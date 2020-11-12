@@ -288,7 +288,7 @@ func (ns *NameStrategy) Name(t *types.Type) string {
 type ImportTracker interface {
 	AddType(*types.Type)
 	LocalNameOf(packagePath string) string
-	PathOf(localName string) (string, string)
+	PathOf(localName string) (string, bool)
 	ImportLines() []string
 }
 

@@ -20,14 +20,14 @@ import (
 	"github.com/lack-io/vine/gogenerator/types"
 )
 
-// Order produces an ordering of types given a Namer.
-type Order struct {
+// Orderer produces an ordering of types given a Namer.
+type Orderer struct {
 	Namer
 }
 
 // OrderUniverse assigns a name to every type in the Universe, including Types,
 // Functions and Variables, and returns a list sorted by those names.
-func (o *Order) OrderUniverse(u types.Universe) []*types.Type {
+func (o *Orderer) OrderUniverse(u types.Universe) []*types.Type {
 	list := tList{
 		namer: o.Namer,
 	}
@@ -48,7 +48,7 @@ func (o *Order) OrderUniverse(u types.Universe) []*types.Type {
 
 // OrderTypes assigns a name to every type, and returns a list sorted by those
 // names
-func (o *Order) OrderTypes(typeList []*types.Type) []*types.Type {
+func (o *Orderer) OrderTypes(typeList []*types.Type) []*types.Type {
 	list := tList{
 		namer: o.Namer,
 		types: typeList,

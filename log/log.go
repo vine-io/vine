@@ -15,7 +15,7 @@
 package log
 
 import (
-	"os"
+	"io"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -24,8 +24,8 @@ import (
 var logger *zap.Logger
 var sugar *zap.SugaredLogger
 
-func Default() {
-	ws := zapcore.AddSync(os.Stdout)
+func DefaultOut(out io.Writer) {
+	ws := zapcore.AddSync(out)
 	encoder := getEncoder()
 	core := zapcore.NewCore(encoder, ws, zapcore.DebugLevel)
 	logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
