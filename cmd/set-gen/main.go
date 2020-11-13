@@ -27,7 +27,7 @@ import (
 	"path/filepath"
 
 	"github.com/lack-io/vine/gogenerator/args"
-	"github.com/lack-io/vine/gogenerator/examples/generators"
+	"github.com/lack-io/vine/gogenerator/examples/set-gen/generators"
 	"github.com/lack-io/vine/log"
 	utilbuild "github.com/lack-io/vine/util/build"
 )

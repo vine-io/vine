@@ -27,7 +27,7 @@ var sugar *zap.SugaredLogger
 func DefaultOut(out io.Writer) {
 	ws := zapcore.AddSync(out)
 	encoder := getEncoder()
-	core := zapcore.NewCore(encoder, ws, zapcore.DebugLevel)
+	core := zapcore.NewCore(encoder, ws, zapcore.InfoLevel)
 	logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	sugar = logger.Sugar()
 }
@@ -39,40 +39,40 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
-func Debug(s string) {
-	sugar.Debugw(s)
+func Debug(args ...interface{}) {
+	sugar.Debug(args...)
 }
 
 func Debugf(format string, v ...interface{}) {
 	sugar.Debugf(format, v...)
 }
 
-func Info(s string) {
-	sugar.Infow(s)
+func Info(args ...interface{}) {
+	sugar.Info(args...)
 }
 
 func Infof(format string, v ...interface{}) {
 	sugar.Infof(format, v...)
 }
 
-func Warn(s string) {
-	sugar.Warnw(s)
+func Warn(args ...interface{}) {
+	sugar.Warn(args...)
 }
 
 func Warnf(format string, v ...interface{}) {
 	sugar.Warnf(format, v...)
 }
 
-func Error(s string) {
-	sugar.Errorw(s)
+func Error(args ...interface{}) {
+	sugar.Error(args...)
 }
 
 func Errorf(format string, v ...interface{}) {
 	sugar.Errorf(format, v...)
 }
 
-func Fatal(s string) {
-	sugar.Fatalw(s)
+func Fatal(args ...interface{}) {
+	sugar.Fatal(args...)
 }
 
 func Fatalf(format string, v ...interface{}) {

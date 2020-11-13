@@ -390,9 +390,9 @@ func (b *Builder) importPackage(dir string, userRequested bool) (*tc.Package, er
 	if err != nil {
 		switch {
 		case ignoreError && pkg != nil:
-			log.Infof("type checking encountered some issues in %q, but ignoring.\n", pkgPath)
+			log.Debugf("type checking encountered some issues in %q, but ignoring.\n", pkgPath)
 		case !ignoreError && pkg != nil:
-			log.Infof("type checking encountered some errors in %q\n", pkgPath)
+			log.Debugf("type checking encountered some errors in %q\n", pkgPath)
 			return nil, err
 		default:
 			return nil, err
@@ -441,7 +441,7 @@ func (b *Builder) typeCheckPackage(pkgPath importPathString) (*tc.Package, error
 		// method. So there can't be cycles in the import graph.
 		Importer: importAdapter{b},
 		Error: func(err error) {
-			log.Infof("type checker: %v\n", err)
+			log.Debugf("type checker: %v\n", err)
 		},
 	}
 	pkg, err := c.Check(string(pkgPath), b.fset, files, nil)
