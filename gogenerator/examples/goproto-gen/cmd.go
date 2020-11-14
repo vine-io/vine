@@ -68,7 +68,6 @@ func New() *Generator {
 		VendorOutputBase: filepath.Join(cwd, "vendor"),
 		ProtoImport:      []string{defaultProtoImport},
 		MetadataPackages: strings.Join([]string{
-			`github.com/lack-io/vine/internal/meta/v1`,
 		}, ","),
 		Packages:           "",
 		DropEmbeddedFields: "github.com/lack-io/vine/internal/meta/v1.TypeMeta",
@@ -109,7 +108,7 @@ func Run(g *Generator) {
 			name.Name = t
 		}
 		if len(name.Name) == 0 {
-			log.Fatalf("--drop-embedded-types requires names in the form of [GOPACKAGE.]TYPENAME: %v", t)
+			log.Warnf("--drop-embedded-types requires names in the form of [GOPACKAGE.]TYPENAME: %v", t)
 		}
 		omitTypes[name] = struct{}{}
 	}
