@@ -27,7 +27,7 @@ var sugar *zap.SugaredLogger
 func DefaultOut(out io.Writer) {
 	ws := zapcore.AddSync(out)
 	encoder := getEncoder()
-	core := zapcore.NewCore(encoder, ws, zapcore.InfoLevel)
+	core := zapcore.NewCore(encoder, ws, zapcore.DebugLevel)
 	logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	sugar = logger.Sugar()
 }

@@ -27,7 +27,7 @@ import (
 	"path/filepath"
 
 	"github.com/lack-io/vine/gogenerator/args"
-	"github.com/lack-io/vine/gogenerator/examples/set-gen/generators"
+	"github.com/lack-io/vine/gogenerator/examples/set-gen"
 	"github.com/lack-io/vine/log"
 	utilbuild "github.com/lack-io/vine/util/build"
 )
@@ -42,9 +42,9 @@ func main() {
 	arguments.OutputPackagePath = "github.com/lack-io/vine/util/sets"
 
 	if err := arguments.Execute(
-		generators.NameSystems(),
-		generators.DefaultNameSystem(),
-		generators.Packages,
+		set_gen.NameSystems(),
+		set_gen.DefaultNameSystem(),
+		set_gen.Packages,
 	); err != nil {
 		log.Errorf("Error: %v", err)
 		os.Exit(1)

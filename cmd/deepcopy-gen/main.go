@@ -48,15 +48,14 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/lack-io/vine/gogenerator/args"
-	generatorargs "github.com/lack-io/vine/gogenerator/examples/deepcpoy-gen/args"
-	"github.com/lack-io/vine/gogenerator/examples/deepcpoy-gen/generators"
+	"github.com/lack-io/vine/gogenerator/examples/deepcopy-gen"
 	"github.com/lack-io/vine/log"
 	utilbuild "github.com/lack-io/vine/util/build"
 )
 
 func main() {
 	log.DefaultOut(os.Stdout)
-	genericArgs, customArgs := generatorargs.NewDefaults()
+	genericArgs, customArgs := deepcopy_gen.NewDefaults()
 
 	// Override defaults.
 	// TODO: move this out of deepcopy-gen
@@ -67,15 +66,15 @@ func main() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
 
-	if err := generatorargs.Validate(genericArgs); err != nil {
+	if err := deepcopy_gen.Validate(genericArgs); err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 
 	// Run it.
 	if err := genericArgs.Execute(
-		generators.NameSystems(),
-		generators.DefaultNameSystem(),
-		generators.Package,
+		deepcopy_gen.NameSystems(),
+		deepcopy_gen.DefaultNameSystem(),
+		deepcopy_gen.Package,
 	); err != nil {
 		log.Fatalf("Error: %v", err)
 	}
