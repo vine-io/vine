@@ -23,6 +23,7 @@ github.com/gogo/protobuf/protoc-gen-gogo/generator
 github.com/gogo/protobuf/protoc-gen-gogo/generator/internal/remap
 github.com/gogo/protobuf/protoc-gen-gogo/grpc
 github.com/gogo/protobuf/protoc-gen-gogo/plugin
+github.com/gogo/protobuf/sortkeys
 github.com/gogo/protobuf/vanity
 github.com/gogo/protobuf/vanity/command
 # github.com/spf13/pflag v1.0.5

@@ -12,6 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +vine:deepcopy=gen=package
-
+// +vine:deepcopy-gen=package
 package v1
