@@ -126,39 +126,48 @@ message OwnerReference {
 // Status contains the return value information of the gRPC request.
 // Each gRPC response will contains Status.
 message Status {
-  // Name of service
+  // Project is the name for this object. It will be assigned when project be created
+  //
+  // Read-Only
   // +optional
-  optional string serviceName = 1;
+  optional string project = 1;
+
+  // Service is the unique for this project. It will be assigned when service be created.
+  //
+  // Read-Only
+  // +optional
+  optional string service = 2;
 
   // Code of status
+  // It's meaning the request is successfully if code equal 0
   // +optional
-  optional int32 code = 2;
+  optional int32 code = 3;
 
   // The description of code
   // +optional
-  optional string message = 3;
+  optional string message = 4;
 
   // Description of status
   // It will be set when requests fails
   // +optional
-  optional string desc = 4;
+  optional string desc = 5;
 
   // The position of exception
   // It will be set when requests fails
   // +optional
-  optional string fileLine = 5;
+  optional string pos = 6;
 
   // The information of call stack
   // It will be set when requests fails
   // +optional
-  repeated StatusDetail detail = 6;
+  repeated StatusDetail detail = 7;
 }
 
 // StatusDetail contains the information of call stack
 message StatusDetail {
   // The position of this call stack
   // +optional
-  optional string fileLine = 1;
+  optional string pos = 1;
 
   // Description of this call stack
   // +optional

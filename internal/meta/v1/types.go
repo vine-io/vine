@@ -137,34 +137,49 @@ type OwnerReference struct {
 // Status contains the return value information of the gRPC request.
 // Each gRPC response will contains Status.
 type Status struct {
-	// Name of service
+	// Project is the name for this object. It will be assigned when project be created
+	//
+	// Read-Only
 	// +optional
-	ServiceName string `json:"serviceName,omitempty" protobuf:"bytes,1,opt,name=serviceName"`
+	Project string `json:"project,omitempty" protobuf:"bytes,1,opt,name=project"`
+
+	// Service is the unique for this project. It will be assigned when service be created.
+	//
+	// Read-Only
+	// +optional
+	Service string `json:"service,omitempty" protobuf:"bytes,2,opt,name=service"`
+
 	// Code of status
+	// It's meaning the request is successfully if code equal 0
 	// +optional
-	Code int32 `json:"code,omitempty" protobuf:"varint,2,opt,name=code"`
+	Code int32 `json:"code,omitempty" protobuf:"varint,3,opt,name=code"`
+
 	// The description of code
 	// +optional
-	Message string `json:"message,omitempty" protobuf:"bytes,3,opt,name=message"`
+	Message string `json:"message,omitempty" protobuf:"bytes,4,opt,name=message"`
+
 	// Description of status
 	// It will be set when requests fails
 	// +optional
-	Desc string `json:"desc,omitempty" protobuf:"bytes,4,opt,name=desc"`
+	Desc string `json:"desc,omitempty" protobuf:"bytes,5,opt,name=desc"`
+
 	// The position of exception
 	// It will be set when requests fails
 	// +optional
-	FileLine string `json:"fileLine,omitempty" protobuf:"bytes,5,opt,name=fileLine"`
+	Pos string `json:"pos,omitempty" protobuf:"bytes,6,opt,name=pos"`
+
 	// The information of call stack
 	// It will be set when requests fails
 	// +optional
-	Details []StatusDetail `json:"detail,omitempty" protobuf:"bytes,6,rep,name=detail"`
+	Details []StatusDetail `json:"detail,omitempty" protobuf:"bytes,7,rep,name=detail"`
 }
 
 // StatusDetail contains the information of call stack
 type StatusDetail struct {
 	// The position of this call stack
 	// +optional
-	FileLine string `json:"fileLine,omitempty" protobuf:"bytes,1,opt,name=fileLine"`
+	Pos string `json:"pos,omitempty" protobuf:"bytes,1,opt,name=pos"`
+
 	// Description of this call stack
 	// +optional
 	Desc string `json:"desc,omitempty" protobuf:"bytes,2,opt,name=desc"`
