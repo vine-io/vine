@@ -12,6 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This Package defines Codez and Codes so that there's a standardization of
-// exception.
 package codes
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+)
+
+func TestCodes_Call(t *testing.T) {
+	c := New(Unknown).Call()
+	assert.NotEqual(t, c.s.Pos, "")
+
+	t.Log(c)
+}
+
+func TestCodes_Stack(t *testing.T) {
+	c := New(Unknown).Stack("stack")
+	assert.NotEqual(t, len(c.s.Details), 0)
+	assert.Equal(t, c.s.Details[0].Desc, "stack")
+
+	t.Log(c)
+}

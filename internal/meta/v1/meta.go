@@ -25,6 +25,8 @@ type Object interface {
 	SetNamespace(namespace string)
 	GetName() string
 	SetName(name string)
+	GetDesc() string
+	SetDesc(desc string)
 	GetUID() string
 	SetUID(uid string)
 	GetCreationTimestamp() int64
@@ -63,6 +65,8 @@ func (meta *ObjectMeta) GetNamespace() string                         { return m
 func (meta *ObjectMeta) SetNamespace(namespace string)                { meta.Namespace = namespace }
 func (meta *ObjectMeta) GetName() string                              { return meta.Name }
 func (meta *ObjectMeta) SetName(name string)                          { meta.Name = name }
+func (meta *ObjectMeta) GetDesc() string                              { return meta.Desc }
+func (meta *ObjectMeta) SetDesc(desc string)                          { meta.Desc = desc }
 func (meta *ObjectMeta) GetUID() string                               { return meta.UID }
 func (meta *ObjectMeta) SetUID(uid string)                            { meta.UID = uid }
 func (meta *ObjectMeta) GetCreationTimestamp() int64                  { return meta.CreationTimestamp }

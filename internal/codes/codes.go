@@ -17,6 +17,7 @@ package codes
 import (
 	"fmt"
 	"runtime"
+	"strings"
 
 	metav1 "github.com/lack-io/vine/internal/meta/v1"
 
@@ -106,10 +107,27 @@ func (c *Codes) Call() *Codes {
 
 // CallDepth calls runtime.Caller to collects error position
 func (c *Codes) CallDepth(d int) *Codes {
-	_, file, line, ok := runtime.Caller(d)
-	if !ok {
-		c.s.Pos = fmt.Sprintf("%s:%d", file, line)
+	_, file, line, _ := runtime.Caller(d+1)
+	if i := strings.Index(file, "src"); i != -1 {
+		file = file[i+4:]
 	}
+	c.s.Pos = fmt.Sprintf("%s:%d", file, line)
+	return c
+}
+
+// Stack collects the context of the error
+func (c *Codes) Stack(msg string) *Codes {
+	if c.s.Details == nil {
+		c.s.Details = []metav1.StatusDetail{}
+	}
+	_, file, line, _ := runtime.Caller(1)
+	if i := strings.Index(file, "src"); i != -1 {
+		file = file[i+4:]
+	}
+	c.s.Details = append(c.s.Details, metav1.StatusDetail{
+		Pos:  fmt.Sprintf("%s:%d", file, line),
+		Desc: msg,
+	})
 	return c
 }
 
@@ -133,4 +151,8 @@ func (c *Codes) IsOK() bool {
 		return true
 	}
 	return c.s.Code == OK.code
+}
+
+func (c *Codes) String() string {
+	return c.s.String()
 }

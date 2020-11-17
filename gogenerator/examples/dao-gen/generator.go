@@ -12,6 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This Package defines Codez and Codes so that there's a standardization of
-// exception.
-package codes
+package dao_gen
