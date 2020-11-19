@@ -17,26 +17,68 @@
 
 package v1
 
+import (
+	runtime "github.com/lack-io/vine/internal/runtime"
+)
+
+// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
+func (in *ListMeta) DeepCopyInto(out *ListMeta) {
+	*out = *in
+	return
+}
+
+// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new ListMeta.
+func (in *ListMeta) DeepCopy() *ListMeta {
+	if in == nil {
+		return nil
+	}
+	out := new(ListMeta)
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
+func (in Map) DeepCopyInto(out *Map) {
+	{
+		in := &in
+		*out = make(Map, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+		return
+	}
+}
+
+// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new Map.
+func (in Map) DeepCopy() Map {
+	if in == nil {
+		return nil
+	}
+	out := new(Map)
+	in.DeepCopyInto(out)
+	return *out
+}
+
 // DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
 func (in *ObjectMeta) DeepCopyInto(out *ObjectMeta) {
 	*out = *in
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
-		*out = make(map[string]string, len(*in))
+		*out = make(Map, len(*in))
 		for key, val := range *in {
 			(*out)[key] = val
 		}
 	}
 	if in.Annotations != nil {
 		in, out := &in.Annotations, &out.Annotations
-		*out = make(map[string]string, len(*in))
+		*out = make(Map, len(*in))
 		for key, val := range *in {
 			(*out)[key] = val
 		}
 	}
 	if in.OwnerReferences != nil {
 		in, out := &in.OwnerReferences, &out.OwnerReferences
-		*out = make([]OwnerReference, len(*in))
+		*out = make(OwnerReferences, len(*in))
 		copy(*out, *in)
 	}
 	return
@@ -66,6 +108,26 @@ func (in *OwnerReference) DeepCopy() *OwnerReference {
 	out := new(OwnerReference)
 	in.DeepCopyInto(out)
 	return out
+}
+
+// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
+func (in OwnerReferences) DeepCopyInto(out *OwnerReferences) {
+	{
+		in := &in
+		*out = make(OwnerReferences, len(*in))
+		copy(*out, *in)
+		return
+	}
+}
+
+// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new OwnerReferences.
+func (in OwnerReferences) DeepCopy() OwnerReferences {
+	if in == nil {
+		return nil
+	}
+	out := new(OwnerReferences)
+	in.DeepCopyInto(out)
+	return *out
 }
 
 // DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
@@ -103,4 +165,30 @@ func (in *StatusDetail) DeepCopy() *StatusDetail {
 	out := new(StatusDetail)
 	in.DeepCopyInto(out)
 	return out
+}
+
+// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
+func (in *WatchStatus) DeepCopyInto(out *WatchStatus) {
+	*out = *in
+	out.TypeMeta = in.TypeMeta
+	in.Status.DeepCopyInto(&out.Status)
+	return
+}
+
+// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new WatchStatus.
+func (in *WatchStatus) DeepCopy() *WatchStatus {
+	if in == nil {
+		return nil
+	}
+	out := new(WatchStatus)
+	in.DeepCopyInto(out)
+	return out
+}
+
+// DeepCopyObject is an auto-generated deepcopy function, copying the receiver, creating a new WatchStatus.
+func (in *WatchStatus) DeepCopyObject() runtime.Object {
+	if c := in.DeepCopy(); c != nil {
+		return c
+	}
+	return nil
 }

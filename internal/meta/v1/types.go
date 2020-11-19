@@ -34,6 +34,28 @@ type TypeMeta struct {
 	APIVersion string `json:"apiVersion,omitempty" protobuf:"bytes,2,opt,name=apiVersion"`
 }
 
+// ListMeta describes metadata that synthetic resources must have, include lists and
+// various status object. A resource may have only one of {ObjectMeta, ListMeta}
+type ListMeta struct {
+	// Offset may be set if user queries collections. It means
+	//
+	// Read-Only
+	// +optional
+	Offset int32 `json:"offset,omitempty" protobuf:"varint,1,opt,name=offset"`
+
+	// Limit may be set if user queries collections.
+	//
+	// Read-Only
+	// +optional
+	Limit int32 `json:"limit,omitempty" protobuf:"varint,2,opt,name=limit"`
+
+	// Count is the number of collections eligibly
+	//
+	// Read-Only
+	// +optional
+	Count int64 `json:"counts,omitempty" protobuf:"varint,3,opt,name=counts"`
+}
+
 // ObjectMeta is metadata that all persisted resources must have, which includes all objects
 // users must create
 type ObjectMeta struct {
@@ -108,18 +130,24 @@ type ObjectMeta struct {
 	// Map of string keys and values that can be used to organize and categorize
 	// (scope and select) objects.
 	// +optional
-	Labels map[string]string `json:"labels,omitempty" protobuf:"bytes,9,rep,name=labels"`
+	Labels Map `json:"labels,omitempty" protobuf:"bytes,9,rep,name=labels"`
 
 	// Annotations is an unstructured key value map stored with a resource that may be
 	// set by external tools to store and retrieve arbitrary metadata. They are not
 	// query and should be preserved when modify objects.
 	// +optional
-	Annotations map[string]string `json:"annotations,omitempty" protobuf:"bytes,10,rep,name=annotations"`
+	Annotations Map `json:"annotations,omitempty" protobuf:"bytes,10,rep,name=annotations"`
 
 	// List of objects depended by this object. If ALL objects in the list have
 	// been deleted, this object will be garbage collected.
-	OwnerReferences []OwnerReference `json:"ownerReferences,omitempty" protobuf:"bytes,11,rep,name=ownerReferences"`
+	OwnerReferences OwnerReferences `json:"ownerReferences,omitempty" protobuf:"bytes,11,rep,name=ownerReferences"`
 }
+
+// Map wraps builtin-map. It implements driver.Valuer
+type Map map[string]string
+
+// OwnerReferences wraps Array of OwnerReference. It implements driver.Valuer
+type OwnerReferences []OwnerReference
 
 // OwnerReference contains enough information to let you identify an owning
 // object. An owning object must be in the same namespace as the dependent,
@@ -189,3 +217,12 @@ type StatusDetail struct {
 	// +optional
 	Desc string `json:"desc,omitempty" protobuf:"bytes,2,opt,name=desc"`
 }
+
+// +vine:deepcopy-gen:interfaces=github.com/lack-io/vine/internal/runtime.Object
+// WatchStatus used by github.com/lack-io/vine/internal/db/watch.Event if event result error.
+type WatchStatus struct {
+	TypeMeta `json:",inline"`
+
+	Status Status `json:"status,omitempty" protobuf:"bytes,1,opt,name=status"`
+}
+

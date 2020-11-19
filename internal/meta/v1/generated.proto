@@ -20,6 +20,28 @@ package github.com.lack_io.vine.internal.meta.v1;
 // Package-wide variables from generator "generated".
 option go_package = "v1";
 
+// ListMeta describes metadata that synthetic resources must have, include lists and
+// various status object. A resource may have only one of {ObjectMeta, ListMeta}
+message ListMeta {
+  // Offset may be set if user queries collections. It means
+  //
+  // Read-Only
+  // +optional
+  optional int32 offset = 1;
+
+  // Limit may be set if user queries collections.
+  //
+  // Read-Only
+  // +optional
+  optional int32 limit = 2;
+
+  // Count is the number of collections eligibly
+  //
+  // Read-Only
+  // +optional
+  optional int64 counts = 3;
+}
+
 // ObjectMeta is metadata that all persisted resources must have, which includes all objects
 // users must create
 message ObjectMeta {
@@ -197,5 +219,9 @@ message TypeMeta {
   // may reject unrecognized values.
   // +optional
   optional string apiVersion = 2;
+}
+
+message WatchStatus {
+  optional Status status = 1;
 }
 

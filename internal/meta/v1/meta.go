@@ -37,13 +37,32 @@ type Object interface {
 	SetDeletionTimestamp(timestamp int64)
 	GetDeletionGrace() bool
 	SetDeletionGrace(grace bool)
-	GetLabels() map[string]string
-	SetLabels(labels map[string]string)
-	GetAnnotations() map[string]string
-	SetAnnotations(annotations map[string]string)
-	GetOwnerReferences() []OwnerReference
-	SetOwnerReferences(references []OwnerReference)
+	GetLabels() Map
+	SetLabels(labels Map)
+	GetAnnotations() Map
+	SetAnnotations(annotations Map)
+	GetOwnerReferences() OwnerReferences
+	SetOwnerReferences(references OwnerReferences)
 }
+
+// ListInterface lets you work with list metadata from any of the versioned or
+// internal API Object. Attempting to set or retrieve a field on an object does
+// not support that field will be no-op return a default value
+type ListInterface interface {
+	GetOffset() int32
+	SetOffset(offset int32)
+	GetLimit() int32
+	SetLimit(limit int32)
+	GetCount() int64
+	SetCount(count int64)
+}
+
+func (meta *ListMeta) GetOffset() int32       { return meta.Offset }
+func (meta *ListMeta) SetOffset(offset int32) { meta.Offset = offset }
+func (meta *ListMeta) GetLimit() int32        { return meta.Limit }
+func (meta *ListMeta) SetLimit(limit int32)   { meta.Limit = limit }
+func (meta *ListMeta) GetCount() int64        { return meta.Count }
+func (meta *ListMeta) SetCount(count int64)   { meta.Count = count }
 
 func (obj *TypeMeta) GetObjectKind() schema.ObjectKind { return obj }
 
@@ -61,27 +80,27 @@ func (obj *ObjectMeta) GetObjectMeta() Object { return obj }
 
 // Namespace implements metav1.Object any object with an ObjectMeta typed field. Allows
 // fast, direct access to metadata fields for API objects.
-func (meta *ObjectMeta) GetNamespace() string                         { return meta.Namespace }
-func (meta *ObjectMeta) SetNamespace(namespace string)                { meta.Namespace = namespace }
-func (meta *ObjectMeta) GetName() string                              { return meta.Name }
-func (meta *ObjectMeta) SetName(name string)                          { meta.Name = name }
-func (meta *ObjectMeta) GetDesc() string                              { return meta.Desc }
-func (meta *ObjectMeta) SetDesc(desc string)                          { meta.Desc = desc }
-func (meta *ObjectMeta) GetUID() string                               { return meta.UID }
-func (meta *ObjectMeta) SetUID(uid string)                            { meta.UID = uid }
-func (meta *ObjectMeta) GetCreationTimestamp() int64                  { return meta.CreationTimestamp }
-func (meta *ObjectMeta) SetCreationTimestamp(timestamp int64)         { meta.CreationTimestamp = timestamp }
-func (meta *ObjectMeta) GetUpdateTimestamp() int64                    { return meta.UpdateTimestamp }
-func (meta *ObjectMeta) SetUpdateTimestamp(timestamp int64)           { meta.UpdateTimestamp = timestamp }
-func (meta *ObjectMeta) GetDeletionTimestamp() int64                  { return meta.DeletionTimestamp }
-func (meta *ObjectMeta) SetDeletionTimestamp(timestamp int64)         { meta.DeletionTimestamp = timestamp }
-func (meta *ObjectMeta) GetDeletionGrace() bool                       { return meta.DeletionGrace }
-func (meta *ObjectMeta) SetDeletionGrace(grace bool)                  { meta.DeletionGrace = grace }
-func (meta *ObjectMeta) GetLabels() map[string]string                 { return meta.Labels }
-func (meta *ObjectMeta) SetLabels(labels map[string]string)           { meta.Labels = labels }
-func (meta *ObjectMeta) GetAnnotations() map[string]string            { return meta.Annotations }
-func (meta *ObjectMeta) SetAnnotations(annotations map[string]string) { meta.Annotations = annotations }
-func (meta *ObjectMeta) GetOwnerReferences() []OwnerReference         { return meta.OwnerReferences }
-func (meta *ObjectMeta) SetOwnerReferences(references []OwnerReference) {
+func (meta *ObjectMeta) GetNamespace() string                 { return meta.Namespace }
+func (meta *ObjectMeta) SetNamespace(namespace string)        { meta.Namespace = namespace }
+func (meta *ObjectMeta) GetName() string                      { return meta.Name }
+func (meta *ObjectMeta) SetName(name string)                  { meta.Name = name }
+func (meta *ObjectMeta) GetDesc() string                      { return meta.Desc }
+func (meta *ObjectMeta) SetDesc(desc string)                  { meta.Desc = desc }
+func (meta *ObjectMeta) GetUID() string                       { return meta.UID }
+func (meta *ObjectMeta) SetUID(uid string)                    { meta.UID = uid }
+func (meta *ObjectMeta) GetCreationTimestamp() int64          { return meta.CreationTimestamp }
+func (meta *ObjectMeta) SetCreationTimestamp(timestamp int64) { meta.CreationTimestamp = timestamp }
+func (meta *ObjectMeta) GetUpdateTimestamp() int64            { return meta.UpdateTimestamp }
+func (meta *ObjectMeta) SetUpdateTimestamp(timestamp int64)   { meta.UpdateTimestamp = timestamp }
+func (meta *ObjectMeta) GetDeletionTimestamp() int64          { return meta.DeletionTimestamp }
+func (meta *ObjectMeta) SetDeletionTimestamp(timestamp int64) { meta.DeletionTimestamp = timestamp }
+func (meta *ObjectMeta) GetDeletionGrace() bool               { return meta.DeletionGrace }
+func (meta *ObjectMeta) SetDeletionGrace(grace bool)          { meta.DeletionGrace = grace }
+func (meta *ObjectMeta) GetLabels() Map                       { return meta.Labels }
+func (meta *ObjectMeta) SetLabels(labels Map)                 { meta.Labels = labels }
+func (meta *ObjectMeta) GetAnnotations() Map                  { return meta.Annotations }
+func (meta *ObjectMeta) SetAnnotations(annotations Map)       { meta.Annotations = annotations }
+func (meta *ObjectMeta) GetOwnerReferences() OwnerReferences  { return meta.OwnerReferences }
+func (meta *ObjectMeta) SetOwnerReferences(references OwnerReferences) {
 	meta.OwnerReferences = references
 }

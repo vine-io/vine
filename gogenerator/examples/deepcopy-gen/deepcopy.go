@@ -586,7 +586,7 @@ func (g *genDeepCopy) GenerateType(c *generator.Context, t *types.Type, w io.Wri
 	if deepCopyIntoMethodOrDie(t) == nil {
 		sw.Do("// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.\n", args)
 		if isReference(t) {
-			sw.Do("func (in $.type|raw$) DeepCopyInto(out $.type|raw$) {\n", args)
+			sw.Do("func (in $.type|raw$) DeepCopyInto(out *$.type|raw$) {\n", args)
 			sw.Do("{in:=&in\n", nil)
 		} else {
 			sw.Do("func (in *$.type|raw$) DeepCopyInto(out *$.type|raw$) {\n", args)
