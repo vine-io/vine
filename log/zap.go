@@ -21,15 +21,12 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var logger *zap.Logger
-var sugar *zap.SugaredLogger
-
 func DefaultOut(out io.Writer) {
 	ws := zapcore.AddSync(out)
 	encoder := getEncoder()
 	core := zapcore.NewCore(encoder, ws, zapcore.DebugLevel)
-	logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
-	sugar = logger.Sugar()
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	deLogger = logger.Sugar()
 }
 
 func getEncoder() zapcore.Encoder {
@@ -39,46 +36,44 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
+var deLogger Logger
+
 func Debug(args ...interface{}) {
-	sugar.Debug(args...)
+	deLogger.Debug(args...)
 }
 
 func Debugf(format string, v ...interface{}) {
-	sugar.Debugf(format, v...)
+	deLogger.Debugf(format, v...)
 }
 
 func Info(args ...interface{}) {
-	sugar.Info(args...)
+	deLogger.Info(args...)
 }
 
 func Infof(format string, v ...interface{}) {
-	sugar.Infof(format, v...)
+	deLogger.Infof(format, v...)
 }
 
 func Warn(args ...interface{}) {
-	sugar.Warn(args...)
+	deLogger.Warn(args...)
 }
 
 func Warnf(format string, v ...interface{}) {
-	sugar.Warnf(format, v...)
+	deLogger.Warnf(format, v...)
 }
 
 func Error(args ...interface{}) {
-	sugar.Error(args...)
+	deLogger.Error(args...)
 }
 
 func Errorf(format string, v ...interface{}) {
-	sugar.Errorf(format, v...)
+	deLogger.Errorf(format, v...)
 }
 
 func Fatal(args ...interface{}) {
-	sugar.Fatal(args...)
+	deLogger.Fatal(args...)
 }
 
 func Fatalf(format string, v ...interface{}) {
-	sugar.Fatalf(format, v...)
-}
-
-func Sync() error {
-	return sugar.Sync()
+	deLogger.Fatalf(format, v...)
 }
