@@ -16,10 +16,17 @@ package log
 
 import (
 	"io"
+	"os"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+var deLogger Logger
+
+func init() {
+	DefaultOut(os.Stdout)
+}
 
 func DefaultOut(out io.Writer) {
 	ws := zapcore.AddSync(out)
@@ -35,8 +42,6 @@ func getEncoder() zapcore.Encoder {
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
-
-var deLogger Logger
 
 func Debug(args ...interface{}) {
 	deLogger.Debug(args...)
