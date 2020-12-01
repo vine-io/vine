@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/metadata"
+	"github.com/lack-io/vine/util/metadata"
 )
 
 func TestCache(t *testing.T) {

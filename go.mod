@@ -3,15 +3,22 @@ module github.com/lack-io/vine
 go 1.15
 
 require (
+	github.com/coreos/etcd v3.3.25+incompatible
+	github.com/coreos/go-semver v0.3.0 // indirect
+	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gogo/googleapis v1.4.0
 	github.com/gogo/protobuf v1.3.1
+	github.com/golang/protobuf v1.4.2
 	github.com/google/uuid v1.1.2
 	github.com/json-iterator/go v1.1.10
 	github.com/kr/pretty v0.1.0
 	github.com/lib/pq v1.3.0
+	github.com/lucas-clemente/quic-go v0.19.2
 	github.com/miekg/dns v1.1.35
+	github.com/mitchellh/hashstructure v1.1.0
+	github.com/nats-io/nats.go v1.10.0
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/spf13/pflag v1.0.5

@@ -24,9 +24,9 @@ import (
 
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/errors"
-	"github.com/lack-io/vine/metadata"
 	"github.com/lack-io/vine/store"
 	pb "github.com/lack-io/vine/store/service/proto"
+	"github.com/lack-io/vine/util/metadata"
 )
 
 type serviceStore struct {

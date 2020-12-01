@@ -37,3 +37,63 @@ message Endpoint {
 }
 
 // Value is an opaque value for a request or response
+message Value {
+  string name = 1;
+  string type = 2;
+  repeated Value values = 3;
+}
+
+// Options are registry options
+message Options {
+  int64 ttl = 1;
+}
+
+// Result is returns by the watcher
+message Result {
+  string action = 1; // create, update, delete
+  Service service = 2;
+  int64 timestamp = 3; // unix timestamp
+}
+
+message EmptyResponse {}
+
+message GetRequest {
+  string service = 1;
+}
+
+message GetResponse {
+  repeated Service services = 1;
+}
+
+message ListRequest {
+  // TODO: filtering
+}
+
+message ListResponse {
+  repeated Service services = 1;
+}
+
+message WatchRequest {
+  // service is optional
+  string service = 1;
+}
+
+// EventType defines the type of event
+enum EventType {
+  Create = 0;
+  Delete = 1;
+  Update = 2;
+}
+
+// Event is registry event
+message Event {
+  // Event Id
+  string id = 1;
+  // type of event
+  EventType type = 2;
+  // unix timestamp of event
+  int64 timestamp = 3;
+  // service entry
+  Service service = 4;
+}
+
