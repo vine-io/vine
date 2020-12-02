@@ -25,9 +25,9 @@ import (
 )
 
 type response struct {
-	conn *grpc.ClientConn
+	conn   *grpc.ClientConn
 	stream grpc.ClientStream
-	codec encoding.Codec
+	codec  encoding.Codec
 	gcodec codec.Codec
 }
 
@@ -49,7 +49,7 @@ func (r *response) Header() map[string]string {
 	return hdr
 }
 
-// Read the undecode response
+// Read the undecoded response
 func (r *response) Read() ([]byte, error) {
 	f := &bytes.Frame{}
 	if err := r.gcodec.ReadBody(f); err != nil {

@@ -59,7 +59,7 @@ func NewRegistry(opts ...registry.Option) registry.Registry {
 
 func configure(e *etcdRegistry, opts ...registry.Option) error {
 	config := clientv3.Config{
-		Endpoints: []string{"127.0.0.1"},
+		Endpoints: []string{"127.0.0.1:2379"},
 	}
 
 	for _, o := range opts {
@@ -219,7 +219,7 @@ func (e *etcdRegistry) registerNode(s *registry.Service, node *registry.Node, op
 		return err
 	}
 
-	// get existing hash for service node
+	// get existing hash for the service node
 	e.Lock()
 	v, ok := e.register[s.Name+node.Id]
 	e.Unlock()
@@ -269,7 +269,7 @@ func (e *etcdRegistry) registerNode(s *registry.Service, node *registry.Node, op
 	e.Lock()
 	// save our hash of the service
 	e.register[s.Name+node.Id] = h
-	// save out leaseID of the service
+	// save our leaseID of the service
 	if lgr != nil {
 		e.leases[s.Name+node.Id] = lgr.ID
 	}
@@ -288,7 +288,7 @@ func (e *etcdRegistry) Deregister(s *registry.Service, opts ...registry.Deregist
 		// delete our hash of the service
 		delete(e.register, s.Name+node.Id)
 		// delete our lease of the service
-		delete(e.register, s.Name+node.Id)
+		delete(e.leases, s.Name+node.Id)
 		e.Unlock()
 
 		ctx, cancel := context.WithTimeout(context.Background(), e.options.Timeout)
@@ -326,9 +326,13 @@ func (e *etcdRegistry) GetService(name string, opts ...registry.GetOption) ([]*r
 	ctx, cancel := context.WithTimeout(context.Background(), e.options.Timeout)
 	defer cancel()
 
-	rsp, err := e.client.Get(ctx, servicePath(name) + "/" , clientv3.WithPrefix(), clientv3.WithSerializable())
+	rsp, err := e.client.Get(ctx, servicePath(name)+"/", clientv3.WithPrefix(), clientv3.WithSerializable())
 	if err != nil {
 		return nil, err
+	}
+
+	if len(rsp.Kvs) == 0 {
+		return nil, registry.ErrNotFound
 	}
 
 	serviceMap := map[string]*registry.Service{}
@@ -338,9 +342,9 @@ func (e *etcdRegistry) GetService(name string, opts ...registry.GetOption) ([]*r
 			s, ok := serviceMap[sn.Version]
 			if !ok {
 				s = &registry.Service{
-					Name: sn.Name,
-					Version: sn.Version,
-					Metadata: sn.Metadata,
+					Name:      sn.Name,
+					Version:   sn.Version,
+					Metadata:  sn.Metadata,
 					Endpoints: sn.Endpoints,
 				}
 				serviceMap[s.Version] = s
@@ -354,6 +358,7 @@ func (e *etcdRegistry) GetService(name string, opts ...registry.GetOption) ([]*r
 	for _, service := range serviceMap {
 		services = append(services, service)
 	}
+
 	return services, nil
 }
 
@@ -391,8 +396,8 @@ func (e *etcdRegistry) ListServices(opts ...registry.ListOption) ([]*registry.Se
 		services = append(services, service)
 	}
 
-	// sort the service
-	sort.Slice(services, func(i, j int) bool {return services[i].Name < services[j].Name})
+	// sort the services
+	sort.Slice(services, func(i, j int) bool { return services[i].Name < services[j].Name })
 
 	return services, nil
 }

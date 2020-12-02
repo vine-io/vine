@@ -18,7 +18,7 @@ import "github.com/lack-io/vine/codec"
 
 type rpcResponse struct {
 	header map[string]string
-	codec codec.Codec
+	codec  codec.Codec
 }
 
 func (r *rpcResponse) Codec() codec.Writer {
@@ -34,6 +34,6 @@ func (r *rpcResponse) WriteHeader(hdr map[string]string) {
 func (r *rpcResponse) Write(b []byte) error {
 	return r.codec.Write(&codec.Message{
 		Header: r.header,
-		Body: b,
+		Body:   b,
 	}, nil)
 }

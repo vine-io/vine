@@ -20,8 +20,8 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/lack-io/vine/debug/trace"
 	"github.com/lack-io/vine/util/ring"
-	"github.com/lack-io/vine/util/trace"
 )
 
 type Tracer struct {

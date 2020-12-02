@@ -23,9 +23,9 @@ import (
 	"github.com/lack-io/vine/auth"
 	"github.com/lack-io/vine/broker"
 	"github.com/lack-io/vine/codec"
+	"github.com/lack-io/vine/debug/trace"
 	"github.com/lack-io/vine/registry"
 	"github.com/lack-io/vine/transport"
-	"github.com/lack-io/vine/util/trace"
 )
 
 type Options struct {
@@ -94,19 +94,19 @@ func newOptions(opts ...Option) Options {
 		options.RegisterCheck = DefaultRegisterCheck
 	}
 
-	if len(options.Address) > 0 {
+	if len(options.Address) == 0 {
 		options.Address = DefaultAddress
 	}
 
-	if len(options.Name) > 0 {
-		options.Name = DefautName
+	if len(options.Name) == 0 {
+		options.Name = DefaultName
 	}
 
-	if len(options.Id) > 0 {
+	if len(options.Id) == 0 {
 		options.Id = DefaultId
 	}
 
-	if len(options.Version) > 0 {
+	if len(options.Version) == 0 {
 		options.Version = DefaultVersion
 	}
 

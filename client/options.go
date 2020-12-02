@@ -49,7 +49,7 @@ type Options struct {
 	// Middleware for client
 	Wrappers []Wrapper
 
-	// Middleware Call Options
+	// Default Call Options
 	CallOptions CallOptions
 
 	// Other options for implementations of the interface
@@ -68,7 +68,7 @@ type CallOptions struct {
 	Retry RetryFunc
 	// Transport Dial Timeout
 	DialTimeout time.Duration
-	// Number of call attempts
+	// Number of Call attempts
 	Retries int
 	// Request/Response timeout
 	RequestTimeout time.Duration
@@ -82,7 +82,7 @@ type CallOptions struct {
 	// Middleware for low level call func
 	CallWrappers []CallWrapper
 
-	// Other options for implementations of the inteface
+	// Other options for implementations of the interface
 	// can be stored in a context
 	Context context.Context
 }
@@ -180,7 +180,7 @@ func Registry(r registry.Registry) Option {
 	}
 }
 
-// Transport to use for communication e.g http, rabbitmq, etcd
+// Transport to use for communication e.g http, rabbitmq, etc
 func Transport(t transport.Transport) Option {
 	return func(o *Options) {
 		o.Transport = t
@@ -194,7 +194,7 @@ func Selector(s selector.Selector) Option {
 	}
 }
 
-// Adds a wrapper to a list of options passed into the client
+// Adds a Wrapper to a list of options passed into the client
 func Wrap(w Wrapper) Option {
 	return func(o *Options) {
 		o.Wrappers = append(o.Wrappers, w)
@@ -224,7 +224,7 @@ func Retries(i int) Option {
 	}
 }
 
-// Retry sets the retry function a be used when re-trying.
+// Retry sets the retry function to be used when re-trying.
 func Retry(fn RetryFunc) Option {
 	return func(o *Options) {
 		o.CallOptions.Retry = fn
@@ -337,7 +337,7 @@ func WithDialTimeout(d time.Duration) CallOption {
 }
 
 // WithServiceToken is a CallOption which overrides the
-// authorization header with the services own which token
+// authorization header with the services own auth token
 func WithServiceToken() CallOption {
 	return func(o *CallOptions) {
 		o.ServiceToken = true

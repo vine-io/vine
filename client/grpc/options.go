@@ -50,7 +50,7 @@ type maxSendMsgSizeKey struct{}
 type grpcDialOptions struct{}
 type grpcCallOptions struct{}
 
-// maximum streams on a connections
+// maximum streams on a connectioin
 func PoolMaxStreams(n int) client.Option {
 	return func(o *client.Options) {
 		if o.Context == nil {

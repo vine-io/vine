@@ -33,7 +33,7 @@ type rpcStream struct {
 	codec    codec.Codec
 	ctx      context.Context
 
-	// single whether we should send EOS
+	// signal whether we should send EOS
 	sendEOS bool
 
 	// release releases the connection back to the pool

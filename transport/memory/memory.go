@@ -233,7 +233,7 @@ func (m *memoryTransport) Listen(addr string, opts ...transport.ListenOption) (t
 
 	// if zero port then randomly assign one
 	if len(port) > 0 && port == "0" {
-		i := rand.Intn(2000)
+		i := rand.Intn(20000)
 		port = fmt.Sprintf("%d", 10000+i)
 	}
 

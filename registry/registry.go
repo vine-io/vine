@@ -17,7 +17,9 @@ package registry
 import "errors"
 
 var (
-	// Not Found error when GetService is called
+	DefaultRegistry = NewRegistry()
+
+	// Not found error when GetService is called
 	ErrNotFound = errors.New("service not found")
 	// Watcher stopped error when watcher is stopped
 	ErrWatcherStopped = errors.New("watcher stopped")
@@ -52,7 +54,7 @@ type Node struct {
 }
 
 type Endpoint struct {
-	Name     string            `json:"name,omitempty"`
+	Name     string            `json:"name"`
 	Request  *Value            `json:"request"`
 	Response *Value            `json:"response"`
 	Metadata map[string]string `json:"metadata"`
@@ -82,16 +84,16 @@ func Register(s *Service, opts ...RegisterOption) error {
 }
 
 // Deregister a service node
-func Deregister(s *Service, opts ...DeregisterOption) error {
-	return DefaultRegistry.Deregister(s, opts...)
+func Deregister(s *Service) error {
+	return DefaultRegistry.Deregister(s)
 }
 
-// Retrieve a service. A slice is returned since we separate Name/Version
-func GetService(name string, opts ...GetOption) ([]*Service, error) {
-	return DefaultRegistry.GetService(name, opts...)
+// Retrieve a service. A slice is returned since we separate Name/Version.
+func GetService(name string) ([]*Service, error) {
+	return DefaultRegistry.GetService(name)
 }
 
-// List the services. Only returns services names
+// List the services. Only returns service names
 func ListServices() ([]*Service, error) {
 	return DefaultRegistry.ListServices()
 }
@@ -101,4 +103,6 @@ func Watch(opts ...WatchOption) (Watcher, error) {
 	return DefaultRegistry.Watch(opts...)
 }
 
-var DefaultRegistry = NewRegistry()
+func String() string {
+	return DefaultRegistry.String()
+}

@@ -36,7 +36,7 @@ type methodType struct {
 	method      reflect.Method
 	ArgType     reflect.Type
 	ReplyType   reflect.Type
-	ContentType reflect.Type
+	ContextType reflect.Type
 	stream      bool
 }
 
@@ -59,7 +59,7 @@ func isExported(name string) bool {
 	return unicode.IsUpper(rune)
 }
 
-// Is this type exported or a builtin>
+// Is this type exported or a builtin?
 func isExportedOrBuiltinType(t reflect.Type) bool {
 	for t.Kind() == reflect.Ptr {
 		t = t.Elem()
@@ -70,7 +70,7 @@ func isExportedOrBuiltinType(t reflect.Type) bool {
 }
 
 // prepareEndpoint() returns a methodType for the provided method or nil
-// is case if the method was unsuitable.
+// in case if the method was unsuitable.
 func prepareEndpoint(method reflect.Method) *methodType {
 	mtype := method.Type
 	mname := method.Name
@@ -84,7 +84,7 @@ func prepareEndpoint(method reflect.Method) *methodType {
 
 	switch mtype.NumIn() {
 	case 3:
-		// assuming stream
+		// assuming streaming
 		argType = mtype.In(2)
 		contextType = mtype.In(1)
 		stream = true
@@ -136,7 +136,7 @@ func prepareEndpoint(method reflect.Method) *methodType {
 		log.Errorf("method %v returns %v not error", mname, returnType.String())
 		return nil
 	}
-	return &methodType{method: method, ArgType: argType, ReplyType: replyType, ContentType: contextType, stream: stream}
+	return &methodType{method: method, ArgType: argType, ReplyType: replyType, ContextType: contextType, stream: stream}
 }
 
 func (server *rServer) register(rcvr interface{}) error {
@@ -184,5 +184,5 @@ func (m *methodType) prepareContext(ctx context.Context) reflect.Value {
 	if contextv := reflect.ValueOf(ctx); contextv.IsValid() {
 		return contextv
 	}
-	return reflect.Zero(m.ContentType)
+	return reflect.Zero(m.ContextType)
 }

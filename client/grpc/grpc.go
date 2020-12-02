@@ -528,7 +528,7 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 	// make a copy of stream
 	gstream := g.stream
 
-	// wrap the client in reverse
+	// wrap the call in reverse
 	for i := len(callOpts.CallWrappers); i > 0; i-- {
 		gstream = callOpts.CallWrappers[i-1](gstream)
 	}

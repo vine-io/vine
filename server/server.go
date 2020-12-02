@@ -152,7 +152,7 @@ type Option func(*Options)
 
 var (
 	DefaultAddress = ":0"
-	DefautName = "go.vine.server"
+	DefaultName = "go.vine.server"
 	DefaultVersion = "latest"
 	DefaultId = uuid.New().String()
 	DefaultServer Server = newRpcServer()

@@ -27,7 +27,6 @@ func serviceToRecord(s *registry.Service, ttl time.Duration) *record {
 	}
 
 	nodes := make(map[string]*node, len(s.Nodes))
-
 	for _, n := range s.Nodes {
 		nodes[n.Id] = &node{
 			Node:     n,

@@ -83,9 +83,9 @@ var (
 	DefaultPath      = "/"
 	DefaultAddress   = "127.0.0.1:0"
 	serviceName      = "vine.http.broker"
-	broadcaseVersion = "ff.http.broadcast"
+	broadcastVersion = "ff.http.broadcast"
 	registerTTL      = time.Minute
-	registerInternal = time.Second * 30
+	registerInterval = time.Second * 30
 )
 
 func init() {
@@ -235,7 +235,7 @@ func (h *httpBroker) getMessage(topic string, num int) [][]byte {
 	// reset inbox
 	h.inbox[topic] = nil
 
-	// return nil messages
+	// return all messages
 	return c
 }
 
@@ -276,7 +276,7 @@ func (h *httpBroker) unsubscribe(s *httpSubscriber) error {
 }
 
 func (h *httpBroker) run(l net.Listener) {
-	t := time.NewTicker(registerInternal)
+	t := time.NewTicker(registerInterval)
 	defer t.Stop()
 
 	for {
@@ -300,7 +300,7 @@ func (h *httpBroker) run(l net.Listener) {
 					_ = h.r.Deregister(sub.svc)
 				}
 			}
-			h.RLock()
+			h.RUnlock()
 			return
 		}
 	}
@@ -347,6 +347,8 @@ func (h *httpBroker) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	//nolint:prealloc
 	var subs []Handler
+
+	h.RLock()
 	for _, subscriber := range h.subscribers[topic] {
 		if id != subscriber.id {
 			continue
@@ -458,7 +460,7 @@ func (h *httpBroker) Disconnect() error {
 
 	// stop cache
 	rc, ok := h.r.(cache.Cache)
-	if !ok {
+	if ok {
 		rc.Stop()
 	}
 
@@ -542,10 +544,10 @@ func (h *httpBroker) Publish(topic string, msg *Message, opts ...PublishOption) 
 		return err
 	}
 
-	// save the messge
+	// save the message
 	h.saveMessage(topic, b)
 
-	// new attempt to get the service
+	// now attempt to get the service
 	h.RLock()
 	s, err := h.r.GetService(serviceName)
 	if err != nil {
@@ -602,13 +604,13 @@ func (h *httpBroker) Publish(topic string, msg *Message, opts ...PublishOption) 
 
 			switch service.Version {
 			// broadcast version means broadcast to all nodes
-			case broadcaseVersion:
+			case broadcastVersion:
 				var success bool
 
 				// publish to all nodes
 				for _, node := range nodes {
 					// publish async
-					if err := pub(node, topic, b); err != nil {
+					if err := pub(node, topic, b); err == nil {
 						success = true
 					}
 				}
@@ -688,7 +690,7 @@ func (h *httpBroker) Subscribe(topic string, handler Handler, opts ...SubscribeO
 	// check for queue group or broadcast queue
 	version := options.Queue
 	if len(version) == 0 {
-		version = broadcaseVersion
+		version = broadcastVersion
 	}
 
 	service := &registry.Service{

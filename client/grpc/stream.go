@@ -73,7 +73,7 @@ func (g *grpcStream) Recv(msg interface{}) (err error) {
 
 func (g *grpcStream) Error() error {
 	g.RLock()
-	defer g.RLock()
+	defer g.RUnlock()
 	return g.err
 }
 

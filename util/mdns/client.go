@@ -56,7 +56,7 @@ func (s *ServiceEntry) complete() bool {
 type QueryParam struct {
 	Service             string               // Service to lookup
 	Domain              string               // Lookup domain, default "local"
-	Type                uint16               // Lookup domain, defaults to dns.TypePRT
+	Type                uint16               // Lookup type, defaults to dns.TypePTR
 	Context             context.Context      // Context
 	Timeout             time.Duration        // Lookup timeout, default 1 second. Ignored if Context is provided
 	Interface           *net.Interface       // Multicast interface to use
@@ -160,7 +160,7 @@ func Listen(entries chan<- *ServiceEntry, exit chan struct{}) error {
 				m.SetQuestion(e.Name, dns.TypePTR)
 				m.RecursionDesired = false
 				if err := client.sendQuery(m); err != nil {
-					log.Errorf("[ERR] mdns: Failed to query interface %s: %v", e.Name, err)
+					log.Errorf("[ERR] mdns: Failed to query instance %s: %v", e.Name, err)
 				}
 			}
 		}
@@ -177,7 +177,7 @@ func Lookup(service string, entries chan<- *ServiceEntry) error {
 }
 
 // Client provides a query interface that can be used to
-// search for service provides using mDNS
+// search for service providers using mDNS
 type client struct {
 	ipv4UnicastConn *net.UDPConn
 	ipv6UnicastConn *net.UDPConn
@@ -389,7 +389,7 @@ func (c *client) query(params *QueryParam) error {
 				m.SetQuestion(inp.Name, inp.Type)
 				m.RecursionDesired = false
 				if err := c.sendQuery(m); err != nil {
-					log.Errorf("[ERR] mdns: Failed to query interface %v: %v", inp.Name, err)
+					log.Errorf("[ERR] mdns: Failed to query instance %s: %v", inp.Name, err)
 				}
 			}
 		case <-params.Context.Done():

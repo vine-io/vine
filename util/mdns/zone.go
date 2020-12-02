@@ -42,7 +42,7 @@ type MDNSService struct {
 	Service      string   // Service name (e.g. "_http._tcp.")
 	Domain       string   // If blank, assumes "local"
 	HostName     string   // Host machine DNS name (e.g. "mymachine.net.")
-	Port         int      // Service port
+	Port         int      // Service Port
 	IPs          []net.IP // IP addresses for the service's host
 	TXT          []string // Service TXT records
 	TTL          uint32
@@ -106,7 +106,7 @@ func NewMDNSService(instance, service, domain, hostName string, port int, ips []
 		hostName = fmt.Sprintf("%s.", hostName)
 	}
 	if err := validateFQDN(hostName); err != nil {
-		return nil, fmt.Errorf("hostName %q is a fully-qualified domain name: %v", hostName, err)
+		return nil, fmt.Errorf("hostName %q is not a fully-qualified domain name: %v", hostName, err)
 	}
 
 	if len(ips) == 0 {
@@ -297,7 +297,7 @@ func (m *MDNSService) instanceRecords(q dns.Question) []dns.RR {
 		}
 		recs := []dns.RR{srv}
 
-		// Add the record
+		// Add the A record
 		recs = append(recs, m.instanceRecords(dns.Question{
 			Name:  m.instanceAddr,
 			Qtype: dns.TypeA,

@@ -34,8 +34,8 @@ const (
 	lastStreamResponseError = "EOS"
 )
 
-// serverError represents an error has been returned from
-// the remote side of RPC connection.
+// serverError represents an error that has been returned from
+// the remote side of the RPC connection.
 type serverError string
 
 func (e serverError) Error() string {

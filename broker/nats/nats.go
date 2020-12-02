@@ -23,7 +23,9 @@ import (
 	"github.com/nats-io/nats.go"
 
 	"github.com/lack-io/vine/broker"
+	"github.com/lack-io/vine/codec/json"
 	"github.com/lack-io/vine/log"
+	"github.com/lack-io/vine/registry"
 )
 
 type natsBroker struct {
@@ -34,24 +36,24 @@ type natsBroker struct {
 	connected bool
 
 	addrs []string
-	conn *nats.Conn
-	opts broker.Options
+	conn  *nats.Conn
+	opts  broker.Options
 	nopts nats.Options
 
 	// should we drain the connection
-	drain bool
+	drain   bool
 	closeCh chan error
 }
 
 type subscriber struct {
-	s *nats.Subscription
+	s    *nats.Subscription
 	opts broker.SubscribeOptions
 }
 
 type publication struct {
-	t string
+	t   string
 	err error
-	m *broker.Message
+	m   *broker.Message
 }
 
 func (p *publication) Topic() string {
@@ -95,22 +97,22 @@ func (n *natsBroker) Address() string {
 	return ""
 }
 
-func (n *natsBroker) setAddr(addr []string) []string {
-	//onlint:prealloc
-	var cAddr []string
-	for _, addr := range addr {
+func (n *natsBroker) setAddrs(addrs []string) []string {
+	//nolint:prealloc
+	var cAddrs []string
+	for _, addr := range addrs {
 		if len(addr) == 0 {
 			continue
 		}
 		if !strings.HasPrefix(addr, "nats://") {
 			addr = "nats://" + addr
 		}
-		cAddr = append(cAddr, addr)
+		cAddrs = append(cAddrs, addr)
 	}
-	if len(cAddr) == 0 {
-		cAddr = []string{nats.DefaultURL}
+	if len(cAddrs) == 0 {
+		cAddrs = []string{nats.DefaultURL}
 	}
-	return cAddr
+	return cAddrs
 }
 
 func (n *natsBroker) Connect() error {
@@ -130,7 +132,7 @@ func (n *natsBroker) Connect() error {
 	case nats.CONNECTED, nats.RECONNECTING, nats.CONNECTING:
 		n.connected = true
 		return nil
-	default: // DISCONNECTED or CLOSE or DRAINING
+	default: // DISCONNECTED or CLOSED or DRAINING
 		opts := n.nopts
 		opts.Servers = n.addrs
 		opts.Secure = n.opts.Secure
@@ -281,7 +283,7 @@ func (n *natsBroker) setOption(opts ...broker.Option) {
 	if n.opts.TLSConfig == nil {
 		n.opts.TLSConfig = n.nopts.TLSConfig
 	}
-	n.addrs = n.setAddr(n.opts.Addrs)
+	n.addrs = n.setAddrs(n.opts.Addrs)
 
 	if n.opts.Context.Value(drainConnectionKey{}) != nil {
 		n.drain = true
@@ -306,4 +308,20 @@ func (n *natsBroker) onAsyncError(conn *nats.Conn, sub *nats.Subscription, err e
 
 func (n *natsBroker) onDisconnectedError(conn *nats.Conn, err error) {
 	n.closeCh <- err
+}
+
+func NewBroker(opts ...broker.Option) broker.Broker {
+	options := broker.Options{
+		// Default codec
+		Codec:    json.Marshaler{},
+		Context:  context.Background(),
+		Registry: registry.DefaultRegistry,
+	}
+
+	n := &natsBroker{
+		opts: options,
+	}
+	n.setOption(opts...)
+
+	return n
 }

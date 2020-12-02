@@ -34,8 +34,8 @@ func (s *svc) Init(opts ...auth.Option) {
 		s.options.Client = client.DefaultClient
 	}
 
-	s.auth = pb.NewAuthService("go.micro.auth", s.options.Client)
-	s.rules = pb.NewRulesService("go.micro.auth", s.options.Client)
+	s.auth = pb.NewAuthService("go.vine.auth", s.options.Client)
+	s.rules = pb.NewRulesService("go.vine.auth", s.options.Client)
 
 	// if we have a JWT public key passed as an option,
 	// we can decode tokens with the type "JWT" locally
@@ -221,8 +221,8 @@ func NewAuth(opts ...auth.Option) auth.Auth {
 	}
 
 	return &svc{
-		auth:    pb.NewAuthService("go.micro.auth", options.Client),
-		rules:   pb.NewRulesService("go.micro.auth", options.Client),
+		auth:    pb.NewAuthService("go.vine.auth", options.Client),
+		rules:   pb.NewRulesService("go.vine.auth", options.Client),
 		options: options,
 	}
 }

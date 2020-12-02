@@ -49,7 +49,7 @@ func (s *serviceRegistry) callOpts() []client.CallOption {
 		opts = append(opts, client.WithAddress(s.address...))
 	}
 
-	// set timestamp
+	// set timeout
 	if s.opts.Timeout > time.Duration(0) {
 		opts = append(opts, client.WithRequestTimeout(s.opts.Timeout))
 	}
@@ -212,9 +212,9 @@ func NewRegistry(opts ...registry.Option) registry.Registry {
 	name := DefaultService
 
 	return &serviceRegistry{
-		opts: options,
-		name: name,
+		opts:    options,
+		name:    name,
 		address: addrs,
-		client: pb.NewRegistryService(name, cli),
+		client:  pb.NewRegistryService(name, cli),
 	}
 }

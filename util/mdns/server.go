@@ -55,16 +55,16 @@ var (
 )
 
 // GetMachineIP is a func which returns the outbound IP of this machine.
-// Used by the server determine whether to attempt send the response on a local address
+// Used by the server to determine whether to attempt send the response on a local address
 type GetMachineIP func() net.IP
 
-// Config is used to config the mDNS server
+// Config is used to configure the mDNS server
 type Config struct {
-	// Zone must be provided to support responding to quries
+	// Zone must be provided to support responding to queries
 	Zone Zone
 
 	// Iface if provided binds the multicast listener to the given
-	// instance. If not provided, the system default multicast interface
+	// interface. If not provided, the system default multicase interface
 	// is used.
 	Iface *net.Interface
 
@@ -74,12 +74,11 @@ type Config struct {
 	// GetMachineIP is a function to return the IP of the local machine
 	GetMachineIP GetMachineIP
 	// LocalhostChecking if enabled asks the server to also send responses to 0.0.0.0 if the target IP
-	// is this host (as defined by GetMachineIP). Useful in case machine is on a VPN which blocks comms
-	// on non standard ports
+	// is this host (as defined by GetMachineIP). Useful in case machine is on a VPN which blocks comms on non standard ports
 	LocalhostChecking bool
 }
 
-// Server is an mDNS used to listen for mDNS queries and respond if we
+// Server is an mDNS server used to listen for mDNS queries and respond if we
 // have a matching local record
 type Server struct {
 	config *Config
@@ -114,7 +113,7 @@ func NewServer(config *Config) (*Server, error) {
 		ipv6List = &net.UDPConn{}
 	}
 
-	// Join multicast groups receive announcements
+	// Join multicast groups to receive announcements
 	p1 := ipv4.NewPacketConn(ipv4List)
 	p2 := ipv6.NewPacketConn(ipv6List)
 	p1.SetMulticastLoopback(true)
@@ -220,6 +219,7 @@ func (s *Server) parsePacket(packet []byte, from net.Addr) error {
 	var msg dns.Msg
 	if err := msg.Unpack(packet); err != nil {
 		log.Errorf("[ERR] mdns: Failed to unpack packet: %v", err)
+		return err
 	}
 	// TODO: This is a bit of a hack
 	msg.Truncated = false
@@ -232,12 +232,12 @@ func (s *Server) handleQuery(query *dns.Msg, from net.Addr) error {
 		// "In both multicast query and multicast response messages, the OPCODE MUST
 		// be zero on transmission (only standard queries are currently supported
 		// over multicast). Multicast DNS messages received with an OPCODE other
-		// than zero MUST be silently ignored." Note: OpcodeQuery = 0
+		// than zero MUST be silently ignored." Note: OpcodeQuery == 0
 		return fmt.Errorf("mdns: received query with non-zero Opcode %v: %v", query.Opcode, *query)
 	}
 	if query.Rcode != 0 {
 		// "In both multicast query and multicast response messages, the Response
-		// Code MUST be zero transmission. Multicast DNS messages received with
+		// Code MUST be zero on transmission. Multicast DNS messages received with
 		// non-zero Response Codes MUST be silently ignored."
 		return fmt.Errorf("mdns: received query with non-zero Rcode %v: %v", query.Rcode, *query)
 	}
@@ -261,7 +261,7 @@ func (s *Server) handleQuery(query *dns.Msg, from net.Addr) error {
 		unicastAnswer = append(unicastAnswer, urecs...)
 	}
 
-	// See section 18 of RFC 6762 for rules about DNS headers
+	// See section 18 of RFC 6762 for rules about DNS headers.
 	resp := func(unicast bool) *dns.Msg {
 		// 18.1: ID (Query Identifier)
 		// 0 for multicast response, query.Id for unicast response
@@ -288,6 +288,9 @@ func (s *Server) handleQuery(query *dns.Msg, from net.Addr) error {
 				Response: true,
 
 				// 18.3: OPCODE - must be zero in response (OpcodeQuery == 0)
+				Opcode: dns.OpcodeQuery,
+
+				// 18.4: AA (Authoritative Answer) Bit - must be set to 1
 				Authoritative: true,
 
 				// 18.4: AA (Authoritative Answer) Bit - must be set to 1
@@ -402,7 +405,6 @@ func (s *Server) probe() {
 
 	resp := new(dns.Msg)
 	resp.MsgHdr.Response = true
-	resp.MsgHdr.Response = true
 
 	// set for query
 	q.SetQuestion(name, dns.TypeANY)
@@ -452,7 +454,7 @@ func (s *Server) SendMulticast(msg *dns.Msg) error {
 
 // sendResponse is used to send a response packet
 func (s *Server) sendResponse(resp *dns.Msg, from net.Addr) error {
-	// TODO(reddaly): Respect the unicast argument, and allow sneding responses
+	// TODO(reddaly): Respect the unicast argument, and allow sending responses
 	// over multicast.
 	buf, err := resp.Pack()
 	if err != nil {
@@ -470,8 +472,8 @@ func (s *Server) sendResponse(resp *dns.Msg, from net.Addr) error {
 	}
 	_, err = conn.WriteToUDP(buf, addr)
 	// If the address we're responding to is this machine then we can also attempt sending on 0.0.0.0
-	// This covers the case where this machine is using a VPN and certain ports are blocked so the response
-	// never gets there Sending two responses is OK
+	// This covers the case where this machine is using a VPN and certain ports are blocked so the response never gets there
+	// Sending two responses is OK
 	if s.config.LocalhostChecking && addr.IP.Equal(s.outboundIP) {
 		// ignore any errors, this is best efforts
 		conn.WriteToUDP(buf, &net.UDPAddr{IP: backupTarget, Port: addr.Port})
@@ -515,10 +517,11 @@ func setCustomPort(port int) {
 	}
 }
 
-// getOutboundIP returns the IP address of this machine as seen when dialing out
+// getOutboundIP returns the IP address of this machine as seen when dialling out
 func getOutboundIP() net.IP {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
+		// no net connectivity maybe so fallback
 		return nil
 	}
 	defer conn.Close()

@@ -59,7 +59,7 @@ func AuthTLS(t *tls.Config) server.Option {
 
 // MaxConn specifies maximum number of max simultaneous connections to server
 func MaxConn(n int) server.Option {
-	return setServerOption(maxMsgSizeKey{}, n)
+	return setServerOption(maxConnKey{}, n)
 }
 
 // Listener specifies the net.Listener to use instead of the default
@@ -87,7 +87,7 @@ func newOptions(opt ...server.Option) server.Options {
 		Registry:  registry.DefaultRegistry,
 		Transport: transport.DefaultTransport,
 		Address:   server.DefaultAddress,
-		Name:      server.DefautName,
+		Name:      server.DefaultName,
 		Id:        server.DefaultId,
 		Version:   server.DefaultVersion,
 	}

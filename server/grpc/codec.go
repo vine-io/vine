@@ -20,7 +20,6 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	json "github.com/json-iterator/go"
-	"github.com/oxtoacart/bpool"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/metadata"
@@ -31,8 +30,8 @@ import (
 )
 
 type jsonCodec struct{}
-type protoCodec struct{}
 type bytesCodec struct{}
+type protoCodec struct{}
 type wrapCodec struct{ encoding.Codec }
 
 var jsonpbMarshaler = &jsonpb.Marshaler{
@@ -41,13 +40,11 @@ var jsonpbMarshaler = &jsonpb.Marshaler{
 	OrigName:     true,
 }
 
-// create buffer pool with 16 instances each preallocated with 256 bytes
-var bufferPool = bpool.NewSizedBufferPool(16, 256)
-
 var (
 	defaultGRPCCodecs = map[string]encoding.Codec{
 		"application/json":         jsonCodec{},
 		"application/proto":        protoCodec{},
+		"application/protobuf":     protoCodec{},
 		"application/octet-stream": protoCodec{},
 		"application/grpc":         protoCodec{},
 		"application/grpc+json":    jsonCodec{},
@@ -100,27 +97,6 @@ func (protoCodec) Name() string {
 	return "proto"
 }
 
-func (bytesCodec) Marshal(v interface{}) ([]byte, error) {
-	b, ok := v.(*[]byte)
-	if !ok {
-		return nil, codec.ErrInvalidMessage
-	}
-	return *b, nil
-}
-
-func (bytesCodec) Unmarshal(data []byte, v interface{}) error {
-	b, ok := v.(*[]byte)
-	if !ok {
-		return codec.ErrInvalidMessage
-	}
-	*b = data
-	return nil
-}
-
-func (bytesCodec) Name() string {
-	return "bytes"
-}
-
 func (jsonCodec) Marshal(v interface{}) ([]byte, error) {
 	if pb, ok := v.(proto.Message); ok {
 		s, err := jsonpbMarshaler.MarshalToString(pb)
@@ -142,6 +118,27 @@ func (jsonCodec) Unmarshal(data []byte, v interface{}) error {
 
 func (jsonCodec) Name() string {
 	return "json"
+}
+
+func (bytesCodec) Marshal(v interface{}) ([]byte, error) {
+	b, ok := v.(*[]byte)
+	if !ok {
+		return nil, codec.ErrInvalidMessage
+	}
+	return *b, nil
+}
+
+func (bytesCodec) Unmarshal(data []byte, v interface{}) error {
+	b, ok := v.(*[]byte)
+	if !ok {
+		return codec.ErrInvalidMessage
+	}
+	*b = data
+	return nil
+}
+
+func (bytesCodec) Name() string {
+	return "bytes"
 }
 
 type grpcCodec struct {
@@ -174,6 +171,7 @@ func (g *grpcCodec) ReadHeader(m *codec.Message, mt codec.MessageType) error {
 }
 
 func (g *grpcCodec) ReadBody(v interface{}) error {
+	// caller has requested a frame
 	if f, ok := v.(*bytes.Frame); ok {
 		return g.s.RecvMsg(f)
 	}

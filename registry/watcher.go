@@ -27,7 +27,7 @@ type Watcher interface {
 // Result is returned by a call to Next on
 // the watcher. Actions can be create, update, delete
 type Result struct {
-	Action string
+	Action  string
 	Service *Service
 }
 
@@ -37,10 +37,10 @@ type EventType int
 const (
 	// Create is emitted when a new service is registered
 	Create EventType = iota
-	// Update is emitted when an existing service is updated
-	Update
-	// Delete is emitted when an existing service is deregistered
+	// Delete is emitted when an existing service is deregsitered
 	Delete
+	// Update is emitted when an existing servicec is updated
+	Update
 )
 
 // String returns human readable event type
@@ -48,10 +48,10 @@ func (t EventType) String() string {
 	switch t {
 	case Create:
 		return "create"
-	case Update:
-		return "update"
 	case Delete:
 		return "delete"
+	case Update:
+		return "update"
 	default:
 		return "unknown"
 	}

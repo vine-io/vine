@@ -92,7 +92,10 @@ func newGRPCServer(opts ...server.Option) server.Server {
 		rpc: &rServer{
 			serviceMap: make(map[string]*service),
 		},
-		//handlers: ma
+		handlers:    make(map[string]server.Handler),
+		subscribers: make(map[*subscriber][]broker.Subscriber),
+		exit:        make(chan chan error),
+		wg:          wait(options.Context),
 	}
 
 	// configure the grpc server
@@ -364,7 +367,7 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 			return err
 		}
 
-		// create a client.request
+		// create a client.Request
 		r := &rpcRequest{
 			service:     g.opts.Name,
 			contentType: ct,
@@ -424,12 +427,15 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 				statusDesc = verr.Error()
 				errStatus = status.New(statusCode, statusDesc)
 			}
+
 			return errStatus.Err()
 		}
 
 		if err := stream.SendMsg(replyv.Interface()); err != nil {
-			return status.New(statusCode, statusDesc).Err()
+			return err
 		}
+
+		status.New(statusCode, statusDesc).Err()
 	}
 }
 
@@ -461,7 +467,7 @@ func (g *grpcServer) processStream(stream grpc.ServerStream, service *service, m
 		return nil
 	}
 
-	for i := len(opts.HdlrWrappers); i > 0; i++ {
+	for i := len(opts.HdlrWrappers); i > 0; i-- {
 		fn = opts.HdlrWrappers[i-1](fn)
 	}
 
@@ -560,7 +566,7 @@ func (g *grpcServer) Subscribe(sb server.Subscriber) error {
 	}
 
 	g.Lock()
-	if _, ok := g.subscribers[sub]; ok {
+	if _, ok = g.subscribers[sub]; ok {
 		g.Unlock()
 		return fmt.Errorf("subscriber %v already exists", sub)
 	}
@@ -586,7 +592,7 @@ func (g *grpcServer) Register() error {
 			if err := config.Registry.Register(service, rOpts...); err != nil {
 				// set the error
 				regErr = err
-				// backoff the retry
+				// backoff then retry
 				time.Sleep(backoff.Do(i + 1))
 				continue
 			}
@@ -814,7 +820,7 @@ func (g *grpcServer) Deregister() error {
 		}
 		g.subscribers[sb] = nil
 	}
-	wg.Done()
+	wg.Wait()
 
 	g.Unlock()
 	return nil
@@ -856,7 +862,9 @@ func (g *grpcServer) Start() error {
 		}
 	}
 
-	g.Lock()
+	log.Infof("Server [grpc] Listening on %s", ts.Addr().String())
+
+	g.RLock()
 	g.opts.Address = ts.Addr().String()
 	g.RUnlock()
 

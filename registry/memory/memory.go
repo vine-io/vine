@@ -140,7 +140,7 @@ func (m *Registry) Init(opts ...registry.Option) error {
 			m.records[name] = record
 			continue
 		}
-		// add the versions of the service we don't tack yet
+		// add the versions of the service we don't track yet
 		for version, r := range record {
 			if _, ok := m.records[name][version]; !ok {
 				m.records[name][version] = r
@@ -282,9 +282,9 @@ func (m *Registry) Watch(opts ...registry.WatchOption) (registry.Watcher, error)
 
 	w := &Watcher{
 		exit: make(chan bool),
-		res: make(chan *registry.Result),
-		id: uuid.New().String(),
-		wo: wo,
+		res:  make(chan *registry.Result),
+		id:   uuid.New().String(),
+		wo:   wo,
 	}
 
 	m.Lock()

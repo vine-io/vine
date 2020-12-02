@@ -35,7 +35,7 @@ var (
 	lastStreamResponseError = errors.New("EOS")
 
 	// Precompute the reflect type for error. Can't use error directly
-	// because TypeOf takes an empty interface value. This is annoying.
+	// because Typeof takes an empty interface value. This is annoying.
 	typeOfError = reflect.TypeOf((*error)(nil)).Elem()
 )
 
@@ -44,14 +44,14 @@ type methodType struct {
 	method      reflect.Method
 	ArgType     reflect.Type
 	ReplyType   reflect.Type
-	ContentType reflect.Type
+	ContextType reflect.Type
 	stream      bool
 }
 
 type service struct {
 	name   string                 // name of service
 	rcvr   reflect.Value          // receiver of methods for the service
-	typ    reflect.Type           // type of receiver
+	typ    reflect.Type           // type of the receiver
 	method map[string]*methodType // registered methods
 }
 
@@ -109,7 +109,7 @@ func newRpcRouter() *router {
 }
 
 // Is this an exported - upper case - name?
-func isExported(name string) bool {
+func IsExported(name string) bool {
 	rune, _ := utf8.DecodeRuneInString(name)
 	return unicode.IsUpper(rune)
 }
@@ -121,7 +121,7 @@ func IsExportedOrBuiltinType(t reflect.Type) bool {
 	}
 	// PkgPath will be non-empty even for an exported type,
 	// so we need to check the type name as well.
-	return isExported(t.Name()) || t.PkgPath() == ""
+	return IsExported(t.Name()) || t.PkgPath() == ""
 }
 
 // prepareMethod returns a methodType for the provided method or nil
@@ -149,7 +149,7 @@ func prepareMethod(method reflect.Method) *methodType {
 		replyType = mtype.In(3)
 		contextType = mtype.In(1)
 	default:
-		log.Errorf("method %v of has wrong number of ins: %v", mname, mtype, mtype.NumIn())
+		log.Errorf("method %v of %v has wrong number of ins: %v", mname, mtype, mtype.NumIn())
 		return nil
 	}
 
@@ -191,7 +191,7 @@ func prepareMethod(method reflect.Method) *methodType {
 		log.Errorf("method %v returns %v not error", mname, returnType.String())
 		return nil
 	}
-	return &methodType{method: method, ArgType: argType, ReplyType: replyType, ContentType: contextType, stream: stream}
+	return &methodType{method: method, ArgType: argType, ReplyType: replyType, ContextType: contextType, stream: stream}
 }
 
 func (r *router) sendResponse(sending sync.Locker, req *request, reply interface{}, cc codec.Writer, last bool) error {
@@ -268,6 +268,7 @@ func (s *service) call(ctx context.Context, router *router, sending *sync.Mutex,
 	fn := func(ctx context.Context, req Request, stream interface{}) error {
 		returnValues = function.Call([]reflect.Value{s.rcvr, mtype.prepareContext(ctx), reflect.ValueOf(stream)})
 		if err := returnValues[0].Interface(); err != nil {
+			// the function returned an error, we use that
 			return err.(error)
 		} else if serr := rawStream.Error(); serr == io.EOF || serr == io.ErrUnexpectedEOF {
 			return nil
@@ -293,7 +294,7 @@ func (m *methodType) prepareContext(ctx context.Context) reflect.Value {
 	if contextv := reflect.ValueOf(ctx); contextv.IsValid() {
 		return contextv
 	}
-	return reflect.Zero(m.ContentType)
+	return reflect.Zero(m.ContextType)
 }
 
 func (router *router) getRequest() *request {
@@ -433,8 +434,8 @@ func (router *router) Handle(h Handler) error {
 	if len(h.Name()) == 0 {
 		return errors.New("rpc.Handle: handler has no name")
 	}
-	if !isExported(h.Name()) {
-		return errors.New("rpc:Handle: type " + h.Name() + " is not exported")
+	if !IsExported(h.Name()) {
+		return errors.New("rpc.Handle: type " + h.Name() + " is not exported")
 	}
 
 	rcvr := h.Handler()
@@ -451,7 +452,7 @@ func (router *router) Handle(h Handler) error {
 	s.method = make(map[string]*methodType)
 
 	// Install the methods
-	for m := 0; m < s.typ.NumField(); m++ {
+	for m := 0; m < s.typ.NumMethod(); m++ {
 		method := s.typ.Method(m)
 		if mt := prepareMethod(method); mt != nil {
 			s.method[method.Name] = mt
@@ -491,7 +492,7 @@ func (router *router) NewSubscriber(topic string, handler interface{}, opts ...S
 func (router *router) Subscribe(s Subscriber) error {
 	sub, ok := s.(*subscriber)
 	if !ok {
-		return fmt.Errorf("invalide subscriber: expected *subscriber")
+		return fmt.Errorf("invalid subscriber: expected *subscriber")
 	}
 	if len(sub.handlers) == 0 {
 		return fmt.Errorf("invalid subscriber: no handler functions")
@@ -563,7 +564,7 @@ func (router *router) ProcessMessage(ctx context.Context, msg Message) (err erro
 				return err
 			}
 
-			// read the body into the header request value
+			// read the body into the handler request value
 			if err = cc.ReadBody(req.Interface()); err != nil {
 				return err
 			}
@@ -573,6 +574,9 @@ func (router *router) ProcessMessage(ctx context.Context, msg Message) (err erro
 				var vals []reflect.Value
 				if sub.typ.Kind() != reflect.Func {
 					vals = append(vals, sub.rcvr)
+				}
+				if handler.ctxType != nil {
+					vals = append(vals, reflect.ValueOf(ctx))
 				}
 
 				// values to pass the handler

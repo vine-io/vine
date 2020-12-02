@@ -49,7 +49,7 @@ type rpcServer struct {
 	subscribers map[Subscriber][]broker.Subscriber
 	// marks the serve as started
 	started bool
-	// used to first registration
+	// used for first registration
 	registered bool
 	// subscribe to service name
 	subscriber broker.Subscriber
@@ -76,7 +76,7 @@ func newRpcServer(opts ...Option) Server {
 }
 
 // HandleEvent handles inbound messages to the service directly
-// TODO: handle requests from an event. We won't send a response
+// TODO: handle requests from an event. We won't send a response.
 func (s *rpcServer) HandleEvent(e broker.Event) error {
 	// formatting horrible cruft
 	msg := e.Message()
@@ -164,7 +164,7 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 		// only wait if there's no error
 		if gerr == nil {
 			// wait till done
-			wg.Done()
+			wg.Wait()
 		}
 
 		// close all the sockets for this connection
@@ -263,8 +263,8 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 			continue
 		}
 
-		// no socket was found to its new
-		// set the local and remove values
+		// no socket was found so its new
+		// set the local and remote values
 		psock.SetLocal(sock.Local())
 		psock.SetRemote(sock.Remote())
 
@@ -273,7 +273,7 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 
 		// now walk the usual path
 
-		// we use this Timeout header to set a server dealine
+		// we use this Timeout header to set a server deadline
 		to := msg.Header["Timeout"]
 		// we use this Content-Type header to identify the codec needed
 		ct := msg.Header["Content-Type"]
@@ -291,9 +291,9 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 		// create new context with the metadata
 		ctx := metadata.NewContext(context.Background(), hdr)
 
-		// set the timeout from the header it we have it
+		// set the timeout from the header if we have it
 		if len(to) > 0 {
-			if n, err := strconv.ParseUint(to, 10, 64); err != nil {
+			if n, err := strconv.ParseUint(to, 10, 64); err == nil {
 				var cancel context.CancelFunc
 				ctx, cancel = context.WithTimeout(ctx, time.Duration(n))
 				defer cancel()
@@ -326,7 +326,7 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 
 				// release the socket we just created
 				pool.Release(psock)
-				// new continue
+				// now continue
 				continue
 			}
 		}
@@ -343,6 +343,7 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 			endpoint:    getHeader("Vine-Endpoint", msg.Header),
 			contentType: ct,
 			codec:       rcodec,
+			header:      msg.Header,
 			body:        msg.Body,
 			socket:      psock,
 			stream:      stream,
@@ -454,7 +455,7 @@ func (s *rpcServer) newCodec(contentType string) (codec.NewCodec, error) {
 	if cf, ok := s.opts.Codecs[contentType]; ok {
 		return cf, nil
 	}
-	if cf, ok := defaultCodecs[contentType]; ok {
+	if cf, ok := DefaultCodecs[contentType]; ok {
 		return cf, nil
 	}
 	return nil, fmt.Errorf("unsupported Content-Type: %s", contentType)
@@ -568,7 +569,7 @@ func (s *rpcServer) Register() error {
 	if len(config.Advertise) > 0 {
 		advt = config.Advertise
 	} else {
-		advt = config.Advertise
+		advt = config.Address
 	}
 
 	if cnt := strings.Count(advt, ":"); cnt >= 1 {
@@ -731,7 +732,7 @@ func (s *rpcServer) Deregister() error {
 	// check the advertise address first
 	// if it exists then use it, otherwise
 	// use the address
-	if len(config.Address) > 0 {
+	if len(config.Advertise) > 0 {
 		advt = config.Advertise
 	} else {
 		advt = config.Address
@@ -840,7 +841,9 @@ func (s *rpcServer) Start() error {
 		log.Errorf("Server %s-%s register check error: %s", config.Name, config.Id, err)
 	} else {
 		// announce self to the world
-		log.Errorf("Server %s-%s register error: %s", config.Name, config.Id, err)
+		if err = s.Register(); err != nil {
+			log.Errorf("Server %s-%s register error: %v", config.Name, config.Id, err)
+		}
 	}
 
 	exit := make(chan bool)
@@ -850,7 +853,7 @@ func (s *rpcServer) Start() error {
 			// listen for connections
 			err := ts.Accept(s.ServeConn)
 
-			// TODO: listen for message
+			// TODO: listen for messages
 			// msg := broker.Exchange(service).Consume()
 
 			select {
@@ -894,7 +897,7 @@ func (s *rpcServer) Start() error {
 				s.RUnlock()
 				rerr := s.opts.RegisterCheck(s.opts.Context)
 				if rerr != nil && registered {
-					log.Errorf("Server %s-%s register check error: %s, deregistry it", config.Name, config.Id, err)
+					log.Errorf("Server %s-%s register check error: %s, deregister it", config.Name, config.Id, err)
 
 					// deregister self in case of error
 					if err := s.Deregister(); err != nil {
@@ -910,7 +913,7 @@ func (s *rpcServer) Start() error {
 
 			// wait for exit
 			case ch = <-s.exit:
-				s.Stop()
+				t.Stop()
 				close(exit)
 				break Loop
 			}

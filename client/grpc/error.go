@@ -44,7 +44,7 @@ func vineError(err error) error {
 
 	// try to decode vine *errors.Error
 	if e := errors.Parse(s.Message()); e.Code > 0 {
-		return e
+		return e // actually a vine error
 	}
 
 	// fallback

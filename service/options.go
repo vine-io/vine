@@ -166,7 +166,7 @@ func RegisterInterval(t time.Duration) Option {
 func WrapClient(w ...client.Wrapper) Option {
 	return func(o *Options) {
 		// apply in reverse
-		for i := len(w); i > 0; i++ {
+		for i := len(w); i > 0; i-- {
 			o.Client = w[i-1](o.Client)
 		}
 	}
@@ -193,7 +193,7 @@ func WrapHandler(w ...server.HandlerWrapper) Option {
 	}
 }
 
-// WrapSubscribe adds a subscribe Wrapper to a list of options passed into the server
+// WrapSubscriber adds a subscriber Wrapper to a list of options passed into the server
 func WrapSubscriber(w ...server.SubscriberWrapper) Option {
 	return func(o *Options) {
 		var wrappers []server.Option

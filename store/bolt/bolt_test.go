@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package file
+package bolt
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ func cleanup(db string, s store.Store) {
 	os.RemoveAll(dir)
 }
 
-func TestFileStoreReInit(t *testing.T) {
+func TestBoltStoreReInit(t *testing.T) {
 	s := NewStore(store.Table("aaa"))
 	defer cleanup(DefaultDatabase, s)
 	s.Init(store.Table("bbb"))
@@ -43,25 +43,25 @@ func TestFileStoreReInit(t *testing.T) {
 	}
 }
 
-func TestFileStoreBasic(t *testing.T) {
+func TestBoltStoreBasic(t *testing.T) {
 	s := NewStore()
 	defer cleanup(DefaultDatabase, s)
 	fileTest(s, t)
 }
 
-func TestFileStoreTable(t *testing.T) {
+func TestBoltStoreTable(t *testing.T) {
 	s := NewStore(store.Table("testTable"))
 	defer cleanup(DefaultDatabase, s)
 	fileTest(s, t)
 }
 
-func TestFileStoreDatabase(t *testing.T) {
+func TestBoltStoreDatabase(t *testing.T) {
 	s := NewStore(store.Database("testdb"))
 	defer cleanup("testdb", s)
 	fileTest(s, t)
 }
 
-func TestFileStoreDatabaseTable(t *testing.T) {
+func TestBoltStoreDatabaseTable(t *testing.T) {
 	s := NewStore(store.Table("testTable"), store.Database("testdb"))
 	defer cleanup("testdb", s)
 	fileTest(s, t)

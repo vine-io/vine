@@ -22,10 +22,10 @@ import (
 )
 
 type rpcHandler struct {
-	name string
-	handler interface{}
+	name      string
+	handler   interface{}
 	endpoints []*registry.Endpoint
-	opts server.HandlerOptions
+	opts      server.HandlerOptions
 }
 
 func newRpcHandler(handler interface{}, opts ...server.HandlerOption) server.Handler {
@@ -56,10 +56,10 @@ func newRpcHandler(handler interface{}, opts ...server.HandlerOption) server.Han
 	}
 
 	return &rpcHandler{
-		name: name,
-		handler: handler,
+		name:      name,
+		handler:   handler,
 		endpoints: endpoints,
-		opts: options,
+		opts:      options,
 	}
 }
 

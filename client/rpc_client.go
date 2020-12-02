@@ -72,7 +72,7 @@ func (r *rpcClient) newCodec(contentType string) (codec.NewCodec, error) {
 	if c, ok := r.opts.Codecs[contentType]; ok {
 		return c, nil
 	}
-	if cf, ok := defaultCodecs[contentType]; ok {
+	if cf, ok := DefaultCodecs[contentType]; ok {
 		return cf, nil
 	}
 	return nil, fmt.Errorf("unsupported Content-Type: %s", contentType)
@@ -107,7 +107,7 @@ func (r *rpcClient) call(ctx context.Context, node *registry.Node, req Request, 
 	// setup old protocol
 	cf := setupProtocol(msg, node)
 
-	// no codec sepecified
+	// no codec specified
 	if cf == nil {
 		var err error
 		cf, err = r.newCodec(req.ContentType())
@@ -124,7 +124,7 @@ func (r *rpcClient) call(ctx context.Context, node *registry.Node, req Request, 
 
 	c, err := r.pool.Get(address, dOpts...)
 	if err != nil {
-		return errors.InternalServerError("go.vine.client", "connection error: %v", err.Error())
+		return errors.InternalServerError("go.vine.client", "connection error: %v", err)
 	}
 
 	seq := atomic.AddUint64(&r.seq, 1) - 1
@@ -136,8 +136,8 @@ func (r *rpcClient) call(ctx context.Context, node *registry.Node, req Request, 
 	}
 
 	stream := &rpcStream{
-		id:       fmt.Sprintf("%d", seq),
-		ctx:      ctx,
+		id:       fmt.Sprintf("%v", seq),
+		ctx:  ctx,
 		request:  req,
 		response: rsp,
 		codec:    codec,
@@ -154,7 +154,7 @@ func (r *rpcClient) call(ctx context.Context, node *registry.Node, req Request, 
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				ch <- errors.InternalServerError("go.vine.client", "panic recovered: %v", err)
+				ch <- errors.InternalServerError("go.vine.client", "panic recovered: %v", r)
 			}
 		}()
 
@@ -213,7 +213,7 @@ func (r *rpcClient) stream(ctx context.Context, node *registry.Node, req Request
 	if opts.StreamTimeout > time.Duration(0) {
 		msg.Header["Timeout"] = fmt.Sprintf("%d", opts.StreamTimeout)
 	}
-	// set the context type for the request
+	// set the content type for the request
 	msg.Header["Content-Type"] = req.ContentType()
 	// set the accept header
 	msg.Header["Accept"] = req.ContentType()
@@ -243,7 +243,7 @@ func (r *rpcClient) stream(ctx context.Context, node *registry.Node, req Request
 
 	// increment the sequence number
 	seq := atomic.AddUint64(&r.seq, 1) - 1
-	id := fmt.Sprintf("%d", seq)
+	id := fmt.Sprintf("%v", seq)
 
 	// create codec with stream id
 	codec := newRpcCodec(msg, c, cf, id)
@@ -388,7 +388,7 @@ func (r *rpcClient) Call(ctx context.Context, request Request, response interfac
 		ctx, cancel = context.WithTimeout(ctx, callOpts.RequestTimeout)
 		defer cancel()
 	} else {
-		// got deadline so we create a new one
+		// got a deadline so no need to setup context
 		// but we need to set the timeout we pass along
 		opt := WithRequestTimeout(d.Sub(time.Now()))
 		opt(&callOpts)
@@ -397,7 +397,7 @@ func (r *rpcClient) Call(ctx context.Context, request Request, response interfac
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return errors.Timeout("go.vine.client", fmt.Sprintf("%v", err.Error()))
+		return errors.Timeout("go.vine.client", fmt.Sprintf("%v", ctx.Err()))
 	default:
 	}
 
@@ -507,7 +507,7 @@ func (r *rpcClient) Stream(ctx context.Context, request Request, opts ...CallOpt
 
 		// only sleep if greater than 0
 		if t.Seconds() > 0 {
-			time.Sleep(0)
+			time.Sleep(t)
 		}
 
 		node, err := next()

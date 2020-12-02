@@ -69,7 +69,7 @@ func (m *memoryBroker) Connect() error {
 		return nil
 	}
 
-	// use 127.0.0.1 to avoid scan of call network interfaces
+	// use 127.0.0.1 to avoid scan of all network interfaces
 	addr, err := maddr.Extract("127.0.0.1")
 	if err != nil {
 		return err

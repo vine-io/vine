@@ -23,12 +23,12 @@ import (
 )
 
 type grpcRequest struct {
-	service string
-	method string
+	service     string
+	method      string
 	contentType string
-	request interface{}
-	opts client.RequestOptions
-	codec codec.Codec
+	request     interface{}
+	opts        client.RequestOptions
+	codec       codec.Codec
 }
 
 // service Struct.Method /service.Struct/Method
@@ -64,11 +64,11 @@ func newGRPCRequest(service, method string, request interface{}, contentType str
 	}
 
 	return &grpcRequest{
-		service: service,
-		method: method,
-		request: request,
+		service:     service,
+		method:      method,
+		request:     request,
 		contentType: contentType,
-		opts: opts,
+		opts:        opts,
 	}
 }
 

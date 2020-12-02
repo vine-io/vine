@@ -31,11 +31,8 @@ import (
 )
 
 type jsonCodec struct{}
-
 type protoCodec struct{}
-
 type bytesCodec struct{}
-
 type wrapCodec struct{ encoding.Codec }
 
 var jsonpbMarshaler = &jsonpb.Marshaler{}
@@ -48,6 +45,7 @@ var (
 	defaultGRPCCodecs = map[string]encoding.Codec{
 		"application/json":         jsonCodec{},
 		"application/proto":        protoCodec{},
+		"application/protobuf":     protoCodec{},
 		"application/octet-stream": protoCodec{},
 		"application/grpc":         protoCodec{},
 		"application/grpc+json":    jsonCodec{},

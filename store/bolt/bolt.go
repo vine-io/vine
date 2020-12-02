@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package local is a file system backed store
-package file
+// Package local is a bolt system backed store
+package bolt
 
 import (
 	"os"
@@ -44,23 +44,23 @@ var (
 
 // NewStore returns a memory store
 func NewStore(opts ...store.Option) store.Store {
-	s := &fileStore{
-		handles: make(map[string]*fileHandle),
+	s := &boltStore{
+		handles: make(map[string]*boltHandle),
 	}
 	s.init(opts...)
 	return s
 }
 
-type fileStore struct {
+type boltStore struct {
 	options store.Options
 	dir     string
 
 	// the database handle
 	sync.RWMutex
-	handles map[string]*fileHandle
+	handles map[string]*boltHandle
 }
 
-type fileHandle struct {
+type boltHandle struct {
 	key string
 	db  *bolt.DB
 }
@@ -77,7 +77,7 @@ func key(database, table string) string {
 	return database + ":" + table
 }
 
-func (m *fileStore) delete(fd *fileHandle, key string) error {
+func (m *boltStore) delete(fd *boltHandle, key string) error {
 	return fd.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(dataBucket))
 		if b == nil {
@@ -87,7 +87,7 @@ func (m *fileStore) delete(fd *fileHandle, key string) error {
 	})
 }
 
-func (m *fileStore) init(opts ...store.Option) error {
+func (m *boltStore) init(opts ...store.Option) error {
 	for _, o := range opts {
 		o(&m.options)
 	}
@@ -111,7 +111,7 @@ func (m *fileStore) init(opts ...store.Option) error {
 	return nil
 }
 
-func (f *fileStore) getDB(database, table string) (*fileHandle, error) {
+func (f *boltStore) getDB(database, table string) (*boltHandle, error) {
 	if len(database) == 0 {
 		database = f.options.Database
 	}
@@ -124,7 +124,7 @@ func (f *fileStore) getDB(database, table string) (*fileHandle, error) {
 	fd, ok := f.handles[k]
 	f.RUnlock()
 
-	// return the file handle
+	// return the bolt handle
 	if ok {
 		return fd, nil
 	}
@@ -146,12 +146,12 @@ func (f *fileStore) getDB(database, table string) (*fileHandle, error) {
 	dbPath := filepath.Join(dir, fname)
 
 	// create new db handle
-	// Bolt DB only allows one process to open the file R/W so make sure we're doing this under a lock
+	// Bolt DB only allows one process to open the bolt R/W so make sure we're doing this under a lock
 	db, err := bolt.Open(dbPath, 0700, &bolt.Options{Timeout: 5 * time.Second})
 	if err != nil {
 		return nil, err
 	}
-	fd = &fileHandle{
+	fd = &boltHandle{
 		key: k,
 		db:  db,
 	}
@@ -160,7 +160,7 @@ func (f *fileStore) getDB(database, table string) (*fileHandle, error) {
 	return fd, nil
 }
 
-func (m *fileStore) list(fd *fileHandle, limit, offset uint) []string {
+func (m *boltStore) list(fd *boltHandle, limit, offset uint) []string {
 	var allItems []string
 
 	fd.db.View(func(tx *bolt.Tx) error {
@@ -214,7 +214,7 @@ func (m *fileStore) list(fd *fileHandle, limit, offset uint) []string {
 	return allKeys
 }
 
-func (m *fileStore) get(fd *fileHandle, k string) (*store.Record, error) {
+func (m *boltStore) get(fd *boltHandle, k string) (*store.Record, error) {
 	var value []byte
 
 	fd.db.View(func(tx *bolt.Tx) error {
@@ -257,7 +257,7 @@ func (m *fileStore) get(fd *fileHandle, k string) (*store.Record, error) {
 	return newRecord, nil
 }
 
-func (m *fileStore) set(fd *fileHandle, r *store.Record) error {
+func (m *boltStore) set(fd *boltHandle, r *store.Record) error {
 	// copy the incoming record and then
 	// convert the expiry in to a hard timestamp
 	item := &record{}
@@ -289,7 +289,7 @@ func (m *fileStore) set(fd *fileHandle, r *store.Record) error {
 	})
 }
 
-func (f *fileStore) Close() error {
+func (f *boltStore) Close() error {
 	f.Lock()
 	defer f.Unlock()
 	for k, v := range f.handles {
@@ -299,11 +299,11 @@ func (f *fileStore) Close() error {
 	return nil
 }
 
-func (f *fileStore) Init(opts ...store.Option) error {
+func (f *boltStore) Init(opts ...store.Option) error {
 	return f.init(opts...)
 }
 
-func (m *fileStore) Delete(key string, opts ...store.DeleteOption) error {
+func (m *boltStore) Delete(key string, opts ...store.DeleteOption) error {
 	var deleteOptions store.DeleteOptions
 	for _, o := range opts {
 		o(&deleteOptions)
@@ -317,7 +317,7 @@ func (m *fileStore) Delete(key string, opts ...store.DeleteOption) error {
 	return m.delete(fd, key)
 }
 
-func (m *fileStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
+func (m *boltStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
 	var readOpts store.ReadOptions
 	for _, o := range opts {
 		o(&readOpts)
@@ -363,7 +363,7 @@ func (m *fileStore) Read(key string, opts ...store.ReadOption) ([]*store.Record,
 	return results, nil
 }
 
-func (m *fileStore) Write(r *store.Record, opts ...store.WriteOption) error {
+func (m *boltStore) Write(r *store.Record, opts ...store.WriteOption) error {
 	var writeOpts store.WriteOptions
 	for _, o := range opts {
 		o(&writeOpts)
@@ -399,11 +399,11 @@ func (m *fileStore) Write(r *store.Record, opts ...store.WriteOption) error {
 	return m.set(fd, r)
 }
 
-func (m *fileStore) Options() store.Options {
+func (m *boltStore) Options() store.Options {
 	return m.options
 }
 
-func (m *fileStore) List(opts ...store.ListOption) ([]string, error) {
+func (m *boltStore) List(opts ...store.ListOption) ([]string, error) {
 	var listOptions store.ListOptions
 
 	for _, o := range opts {
@@ -441,6 +441,6 @@ func (m *fileStore) List(opts ...store.ListOption) ([]string, error) {
 	return allKeys, nil
 }
 
-func (m *fileStore) String() string {
-	return "file"
+func (m *boltStore) String() string {
+	return "bolt"
 }

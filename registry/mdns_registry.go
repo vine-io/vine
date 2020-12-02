@@ -283,7 +283,7 @@ func (m *mdnsRegistry) Register(service *Service, opts ...RegisterOption) error 
 	return gerr
 }
 
-func (m *mdnsRegistry) Deregister(service *Service, option ...DeregisterOption) error {
+func (m *mdnsRegistry) Deregister(service *Service, opts ...DeregisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -295,7 +295,7 @@ func (m *mdnsRegistry) Deregister(service *Service, option ...DeregisterOption) 
 
 		for _, node := range service.Nodes {
 			if node.Id == entry.id {
-				_ = entry.node.Shutdown()
+				entry.node.Shutdown()
 				remove = true
 				break
 			}

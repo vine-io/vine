@@ -117,14 +117,14 @@ var (
 	DefaultRetry = RetryOnError
 	// DefaultRetries is the default number of times a request is tried
 	DefaultRetries = 1
-	// DefaultResponseTimeout is the default request timeout
+	// DefaultRequestTimeout is the default request timeout
 	DefaultRequestTimeout = time.Second * 5
 	// DefaultPoolSize sets the connection pool size
 	DefaultPoolSize = 100
 	// DefaultPoolTTL sets the connection pool ttl
 	DefaultPoolTTL = time.Minute
 
-	// NewClient return a new client
+	// NewClient returns a new client
 	NewClient func(...Option) Client = newRpcClient
 )
 

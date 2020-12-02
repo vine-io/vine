@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package mucp
+package vine
 
 import (
 	"context"
 
-	"github.com/lack-io/vine/registry"
+	"github.com/lack-io/vine/client"
 )
 
-// NewRegistry returns a new mdns registry
-func NewRegistry(opts ...registry.Option) registry.Registry {
-	return registry.NewRegistry(opts...)
+type event struct {
+	c client.Client
+	topic string
 }
 
-// Domain sets the mdnsDomain
-func Domain(d string) registry.Option {
-	return func(o *registry.Options) {
-		if o.Context == nil {
-			o.Context = context.Background()
-		}
-		o.Context = context.WithValue(o.Context, "mdns.domain", d)
-	}
+func (e *event) Publish(ctx context.Context, msg interface{}, opts ...client.PublishOption) error {
+	return e.c.Publish(ctx, e.c.NewMessage(e.topic, msg), opts...)
 }

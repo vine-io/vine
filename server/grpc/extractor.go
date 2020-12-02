@@ -62,14 +62,8 @@ func extractValue(v reflect.Type, d int) *registry.Value {
 				val.Name = v.Field(i).Name
 			}
 
-			// still no name then continue
-			if len(val.Name) == 0 {
-				continue
-			}
-
 			arg.Values = append(arg.Values, val)
 		}
-
 	case reflect.Slice:
 		p := v.Elem()
 		if p.Kind() == reflect.Ptr {
@@ -111,13 +105,12 @@ func extractEndpoint(method reflect.Method) *registry.Endpoint {
 	response := extractValue(rspType, 0)
 
 	ep := &registry.Endpoint{
-		Name: method.Name,
-		Request: request,
+		Name:     method.Name,
+		Request:  request,
 		Response: response,
 		Metadata: make(map[string]string),
 	}
 
-	// set endpoint metadata for stream.
 	if stream {
 		ep.Metadata = map[string]string{
 			"stream": fmt.Sprintf("%v", stream),

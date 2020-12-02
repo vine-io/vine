@@ -24,7 +24,7 @@ import (
 
 // rpcStream implements a server side Stream.
 type rpcStream struct {
-	s grpc.ServerStream
+	s       grpc.ServerStream
 	request server.Request
 }
 
