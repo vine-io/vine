@@ -38,6 +38,7 @@ type Options struct {
 	Server    server.Server
 	Store     store.Store
 	Registry  registry.Registry
+
 	Transport transport.Transport
 	Profile   profile.Profile
 
