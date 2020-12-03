@@ -25,6 +25,7 @@ import (
 	"github.com/lack-io/vine/debug/profile"
 	"github.com/lack-io/vine/debug/trace"
 	"github.com/lack-io/vine/registry"
+	"github.com/lack-io/vine/runtime"
 	"github.com/lack-io/vine/server"
 	"github.com/lack-io/vine/store"
 	"github.com/lack-io/vine/transport"
@@ -38,7 +39,7 @@ type Options struct {
 	Server    server.Server
 	Store     store.Store
 	Registry  registry.Registry
-
+	Runtime   runtime.Runtime
 	Transport transport.Transport
 	Profile   profile.Profile
 
@@ -63,6 +64,7 @@ func newOptions(opts ...Option) Options {
 		Server:    server.DefaultServer,
 		Store:     store.DefaultStore,
 		Registry:  registry.DefaultRegistry,
+		Runtime:   runtime.DefaultRuntime,
 		Transport: transport.DefaultTransport,
 		Context:   context.Background(),
 		Signal:    true,
@@ -175,6 +177,13 @@ func Transport(t transport.Transport) Option {
 		// Update Client and Server
 		o.Client.Init(client.Transport(t))
 		o.Server.Init(server.Transport(t))
+	}
+}
+
+// Runtime sets the runtime
+func Runtime(r runtime.Runtime) Option {
+	return func(o *Options) {
+		o.Runtime = r
 	}
 }
 

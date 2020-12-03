@@ -54,7 +54,7 @@ func (s *svc) Create(svc *runtime.Service, opts ...runtime.CreateOption) error {
 		options.Context = context.Background()
 	}
 
-	// set the default source from MICRO_RUNTIME_SOURCE
+	// set the default source from VINE_RUNTIME_SOURCE
 	if len(svc.Source) == 0 {
 		svc.Source = s.options.Source
 	}

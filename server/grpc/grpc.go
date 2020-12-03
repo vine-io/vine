@@ -435,7 +435,7 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 			return err
 		}
 
-		status.New(statusCode, statusDesc).Err()
+		return status.New(statusCode, statusDesc).Err()
 	}
 }
 

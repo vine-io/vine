@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package go.vine.client;
 
-// Client is the micro client interface
+// Client is the vine client interface
 service Client {
   // Call allows a single request to be made
   rpc Call(Request) returns (Response) {};

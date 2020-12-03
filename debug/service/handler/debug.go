@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package handler implements service debug handler embedded in go-micro services
+// Package handler implements service debug handler embedded in vine services
 package handler
 
 import (

@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	// DefaultRuntime is default micro runtime
+	// DefaultRuntime is default vine runtime
 	DefaultRuntime Runtime = NewRuntime()
 	// DefaultName is default runtime service name
 	DefaultName = "go.vine.runtime"

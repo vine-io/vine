@@ -117,7 +117,7 @@ func (s *grpcService) Run() error {
 	return s.Stop()
 }
 
-// NewService returns a grpc service compatible with go-micro.Service
+// NewService returns a grpc service compatible with vine.Service
 func NewService(opts ...service.Option) service.Service {
 	// our grpc client
 	c := gclient.NewClient()

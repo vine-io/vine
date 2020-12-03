@@ -27,7 +27,7 @@ var (
 	DefaultSize = 1024
 )
 
-// memoryLog is default micro log
+// memoryLog is default vine log
 type memoryLog struct {
 	*ring.Buffer
 }
