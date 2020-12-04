@@ -22,6 +22,7 @@ import (
 	"github.com/lack-io/vine/broker"
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/client/selector"
+	"github.com/lack-io/vine/config"
 	"github.com/lack-io/vine/debug/profile"
 	"github.com/lack-io/vine/debug/trace"
 	"github.com/lack-io/vine/registry"
@@ -36,6 +37,7 @@ type Options struct {
 	Auth      auth.Auth
 	Broker    broker.Broker
 	Client    client.Client
+	Config    config.Config
 	Server    server.Server
 	Store     store.Store
 	Registry  registry.Registry
@@ -60,6 +62,7 @@ func newOptions(opts ...Option) Options {
 	opt := Options{
 		Auth:      auth.DefaultAuth,
 		Broker:    broker.DefaultBroker,
+		Config:    config.DefaultConfig,
 		Client:    client.DefaultClient,
 		Server:    server.DefaultServer,
 		Store:     store.DefaultStore,
@@ -161,6 +164,11 @@ func Auth(a auth.Auth) Option {
 }
 
 // Config sets the config for the service
+func Config(c config.Config) Option {
+	return func(o *Options) {
+		o.Config = c
+	}
+}
 
 // Selector sets the selector for the service client
 func Selector(s selector.Selector) Option {
