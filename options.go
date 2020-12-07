@@ -18,11 +18,14 @@ import (
 	"context"
 	"time"
 
+	"github.com/lack-io/cli"
+
 	"github.com/lack-io/vine/auth"
 	"github.com/lack-io/vine/broker"
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/client/selector"
 	"github.com/lack-io/vine/config"
+	"github.com/lack-io/vine/config/cmd"
 	"github.com/lack-io/vine/debug/profile"
 	"github.com/lack-io/vine/debug/trace"
 	"github.com/lack-io/vine/registry"
@@ -36,6 +39,7 @@ import (
 type Options struct {
 	Auth      auth.Auth
 	Broker    broker.Broker
+	Cmd       cmd.Cmd
 	Client    client.Client
 	Config    config.Config
 	Server    server.Server
@@ -62,6 +66,7 @@ func newOptions(opts ...Option) Options {
 	opt := Options{
 		Auth:      auth.DefaultAuth,
 		Broker:    broker.DefaultBroker,
+		Cmd:       cmd.DefaultCmd,
 		Config:    config.DefaultConfig,
 		Client:    client.DefaultClient,
 		Server:    server.DefaultServer,
@@ -87,6 +92,12 @@ func Broker(b broker.Broker) Option {
 		// Update Client and Service
 		o.Client.Init(client.Broker(b))
 		o.Server.Init(server.Broker(b))
+	}
+}
+
+func Cmd(c cmd.Cmd) Option {
+	return func(o *Options) {
+		o.Cmd = c
 	}
 }
 
@@ -220,6 +231,20 @@ func Version(v string) Option {
 func Metadata(md map[string]string) Option {
 	return func(o *Options) {
 		o.Server.Init(server.Metadata(md))
+	}
+}
+
+// Flags that can be passed to service
+func Flags(flags ...cli.Flag) Option {
+	return func(o *Options) {
+		o.Cmd.App().Flags = append(o.Cmd.App().Flags, flags...)
+	}
+}
+
+// Action can be used to parse user provided cli options
+func Action(a func(*cli.Context) error) Option {
+	return func(o *Options) {
+		o.Cmd.App().Action = a
 	}
 }
 

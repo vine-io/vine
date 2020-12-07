@@ -22,11 +22,13 @@ import (
 
 	"github.com/lack-io/vine/auth"
 	"github.com/lack-io/vine/client"
+	"github.com/lack-io/vine/config/cmd"
 	"github.com/lack-io/vine/debug/service/handler"
 	"github.com/lack-io/vine/debug/stats"
 	"github.com/lack-io/vine/debug/trace"
 	"github.com/lack-io/vine/log"
 	"github.com/lack-io/vine/server"
+	"github.com/lack-io/vine/store"
 	signalutil "github.com/lack-io/vine/util/signal"
 	"github.com/lack-io/vine/util/wrapper"
 )
@@ -81,8 +83,33 @@ func (s *service) Init(opts ...Option) {
 	}
 
 	s.once.Do(func() {
+		// setup the plugins
+		//for _, p := range strings.Split(os.Getenv(""))
 
-		//s.opts.Store.Init(store.Table(""))
+		// set cmd name
+		if len(s.opts.Cmd.App().Name) == 0 {
+			s.opts.Cmd.App().Name = s.Server().Options().Name
+		}
+
+		// Initialise the command flags, overriding new service
+		if err := s.opts.Cmd.Init(
+			cmd.Auth(&s.opts.Auth),
+			cmd.Broker(&s.opts.Broker),
+			cmd.Registry(&s.opts.Registry),
+			cmd.Runtime(&s.opts.Runtime),
+			cmd.Transport(&s.opts.Transport),
+			cmd.Client(&s.opts.Client),
+			cmd.Config(&s.opts.Config),
+			cmd.Server(&s.opts.Server),
+			cmd.Store(&s.opts.Store),
+			cmd.Profile(&s.opts.Profile),
+		); err != nil {
+			log.Fatal(err)
+		}
+
+		// Explicitly set the table name to the service name
+		name := s.opts.Cmd.App().Name
+		s.opts.Store.Init(store.Table(name))
 	})
 }
 

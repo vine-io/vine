@@ -72,6 +72,11 @@ func (c *config) Init(opts ...Option) error {
 		return err
 	}
 
+	c.snap, err = c.opts.Loader.Snapshot()
+	if err != nil {
+		return err
+	}
+
 	c.vals, err = c.opts.Reader.Values(c.snap.ChangeSet)
 	if err != nil {
 		return err
