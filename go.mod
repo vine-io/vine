@@ -8,9 +8,13 @@ require (
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/evanphx/json-patch/v5 v5.1.0
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/fsouza/go-dockerclient v1.6.6
 	github.com/go-git/go-git/v5 v5.2.0
+	github.com/gobwas/httphead v0.1.0
+	github.com/gobwas/pool v0.2.1 // indirect
+	github.com/gobwas/ws v1.0.4
 	github.com/gogo/googleapis v1.4.0
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
