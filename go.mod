@@ -31,6 +31,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	go.etcd.io/bbolt v1.3.5
 	go.uber.org/zap v1.16.0
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
 	golang.org/x/tools v0.0.0-20201206230334-368bee879bfd // indirect
 	google.golang.org/grpc v1.34.0

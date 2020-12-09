@@ -519,7 +519,7 @@ func (router *router) ProcessMessage(ctx context.Context, msg Message) (err erro
 		if r := recover(); r != nil {
 			log.Errorf("panic recovered: %v", r)
 			log.Error(string(debug.Stack()))
-			err = verrors.InternalServerError("go.vine.server", "panic recovered: %v", r)
+			err = verrors.InternalServerError(DefaultName, "panic recovered: %v", r)
 		}
 	}()
 
@@ -614,7 +614,7 @@ func (router *router) ProcessMessage(ctx context.Context, msg Message) (err erro
 
 	// if no errors just return
 	if len(errResults) > 0 {
-		err = verrors.InternalServerError("go.vine.server", "subscriber error: %v", strings.Join(errResults, "\n"))
+		err = verrors.InternalServerError(DefaultName, "subscriber error: %v", strings.Join(errResults, "\n"))
 	}
 
 	return err

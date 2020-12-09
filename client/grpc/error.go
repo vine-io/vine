@@ -17,6 +17,7 @@ package grpc
 import (
 	"google.golang.org/grpc/status"
 
+	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/errors"
 )
 
@@ -48,5 +49,5 @@ func vineError(err error) error {
 	}
 
 	// fallback
-	return errors.InternalServerError("go.vine.client", s.Message())
+	return errors.InternalServerError(client.DefaultName, s.Message())
 }

@@ -180,7 +180,7 @@ func (g *grpcServer) createSubHandler(sb *subscriber, opts server.Options) broke
 			if r := recover(); r != nil {
 				log.Error("panic recovered: ", r)
 				log.Error(string(debug.Stack()))
-				err = errors.InternalServerError("go.vine.server", "panic recovered: %v", r)
+				err = errors.InternalServerError(server.DefaultName, "panic recovered: %v", r)
 			}
 		}()
 

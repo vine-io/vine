@@ -260,7 +260,7 @@ func (g *grpcServer) handler(srv interface{}, stream grpc.ServerStream) error {
 	if g.opts.Router != nil {
 		cc, err := g.newGRPCCodec(ct)
 		if err != nil {
-			return errors.InternalServerError("go.vine.server", err.Error())
+			return errors.InternalServerError(server.DefaultName, err.Error())
 		}
 		codec := &grpcCodec{
 			method:   fmt.Sprintf("%s.%s", serviceName, methodName),
@@ -360,7 +360,7 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 
 		cc, err := g.newGRPCCodec(ct)
 		if err != nil {
-			return errors.InternalServerError("go.vine.server", err.Error())
+			return errors.InternalServerError(server.DefaultName, err.Error())
 		}
 		b, err := cc.Marshal(argv.Interface())
 		if err != nil {
@@ -382,7 +382,7 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 				if r := recover(); r != nil {
 					log.Error("panic recovered: ", r)
 					log.Error(string(debug.Stack()))
-					err = errors.InternalServerError("go.vine.server", "panic recovered: %v", r)
+					err = errors.InternalServerError(server.DefaultName, "panic recovered: %v", r)
 				}
 			}()
 			returnValues = function.Call([]reflect.Value{service.rcvr, mtype.prepareContext(ctx), reflect.ValueOf(argv.Interface()), reflect.ValueOf(rsp)})
