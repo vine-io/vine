@@ -12,14 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package registry uses the vine registry for selection
-package registry
+package transport
 
 import (
-	"github.com/lack-io/vine/client/selector"
+	"github.com/lack-io/vine/transport"
+	"github.com/lack-io/vine/tunnel"
 )
 
-// NewSelector returns a new registry selector
-func NewSelector(opts ...selector.Option) selector.Selector {
-	return selector.NewSelector(opts...)
+type tunListener struct {
+	l tunnel.Listener
+}
+
+func (t *tunListener) Addr() string {
+	return t.l.Channel()
+}
+
+func (t *tunListener) Close() error {
+	return t.l.Close()
+}
+
+func (t *tunListener) Accept(fn func(socket transport.Socket)) error {
+	for {
+		// accept connection
+		c, err := t.l.Accept()
+		if err != nil {
+			return err
+		}
+		// execute the function
+		go fn(c)
+	}
 }

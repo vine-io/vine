@@ -12,14 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package registry uses the vine registry for selection
-package registry
+// Package proxy is a transport proxy built on the vine/server
+package proxy
 
 import (
-	"github.com/lack-io/vine/client/selector"
+	"context"
+
+	"github.com/lack-io/vine/server"
 )
 
-// NewSelector returns a new registry selector
-func NewSelector(opts ...selector.Option) selector.Selector {
-	return selector.NewSelector(opts...)
+// Proxy can be used as a proxy server for vine services
+type Proxy interface {
+	// ProcessMessage handles inbound messages
+	ProcessMessage(context.Context, server.Message) error
+	// ServeRequest handles inbound requests
+	ServeRequest(context.Context, server.Request, server.Response) error
+	// Name of the proxy protocol
+	String() string
 }
+
+var (
+	DefaultName     = "go.vine.proxy"
+	DefaultEndpoint = "localhost:9090"
+)
