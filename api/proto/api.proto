@@ -15,7 +15,7 @@ message Request {
   map<string, Pair> header = 3;
   map<string, Pair> get = 4;
   map<string, Pair> post = 5;
-  bytes body = 6; // raw request body; if not application/x-www-form-urlencoded
+  string body = 6; // raw request body; if not application/x-www-form-urlencoded
   string url = 7;
 }
 
@@ -24,7 +24,7 @@ message Request {
 message Response {
   int32 statusCode = 1;
   map<string, Pair> header = 2;
-  bytes body = 3;
+  string body = 3;
 }
 
 // A HTTP event as RPC
@@ -39,5 +39,5 @@ message Event {
   // event headers
   map<string, Pair> header = 4;
   // the event data
-  bytes data = 5;
+  string data = 5;
 }

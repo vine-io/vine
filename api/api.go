@@ -23,6 +23,10 @@ import (
 	"github.com/lack-io/vine/server"
 )
 
+var (
+	DefaultName = "go.vine.api"
+)
+
 type Api interface {
 	// Initialise options
 	Init(...Option) error
