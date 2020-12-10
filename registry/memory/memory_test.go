@@ -180,7 +180,7 @@ func TestMemoryRegistry(t *testing.T) {
 	}
 }
 
-func TestMemoryRegistryTTL(t *testing.T) {
+func TestMemoryRegisterTTL(t *testing.T) {
 	m := NewRegistry()
 
 	for _, v := range testData {
@@ -207,7 +207,7 @@ func TestMemoryRegistryTTL(t *testing.T) {
 	}
 }
 
-func TestMemoryRegistryTTLConcurrent(t *testing.T) {
+func TestMemoryRegisterTTLConcurrent(t *testing.T) {
 	concurrency := 1000
 	waitTime := ttlPruneTime * 2
 	m := NewRegistry()

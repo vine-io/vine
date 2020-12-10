@@ -49,7 +49,7 @@ func newFunction(opts ...Option) Function {
 
 	// fore ttl/interval
 	fopts := []Option{
-		RegistryTTL(time.Minute),
+		RegisterTTL(time.Minute),
 		RegisterInterval(time.Second * 30),
 	}
 
