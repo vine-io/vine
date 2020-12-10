@@ -248,8 +248,8 @@ func Action(a func(*cli.Context) error) Option {
 	}
 }
 
-// Registry specifies the TTL to use when registering the service
-func RegistryTTL(t time.Duration) Option {
+// RegisterTTL specifies the TTL to use when registering the service
+func RegisterTTL(t time.Duration) Option {
 	return func(o *Options) {
 		o.Server.Init(server.RegisterTTL(t))
 	}

@@ -36,7 +36,7 @@ type Option func(o *Options)
 // WithEndpoint sets a proxy endpoint
 func WithEndpoint(e string) Option {
 	return func(o *Options) {
-		o.Endpoint =e
+		o.Endpoint = e
 	}
 }
 
@@ -54,8 +54,8 @@ func WithRouter(r router.Router) Option {
 	}
 }
 
-// WithLinks sets a link for outbound requests
-func WithLinks(name string, c client.Client) Option {
+// WithLink sets a link for outbound requests
+func WithLink(name string, c client.Client) Option {
 	return func(o *Options) {
 		if o.Links == nil {
 			o.Links = make(map[string]client.Client)
