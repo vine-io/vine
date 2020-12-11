@@ -56,7 +56,6 @@ import (
 	// brokers
 	brokerHttp "github.com/lack-io/vine/broker/http"
 	"github.com/lack-io/vine/broker/memory"
-	"github.com/lack-io/vine/broker/nats"
 	brokerSrv "github.com/lack-io/vine/broker/service"
 
 	// registries
@@ -345,7 +344,6 @@ var (
 	DefaultBrokers = map[string]func(...broker.Option) broker.Broker{
 		"service": brokerSrv.NewBroker,
 		"memory":  memory.NewBroker,
-		"nats":    nats.NewBroker,
 		"http":    brokerHttp.NewBroker,
 	}
 

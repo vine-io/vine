@@ -31,7 +31,7 @@ func init() {
 func DefaultOut(out io.Writer) {
 	ws := zapcore.AddSync(out)
 	encoder := getEncoder()
-	core := zapcore.NewCore(encoder, ws, zapcore.DebugLevel)
+	core := zapcore.NewCore(encoder, ws, zapcore.InfoLevel)
 	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	deLogger = logger.Sugar()
 }

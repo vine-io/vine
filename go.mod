@@ -33,8 +33,6 @@ require (
 	github.com/lib/pq v1.9.0
 	github.com/lucas-clemente/quic-go v0.19.3
 	github.com/miekg/dns v1.1.35
-	github.com/nats-io/nats-server/v2 v2.1.9 // indirect
-	github.com/nats-io/nats.go v1.10.0
 	github.com/nlopes/slack v0.6.0
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
