@@ -93,7 +93,7 @@ func (s *serviceRegistry) Register(srv *registry.Service, opts ...registry.Regis
 	}
 
 	// encode srv into protobuf adn pack Register TTL into it
-	pbSrv := toProto(srv)
+	pbSrv := ToProto(srv)
 	pbSrv.Options.Ttl = int64(options.TTL.Seconds())
 
 	// register the service
@@ -111,7 +111,7 @@ func (s *serviceRegistry) Deregister(srv *registry.Service, opts ...registry.Der
 	}
 
 	// deregister the service
-	_, err := s.client.Deregister(options.Context, toProto(srv), s.callOpts()...)
+	_, err := s.client.Deregister(options.Context, ToProto(srv), s.callOpts()...)
 	return err
 }
 
@@ -134,7 +134,7 @@ func (s *serviceRegistry) GetService(name string, opts ...registry.GetOption) ([
 
 	services := make([]*registry.Service, 0, len(rsp.Services))
 	for _, service := range rsp.Services {
-		services = append(services, toService(service))
+		services = append(services, ToService(service))
 	}
 
 	return services, nil
@@ -156,7 +156,7 @@ func (s *serviceRegistry) ListServices(opts ...registry.ListOption) ([]*registry
 
 	services := make([]*registry.Service, 0, len(rsp.Services))
 	for _, service := range rsp.Services {
-		services = append(services, toService(service))
+		services = append(services, ToService(service))
 	}
 
 	return services, nil
