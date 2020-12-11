@@ -27,6 +27,10 @@ import (
 	"github.com/lack-io/vine/util/ctx"
 )
 
+const (
+	Handler = "api"
+)
+
 type apiHandler struct {
 	opts handler.Options
 	s    *goapi.Service
