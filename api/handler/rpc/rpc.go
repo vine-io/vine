@@ -24,6 +24,8 @@ import (
 	"strings"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
+	"github.com/oxtoacart/bpool"
+
 	"github.com/lack-io/vine/api"
 	"github.com/lack-io/vine/api/handler"
 	"github.com/lack-io/vine/client"
@@ -37,7 +39,6 @@ import (
 	"github.com/lack-io/vine/util/ctx"
 	"github.com/lack-io/vine/util/metadata"
 	"github.com/lack-io/vine/util/qson"
-	"github.com/oxtoacart/bpool"
 )
 
 const (

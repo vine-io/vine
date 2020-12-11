@@ -17,8 +17,9 @@ package registry
 import (
 	"testing"
 
-	"github.com/lack-io/vine/registry"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/lack-io/vine/registry"
 )
 
 func TestStoreRegex(t *testing.T) {

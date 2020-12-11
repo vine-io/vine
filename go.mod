@@ -6,10 +6,12 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
+	github.com/bwmarrin/discordgo v0.22.0
 	github.com/caddyserver/certmagic v0.10.6
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/evanphx/json-patch/v5 v5.1.0
+	github.com/forestgiant/sliceutil v0.0.0-20160425183142-94783f95db6c
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/fsouza/go-dockerclient v1.6.6
 	github.com/go-acme/lego/v3 v3.9.0
@@ -33,15 +35,18 @@ require (
 	github.com/miekg/dns v1.1.35
 	github.com/nats-io/nats-server/v2 v2.1.9 // indirect
 	github.com/nats-io/nats.go v1.10.0
+	github.com/nlopes/slack v0.6.0
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.6.1
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	go.etcd.io/bbolt v1.3.5
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
 	golang.org/x/tools v0.0.0-20201206230334-368bee879bfd // indirect
 	google.golang.org/grpc v1.34.0
+	gopkg.in/telegram-bot-api.v4 v4.6.4
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 	gorm.io/driver/postgres v1.0.5
 	gorm.io/gorm v1.20.8

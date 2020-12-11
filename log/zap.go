@@ -43,6 +43,14 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
+func Trace(args ...interface{}) {
+	deLogger.Debug(args...)
+}
+
+func Tracef(format string, v ...interface{}) {
+	deLogger.Debugf(format, v...)
+}
+
 func Debug(args ...interface{}) {
 	deLogger.Debug(args...)
 }

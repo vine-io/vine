@@ -14,6 +14,9 @@ github.com/Microsoft/hcsshim/osversion
 github.com/bitly/go-simplejson
 # github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
 ## explicit
+# github.com/bwmarrin/discordgo v0.22.0
+## explicit
+github.com/bwmarrin/discordgo
 # github.com/caddyserver/certmagic v0.10.6
 ## explicit
 github.com/caddyserver/certmagic
@@ -74,6 +77,9 @@ github.com/emirpasic/gods/utils
 github.com/evanphx/json-patch/v5
 # github.com/felixge/httpsnoop v1.0.1
 github.com/felixge/httpsnoop
+# github.com/forestgiant/sliceutil v0.0.0-20160425183142-94783f95db6c
+## explicit
+github.com/forestgiant/sliceutil
 # github.com/fsnotify/fsnotify v1.4.9
 ## explicit
 github.com/fsnotify/fsnotify
@@ -188,6 +194,8 @@ github.com/google/uuid
 # github.com/gorilla/handlers v1.5.1
 ## explicit
 github.com/gorilla/handlers
+# github.com/gorilla/websocket v1.4.0
+github.com/gorilla/websocket
 # github.com/hashicorp/hcl v1.0.0
 ## explicit
 github.com/hashicorp/hcl
@@ -308,6 +316,12 @@ github.com/nats-io/nats.go/util
 github.com/nats-io/nkeys
 # github.com/nats-io/nuid v1.0.1
 github.com/nats-io/nuid
+# github.com/nlopes/slack v0.6.0
+## explicit
+github.com/nlopes/slack
+github.com/nlopes/slack/internal/errorsx
+github.com/nlopes/slack/internal/timex
+github.com/nlopes/slack/slackutilsx
 # github.com/opencontainers/go-digest v1.0.0-rc1
 github.com/opencontainers/go-digest
 # github.com/opencontainers/image-spec v1.0.1
@@ -337,6 +351,9 @@ github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.6.1
 ## explicit
 github.com/stretchr/testify/assert
+# github.com/technoweenie/multipartstreamer v1.0.1
+## explicit
+github.com/technoweenie/multipartstreamer
 # github.com/xanzy/ssh-agent v0.2.1
 github.com/xanzy/ssh-agent
 # go.etcd.io/bbolt v1.3.5
@@ -513,6 +530,9 @@ gopkg.in/fsnotify.v1
 gopkg.in/square/go-jose.v2
 gopkg.in/square/go-jose.v2/cipher
 gopkg.in/square/go-jose.v2/json
+# gopkg.in/telegram-bot-api.v4 v4.6.4
+## explicit
+gopkg.in/telegram-bot-api.v4
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
 gopkg.in/tomb.v1
 # gopkg.in/warnings.v0 v0.1.2
