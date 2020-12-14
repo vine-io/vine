@@ -7,6 +7,6 @@ service Transport {
 }
 
 message Message {
-  map<string,string> header = 1;
+  map<string, string> header = 1;
   bytes body = 2;
 }

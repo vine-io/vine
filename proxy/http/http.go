@@ -22,114 +22,125 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"path"
+	"path/filepath"
+	"strings"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/errors"
-	"github.com/lack-io/vine/proxy"
 	"github.com/lack-io/vine/server"
 )
 
-// Proxy will proxy rpc requests as http POST requests. It is a server.Proxy
-type Proxy struct {
-	options proxy.Options
-
+// Router will proxy rpc requests as http POST requests. It is a server.Router
+type Router struct {
+	// Converts RPC Foo.Bar to /foo/bar
+	Resolver *Resolver
 	// The http backend to call
-	Endpoint string
+	Backend string
 
 	// first request
 	first bool
+	// rpc ep / http ep mapping
+	eps map[string]string
 }
 
-func getMethod(hdr map[string]string) string {
-	switch hdr["Vine-Method"] {
-	case "GET", "HEAD", "POST", "PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE", "PATCH":
-		return hdr["Vine-Method"]
-	default:
-		return "POST"
+// Resolver resolves rpc to http. It explicity maps Foo.Bar to /foo/bar
+type Resolver struct{}
+
+var (
+	// The default backend
+	DefaultBackend = "http://localhost:9090"
+	// The default router
+	DefaultRouter = &Router{}
+)
+
+// Foo.Bar becomes /foo/bar
+func (r *Resolver) Resolve(ep string) string {
+	// replace . with /
+	ep = strings.Replace(ep, ".", "/", -1)
+	// lowercase the whole thing
+	ep = strings.ToLower(ep)
+	// prefix with "/"
+	return filepath.Join("/", ep)
+}
+
+// set the nil things
+func (p *Router) setup() {
+	if p.Resolver == nil {
+		p.Resolver = new(Resolver)
+	}
+	if p.Backend == "" {
+		p.Backend = DefaultBackend
+	}
+	if p.eps == nil {
+		p.eps = map[string]string{}
 	}
 }
 
-func getEndpoint(hdr map[string]string) string {
-	ep := hdr["Vine-Endpoint"]
-	if len(ep) > 0 && ep[0] == '/' {
-		return ep
-	}
-	return ""
-}
+// Endpoint returns the http endpoint for an rpc endpoint.
+// Endpoint("Foo.Bar") returns http://localhost:9090/foo/bar
+func (p *Router) Endpoint(rpcEp string) (string, error) {
+	p.setup()
 
-func getTopic(hdr map[string]string) string {
-	ep := hdr["Vine-Topic"]
-	if len(ep) > 0 && ep[0] == '/' {
-		return ep
+	// get http endpoint
+	ep, ok := p.eps[rpcEp]
+	if !ok {
+		// get default
+		ep = p.Resolver.Resolve(rpcEp)
 	}
 
-	return "/" + hdr["Vine-Topic"]
-}
-
-// ProcessMessage handles incoming asynchronous messages
-func (p *Proxy) ProcessMessage(ctx context.Context, msg server.Message) error {
-	if p.Endpoint == "" {
-		p.Endpoint = proxy.DefaultEndpoint
+	// already full qualified URL
+	if strings.HasPrefix(ep, "http://") || strings.HasPrefix(ep, "https://") {
+		return ep, nil
 	}
 
-	// get the header
-	hdr := msg.Header()
+	// parse into url
 
-	// get topic
-	// use /topic as endpoint
-	endpoint := getTopic(hdr)
-
-	// set the endpoint
-	if len(endpoint) == 0 {
-		endpoint = p.Endpoint
-	} else {
-		// add endpoint to backend
-		u, err := url.Parse(p.Endpoint)
-		if err != nil {
-			return errors.InternalServerError(msg.Topic(), err.Error())
-		}
-		u.Path = path.Join(u.Path, endpoint)
-		endpoint = u.String()
-	}
-
-	// send to backend
-	hreq, err := http.NewRequest("POST", endpoint, bytes.NewReader(msg.Body()))
+	// full path to call
+	u, err := url.Parse(p.Backend)
 	if err != nil {
-		return errors.InternalServerError(msg.Topic(), err.Error())
+		return "", err
 	}
 
-	// set the headers
-	for k, v := range hdr {
-		hreq.Header.Set(k, v)
+	// set path
+	u.Path = filepath.Join(u.Path, ep)
+
+	// set scheme
+	if len(u.Scheme) == 0 {
+		u.Scheme = "http"
 	}
 
-	// make the call
-	hrsp, err := http.DefaultClient.Do(hreq)
-	if err != nil {
-		return errors.InternalServerError(msg.Topic(), err.Error())
+	// set host
+	if len(u.Host) == 0 {
+		u.Host = "localhost"
 	}
 
-	// read body
-	b, err := ioutil.ReadAll(hrsp.Body)
-	hrsp.Body.Close()
-	if err != nil {
-		return errors.InternalServerError(msg.Topic(), err.Error())
-	}
+	// create ep
+	return u.String(), nil
+}
 
-	if hrsp.StatusCode != 200 {
-		return errors.New(msg.Topic(), string(b), int32(hrsp.StatusCode))
-	}
+// RegisterEndpoint registers a http endpoint against an RPC endpoint.
+// It converts relative paths into backend:endpoint. Anything prefixed
+// with http:// or https:// will be left as is.
+//	RegisterEndpoint("Foo.Bar", "/foo/bar")
+//	RegisterEndpoint("Greeter.Hello", "/helloworld")
+//	RegisterEndpoint("Greeter.Hello", "http://localhost:8080/")
+func (p *Router) RegisterEndpoint(rpcEp, httpEp string) error {
+	p.setup()
 
+	// create ep
+	p.eps[rpcEp] = httpEp
+	return nil
+}
+
+func (p *Router) ProcessMessage(ctx context.Context, msg server.Message) error {
 	return nil
 }
 
 // ServeRequest honours the server.Router interface
-func (p *Proxy) ServeRequest(ctx context.Context, req server.Request, rsp server.Response) error {
-	if p.Endpoint == "" {
-		p.Endpoint = proxy.DefaultEndpoint
-	}
-
+func (p *Router) ServeRequest(ctx context.Context, req server.Request, rsp server.Response) error {
+	// rudimentary post based streaming
 	for {
+		// get data
 		body, err := req.Read()
 		if err == io.EOF {
 			return nil
@@ -138,33 +149,32 @@ func (p *Proxy) ServeRequest(ctx context.Context, req server.Request, rsp server
 			return err
 		}
 
-		// get the header
-		hdr := req.Header()
+		var rpcEp string
 
-		// get method
-		method := getMethod(hdr)
-
-		// get endpoint
-		endpoint := getEndpoint(hdr)
-
-		// set the endpoint
-		if len(endpoint) == 0 {
-			endpoint = p.Endpoint
+		// get rpc endpoint
+		if p.first {
+			p.first = false
+			rpcEp = req.Endpoint()
 		} else {
-			// add endpoint to backend
-			u, err := url.Parse(p.Endpoint)
-			if err != nil {
-				return errors.InternalServerError(req.Service(), err.Error())
-			}
-			u.Path = path.Join(u.Path, endpoint)
-			endpoint = u.String()
+			hdr := req.Header()
+			rpcEp = hdr["X-Vine-Endpoint"]
 		}
 
-		// send to backend
-		hreq, err := http.NewRequest(method, endpoint, bytes.NewReader(body))
+		// get http endpoint
+		ep, err := p.Endpoint(rpcEp)
+		if err != nil {
+			return errors.NotFound(req.Service(), err.Error())
+		}
+
+		// no stream support currently
+		// TODO: lookup host
+		hreq, err := http.NewRequest("POST", ep, bytes.NewReader(body))
 		if err != nil {
 			return errors.InternalServerError(req.Service(), err.Error())
 		}
+
+		// get the header
+		hdr := req.Header()
 
 		// set the headers
 		for k, v := range hdr {
@@ -186,7 +196,7 @@ func (p *Proxy) ServeRequest(ctx context.Context, req server.Request, rsp server
 
 		// set response headers
 		hdr = map[string]string{}
-		for k := range hrsp.Header {
+		for k, _ := range hrsp.Header {
 			hdr[k] = hrsp.Header.Get(k)
 		}
 		// write the header
@@ -200,29 +210,76 @@ func (p *Proxy) ServeRequest(ctx context.Context, req server.Request, rsp server
 			return errors.InternalServerError(req.Service(), err.Error())
 		}
 	}
+
+	return nil
 }
 
-func (p *Proxy) String() string {
-	return "http"
-}
-
-// NewSingleHostProxy returns a router which sends requests to a single http backend
-func NewSingleHostProxy(url string) proxy.Proxy {
-	return &Proxy{
-		Endpoint: url,
+// NewSingleHostRouter returns a router which sends requests a single http backend
+//
+// It is used by setting it in a new vine service to act as a proxy for a http backend.
+//
+// Usage:
+//
+// Create a new router to the http backend
+//
+// 	r := NewSingleHostRouter("http://localhost:10001")
+//
+//	// Add additional routes
+//	r.RegisterEndpoint("Hello.World", "/helloworld")
+//
+// 	// Create your new service
+// 	service := vine.NewService(
+// 		vine.Name("greeter"),
+//		// Set the router
+//		http.WithRouter(r),
+// 	)
+//
+// 	// Run the service
+// 	service.Run()
+func NewSingleHostRouter(url string) *Router {
+	return &Router{
+		Resolver: new(Resolver),
+		Backend:  url,
+		eps:      map[string]string{},
 	}
 }
 
-// NewProxy returns a new proxy which will route using a http client
-func NewProxy(opts ...proxy.Option) proxy.Proxy {
-	var options proxy.Options
-	for _, o := range opts {
-		o(&options)
-	}
+// NewService returns a new http proxy. It acts as a vine service and proxies to a http backend.
+// Routes are dynamically set e.g Foo.Bar routes to /foo/bar. The default backend is http://localhost:9090.
+// Optionally specify the backend endpoint url or the router. Also choose to register specific endpoints.
+//
+// Usage:
+//
+// 	service := NewService(
+//		vine.Name("greeter"),
+//		// Sets the default http endpoint
+//		http.WithBackend("http://localhost:10001"),
+//	 )
+//
+// Set fixed backend endpoints
+//
+//	// register an endpoint
+//	http.RegisterEndpoint("Hello.World", "/helloworld")
+//
+// 	service := NewService(
+//		vine.Name("greeter"),
+//		// Set the http endpoint
+//		http.WithBackend("http://localhost:10001"),
+//	 )
+func NewService(opts ...vine.Option) vine.Service {
+	// prepend router to opts
+	opts = append([]vine.Option{
+		WithRouter(DefaultRouter),
+	}, opts...)
 
-	p := new(Proxy)
-	p.Endpoint = options.Endpoint
-	p.options = options
+	// create the new service
+	return vine.NewService(opts...)
+}
 
-	return p
+// RegisterEndpoint registers a http endpoint against an RPC endpoint
+//	RegisterEndpoint("Foo.Bar", "/foo/bar")
+//	RegisterEndpoint("Greeter.Hello", "/helloworld")
+//	RegisterEndpoint("Greeter.Hello", "http://localhost:8080/")
+func RegisterEndpoint(rpcEp string, httpEp string) error {
+	return DefaultRouter.RegisterEndpoint(rpcEp, httpEp)
 }

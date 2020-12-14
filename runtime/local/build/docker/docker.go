@@ -23,6 +23,7 @@ import (
 	"path/filepath"
 
 	docker "github.com/fsouza/go-dockerclient"
+
 	"github.com/lack-io/vine/log"
 	"github.com/lack-io/vine/runtime/local/build"
 )

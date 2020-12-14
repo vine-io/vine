@@ -130,7 +130,7 @@ func (q *quicTransport) Dial(addr string, opts ...transport.DialOption) (transpo
 	if config == nil {
 		config = &tls.Config{
 			InsecureSkipVerify: true,
-			NextProtos:         []string{"http/1,1"},
+			NextProtos:         []string{"http/1.1"},
 		}
 	}
 	s, err := quic.DialAddr(addr, config, &quic.Config{
