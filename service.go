@@ -18,6 +18,7 @@ import (
 	"os"
 	"os/signal"
 	gruntime "runtime"
+	"strings"
 	"sync"
 
 	"github.com/lack-io/vine/auth"
@@ -27,6 +28,7 @@ import (
 	"github.com/lack-io/vine/debug/stats"
 	"github.com/lack-io/vine/debug/trace"
 	"github.com/lack-io/vine/log"
+	"github.com/lack-io/vine/plugin"
 	"github.com/lack-io/vine/server"
 	"github.com/lack-io/vine/store"
 	signalutil "github.com/lack-io/vine/util/signal"
@@ -84,7 +86,22 @@ func (s *service) Init(opts ...Option) {
 
 	s.once.Do(func() {
 		// setup the plugins
-		//for _, p := range strings.Split(os.Getenv(""))
+		for _, p := range strings.Split(os.Getenv("VINE_PLUGIN"), ",") {
+			if len(p) == 0 {
+				continue
+			}
+
+			// load the plugin
+			c, err := plugin.Load(p)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			// initialise the plugin
+			if err := plugin.Init(c); err != nil {
+				log.Fatal(err)
+			}
+		}
 
 		// set cmd name
 		if len(s.opts.Cmd.App().Name) == 0 {
