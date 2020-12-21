@@ -20,9 +20,9 @@ import (
 
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/config/source"
-	proto "github.com/lack-io/vine/config/source/service/proto"
 	"github.com/lack-io/vine/errors"
 	"github.com/lack-io/vine/log"
+	proto "github.com/lack-io/vine/proto/config"
 )
 
 var (

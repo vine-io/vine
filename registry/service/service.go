@@ -22,8 +22,8 @@ import (
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/client/grpc"
 	"github.com/lack-io/vine/errors"
+	pb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/registry"
-	pb "github.com/lack-io/vine/registry/service/proto"
 )
 
 var (

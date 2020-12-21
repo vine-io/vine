@@ -21,9 +21,9 @@ import (
 
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/debug/log"
-	proto "github.com/lack-io/vine/debug/service/proto"
 	"github.com/lack-io/vine/debug/stats"
 	"github.com/lack-io/vine/debug/trace"
+	proto "github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/server"
 )
 

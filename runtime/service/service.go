@@ -19,8 +19,8 @@ import (
 	"sync"
 
 	"github.com/lack-io/vine/client"
+	pb "github.com/lack-io/vine/proto/runtime"
 	"github.com/lack-io/vine/runtime"
-	pb "github.com/lack-io/vine/runtime/service/proto"
 )
 
 type svc struct {

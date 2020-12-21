@@ -24,8 +24,8 @@ import (
 
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/errors"
+	pb "github.com/lack-io/vine/proto/store"
 	"github.com/lack-io/vine/store"
-	pb "github.com/lack-io/vine/store/service/proto"
 	"github.com/lack-io/vine/util/metadata"
 )
 

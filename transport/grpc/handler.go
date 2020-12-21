@@ -21,21 +21,21 @@ import (
 
 	"github.com/lack-io/vine/errors"
 	"github.com/lack-io/vine/log"
+	pb "github.com/lack-io/vine/proto/transport"
 	"github.com/lack-io/vine/transport"
-	pb "github.com/lack-io/vine/transport/grpc/proto"
 )
 
 // vineTransport satisfies the pb.TransportServer interface
 type vineTransport struct {
 	addr string
-	fn func(transport.Socket)
+	fn   func(transport.Socket)
 }
 
 func (m *vineTransport) Stream(ts pb.Transport_StreamServer) (err error) {
 
 	sock := &grpcTransportSocket{
 		stream: ts,
-		local: m.addr,
+		local:  m.addr,
 	}
 
 	p, ok := peer.FromContext(ts.Context())

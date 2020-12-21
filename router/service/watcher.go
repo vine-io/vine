@@ -19,8 +19,8 @@ import (
 	"sync"
 	"time"
 
+	pb "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/router"
-	pb "github.com/lack-io/vine/router/service/proto"
 )
 
 type watcher struct {

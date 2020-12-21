@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/client"
+	pb "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/router"
-	pb "github.com/lack-io/vine/router/service/proto"
 )
 
 type svc struct {

@@ -16,8 +16,8 @@
 package proto
 
 import (
+	pbRtr "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/router"
-	pbRtr "github.com/lack-io/vine/router/service/proto"
 )
 
 // RouteToProto encodes route into protobuf and returns it

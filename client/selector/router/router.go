@@ -23,9 +23,9 @@ import (
 
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/client/selector"
+	pb "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/registry"
 	"github.com/lack-io/vine/router"
-	pb "github.com/lack-io/vine/router/service/proto"
 )
 
 type routerSelector struct {

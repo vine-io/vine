@@ -15,8 +15,8 @@
 package service
 
 import (
+	pb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/registry"
-	pb "github.com/lack-io/vine/registry/service/proto"
 )
 
 func values(v []*registry.Value) []*pb.Value {

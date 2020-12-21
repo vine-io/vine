@@ -19,9 +19,9 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/broker"
-	pb "github.com/lack-io/vine/broker/service/proto"
 	"github.com/lack-io/vine/client"
 	"github.com/lack-io/vine/log"
+	pb "github.com/lack-io/vine/proto/broker"
 )
 
 type serviceBroker struct {

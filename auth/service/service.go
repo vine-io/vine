@@ -21,10 +21,10 @@ import (
 
 	"github.com/lack-io/vine/auth"
 	"github.com/lack-io/vine/auth/rules"
-	pb "github.com/lack-io/vine/auth/service/proto"
 	"github.com/lack-io/vine/auth/token"
 	"github.com/lack-io/vine/auth/token/jwt"
 	"github.com/lack-io/vine/client"
+	pb "github.com/lack-io/vine/proto/auth"
 )
 
 // svc is the service implementation of the Auth interface

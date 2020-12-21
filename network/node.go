@@ -20,7 +20,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/lack-io/vine/network/service/proto"
+	pb "github.com/lack-io/vine/proto/network"
 )
 
 var (
