@@ -11,9 +11,9 @@ import (
 
 import (
 	context "context"
-	api "github.com/lack-io/vine/api"
-	client "github.com/lack-io/vine/client"
-	server "github.com/lack-io/vine/server"
+	api "github.com/lack-io/vine/service/api"
+	client "github.com/lack-io/vine/service/client"
+	server "github.com/lack-io/vine/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -42,8 +42,6 @@ func NewRouterEndpoints() []*api.Endpoint {
 type RouterService interface {
 	Lookup(ctx context.Context, in *LookupRequest, opts ...client.CallOption) (*LookupResponse, error)
 	Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Router_WatchService, error)
-	Advertise(ctx context.Context, in *Request, opts ...client.CallOption) (Router_AdvertiseService, error)
-	Process(ctx context.Context, in *Advert, opts ...client.CallOption) (*ProcessResponse, error)
 }
 
 type routerService struct {
@@ -117,79 +115,16 @@ func (x *routerServiceWatch) Recv() (*Event, error) {
 	return m, nil
 }
 
-func (c *routerService) Advertise(ctx context.Context, in *Request, opts ...client.CallOption) (Router_AdvertiseService, error) {
-	req := c.c.NewRequest(c.name, "Router.Advertise", &Request{})
-	stream, err := c.c.Stream(ctx, req, opts...)
-	if err != nil {
-		return nil, err
-	}
-	if err := stream.Send(in); err != nil {
-		return nil, err
-	}
-	return &routerServiceAdvertise{stream}, nil
-}
-
-type Router_AdvertiseService interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Recv() (*Advert, error)
-}
-
-type routerServiceAdvertise struct {
-	stream client.Stream
-}
-
-func (x *routerServiceAdvertise) Close() error {
-	return x.stream.Close()
-}
-
-func (x *routerServiceAdvertise) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *routerServiceAdvertise) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *routerServiceAdvertise) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *routerServiceAdvertise) Recv() (*Advert, error) {
-	m := new(Advert)
-	err := x.stream.Recv(m)
-	if err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *routerService) Process(ctx context.Context, in *Advert, opts ...client.CallOption) (*ProcessResponse, error) {
-	req := c.c.NewRequest(c.name, "Router.Process", in)
-	out := new(ProcessResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // Server API for Router service
 type RouterHandler interface {
 	Lookup(context.Context, *LookupRequest, *LookupResponse) error
 	Watch(context.Context, *WatchRequest, Router_WatchStream) error
-	Advertise(context.Context, *Request, Router_AdvertiseStream) error
-	Process(context.Context, *Advert, *ProcessResponse) error
 }
 
 func RegisterRouterHandler(s server.Server, hdlr RouterHandler, opts ...server.HandlerOption) error {
 	type routerImpl interface {
 		Lookup(ctx context.Context, in *LookupRequest, out *LookupResponse) error
 		Watch(ctx context.Context, stream server.Stream) error
-		Advertise(ctx context.Context, stream server.Stream) error
-		Process(ctx context.Context, in *Advert, out *ProcessResponse) error
 	}
 	type Router struct {
 		routerImpl
@@ -246,50 +181,6 @@ func (x *routerWatchStream) Send(m *Event) error {
 	return x.stream.Send(m)
 }
 
-func (h *routerHandler) Advertise(ctx context.Context, stream server.Stream) error {
-	m := new(Request)
-	if err := stream.Recv(m); err != nil {
-		return err
-	}
-	return h.RouterHandler.Advertise(ctx, m, &routerAdvertiseStream{stream})
-}
-
-type Router_AdvertiseStream interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Send(*Advert) error
-}
-
-type routerAdvertiseStream struct {
-	stream server.Stream
-}
-
-func (x *routerAdvertiseStream) Close() error {
-	return x.stream.Close()
-}
-
-func (x *routerAdvertiseStream) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *routerAdvertiseStream) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *routerAdvertiseStream) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *routerAdvertiseStream) Send(m *Advert) error {
-	return x.stream.Send(m)
-}
-
-func (h *routerHandler) Process(ctx context.Context, in *Advert, out *ProcessResponse) error {
-	return h.RouterHandler.Process(ctx, in, out)
-}
-
 // Api Endpoints for Table service
 func NewTableEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
@@ -300,8 +191,7 @@ type TableService interface {
 	Create(ctx context.Context, in *Route, opts ...client.CallOption) (*CreateResponse, error)
 	Delete(ctx context.Context, in *Route, opts ...client.CallOption) (*DeleteResponse, error)
 	Update(ctx context.Context, in *Route, opts ...client.CallOption) (*UpdateResponse, error)
-	List(ctx context.Context, in *Request, opts ...client.CallOption) (*ListResponse, error)
-	Query(ctx context.Context, in *QueryRequest, opts ...client.CallOption) (*QueryResponse, error)
+	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 }
 
 type tableService struct {
@@ -346,19 +236,9 @@ func (c *tableService) Update(ctx context.Context, in *Route, opts ...client.Cal
 	return out, nil
 }
 
-func (c *tableService) List(ctx context.Context, in *Request, opts ...client.CallOption) (*ListResponse, error) {
-	req := c.c.NewRequest(c.name, "Table.List", in)
-	out := new(ListResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *tableService) Query(ctx context.Context, in *QueryRequest, opts ...client.CallOption) (*QueryResponse, error) {
-	req := c.c.NewRequest(c.name, "Table.Query", in)
-	out := new(QueryResponse)
+func (c *tableService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
+	req := c.c.NewRequest(c.name, "Table.Read", in)
+	out := new(ReadResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -371,8 +251,7 @@ type TableHandler interface {
 	Create(context.Context, *Route, *CreateResponse) error
 	Delete(context.Context, *Route, *DeleteResponse) error
 	Update(context.Context, *Route, *UpdateResponse) error
-	List(context.Context, *Request, *ListResponse) error
-	Query(context.Context, *QueryRequest, *QueryResponse) error
+	Read(context.Context, *ReadRequest, *ReadResponse) error
 }
 
 func RegisterTableHandler(s server.Server, hdlr TableHandler, opts ...server.HandlerOption) error {
@@ -380,8 +259,7 @@ func RegisterTableHandler(s server.Server, hdlr TableHandler, opts ...server.Han
 		Create(ctx context.Context, in *Route, out *CreateResponse) error
 		Delete(ctx context.Context, in *Route, out *DeleteResponse) error
 		Update(ctx context.Context, in *Route, out *UpdateResponse) error
-		List(ctx context.Context, in *Request, out *ListResponse) error
-		Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error
+		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
 	}
 	type Table struct {
 		tableImpl
@@ -406,10 +284,6 @@ func (h *tableHandler) Update(ctx context.Context, in *Route, out *UpdateRespons
 	return h.TableHandler.Update(ctx, in, out)
 }
 
-func (h *tableHandler) List(ctx context.Context, in *Request, out *ListResponse) error {
-	return h.TableHandler.List(ctx, in, out)
-}
-
-func (h *tableHandler) Query(ctx context.Context, in *QueryRequest, out *QueryResponse) error {
-	return h.TableHandler.Query(ctx, in, out)
+func (h *tableHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
+	return h.TableHandler.Read(ctx, in, out)
 }

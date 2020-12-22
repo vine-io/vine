@@ -86,6 +86,62 @@ func (f *PathFlag) Apply(set *flag.FlagSet) error {
 	return nil
 }
 
+func (a *App) pathVar(p *string, name, alias string, value string, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &PathFlag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// PathVar defines a string flag with specified name, default value, usage string and env string.
+// The argument p points to a string variable in which to store the value of the flag.
+func (a *App) PathVar(p *string, name string, value string, usage, env string) {
+	a.stringVar(p, name, "", value, usage, env)
+}
+
+// PathVarP is like PathVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) PathVarP(p *string, name, alias string, value string, usage, env string) {
+	a.stringVar(p, name, alias, value, usage, env)
+}
+
+// PathVar defines a string flag with specified name, default value, usage string and env string.
+// The argument p points to a string variable in which to store the value of the flag.
+func PathVar(p *string, name string, value string, usage, env string) {
+	CommandLine.PathVar(p, name, value, usage, env)
+}
+
+// PathVarP is like PathVar, but accepts a shorthand letter that can be used after a single dash.
+func PathVarP(p *string, name, alias string, value string, usage, env string) {
+	CommandLine.PathVarP(p, name, alias, value, usage, env)
+}
+
+// String defines a string flag with specified name, default value, usage string and env string.
+// The return value is the address of a string variable that stores the value of the flag.
+func (a *App) Path(name string, value string, usage, env string) *string {
+	p := new(string)
+	a.PathVar(p, name, value, usage, env)
+	return p
+}
+
+// StringP is like String, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) PathP(name, alias string, value string, usage, env string) *string {
+	p := new(string)
+	a.PathVarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Path looks up the value of a local PathFlag, returns
 // "" if not found
 func (c *Context) Path(name string) string {

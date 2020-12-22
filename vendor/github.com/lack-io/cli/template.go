@@ -46,6 +46,13 @@ COPYRIGHT:
    {{.Copyright}}{{end}}
 `
 
+// CommandLineHelpTemplate is the text template for the CommandLine help topic.
+// cli.go uses text/template to render templates. You can
+// render custom help text by setting this variable.
+var CommandLineHelpTemplate = `{{if .VisibleFlags}}{{range $index, $option := .VisibleFlags}}{{if $index}}
+{{end}}{{$option}}{{end}}{{end}}
+`
+
 // CommandHelpTemplate is the text template for the command help topic.
 // cli.go uses text/template to render templates. You can
 // render custom help text by setting this variable.

@@ -52,8 +52,6 @@ func (SpanType) EnumDescriptor() ([]byte, []int) {
 }
 
 type HealthRequest struct {
-	// optional service name
-	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 }
 
 func (m *HealthRequest) Reset()         { *m = HealthRequest{} }
@@ -88,13 +86,6 @@ func (m *HealthRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_HealthRequest proto.InternalMessageInfo
-
-func (m *HealthRequest) GetService() string {
-	if m != nil {
-		return m.Service
-	}
-	return ""
-}
 
 type HealthResponse struct {
 	// default: ok
@@ -142,8 +133,6 @@ func (m *HealthResponse) GetStatus() string {
 }
 
 type StatsRequest struct {
-	// optional service name
-	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 }
 
 func (m *StatsRequest) Reset()         { *m = StatsRequest{} }
@@ -178,13 +167,6 @@ func (m *StatsRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_StatsRequest proto.InternalMessageInfo
-
-func (m *StatsRequest) GetService() string {
-	if m != nil {
-		return m.Service
-	}
-	return ""
-}
 
 type StatsResponse struct {
 	// timestamp of recording
@@ -296,16 +278,12 @@ func (m *StatsResponse) GetErrors() uint64 {
 
 // LogRequest requests service logs
 type LogRequest struct {
-	// service to request logs for
-	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	// stream records continuously
-	Stream bool `protobuf:"varint,2,opt,name=stream,proto3" json:"stream,omitempty"`
 	// count of records to request
-	Count int64 `protobuf:"varint,3,opt,name=count,proto3" json:"count,omitempty"`
+	Count int64 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	// relative time in seconds
 	// before the current time
 	// from which to show logs
-	Since int64 `protobuf:"varint,4,opt,name=since,proto3" json:"since,omitempty"`
+	Since int64 `protobuf:"varint,2,opt,name=since,proto3" json:"since,omitempty"`
 }
 
 func (m *LogRequest) Reset()         { *m = LogRequest{} }
@@ -341,20 +319,6 @@ func (m *LogRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_LogRequest proto.InternalMessageInfo
 
-func (m *LogRequest) GetService() string {
-	if m != nil {
-		return m.Service
-	}
-	return ""
-}
-
-func (m *LogRequest) GetStream() bool {
-	if m != nil {
-		return m.Stream
-	}
-	return false
-}
-
 func (m *LogRequest) GetCount() int64 {
 	if m != nil {
 		return m.Count
@@ -367,6 +331,51 @@ func (m *LogRequest) GetSince() int64 {
 		return m.Since
 	}
 	return 0
+}
+
+// LogResponse returns a list of logs
+type LogResponse struct {
+	Records []*Record `protobuf:"bytes,1,rep,name=records,proto3" json:"records,omitempty"`
+}
+
+func (m *LogResponse) Reset()         { *m = LogResponse{} }
+func (m *LogResponse) String() string { return proto.CompactTextString(m) }
+func (*LogResponse) ProtoMessage()    {}
+func (*LogResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_12a119a1165d2b80, []int{5}
+}
+func (m *LogResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *LogResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_LogResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *LogResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LogResponse.Merge(m, src)
+}
+func (m *LogResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *LogResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_LogResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LogResponse proto.InternalMessageInfo
+
+func (m *LogResponse) GetRecords() []*Record {
+	if m != nil {
+		return m.Records
+	}
+	return nil
 }
 
 // Record is service log record
@@ -383,7 +392,7 @@ func (m *Record) Reset()         { *m = Record{} }
 func (m *Record) String() string { return proto.CompactTextString(m) }
 func (*Record) ProtoMessage()    {}
 func (*Record) Descriptor() ([]byte, []int) {
-	return fileDescriptor_12a119a1165d2b80, []int{5}
+	return fileDescriptor_12a119a1165d2b80, []int{6}
 }
 func (m *Record) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -442,7 +451,7 @@ func (m *TraceRequest) Reset()         { *m = TraceRequest{} }
 func (m *TraceRequest) String() string { return proto.CompactTextString(m) }
 func (*TraceRequest) ProtoMessage()    {}
 func (*TraceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_12a119a1165d2b80, []int{6}
+	return fileDescriptor_12a119a1165d2b80, []int{7}
 }
 func (m *TraceRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -486,7 +495,7 @@ func (m *TraceResponse) Reset()         { *m = TraceResponse{} }
 func (m *TraceResponse) String() string { return proto.CompactTextString(m) }
 func (*TraceResponse) ProtoMessage()    {}
 func (*TraceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_12a119a1165d2b80, []int{7}
+	return fileDescriptor_12a119a1165d2b80, []int{8}
 }
 func (m *TraceResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -544,7 +553,7 @@ func (m *Span) Reset()         { *m = Span{} }
 func (m *Span) String() string { return proto.CompactTextString(m) }
 func (*Span) ProtoMessage()    {}
 func (*Span) Descriptor() ([]byte, []int) {
-	return fileDescriptor_12a119a1165d2b80, []int{8}
+	return fileDescriptor_12a119a1165d2b80, []int{9}
 }
 func (m *Span) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -629,86 +638,6 @@ func (m *Span) GetType() SpanType {
 	return SpanType_INBOUND
 }
 
-type CacheRequest struct {
-}
-
-func (m *CacheRequest) Reset()         { *m = CacheRequest{} }
-func (m *CacheRequest) String() string { return proto.CompactTextString(m) }
-func (*CacheRequest) ProtoMessage()    {}
-func (*CacheRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_12a119a1165d2b80, []int{9}
-}
-func (m *CacheRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *CacheRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_CacheRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *CacheRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CacheRequest.Merge(m, src)
-}
-func (m *CacheRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *CacheRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CacheRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CacheRequest proto.InternalMessageInfo
-
-type CacheResponse struct {
-	Values map[string]string `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-}
-
-func (m *CacheResponse) Reset()         { *m = CacheResponse{} }
-func (m *CacheResponse) String() string { return proto.CompactTextString(m) }
-func (*CacheResponse) ProtoMessage()    {}
-func (*CacheResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_12a119a1165d2b80, []int{10}
-}
-func (m *CacheResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *CacheResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_CacheResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *CacheResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CacheResponse.Merge(m, src)
-}
-func (m *CacheResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *CacheResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CacheResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_CacheResponse proto.InternalMessageInfo
-
-func (m *CacheResponse) GetValues() map[string]string {
-	if m != nil {
-		return m.Values
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterEnum("debug.SpanType", SpanType_name, SpanType_value)
 	proto.RegisterType((*HealthRequest)(nil), "debug.HealthRequest")
@@ -716,15 +645,13 @@ func init() {
 	proto.RegisterType((*StatsRequest)(nil), "debug.StatsRequest")
 	proto.RegisterType((*StatsResponse)(nil), "debug.StatsResponse")
 	proto.RegisterType((*LogRequest)(nil), "debug.LogRequest")
+	proto.RegisterType((*LogResponse)(nil), "debug.LogResponse")
 	proto.RegisterType((*Record)(nil), "debug.Record")
 	proto.RegisterMapType((map[string]string)(nil), "debug.Record.MetadataEntry")
 	proto.RegisterType((*TraceRequest)(nil), "debug.TraceRequest")
 	proto.RegisterType((*TraceResponse)(nil), "debug.TraceResponse")
 	proto.RegisterType((*Span)(nil), "debug.Span")
 	proto.RegisterMapType((map[string]string)(nil), "debug.Span.MetadataEntry")
-	proto.RegisterType((*CacheRequest)(nil), "debug.CacheRequest")
-	proto.RegisterType((*CacheResponse)(nil), "debug.CacheResponse")
-	proto.RegisterMapType((map[string]string)(nil), "debug.CacheResponse.ValuesEntry")
 }
 
 func init() {
@@ -732,52 +659,49 @@ func init() {
 }
 
 var fileDescriptor_12a119a1165d2b80 = []byte{
-	// 720 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x55, 0xcb, 0x6e, 0xd3, 0x4a,
-	0x18, 0x8e, 0x9d, 0xfb, 0x9f, 0xcb, 0xe9, 0x99, 0xd3, 0x83, 0x4c, 0x40, 0x51, 0x31, 0x42, 0x4a,
-	0x41, 0x24, 0x28, 0x80, 0x5a, 0xe8, 0xae, 0x2d, 0x12, 0x48, 0xa5, 0x95, 0xa6, 0x2d, 0x0b, 0x76,
-	0x53, 0x7b, 0x94, 0x98, 0xd6, 0x17, 0x66, 0xc6, 0x95, 0xb2, 0x67, 0x0f, 0x6f, 0xc1, 0x1b, 0xf0,
-	0x0c, 0x2c, 0xbb, 0x41, 0x62, 0x89, 0xda, 0x17, 0x41, 0x73, 0xb1, 0x6b, 0x83, 0x50, 0x41, 0x6c,
-	0x2c, 0x7f, 0xdf, 0x7f, 0xf1, 0xf7, 0x7f, 0xf3, 0x67, 0x02, 0x93, 0x59, 0x20, 0xe6, 0xe9, 0xd1,
-	0xd8, 0x8b, 0xc3, 0xc9, 0x09, 0xf1, 0x8e, 0xef, 0x07, 0xf1, 0xe4, 0x34, 0x88, 0xe8, 0x24, 0x61,
-	0xb1, 0x88, 0x27, 0x3e, 0x3d, 0x4a, 0x67, 0xfa, 0x39, 0x56, 0x0c, 0xaa, 0x2b, 0xe0, 0xae, 0x42,
-	0xef, 0x39, 0x25, 0x27, 0x62, 0x8e, 0xe9, 0xdb, 0x94, 0x72, 0x81, 0x1c, 0x68, 0x72, 0xca, 0x4e,
-	0x03, 0x8f, 0x3a, 0xd6, 0x8a, 0x35, 0x6a, 0xe3, 0x0c, 0xba, 0x23, 0xe8, 0x67, 0xa9, 0x3c, 0x89,
-	0x23, 0x4e, 0xd1, 0x35, 0x68, 0x70, 0x41, 0x44, 0xca, 0x4d, 0xaa, 0x41, 0xee, 0x08, 0xba, 0xfb,
-	0x82, 0x08, 0x7e, 0x75, 0xcf, 0x2f, 0x16, 0xf4, 0x4c, 0xaa, 0xe9, 0x79, 0x13, 0xda, 0x22, 0x08,
-	0x29, 0x17, 0x24, 0x4c, 0x54, 0x76, 0x0d, 0x5f, 0x12, 0xaa, 0x93, 0x20, 0x4c, 0x50, 0xdf, 0xb1,
-	0x55, 0x2c, 0x83, 0x52, 0x4b, 0x9a, 0xc8, 0x44, 0xa7, 0xaa, 0x02, 0x06, 0x49, 0x3e, 0xa4, 0x61,
-	0xcc, 0x16, 0x4e, 0x4d, 0xf3, 0x1a, 0xc9, 0x4e, 0x62, 0xce, 0x28, 0xf1, 0xb9, 0x53, 0xd7, 0x9d,
-	0x0c, 0x44, 0x7d, 0xb0, 0x67, 0x9e, 0xd3, 0x50, 0xa4, 0x3d, 0xf3, 0xd0, 0x00, 0x5a, 0x4c, 0x0f,
-	0xc2, 0x9d, 0xa6, 0x62, 0x73, 0x2c, 0xbb, 0x53, 0xc6, 0x62, 0xc6, 0x9d, 0x96, 0xee, 0xae, 0x91,
-	0xfb, 0x06, 0x60, 0x27, 0x9e, 0x5d, 0x39, 0xbf, 0x76, 0x90, 0x51, 0x12, 0xaa, 0x71, 0x5a, 0xd8,
-	0x20, 0xb4, 0x0c, 0x75, 0x2f, 0x4e, 0x23, 0xa1, 0x86, 0xa9, 0x62, 0x0d, 0x24, 0xcb, 0x83, 0xc8,
-	0xa3, 0x6a, 0x94, 0x2a, 0xd6, 0xc0, 0xfd, 0x64, 0x41, 0x03, 0x53, 0x2f, 0x66, 0xfe, 0xcf, 0xe6,
-	0x55, 0x8b, 0xe6, 0xad, 0x41, 0x2b, 0xa4, 0x82, 0xf8, 0x44, 0x10, 0xc7, 0x5e, 0xa9, 0x8e, 0x3a,
-	0xd3, 0x1b, 0x63, 0xbd, 0x12, 0xba, 0x7c, 0xfc, 0xd2, 0x44, 0x9f, 0x45, 0x82, 0x2d, 0x70, 0x9e,
-	0x2c, 0xf5, 0x87, 0x94, 0x73, 0x32, 0xd3, 0xe6, 0xb6, 0x71, 0x06, 0x07, 0x1b, 0xd0, 0x2b, 0x15,
-	0xa1, 0x25, 0xa8, 0x1e, 0xd3, 0x85, 0x19, 0x53, 0xbe, 0x4a, 0xd1, 0xa7, 0xe4, 0x24, 0xa5, 0x6a,
-	0xc2, 0x36, 0xd6, 0xe0, 0xa9, 0xbd, 0x6e, 0xb9, 0x43, 0xe8, 0x1e, 0x30, 0xe2, 0xd1, 0xcc, 0xa6,
-	0x3e, 0xd8, 0x81, 0x6f, 0x4a, 0xed, 0xc0, 0x77, 0xa7, 0xd0, 0x33, 0x71, 0xb3, 0x1b, 0xb7, 0xa0,
-	0xce, 0x13, 0x12, 0xc9, 0x75, 0x93, 0xea, 0x3b, 0x46, 0xfd, 0x7e, 0x42, 0x22, 0xac, 0x23, 0xee,
-	0x47, 0x1b, 0x6a, 0x12, 0xcb, 0xcf, 0x0a, 0x59, 0x6c, 0xfa, 0x69, 0x60, 0x3e, 0x61, 0x67, 0x9f,
-	0x90, 0xfe, 0x27, 0x84, 0x51, 0x63, 0x74, 0x1b, 0x1b, 0x84, 0x10, 0xd4, 0x22, 0x12, 0x6a, 0xa3,
-	0xdb, 0x58, 0xbd, 0x17, 0x77, 0xaf, 0x5e, 0xde, 0xbd, 0x01, 0xb4, 0xfc, 0x94, 0x11, 0x11, 0xc4,
-	0x91, 0xd9, 0x9b, 0x1c, 0xa3, 0xc7, 0x05, 0xd3, 0x9b, 0x4a, 0xf6, 0xf5, 0x82, 0xec, 0x5f, 0x5a,
-	0x7e, 0x1b, 0x6a, 0x62, 0x91, 0x50, 0xb5, 0x56, 0xfd, 0xe9, 0x3f, 0x85, 0x92, 0x83, 0x45, 0x42,
-	0xb1, 0x0a, 0xfe, 0x9d, 0xfb, 0x7d, 0xe8, 0x6e, 0x11, 0x6f, 0x9e, 0xb9, 0xef, 0xbe, 0xb3, 0xa0,
-	0x67, 0x08, 0x63, 0xf7, 0x3a, 0x34, 0x54, 0x7a, 0xe6, 0xf7, 0x8a, 0x51, 0x51, 0xca, 0x1a, 0xbf,
-	0x52, 0x29, 0x5a, 0xbf, 0xc9, 0x1f, 0x3c, 0x81, 0x4e, 0x81, 0xfe, 0x13, 0x59, 0x77, 0xef, 0x40,
-	0x2b, 0x9b, 0x12, 0x75, 0xa0, 0xf9, 0x62, 0x77, 0x73, 0xef, 0x70, 0x77, 0x7b, 0xa9, 0x82, 0xba,
-	0xd0, 0xda, 0x3b, 0x3c, 0xd0, 0xc8, 0x9a, 0xbe, 0xb7, 0xa1, 0xbe, 0x2d, 0xd5, 0xa0, 0x7b, 0x50,
-	0xdd, 0x89, 0x67, 0xe8, 0x5f, 0x23, 0xee, 0xf2, 0x67, 0x37, 0xe8, 0x95, 0xb6, 0xdb, 0xad, 0x3c,
-	0xb0, 0xd0, 0x1a, 0x34, 0xf4, 0x1d, 0x86, 0x96, 0x4d, 0xb0, 0x74, 0xfb, 0x0d, 0xfe, 0xff, 0x81,
-	0xd5, 0x33, 0xba, 0x15, 0xf4, 0x08, 0xea, 0xea, 0x9e, 0x42, 0xff, 0x65, 0x47, 0x51, 0xb8, 0xe0,
-	0x06, 0xcb, 0x65, 0xb2, 0x58, 0xa5, 0x36, 0x38, 0xaf, 0x2a, 0xee, 0x7b, 0x5e, 0x55, 0x5a, 0x72,
-	0x5d, 0xa5, 0x2c, 0xce, 0xab, 0x8a, 0xe7, 0x94, 0x57, 0x95, 0x4e, 0xc1, 0xad, 0x6c, 0x6e, 0x7d,
-	0x3e, 0x1f, 0x5a, 0x67, 0xe7, 0x43, 0xeb, 0xdb, 0xf9, 0xd0, 0xfa, 0x70, 0x31, 0xac, 0x9c, 0x5d,
-	0x0c, 0x2b, 0x5f, 0x2f, 0x86, 0x95, 0xd7, 0xab, 0xbf, 0xf1, 0xdf, 0xb0, 0xa1, 0x9e, 0x47, 0x0d,
-	0x45, 0x3d, 0xfc, 0x1e, 0x00, 0x00, 0xff, 0xff, 0x17, 0x15, 0xb4, 0x0f, 0x4f, 0x06, 0x00, 0x00,
+	// 659 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x54, 0x5d, 0x6b, 0xd4, 0x4c,
+	0x14, 0xde, 0x24, 0x9b, 0xfd, 0x38, 0xdb, 0xdd, 0xf6, 0x9d, 0xb7, 0x4a, 0x5c, 0x25, 0x68, 0x44,
+	0xac, 0x82, 0xbb, 0xb0, 0x7e, 0xb4, 0xd8, 0xbb, 0x5a, 0x41, 0xa1, 0xb6, 0x30, 0x6d, 0x6f, 0xbc,
+	0x9b, 0x26, 0x43, 0x1a, 0xda, 0x7c, 0x38, 0x33, 0x29, 0xec, 0xbf, 0xf0, 0x5f, 0xf8, 0x0f, 0xfc,
+	0x0d, 0x5e, 0xf6, 0x46, 0xf0, 0xc2, 0x0b, 0xe9, 0xfe, 0x11, 0x99, 0x8f, 0x6c, 0x13, 0x45, 0x10,
+	0xbc, 0x09, 0x79, 0x9e, 0x33, 0xcf, 0x99, 0x73, 0x9e, 0x39, 0x1c, 0x98, 0xc6, 0x89, 0x38, 0x2d,
+	0x4f, 0x26, 0x61, 0x9e, 0x4e, 0xcf, 0x49, 0x78, 0xf6, 0x24, 0xc9, 0xa7, 0x17, 0x49, 0x46, 0xa7,
+	0x05, 0xcb, 0x45, 0x3e, 0x8d, 0xe8, 0x49, 0x19, 0xeb, 0xef, 0x44, 0x31, 0xc8, 0x55, 0x20, 0x58,
+	0x85, 0xe1, 0x1b, 0x4a, 0xce, 0xc5, 0x29, 0xa6, 0x1f, 0x4a, 0xca, 0x45, 0xb0, 0x01, 0xa3, 0x8a,
+	0xe0, 0x45, 0x9e, 0x71, 0x8a, 0x6e, 0x42, 0x87, 0x0b, 0x22, 0x4a, 0xee, 0x59, 0x77, 0xad, 0x8d,
+	0x3e, 0x36, 0x28, 0x18, 0xc1, 0xca, 0xa1, 0x20, 0x82, 0x57, 0xca, 0xaf, 0x16, 0x0c, 0x0d, 0x61,
+	0x94, 0x77, 0xa0, 0x2f, 0x92, 0x94, 0x72, 0x41, 0xd2, 0x42, 0x89, 0xdb, 0xf8, 0x9a, 0x40, 0x1e,
+	0x74, 0xb9, 0x20, 0x4c, 0xd0, 0xc8, 0xb3, 0x55, 0xac, 0x82, 0xf2, 0xc6, 0xb2, 0x90, 0x07, 0x3d,
+	0x47, 0x05, 0x0c, 0x92, 0x7c, 0x4a, 0xd3, 0x9c, 0xcd, 0xbd, 0xb6, 0xe6, 0x35, 0x92, 0x99, 0xc4,
+	0x29, 0xa3, 0x24, 0xe2, 0x9e, 0xab, 0x33, 0x19, 0x88, 0x46, 0x60, 0xc7, 0xa1, 0xd7, 0x51, 0xa4,
+	0x1d, 0x87, 0x68, 0x0c, 0x3d, 0xa6, 0xcb, 0xe5, 0x5e, 0x57, 0xb1, 0x4b, 0x2c, 0xb3, 0x53, 0xc6,
+	0x72, 0xc6, 0xbd, 0x9e, 0xce, 0xae, 0x51, 0xb0, 0x05, 0xb0, 0x97, 0xc7, 0xa6, 0x4b, 0xb4, 0x0e,
+	0x6e, 0x98, 0x97, 0x99, 0x50, 0xfd, 0x38, 0x58, 0x03, 0xc9, 0xf2, 0x24, 0x0b, 0xa9, 0xea, 0xc4,
+	0xc1, 0x1a, 0x04, 0x2f, 0x60, 0xa0, 0x94, 0xc6, 0x8e, 0x87, 0xd0, 0x65, 0x34, 0xcc, 0x59, 0x24,
+	0x9d, 0x74, 0x36, 0x06, 0xb3, 0xe1, 0x44, 0xbf, 0x08, 0x56, 0x2c, 0xae, 0xa2, 0xc1, 0x67, 0x0b,
+	0x3a, 0x9a, 0xfb, 0xdd, 0x42, 0xa7, 0x6e, 0xe1, 0x26, 0xf4, 0x52, 0x2a, 0x48, 0x44, 0x04, 0xf1,
+	0x6c, 0x95, 0xf2, 0x76, 0x23, 0xe5, 0xe4, 0x9d, 0x89, 0xbe, 0xce, 0x04, 0x9b, 0xe3, 0xe5, 0x61,
+	0xe9, 0x58, 0x4a, 0x39, 0x27, 0xb1, 0xb6, 0xb8, 0x8f, 0x2b, 0x38, 0xde, 0x86, 0x61, 0x43, 0x84,
+	0xd6, 0xc0, 0x39, 0xa3, 0x73, 0xf3, 0xf6, 0xf2, 0x57, 0x36, 0x7b, 0x41, 0xce, 0x4b, 0xdd, 0x6c,
+	0x1f, 0x6b, 0xf0, 0xd2, 0xde, 0xb2, 0x02, 0x1f, 0x56, 0x8e, 0x18, 0x09, 0x69, 0x65, 0xd6, 0x08,
+	0xec, 0x24, 0x32, 0x52, 0x3b, 0x89, 0x82, 0x19, 0x0c, 0x4d, 0xdc, 0x58, 0x72, 0x0f, 0x5c, 0x5e,
+	0x90, 0xac, 0x32, 0x64, 0x60, 0xaa, 0x3f, 0x2c, 0x48, 0x86, 0x75, 0x24, 0xf8, 0x64, 0x43, 0x5b,
+	0x62, 0x79, 0xad, 0x90, 0x62, 0x93, 0x4f, 0x03, 0x73, 0x85, 0x5d, 0x5d, 0x21, 0x5f, 0xb1, 0x20,
+	0x8c, 0x66, 0xc2, 0x34, 0x66, 0x10, 0x42, 0xd0, 0xce, 0x48, 0x4a, 0xd5, 0xe4, 0xf4, 0xb1, 0xfa,
+	0xaf, 0x4f, 0xa0, 0xdb, 0x9c, 0xc0, 0x31, 0xf4, 0xa2, 0x92, 0x11, 0x91, 0xe4, 0x99, 0x99, 0x9e,
+	0x25, 0x46, 0xcf, 0x6b, 0xa6, 0x77, 0x55, 0xd9, 0xb7, 0x6a, 0x65, 0xff, 0xd1, 0xf2, 0xfb, 0xd0,
+	0x16, 0xf3, 0x82, 0xaa, 0xe1, 0x1a, 0xcd, 0x56, 0x6b, 0x92, 0xa3, 0x79, 0x41, 0xb1, 0x0a, 0xfe,
+	0x93, 0xfb, 0x8f, 0x1f, 0x40, 0xaf, 0x4a, 0x87, 0x06, 0xd0, 0x7d, 0xbb, 0xbf, 0x73, 0x70, 0xbc,
+	0xbf, 0xbb, 0xd6, 0x42, 0x2b, 0xd0, 0x3b, 0x38, 0x3e, 0xd2, 0xc8, 0x9a, 0x7d, 0xb7, 0xc0, 0xdd,
+	0x95, 0x97, 0xa3, 0x09, 0x38, 0x7b, 0x79, 0x8c, 0xfe, 0x33, 0xb5, 0x5c, 0x4f, 0xf9, 0x18, 0xd5,
+	0x29, 0xfd, 0x56, 0x41, 0x0b, 0x6d, 0x42, 0x47, 0xef, 0x06, 0xb4, 0x6e, 0xe2, 0x8d, 0xdd, 0x31,
+	0xbe, 0xf1, 0x0b, 0xbb, 0x14, 0x3e, 0x03, 0x57, 0x6d, 0x06, 0xf4, 0x7f, 0xd5, 0x76, 0x6d, 0x71,
+	0x8c, 0xd7, 0x9b, 0x64, 0x5d, 0xa5, 0xa6, 0x65, 0xa9, 0xaa, 0xcf, 0xd6, 0x52, 0xd5, 0x18, 0xa8,
+	0xa0, 0xb5, 0xf3, 0xea, 0xcb, 0x95, 0x6f, 0x5d, 0x5e, 0xf9, 0xd6, 0x8f, 0x2b, 0xdf, 0xfa, 0xb8,
+	0xf0, 0x5b, 0x97, 0x0b, 0xbf, 0xf5, 0x6d, 0xe1, 0xb7, 0xde, 0x3f, 0xfa, 0x8b, 0x1d, 0xb9, 0xad,
+	0xbe, 0x27, 0x1d, 0x45, 0x3d, 0xfd, 0x19, 0x00, 0x00, 0xff, 0xff, 0xe1, 0xd8, 0xd1, 0x6a, 0x57,
+	0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -792,11 +716,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DebugClient interface {
-	Log(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (Debug_LogClient, error)
+	Log(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 	Stats(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (*StatsResponse, error)
 	Trace(ctx context.Context, in *TraceRequest, opts ...grpc.CallOption) (*TraceResponse, error)
-	Cache(ctx context.Context, in *CacheRequest, opts ...grpc.CallOption) (*CacheResponse, error)
 }
 
 type debugClient struct {
@@ -807,36 +730,13 @@ func NewDebugClient(cc *grpc.ClientConn) DebugClient {
 	return &debugClient{cc}
 }
 
-func (c *debugClient) Log(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (Debug_LogClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Debug_serviceDesc.Streams[0], "/debug.Debug/Log", opts...)
+func (c *debugClient) Log(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error) {
+	out := new(LogResponse)
+	err := c.cc.Invoke(ctx, "/debug.Debug/Log", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &debugLogClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type Debug_LogClient interface {
-	Recv() (*Record, error)
-	grpc.ClientStream
-}
-
-type debugLogClient struct {
-	grpc.ClientStream
-}
-
-func (x *debugLogClient) Recv() (*Record, error) {
-	m := new(Record)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 func (c *debugClient) Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
@@ -866,30 +766,20 @@ func (c *debugClient) Trace(ctx context.Context, in *TraceRequest, opts ...grpc.
 	return out, nil
 }
 
-func (c *debugClient) Cache(ctx context.Context, in *CacheRequest, opts ...grpc.CallOption) (*CacheResponse, error) {
-	out := new(CacheResponse)
-	err := c.cc.Invoke(ctx, "/debug.Debug/Cache", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // DebugServer is the server API for Debug service.
 type DebugServer interface {
-	Log(*LogRequest, Debug_LogServer) error
+	Log(context.Context, *LogRequest) (*LogResponse, error)
 	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	Stats(context.Context, *StatsRequest) (*StatsResponse, error)
 	Trace(context.Context, *TraceRequest) (*TraceResponse, error)
-	Cache(context.Context, *CacheRequest) (*CacheResponse, error)
 }
 
 // UnimplementedDebugServer can be embedded to have forward compatible implementations.
 type UnimplementedDebugServer struct {
 }
 
-func (*UnimplementedDebugServer) Log(req *LogRequest, srv Debug_LogServer) error {
-	return status.Errorf(codes.Unimplemented, "method Log not implemented")
+func (*UnimplementedDebugServer) Log(ctx context.Context, req *LogRequest) (*LogResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Log not implemented")
 }
 func (*UnimplementedDebugServer) Health(ctx context.Context, req *HealthRequest) (*HealthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Health not implemented")
@@ -900,33 +790,27 @@ func (*UnimplementedDebugServer) Stats(ctx context.Context, req *StatsRequest) (
 func (*UnimplementedDebugServer) Trace(ctx context.Context, req *TraceRequest) (*TraceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Trace not implemented")
 }
-func (*UnimplementedDebugServer) Cache(ctx context.Context, req *CacheRequest) (*CacheResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Cache not implemented")
-}
 
 func RegisterDebugServer(s *grpc.Server, srv DebugServer) {
 	s.RegisterService(&_Debug_serviceDesc, srv)
 }
 
-func _Debug_Log_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(LogRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _Debug_Log_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(DebugServer).Log(m, &debugLogServer{stream})
-}
-
-type Debug_LogServer interface {
-	Send(*Record) error
-	grpc.ServerStream
-}
-
-type debugLogServer struct {
-	grpc.ServerStream
-}
-
-func (x *debugLogServer) Send(m *Record) error {
-	return x.ServerStream.SendMsg(m)
+	if interceptor == nil {
+		return srv.(DebugServer).Log(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/debug.Debug/Log",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DebugServer).Log(ctx, req.(*LogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Debug_Health_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -983,28 +867,14 @@ func _Debug_Trace_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Debug_Cache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CacheRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DebugServer).Cache(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/debug.Debug/Cache",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DebugServer).Cache(ctx, req.(*CacheRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _Debug_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "debug.Debug",
 	HandlerType: (*DebugServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Log",
+			Handler:    _Debug_Log_Handler,
+		},
 		{
 			MethodName: "Health",
 			Handler:    _Debug_Health_Handler,
@@ -1017,18 +887,8 @@ var _Debug_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Trace",
 			Handler:    _Debug_Trace_Handler,
 		},
-		{
-			MethodName: "Cache",
-			Handler:    _Debug_Cache_Handler,
-		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Log",
-			Handler:       _Debug_Log_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "github.com/lack-io/vine/proto/debug/debug.proto",
 }
 
@@ -1052,13 +912,6 @@ func (m *HealthRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Service) > 0 {
-		i -= len(m.Service)
-		copy(dAtA[i:], m.Service)
-		i = encodeVarintDebug(dAtA, i, uint64(len(m.Service)))
-		i--
-		dAtA[i] = 0xa
-	}
 	return len(dAtA) - i, nil
 }
 
@@ -1112,13 +965,6 @@ func (m *StatsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Service) > 0 {
-		i -= len(m.Service)
-		copy(dAtA[i:], m.Service)
-		i = encodeVarintDebug(dAtA, i, uint64(len(m.Service)))
-		i--
-		dAtA[i] = 0xa
-	}
 	return len(dAtA) - i, nil
 }
 
@@ -1208,29 +1054,49 @@ func (m *LogRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.Since != 0 {
 		i = encodeVarintDebug(dAtA, i, uint64(m.Since))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x10
 	}
 	if m.Count != 0 {
 		i = encodeVarintDebug(dAtA, i, uint64(m.Count))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x8
 	}
-	if m.Stream {
-		i--
-		if m.Stream {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
+	return len(dAtA) - i, nil
+}
+
+func (m *LogResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *LogResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *LogResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Records) > 0 {
+		for iNdEx := len(m.Records) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Records[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintDebug(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
 		}
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Service) > 0 {
-		i -= len(m.Service)
-		copy(dAtA[i:], m.Service)
-		i = encodeVarintDebug(dAtA, i, uint64(len(m.Service)))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -1441,71 +1307,6 @@ func (m *Span) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *CacheRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *CacheRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *CacheRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *CacheResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *CacheResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *CacheResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Values) > 0 {
-		for k := range m.Values {
-			v := m.Values[k]
-			baseI := i
-			i -= len(v)
-			copy(dAtA[i:], v)
-			i = encodeVarintDebug(dAtA, i, uint64(len(v)))
-			i--
-			dAtA[i] = 0x12
-			i -= len(k)
-			copy(dAtA[i:], k)
-			i = encodeVarintDebug(dAtA, i, uint64(len(k)))
-			i--
-			dAtA[i] = 0xa
-			i = encodeVarintDebug(dAtA, i, uint64(baseI-i))
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintDebug(dAtA []byte, offset int, v uint64) int {
 	offset -= sovDebug(v)
 	base := offset
@@ -1523,10 +1324,6 @@ func (m *HealthRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Service)
-	if l > 0 {
-		n += 1 + l + sovDebug(uint64(l))
-	}
 	return n
 }
 
@@ -1549,10 +1346,6 @@ func (m *StatsRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Service)
-	if l > 0 {
-		n += 1 + l + sovDebug(uint64(l))
-	}
 	return n
 }
 
@@ -1595,18 +1388,26 @@ func (m *LogRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Service)
-	if l > 0 {
-		n += 1 + l + sovDebug(uint64(l))
-	}
-	if m.Stream {
-		n += 2
-	}
 	if m.Count != 0 {
 		n += 1 + sovDebug(uint64(m.Count))
 	}
 	if m.Since != 0 {
 		n += 1 + sovDebug(uint64(m.Since))
+	}
+	return n
+}
+
+func (m *LogResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Records) > 0 {
+		for _, e := range m.Records {
+			l = e.Size()
+			n += 1 + l + sovDebug(uint64(l))
+		}
 	}
 	return n
 }
@@ -1705,32 +1506,6 @@ func (m *Span) Size() (n int) {
 	return n
 }
 
-func (m *CacheRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *CacheResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Values) > 0 {
-		for k, v := range m.Values {
-			_ = k
-			_ = v
-			mapEntrySize := 1 + len(k) + sovDebug(uint64(len(k))) + 1 + len(v) + sovDebug(uint64(len(v)))
-			n += mapEntrySize + 1 + sovDebug(uint64(mapEntrySize))
-		}
-	}
-	return n
-}
-
 func sovDebug(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -1766,38 +1541,6 @@ func (m *HealthRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: HealthRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Service", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDebug
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthDebug
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Service = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDebug(dAtA[iNdEx:])
@@ -1936,38 +1679,6 @@ func (m *StatsRequest) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: StatsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Service", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDebug
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthDebug
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Service = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDebug(dAtA[iNdEx:])
@@ -2227,58 +1938,6 @@ func (m *LogRequest) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Service", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDebug
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthDebug
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Service = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Stream", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDebug
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Stream = bool(v != 0)
-		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Count", wireType)
 			}
@@ -2297,7 +1956,7 @@ func (m *LogRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Since", wireType)
 			}
@@ -2316,6 +1975,93 @@ func (m *LogRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDebug(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDebug
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthDebug
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *LogResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDebug
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: LogResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: LogResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Records", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDebug
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDebug
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthDebug
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Records = append(m.Records, &Record{})
+			if err := m.Records[len(m.Records)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDebug(dAtA[iNdEx:])
@@ -3084,239 +2830,6 @@ func (m *Span) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipDebug(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *CacheRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowDebug
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: CacheRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CacheRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipDebug(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *CacheResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowDebug
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: CacheResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CacheResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Values", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowDebug
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthDebug
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthDebug
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Values == nil {
-				m.Values = make(map[string]string)
-			}
-			var mapkey string
-			var mapvalue string
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowDebug
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					var stringLenmapkey uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowDebug
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapkey |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapkey := int(stringLenmapkey)
-					if intStringLenmapkey < 0 {
-						return ErrInvalidLengthDebug
-					}
-					postStringIndexmapkey := iNdEx + intStringLenmapkey
-					if postStringIndexmapkey < 0 {
-						return ErrInvalidLengthDebug
-					}
-					if postStringIndexmapkey > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
-					iNdEx = postStringIndexmapkey
-				} else if fieldNum == 2 {
-					var stringLenmapvalue uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowDebug
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						stringLenmapvalue |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					intStringLenmapvalue := int(stringLenmapvalue)
-					if intStringLenmapvalue < 0 {
-						return ErrInvalidLengthDebug
-					}
-					postStringIndexmapvalue := iNdEx + intStringLenmapvalue
-					if postStringIndexmapvalue < 0 {
-						return ErrInvalidLengthDebug
-					}
-					if postStringIndexmapvalue > l {
-						return io.ErrUnexpectedEOF
-					}
-					mapvalue = string(dAtA[iNdEx:postStringIndexmapvalue])
-					iNdEx = postStringIndexmapvalue
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipDebug(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if skippy < 0 {
-						return ErrInvalidLengthDebug
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
-				}
-			}
-			m.Values[mapkey] = mapvalue
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDebug(dAtA[iNdEx:])

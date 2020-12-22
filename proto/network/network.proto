@@ -1,9 +1,10 @@
 syntax = "proto3";
 
 package network;
-option go_package = "github.com/lack-io/vine/proto/network;network";
 
 import "github.com/lack-io/vine/proto/router/router.proto";
+
+option go_package = "github.com/lack-io/vine/proto/network;network";
 
 // Network service is usesd to gain visibility into networks
 service Network {
@@ -98,7 +99,7 @@ message Node {
   // the network
   string network = 3;
   // associated metadata
-  map<string, string> metadata = 4;
+  map<string,string> metadata = 4;
   // node status
   Status status = 5;
 }

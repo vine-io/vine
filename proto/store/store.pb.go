@@ -335,10 +335,6 @@ func (m *ReadResponse) GetRecords() []*Record {
 type WriteOptions struct {
 	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
 	Table    string `protobuf:"bytes,2,opt,name=table,proto3" json:"table,omitempty"`
-	// time.Time
-	Expiry int64 `protobuf:"varint,3,opt,name=expiry,proto3" json:"expiry,omitempty"`
-	// time.Duration
-	Ttl int64 `protobuf:"varint,4,opt,name=ttl,proto3" json:"ttl,omitempty"`
 }
 
 func (m *WriteOptions) Reset()         { *m = WriteOptions{} }
@@ -386,20 +382,6 @@ func (m *WriteOptions) GetTable() string {
 		return m.Table
 	}
 	return ""
-}
-
-func (m *WriteOptions) GetExpiry() int64 {
-	if m != nil {
-		return m.Expiry
-	}
-	return 0
-}
-
-func (m *WriteOptions) GetTtl() int64 {
-	if m != nil {
-		return m.Ttl
-	}
-	return 0
 }
 
 type WriteRequest struct {
@@ -970,6 +952,330 @@ func (m *TablesResponse) GetTables() []string {
 	return nil
 }
 
+type BlobOptions struct {
+	Namespace string `protobuf:"bytes,1,opt,name=namespace,proto3" json:"namespace,omitempty"`
+}
+
+func (m *BlobOptions) Reset()         { *m = BlobOptions{} }
+func (m *BlobOptions) String() string { return proto.CompactTextString(m) }
+func (*BlobOptions) ProtoMessage()    {}
+func (*BlobOptions) Descriptor() ([]byte, []int) {
+	return fileDescriptor_887073ae935ceac7, []int{18}
+}
+func (m *BlobOptions) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BlobOptions) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BlobOptions.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BlobOptions) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BlobOptions.Merge(m, src)
+}
+func (m *BlobOptions) XXX_Size() int {
+	return m.Size()
+}
+func (m *BlobOptions) XXX_DiscardUnknown() {
+	xxx_messageInfo_BlobOptions.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BlobOptions proto.InternalMessageInfo
+
+func (m *BlobOptions) GetNamespace() string {
+	if m != nil {
+		return m.Namespace
+	}
+	return ""
+}
+
+type BlobReadRequest struct {
+	Key     string       `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Options *BlobOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
+}
+
+func (m *BlobReadRequest) Reset()         { *m = BlobReadRequest{} }
+func (m *BlobReadRequest) String() string { return proto.CompactTextString(m) }
+func (*BlobReadRequest) ProtoMessage()    {}
+func (*BlobReadRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_887073ae935ceac7, []int{19}
+}
+func (m *BlobReadRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BlobReadRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BlobReadRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BlobReadRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BlobReadRequest.Merge(m, src)
+}
+func (m *BlobReadRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *BlobReadRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_BlobReadRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BlobReadRequest proto.InternalMessageInfo
+
+func (m *BlobReadRequest) GetKey() string {
+	if m != nil {
+		return m.Key
+	}
+	return ""
+}
+
+func (m *BlobReadRequest) GetOptions() *BlobOptions {
+	if m != nil {
+		return m.Options
+	}
+	return nil
+}
+
+type BlobReadResponse struct {
+	Blob []byte `protobuf:"bytes,1,opt,name=blob,proto3" json:"blob,omitempty"`
+}
+
+func (m *BlobReadResponse) Reset()         { *m = BlobReadResponse{} }
+func (m *BlobReadResponse) String() string { return proto.CompactTextString(m) }
+func (*BlobReadResponse) ProtoMessage()    {}
+func (*BlobReadResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_887073ae935ceac7, []int{20}
+}
+func (m *BlobReadResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BlobReadResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BlobReadResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BlobReadResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BlobReadResponse.Merge(m, src)
+}
+func (m *BlobReadResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *BlobReadResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_BlobReadResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BlobReadResponse proto.InternalMessageInfo
+
+func (m *BlobReadResponse) GetBlob() []byte {
+	if m != nil {
+		return m.Blob
+	}
+	return nil
+}
+
+type BlobWriteRequest struct {
+	Key     string       `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Options *BlobOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
+	Blob    []byte       `protobuf:"bytes,3,opt,name=blob,proto3" json:"blob,omitempty"`
+}
+
+func (m *BlobWriteRequest) Reset()         { *m = BlobWriteRequest{} }
+func (m *BlobWriteRequest) String() string { return proto.CompactTextString(m) }
+func (*BlobWriteRequest) ProtoMessage()    {}
+func (*BlobWriteRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_887073ae935ceac7, []int{21}
+}
+func (m *BlobWriteRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BlobWriteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BlobWriteRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BlobWriteRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BlobWriteRequest.Merge(m, src)
+}
+func (m *BlobWriteRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *BlobWriteRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_BlobWriteRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BlobWriteRequest proto.InternalMessageInfo
+
+func (m *BlobWriteRequest) GetKey() string {
+	if m != nil {
+		return m.Key
+	}
+	return ""
+}
+
+func (m *BlobWriteRequest) GetOptions() *BlobOptions {
+	if m != nil {
+		return m.Options
+	}
+	return nil
+}
+
+func (m *BlobWriteRequest) GetBlob() []byte {
+	if m != nil {
+		return m.Blob
+	}
+	return nil
+}
+
+type BlobWriteResponse struct {
+}
+
+func (m *BlobWriteResponse) Reset()         { *m = BlobWriteResponse{} }
+func (m *BlobWriteResponse) String() string { return proto.CompactTextString(m) }
+func (*BlobWriteResponse) ProtoMessage()    {}
+func (*BlobWriteResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_887073ae935ceac7, []int{22}
+}
+func (m *BlobWriteResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BlobWriteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BlobWriteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BlobWriteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BlobWriteResponse.Merge(m, src)
+}
+func (m *BlobWriteResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *BlobWriteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_BlobWriteResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BlobWriteResponse proto.InternalMessageInfo
+
+type BlobDeleteRequest struct {
+	Key     string       `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Options *BlobOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
+}
+
+func (m *BlobDeleteRequest) Reset()         { *m = BlobDeleteRequest{} }
+func (m *BlobDeleteRequest) String() string { return proto.CompactTextString(m) }
+func (*BlobDeleteRequest) ProtoMessage()    {}
+func (*BlobDeleteRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_887073ae935ceac7, []int{23}
+}
+func (m *BlobDeleteRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BlobDeleteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BlobDeleteRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BlobDeleteRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BlobDeleteRequest.Merge(m, src)
+}
+func (m *BlobDeleteRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *BlobDeleteRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_BlobDeleteRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BlobDeleteRequest proto.InternalMessageInfo
+
+func (m *BlobDeleteRequest) GetKey() string {
+	if m != nil {
+		return m.Key
+	}
+	return ""
+}
+
+func (m *BlobDeleteRequest) GetOptions() *BlobOptions {
+	if m != nil {
+		return m.Options
+	}
+	return nil
+}
+
+type BlobDeleteResponse struct {
+}
+
+func (m *BlobDeleteResponse) Reset()         { *m = BlobDeleteResponse{} }
+func (m *BlobDeleteResponse) String() string { return proto.CompactTextString(m) }
+func (*BlobDeleteResponse) ProtoMessage()    {}
+func (*BlobDeleteResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_887073ae935ceac7, []int{24}
+}
+func (m *BlobDeleteResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BlobDeleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BlobDeleteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BlobDeleteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BlobDeleteResponse.Merge(m, src)
+}
+func (m *BlobDeleteResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *BlobDeleteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_BlobDeleteResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BlobDeleteResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*Field)(nil), "store.Field")
 	proto.RegisterType((*Record)(nil), "store.Record")
@@ -990,6 +1296,13 @@ func init() {
 	proto.RegisterType((*DatabasesResponse)(nil), "store.DatabasesResponse")
 	proto.RegisterType((*TablesRequest)(nil), "store.TablesRequest")
 	proto.RegisterType((*TablesResponse)(nil), "store.TablesResponse")
+	proto.RegisterType((*BlobOptions)(nil), "store.BlobOptions")
+	proto.RegisterType((*BlobReadRequest)(nil), "store.BlobReadRequest")
+	proto.RegisterType((*BlobReadResponse)(nil), "store.BlobReadResponse")
+	proto.RegisterType((*BlobWriteRequest)(nil), "store.BlobWriteRequest")
+	proto.RegisterType((*BlobWriteResponse)(nil), "store.BlobWriteResponse")
+	proto.RegisterType((*BlobDeleteRequest)(nil), "store.BlobDeleteRequest")
+	proto.RegisterType((*BlobDeleteResponse)(nil), "store.BlobDeleteResponse")
 }
 
 func init() {
@@ -997,51 +1310,59 @@ func init() {
 }
 
 var fileDescriptor_887073ae935ceac7 = []byte{
-	// 695 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xce, 0xc6, 0x8e, 0x9b, 0x4c, 0x93, 0x12, 0xb6, 0xa5, 0x58, 0x01, 0x45, 0xd1, 0x4a, 0x08,
-	0x23, 0x68, 0x42, 0x5b, 0xa4, 0x22, 0x7a, 0xe1, 0xa7, 0x20, 0x81, 0xa8, 0x10, 0x0b, 0x12, 0x12,
-	0x37, 0xa7, 0xd9, 0x80, 0xa9, 0x1b, 0x1b, 0x7b, 0x53, 0x35, 0x6f, 0xc1, 0x0b, 0xf0, 0x3e, 0x1c,
-	0x38, 0xf4, 0x08, 0x37, 0xd4, 0xbe, 0x08, 0xda, 0x3f, 0xc7, 0x4e, 0x53, 0x84, 0x28, 0x97, 0x68,
-	0x67, 0x76, 0x67, 0xe6, 0xfb, 0xbe, 0xf9, 0xdc, 0x42, 0xef, 0x43, 0xc0, 0x3f, 0x8e, 0xfb, 0xdd,
-	0xbd, 0xe8, 0xa0, 0x17, 0xfa, 0x7b, 0xfb, 0x6b, 0x41, 0xd4, 0x3b, 0x0c, 0x46, 0xac, 0x17, 0x27,
-	0x11, 0x8f, 0x7a, 0x29, 0x8f, 0x12, 0xa6, 0x7e, 0xbb, 0x32, 0x83, 0x2b, 0x32, 0x20, 0xeb, 0x50,
-	0x79, 0x16, 0xb0, 0x70, 0x80, 0x31, 0xd8, 0x7c, 0x12, 0x33, 0x17, 0x75, 0x90, 0x57, 0xa3, 0xf2,
-	0x8c, 0x57, 0xa0, 0x72, 0xe8, 0x87, 0x63, 0xe6, 0x96, 0x65, 0x52, 0x05, 0xe4, 0x3b, 0x02, 0x87,
-	0xb2, 0xbd, 0x28, 0x19, 0xe0, 0x26, 0x58, 0xfb, 0x6c, 0xa2, 0x6b, 0xc4, 0xb1, 0x58, 0x52, 0xd7,
-	0x25, 0x78, 0x15, 0x1c, 0x76, 0x14, 0x07, 0xc9, 0xc4, 0xb5, 0x3a, 0xc8, 0xb3, 0xa8, 0x8e, 0xf0,
-	0x16, 0x54, 0x0f, 0x18, 0xf7, 0x07, 0x3e, 0xf7, 0x5d, 0xbb, 0x63, 0x79, 0x8b, 0x1b, 0xd7, 0xba,
-	0x0a, 0xa4, 0x1a, 0xd0, 0xdd, 0xd5, 0xb7, 0x4f, 0x47, 0x3c, 0x99, 0xd0, 0xec, 0x71, 0xeb, 0x39,
-	0x34, 0x0a, 0x57, 0x73, 0x90, 0x90, 0x3c, 0x92, 0xc5, 0x8d, 0xba, 0x6e, 0x2c, 0xd9, 0x6a, 0x5c,
-	0x0f, 0xca, 0xf7, 0x11, 0xf9, 0x8a, 0x60, 0x91, 0x32, 0x7f, 0xf0, 0x2a, 0xe6, 0x41, 0x34, 0x4a,
-	0x71, 0x0b, 0xaa, 0xa2, 0x6d, 0xdf, 0x4f, 0x8d, 0x18, 0x59, 0x2c, 0xd8, 0x71, 0xbf, 0x1f, 0x66,
-	0x82, 0xc8, 0x40, 0xb0, 0x8b, 0x13, 0x36, 0x0c, 0x8e, 0x24, 0xbb, 0x2a, 0xd5, 0x91, 0xc8, 0xa7,
-	0xe3, 0xa1, 0xc8, 0xdb, 0x2a, 0xaf, 0x22, 0xd1, 0x25, 0x0c, 0x0e, 0x02, 0xee, 0x56, 0x3a, 0xc8,
-	0xb3, 0xa9, 0x0a, 0xc4, 0xeb, 0x68, 0x38, 0x4c, 0x19, 0x77, 0x1d, 0x99, 0xd6, 0x11, 0xd9, 0x55,
-	0xf0, 0x28, 0xfb, 0x3c, 0x66, 0x29, 0x9f, 0x43, 0xf4, 0x0e, 0x2c, 0x44, 0x0a, 0xbb, 0xa6, 0x8a,
-	0x33, 0x0d, 0x33, 0x56, 0xd4, 0x3c, 0x21, 0x5b, 0x50, 0x57, 0xed, 0xd2, 0x38, 0x1a, 0xa5, 0x0c,
-	0xdf, 0x84, 0x85, 0x44, 0x6a, 0x9d, 0xba, 0x48, 0x6e, 0xa0, 0x51, 0xd8, 0x00, 0x35, 0xb7, 0xe4,
-	0x13, 0xd4, 0xdf, 0x25, 0x01, 0x67, 0x17, 0xd2, 0x69, 0xae, 0x0b, 0x9a, 0x60, 0x71, 0x1e, 0x4a,
-	0x91, 0x2c, 0x2a, 0x8e, 0x64, 0xa0, 0x67, 0x19, 0xd2, 0x37, 0xc0, 0x51, 0x30, 0xe4, 0xa4, 0x33,
-	0x18, 0xf5, 0x25, 0x5e, 0x9b, 0x55, 0x62, 0x59, 0xbf, 0xcb, 0x03, 0x9f, 0x4a, 0x71, 0x09, 0x1a,
-	0x7a, 0x8a, 0xd2, 0x82, 0x3c, 0x82, 0xc6, 0x0e, 0x0b, 0xd9, 0x05, 0x38, 0x92, 0xd7, 0xa6, 0xc5,
-	0xf9, 0xfb, 0xea, 0xce, 0xa2, 0x5c, 0xd1, 0x28, 0x0b, 0xb3, 0xa7, 0x30, 0x9b, 0xb0, 0x64, 0x5a,
-	0x6a, 0x9c, 0xc2, 0xb2, 0x2f, 0x83, 0x94, 0xff, 0x2f, 0xcb, 0xd6, 0xce, 0xb1, 0x6c, 0xed, 0x1f,
-	0x2d, 0xbb, 0xad, 0xe0, 0x19, 0x09, 0x72, 0x06, 0x45, 0x05, 0x83, 0xe6, 0x38, 0x4c, 0xe9, 0x7a,
-	0x50, 0x57, 0xc5, 0xda, 0xa0, 0x18, 0xec, 0x7d, 0x36, 0x11, 0x5a, 0x59, 0xe2, 0x0f, 0x93, 0x38,
-	0xbf, 0xb0, 0xab, 0xa8, 0x59, 0x26, 0x18, 0x9a, 0x3b, 0x9a, 0x66, 0xaa, 0x67, 0x91, 0x75, 0xb8,
-	0x9c, 0xcb, 0xe9, 0x16, 0xd7, 0xa1, 0x66, 0xf4, 0x50, 0x2e, 0xaf, 0xd1, 0x69, 0x82, 0xdc, 0x86,
-	0xc6, 0x5b, 0x21, 0x8a, 0xe9, 0xf1, 0x27, 0x39, 0x89, 0x07, 0x4b, 0xe6, 0xb1, 0x6e, 0xbe, 0x0a,
-	0x8e, 0xd4, 0xd4, 0x74, 0xd6, 0xd1, 0xc6, 0xcf, 0x32, 0x54, 0xde, 0x08, 0x9a, 0x78, 0x1d, 0x6c,
-	0xf1, 0xc9, 0xe1, 0xfc, 0x77, 0xa9, 0x67, 0xb5, 0x96, 0x0b, 0x39, 0xbd, 0xdf, 0x12, 0xbe, 0x07,
-	0x15, 0x69, 0x4d, 0x5c, 0x70, 0xb0, 0x29, 0x5a, 0x29, 0x26, 0xb3, 0xaa, 0x2d, 0x70, 0x94, 0x53,
-	0x70, 0xd1, 0x52, 0xa6, 0xee, 0xca, 0x4c, 0x36, 0x2b, 0xdc, 0x04, 0x5b, 0x68, 0x8e, 0xf3, 0x8b,
-	0x99, 0x45, 0x98, 0x5f, 0x0a, 0x29, 0xdd, 0x45, 0xf8, 0x21, 0xd4, 0x32, 0xa9, 0xf1, 0x55, 0xd3,
-	0x7a, 0x66, 0x21, 0x2d, 0xf7, 0xec, 0x45, 0x1e, 0xaf, 0x12, 0x33, 0xc3, 0x5b, 0x58, 0x44, 0x86,
-	0xb7, 0xa8, 0x38, 0x29, 0x3d, 0x7e, 0xf2, 0xed, 0xa4, 0x8d, 0x8e, 0x4f, 0xda, 0xe8, 0xd7, 0x49,
-	0x1b, 0x7d, 0x39, 0x6d, 0x97, 0x8e, 0x4f, 0xdb, 0xa5, 0x1f, 0xa7, 0xed, 0xd2, 0xfb, 0x5b, 0x7f,
-	0xf1, 0x7f, 0x70, 0x5b, 0xfe, 0xf6, 0x1d, 0x99, 0xda, 0xfc, 0x1d, 0x00, 0x00, 0xff, 0xff, 0x0e,
-	0xaf, 0x5f, 0x9b, 0x3b, 0x07, 0x00, 0x00,
+	// 818 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x5f, 0x6f, 0x1a, 0x47,
+	0x10, 0x67, 0xe1, 0xc0, 0xdc, 0x00, 0x36, 0x5e, 0x53, 0xfb, 0x4a, 0x2d, 0x84, 0x56, 0x6a, 0x4b,
+	0xe5, 0x1a, 0x6a, 0x5c, 0xc9, 0x55, 0x2d, 0xb5, 0xae, 0xeb, 0x56, 0x6a, 0x15, 0x2b, 0xf2, 0x39,
+	0x52, 0xa4, 0xbc, 0x1d, 0xb0, 0x24, 0x27, 0x1f, 0x1c, 0xb9, 0x3b, 0x2c, 0xf3, 0x2d, 0xf2, 0x05,
+	0xf2, 0x7d, 0x12, 0x29, 0x0f, 0x7e, 0x4c, 0xde, 0x22, 0xfb, 0x8b, 0x44, 0xfb, 0xef, 0x6e, 0x0f,
+	0xec, 0xfc, 0xb1, 0xf3, 0x82, 0x76, 0x66, 0x67, 0x7e, 0xf3, 0x9b, 0xdf, 0xce, 0x9c, 0x80, 0xce,
+	0x53, 0x37, 0x7a, 0x36, 0xed, 0xb5, 0xfb, 0xfe, 0xa8, 0xe3, 0x39, 0xfd, 0xb3, 0x6d, 0xd7, 0xef,
+	0x9c, 0xbb, 0x63, 0xda, 0x99, 0x04, 0x7e, 0xe4, 0x77, 0xc2, 0xc8, 0x0f, 0xa8, 0xf8, 0x6d, 0x73,
+	0x0f, 0xce, 0x73, 0x83, 0xec, 0x40, 0xfe, 0x5f, 0x97, 0x7a, 0x03, 0x8c, 0xc1, 0x88, 0x66, 0x13,
+	0x6a, 0xa1, 0x26, 0x6a, 0x99, 0x36, 0x3f, 0xe3, 0x1a, 0xe4, 0xcf, 0x1d, 0x6f, 0x4a, 0xad, 0x2c,
+	0x77, 0x0a, 0x83, 0xbc, 0x41, 0x50, 0xb0, 0x69, 0xdf, 0x0f, 0x06, 0xb8, 0x0a, 0xb9, 0x33, 0x3a,
+	0x93, 0x39, 0xec, 0x98, 0x4e, 0x29, 0xcb, 0x14, 0xbc, 0x0e, 0x05, 0x7a, 0x31, 0x71, 0x83, 0x99,
+	0x95, 0x6b, 0xa2, 0x56, 0xce, 0x96, 0x16, 0xde, 0x83, 0xe2, 0x88, 0x46, 0xce, 0xc0, 0x89, 0x1c,
+	0xcb, 0x68, 0xe6, 0x5a, 0xa5, 0xee, 0x77, 0x6d, 0x41, 0x52, 0x14, 0x68, 0x1f, 0xcb, 0xdb, 0x7f,
+	0xc6, 0x51, 0x30, 0xb3, 0xe3, 0xe0, 0xfa, 0x7f, 0x50, 0x49, 0x5d, 0xdd, 0xc0, 0x84, 0xe8, 0x4c,
+	0x4a, 0xdd, 0xb2, 0x04, 0xe6, 0xdd, 0x4a, 0x5e, 0xbf, 0x67, 0x7f, 0x43, 0xe4, 0x25, 0x82, 0x92,
+	0x4d, 0x9d, 0xc1, 0xc3, 0x49, 0xe4, 0xfa, 0xe3, 0x10, 0xd7, 0xa1, 0xc8, 0x60, 0x7b, 0x4e, 0xa8,
+	0xc4, 0x88, 0x6d, 0xd6, 0x5d, 0xe4, 0xf4, 0xbc, 0x58, 0x10, 0x6e, 0xb0, 0xee, 0x26, 0x01, 0x1d,
+	0xba, 0x17, 0xbc, 0xbb, 0xa2, 0x2d, 0x2d, 0xe6, 0x0f, 0xa7, 0x43, 0xe6, 0x37, 0x84, 0x5f, 0x58,
+	0x0c, 0xc5, 0x73, 0x47, 0x6e, 0x64, 0xe5, 0x9b, 0xa8, 0x65, 0xd8, 0xc2, 0x60, 0xd1, 0xfe, 0x70,
+	0x18, 0xd2, 0xc8, 0x2a, 0x70, 0xb7, 0xb4, 0xc8, 0xb1, 0xa0, 0x67, 0xd3, 0xe7, 0x53, 0x1a, 0x46,
+	0x37, 0x34, 0xfa, 0x33, 0x2c, 0xf9, 0x82, 0xbb, 0x6c, 0x15, 0xc7, 0x1a, 0xc6, 0x5d, 0xd9, 0x2a,
+	0x84, 0xec, 0x41, 0x59, 0xc0, 0x85, 0x13, 0x7f, 0x1c, 0x52, 0xfc, 0x23, 0x2c, 0x05, 0x5c, 0xeb,
+	0xd0, 0x42, 0xfc, 0x05, 0x2a, 0xa9, 0x17, 0xb0, 0xd5, 0x2d, 0x39, 0x80, 0xf2, 0xe3, 0xc0, 0x8d,
+	0xe8, 0x9d, 0x75, 0x22, 0x03, 0x89, 0xa0, 0x5a, 0xf9, 0x1e, 0x0a, 0x02, 0x9c, 0xe7, 0x2f, 0x54,
+	0x96, 0x97, 0x78, 0x7b, 0xbe, 0xbf, 0x35, 0x19, 0xa7, 0xd3, 0x49, 0x1a, 0x5c, 0x81, 0x8a, 0xac,
+	0x22, 0x3a, 0x24, 0x7f, 0x41, 0xe5, 0x88, 0x7a, 0xf4, 0x3e, 0xcc, 0x4f, 0x14, 0xc4, 0xed, 0xaf,
+	0xd0, 0x9e, 0x67, 0x59, 0x93, 0x2c, 0x53, 0xb5, 0x13, 0x9a, 0x55, 0x58, 0x56, 0x90, 0x92, 0x27,
+	0x1b, 0xc4, 0x07, 0x6e, 0x18, 0x7d, 0xad, 0x41, 0x34, 0x6f, 0x19, 0x44, 0xf3, 0x8e, 0x83, 0xb8,
+	0x2f, 0xe8, 0x29, 0x09, 0xb4, 0xb1, 0x43, 0xa9, 0xb1, 0xd3, 0x7a, 0x48, 0xda, 0x6d, 0x41, 0x59,
+	0x24, 0xcb, 0xb1, 0xc3, 0x60, 0x9c, 0xd1, 0x19, 0xd3, 0x2a, 0xc7, 0x3e, 0x37, 0xec, 0xfc, 0xbf,
+	0x51, 0x44, 0xd5, 0x2c, 0xc1, 0x50, 0x3d, 0x92, 0x6d, 0x86, 0xb2, 0x16, 0xd9, 0x81, 0x55, 0xcd,
+	0x27, 0x21, 0x36, 0xc1, 0x54, 0x7a, 0x88, 0xd9, 0x35, 0xed, 0xc4, 0x41, 0xb6, 0xa0, 0xf2, 0x88,
+	0x89, 0xa2, 0x30, 0x3e, 0x26, 0x27, 0x69, 0xc1, 0xb2, 0x0a, 0x96, 0xe0, 0xeb, 0x50, 0xe0, 0x9a,
+	0x2a, 0x64, 0x69, 0x91, 0x2d, 0x28, 0x1d, 0x7a, 0x7e, 0x4f, 0xbd, 0xd1, 0x26, 0x98, 0x63, 0x67,
+	0x44, 0xc3, 0x89, 0xd3, 0x57, 0xa8, 0x89, 0x83, 0x9c, 0xc0, 0x0a, 0x0b, 0xbe, 0xe3, 0xfa, 0x6a,
+	0x75, 0x12, 0x1d, 0x7f, 0x80, 0x6a, 0x02, 0x99, 0x68, 0xd9, 0xf3, 0xfc, 0x1e, 0x07, 0x2d, 0xdb,
+	0xfc, 0x4c, 0x86, 0x22, 0x2e, 0xb5, 0x6f, 0xf7, 0xac, 0x1d, 0xd7, 0xc9, 0x69, 0x75, 0xd6, 0x60,
+	0x55, 0xab, 0x23, 0x27, 0xf9, 0x54, 0x38, 0x3f, 0xb5, 0x32, 0x5f, 0xd6, 0x79, 0x0d, 0xb0, 0x0e,
+	0x2a, 0x4a, 0x75, 0xdf, 0x65, 0x21, 0x7f, 0xca, 0x92, 0xf0, 0x0e, 0x18, 0x4c, 0x15, 0xac, 0x7f,
+	0xfd, 0x64, 0xed, 0xfa, 0x5a, 0xca, 0x27, 0x59, 0x66, 0xf0, 0xaf, 0x90, 0xe7, 0xc4, 0x71, 0xea,
+	0x8b, 0xa2, 0x92, 0x6a, 0x69, 0x67, 0x9c, 0xb5, 0x07, 0x05, 0x41, 0x02, 0xa7, 0x57, 0x5c, 0xe5,
+	0x7d, 0x33, 0xe7, 0x8d, 0x13, 0x77, 0xc1, 0x60, 0x3b, 0x80, 0xf5, 0x45, 0x99, 0x67, 0xa8, 0x2f,
+	0x09, 0xc9, 0xfc, 0x82, 0xf0, 0x01, 0x98, 0xf1, 0xe8, 0xe3, 0x0d, 0x05, 0x3d, 0xb7, 0x20, 0x75,
+	0x6b, 0xf1, 0x42, 0xe7, 0x2b, 0x86, 0x3b, 0xe6, 0x9b, 0x5a, 0x8c, 0x98, 0x6f, 0x7a, 0x03, 0x48,
+	0xa6, 0xfb, 0x1a, 0x81, 0xc9, 0x24, 0x17, 0xfa, 0xee, 0x4b, 0x7d, 0xd7, 0xb5, 0x47, 0xd2, 0x35,
+	0xde, 0x58, 0xf0, 0x6b, 0x5d, 0xfc, 0xa1, 0x94, 0xd6, 0xa3, 0x52, 0x6a, 0x5b, 0x8b, 0x17, 0x2a,
+	0xbf, 0x85, 0xf0, 0x9f, 0xb1, 0xe6, 0x7a, 0x5c, 0x5a, 0xf7, 0x6f, 0x6f, 0xb8, 0x51, 0x10, 0x87,
+	0x7f, 0xbf, 0xba, 0x6a, 0xa0, 0xcb, 0xab, 0x06, 0x7a, 0x7f, 0xd5, 0x40, 0x2f, 0xae, 0x1b, 0x99,
+	0xcb, 0xeb, 0x46, 0xe6, 0xed, 0x75, 0x23, 0xf3, 0xe4, 0xa7, 0xcf, 0xf8, 0xe7, 0xb4, 0xcf, 0x7f,
+	0x7b, 0x05, 0xee, 0xda, 0xfd, 0x10, 0x00, 0x00, 0xff, 0xff, 0x14, 0xd1, 0x47, 0x26, 0x6d, 0x09,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1332,6 +1653,212 @@ var _Store_serviceDesc = grpc.ServiceDesc{
 	Metadata: "github.com/lack-io/vine/proto/store/store.proto",
 }
 
+// BlobStoreClient is the client API for BlobStore service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type BlobStoreClient interface {
+	Read(ctx context.Context, in *BlobReadRequest, opts ...grpc.CallOption) (BlobStore_ReadClient, error)
+	Write(ctx context.Context, opts ...grpc.CallOption) (BlobStore_WriteClient, error)
+	Delete(ctx context.Context, in *BlobDeleteRequest, opts ...grpc.CallOption) (*BlobDeleteResponse, error)
+}
+
+type blobStoreClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewBlobStoreClient(cc *grpc.ClientConn) BlobStoreClient {
+	return &blobStoreClient{cc}
+}
+
+func (c *blobStoreClient) Read(ctx context.Context, in *BlobReadRequest, opts ...grpc.CallOption) (BlobStore_ReadClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_BlobStore_serviceDesc.Streams[0], "/store.BlobStore/Read", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &blobStoreReadClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type BlobStore_ReadClient interface {
+	Recv() (*BlobReadResponse, error)
+	grpc.ClientStream
+}
+
+type blobStoreReadClient struct {
+	grpc.ClientStream
+}
+
+func (x *blobStoreReadClient) Recv() (*BlobReadResponse, error) {
+	m := new(BlobReadResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *blobStoreClient) Write(ctx context.Context, opts ...grpc.CallOption) (BlobStore_WriteClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_BlobStore_serviceDesc.Streams[1], "/store.BlobStore/Write", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &blobStoreWriteClient{stream}
+	return x, nil
+}
+
+type BlobStore_WriteClient interface {
+	Send(*BlobWriteRequest) error
+	CloseAndRecv() (*BlobWriteResponse, error)
+	grpc.ClientStream
+}
+
+type blobStoreWriteClient struct {
+	grpc.ClientStream
+}
+
+func (x *blobStoreWriteClient) Send(m *BlobWriteRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *blobStoreWriteClient) CloseAndRecv() (*BlobWriteResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(BlobWriteResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *blobStoreClient) Delete(ctx context.Context, in *BlobDeleteRequest, opts ...grpc.CallOption) (*BlobDeleteResponse, error) {
+	out := new(BlobDeleteResponse)
+	err := c.cc.Invoke(ctx, "/store.BlobStore/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// BlobStoreServer is the server API for BlobStore service.
+type BlobStoreServer interface {
+	Read(*BlobReadRequest, BlobStore_ReadServer) error
+	Write(BlobStore_WriteServer) error
+	Delete(context.Context, *BlobDeleteRequest) (*BlobDeleteResponse, error)
+}
+
+// UnimplementedBlobStoreServer can be embedded to have forward compatible implementations.
+type UnimplementedBlobStoreServer struct {
+}
+
+func (*UnimplementedBlobStoreServer) Read(req *BlobReadRequest, srv BlobStore_ReadServer) error {
+	return status.Errorf(codes.Unimplemented, "method Read not implemented")
+}
+func (*UnimplementedBlobStoreServer) Write(srv BlobStore_WriteServer) error {
+	return status.Errorf(codes.Unimplemented, "method Write not implemented")
+}
+func (*UnimplementedBlobStoreServer) Delete(ctx context.Context, req *BlobDeleteRequest) (*BlobDeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+
+func RegisterBlobStoreServer(s *grpc.Server, srv BlobStoreServer) {
+	s.RegisterService(&_BlobStore_serviceDesc, srv)
+}
+
+func _BlobStore_Read_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(BlobReadRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(BlobStoreServer).Read(m, &blobStoreReadServer{stream})
+}
+
+type BlobStore_ReadServer interface {
+	Send(*BlobReadResponse) error
+	grpc.ServerStream
+}
+
+type blobStoreReadServer struct {
+	grpc.ServerStream
+}
+
+func (x *blobStoreReadServer) Send(m *BlobReadResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _BlobStore_Write_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BlobStoreServer).Write(&blobStoreWriteServer{stream})
+}
+
+type BlobStore_WriteServer interface {
+	SendAndClose(*BlobWriteResponse) error
+	Recv() (*BlobWriteRequest, error)
+	grpc.ServerStream
+}
+
+type blobStoreWriteServer struct {
+	grpc.ServerStream
+}
+
+func (x *blobStoreWriteServer) SendAndClose(m *BlobWriteResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *blobStoreWriteServer) Recv() (*BlobWriteRequest, error) {
+	m := new(BlobWriteRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _BlobStore_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlobDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlobStoreServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/store.BlobStore/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlobStoreServer).Delete(ctx, req.(*BlobDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _BlobStore_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "store.BlobStore",
+	HandlerType: (*BlobStoreServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Delete",
+			Handler:    _BlobStore_Delete_Handler,
+		},
+	},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Read",
+			Handler:       _BlobStore_Read_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "Write",
+			Handler:       _BlobStore_Write_Handler,
+			ClientStreams: true,
+		},
+	},
+	Metadata: "github.com/lack-io/vine/proto/store/store.proto",
+}
+
 func (m *Field) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1603,16 +2130,6 @@ func (m *WriteOptions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Ttl != 0 {
-		i = encodeVarintStore(dAtA, i, uint64(m.Ttl))
-		i--
-		dAtA[i] = 0x20
-	}
-	if m.Expiry != 0 {
-		i = encodeVarintStore(dAtA, i, uint64(m.Expiry))
-		i--
-		dAtA[i] = 0x18
-	}
 	if len(m.Table) > 0 {
 		i -= len(m.Table)
 		copy(dAtA[i:], m.Table)
@@ -2047,6 +2564,245 @@ func (m *TablesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *BlobOptions) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BlobOptions) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BlobOptions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Namespace) > 0 {
+		i -= len(m.Namespace)
+		copy(dAtA[i:], m.Namespace)
+		i = encodeVarintStore(dAtA, i, uint64(len(m.Namespace)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BlobReadRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BlobReadRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BlobReadRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Options != nil {
+		{
+			size, err := m.Options.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintStore(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Key) > 0 {
+		i -= len(m.Key)
+		copy(dAtA[i:], m.Key)
+		i = encodeVarintStore(dAtA, i, uint64(len(m.Key)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BlobReadResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BlobReadResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BlobReadResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Blob) > 0 {
+		i -= len(m.Blob)
+		copy(dAtA[i:], m.Blob)
+		i = encodeVarintStore(dAtA, i, uint64(len(m.Blob)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BlobWriteRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BlobWriteRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BlobWriteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Blob) > 0 {
+		i -= len(m.Blob)
+		copy(dAtA[i:], m.Blob)
+		i = encodeVarintStore(dAtA, i, uint64(len(m.Blob)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Options != nil {
+		{
+			size, err := m.Options.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintStore(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Key) > 0 {
+		i -= len(m.Key)
+		copy(dAtA[i:], m.Key)
+		i = encodeVarintStore(dAtA, i, uint64(len(m.Key)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BlobWriteResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BlobWriteResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BlobWriteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *BlobDeleteRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BlobDeleteRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BlobDeleteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Options != nil {
+		{
+			size, err := m.Options.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintStore(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Key) > 0 {
+		i -= len(m.Key)
+		copy(dAtA[i:], m.Key)
+		i = encodeVarintStore(dAtA, i, uint64(len(m.Key)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BlobDeleteResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BlobDeleteResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BlobDeleteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintStore(dAtA []byte, offset int, v uint64) int {
 	offset -= sovStore(v)
 	base := offset
@@ -2182,12 +2938,6 @@ func (m *WriteOptions) Size() (n int) {
 	l = len(m.Table)
 	if l > 0 {
 		n += 1 + l + sovStore(uint64(l))
-	}
-	if m.Expiry != 0 {
-		n += 1 + sovStore(uint64(m.Expiry))
-	}
-	if m.Ttl != 0 {
-		n += 1 + sovStore(uint64(m.Ttl))
 	}
 	return n
 }
@@ -2369,6 +3119,105 @@ func (m *TablesResponse) Size() (n int) {
 			n += 1 + l + sovStore(uint64(l))
 		}
 	}
+	return n
+}
+
+func (m *BlobOptions) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Namespace)
+	if l > 0 {
+		n += 1 + l + sovStore(uint64(l))
+	}
+	return n
+}
+
+func (m *BlobReadRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Key)
+	if l > 0 {
+		n += 1 + l + sovStore(uint64(l))
+	}
+	if m.Options != nil {
+		l = m.Options.Size()
+		n += 1 + l + sovStore(uint64(l))
+	}
+	return n
+}
+
+func (m *BlobReadResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Blob)
+	if l > 0 {
+		n += 1 + l + sovStore(uint64(l))
+	}
+	return n
+}
+
+func (m *BlobWriteRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Key)
+	if l > 0 {
+		n += 1 + l + sovStore(uint64(l))
+	}
+	if m.Options != nil {
+		l = m.Options.Size()
+		n += 1 + l + sovStore(uint64(l))
+	}
+	l = len(m.Blob)
+	if l > 0 {
+		n += 1 + l + sovStore(uint64(l))
+	}
+	return n
+}
+
+func (m *BlobWriteResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *BlobDeleteRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Key)
+	if l > 0 {
+		n += 1 + l + sovStore(uint64(l))
+	}
+	if m.Options != nil {
+		l = m.Options.Size()
+		n += 1 + l + sovStore(uint64(l))
+	}
+	return n
+}
+
+func (m *BlobDeleteResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -3258,44 +4107,6 @@ func (m *WriteOptions) Unmarshal(dAtA []byte) error {
 			}
 			m.Table = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Expiry", wireType)
-			}
-			m.Expiry = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStore
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Expiry |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ttl", wireType)
-			}
-			m.Ttl = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStore
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Ttl |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipStore(dAtA[iNdEx:])
@@ -4466,6 +5277,681 @@ func (m *TablesResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.Tables = append(m.Tables, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStore(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BlobOptions) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStore
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BlobOptions: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BlobOptions: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Namespace", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Namespace = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStore(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BlobReadRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStore
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BlobReadRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BlobReadRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Key = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Options == nil {
+				m.Options = &BlobOptions{}
+			}
+			if err := m.Options.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStore(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BlobReadResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStore
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BlobReadResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BlobReadResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Blob", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Blob = append(m.Blob[:0], dAtA[iNdEx:postIndex]...)
+			if m.Blob == nil {
+				m.Blob = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStore(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BlobWriteRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStore
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BlobWriteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BlobWriteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Key = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Options == nil {
+				m.Options = &BlobOptions{}
+			}
+			if err := m.Options.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Blob", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Blob = append(m.Blob[:0], dAtA[iNdEx:postIndex]...)
+			if m.Blob == nil {
+				m.Blob = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStore(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BlobWriteResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStore
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BlobWriteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BlobWriteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStore(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BlobDeleteRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStore
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BlobDeleteRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BlobDeleteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Key", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Key = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Options", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStore
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthStore
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthStore
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Options == nil {
+				m.Options = &BlobOptions{}
+			}
+			if err := m.Options.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStore(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthStore
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BlobDeleteResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStore
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BlobDeleteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BlobDeleteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipStore(dAtA[iNdEx:])

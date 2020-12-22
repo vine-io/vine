@@ -248,7 +248,7 @@ type ClientClient interface {
 	Call(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	// Stream is a bidirectional stream
 	Stream(ctx context.Context, opts ...grpc.CallOption) (Client_StreamClient, error)
-	// Publish publishes a message returns an empty Message
+	// Publish publishes a message and returns an empty Message
 	Publish(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
 }
 
@@ -315,7 +315,7 @@ type ClientServer interface {
 	Call(context.Context, *Request) (*Response, error)
 	// Stream is a bidirectional stream
 	Stream(Client_StreamServer) error
-	// Publish publishes a message returns an empty Message
+	// Publish publishes a message and returns an empty Message
 	Publish(context.Context, *Message) (*Message, error)
 }
 

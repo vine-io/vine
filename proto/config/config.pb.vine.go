@@ -11,9 +11,9 @@ import (
 
 import (
 	context "context"
-	api "github.com/lack-io/vine/api"
-	client "github.com/lack-io/vine/client"
-	server "github.com/lack-io/vine/server"
+	api "github.com/lack-io/vine/service/api"
+	client "github.com/lack-io/vine/service/client"
+	server "github.com/lack-io/vine/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -40,12 +40,11 @@ func NewConfigEndpoints() []*api.Endpoint {
 
 // Client API for Config service
 type ConfigService interface {
-	Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error)
-	Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error)
+	Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error)
+	Set(ctx context.Context, in *SetRequest, opts ...client.CallOption) (*SetResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...client.CallOption) (*DeleteResponse, error)
-	List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
+	// These methods are here for backwards compatibility reasons
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
-	Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Config_WatchService, error)
 }
 
 type configService struct {
@@ -60,9 +59,9 @@ func NewConfigService(name string, c client.Client) ConfigService {
 	}
 }
 
-func (c *configService) Create(ctx context.Context, in *CreateRequest, opts ...client.CallOption) (*CreateResponse, error) {
-	req := c.c.NewRequest(c.name, "Config.Create", in)
-	out := new(CreateResponse)
+func (c *configService) Get(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error) {
+	req := c.c.NewRequest(c.name, "Config.Get", in)
+	out := new(GetResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -70,9 +69,9 @@ func (c *configService) Create(ctx context.Context, in *CreateRequest, opts ...c
 	return out, nil
 }
 
-func (c *configService) Update(ctx context.Context, in *UpdateRequest, opts ...client.CallOption) (*UpdateResponse, error) {
-	req := c.c.NewRequest(c.name, "Config.Update", in)
-	out := new(UpdateResponse)
+func (c *configService) Set(ctx context.Context, in *SetRequest, opts ...client.CallOption) (*SetResponse, error) {
+	req := c.c.NewRequest(c.name, "Config.Set", in)
+	out := new(SetResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -90,16 +89,6 @@ func (c *configService) Delete(ctx context.Context, in *DeleteRequest, opts ...c
 	return out, nil
 }
 
-func (c *configService) List(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error) {
-	req := c.c.NewRequest(c.name, "Config.List", in)
-	out := new(ListResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *configService) Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error) {
 	req := c.c.NewRequest(c.name, "Config.Read", in)
 	out := new(ReadResponse)
@@ -110,73 +99,21 @@ func (c *configService) Read(ctx context.Context, in *ReadRequest, opts ...clien
 	return out, nil
 }
 
-func (c *configService) Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Config_WatchService, error) {
-	req := c.c.NewRequest(c.name, "Config.Watch", &WatchRequest{})
-	stream, err := c.c.Stream(ctx, req, opts...)
-	if err != nil {
-		return nil, err
-	}
-	if err := stream.Send(in); err != nil {
-		return nil, err
-	}
-	return &configServiceWatch{stream}, nil
-}
-
-type Config_WatchService interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Recv() (*WatchResponse, error)
-}
-
-type configServiceWatch struct {
-	stream client.Stream
-}
-
-func (x *configServiceWatch) Close() error {
-	return x.stream.Close()
-}
-
-func (x *configServiceWatch) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *configServiceWatch) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *configServiceWatch) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *configServiceWatch) Recv() (*WatchResponse, error) {
-	m := new(WatchResponse)
-	err := x.stream.Recv(m)
-	if err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // Server API for Config service
 type ConfigHandler interface {
-	Create(context.Context, *CreateRequest, *CreateResponse) error
-	Update(context.Context, *UpdateRequest, *UpdateResponse) error
+	Get(context.Context, *GetRequest, *GetResponse) error
+	Set(context.Context, *SetRequest, *SetResponse) error
 	Delete(context.Context, *DeleteRequest, *DeleteResponse) error
-	List(context.Context, *ListRequest, *ListResponse) error
+	// These methods are here for backwards compatibility reasons
 	Read(context.Context, *ReadRequest, *ReadResponse) error
-	Watch(context.Context, *WatchRequest, Config_WatchStream) error
 }
 
 func RegisterConfigHandler(s server.Server, hdlr ConfigHandler, opts ...server.HandlerOption) error {
 	type configImpl interface {
-		Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error
-		Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error
+		Get(ctx context.Context, in *GetRequest, out *GetResponse) error
+		Set(ctx context.Context, in *SetRequest, out *SetResponse) error
 		Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error
-		List(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error
-		Watch(ctx context.Context, stream server.Stream) error
 	}
 	type Config struct {
 		configImpl
@@ -189,62 +126,18 @@ type configHandler struct {
 	ConfigHandler
 }
 
-func (h *configHandler) Create(ctx context.Context, in *CreateRequest, out *CreateResponse) error {
-	return h.ConfigHandler.Create(ctx, in, out)
+func (h *configHandler) Get(ctx context.Context, in *GetRequest, out *GetResponse) error {
+	return h.ConfigHandler.Get(ctx, in, out)
 }
 
-func (h *configHandler) Update(ctx context.Context, in *UpdateRequest, out *UpdateResponse) error {
-	return h.ConfigHandler.Update(ctx, in, out)
+func (h *configHandler) Set(ctx context.Context, in *SetRequest, out *SetResponse) error {
+	return h.ConfigHandler.Set(ctx, in, out)
 }
 
 func (h *configHandler) Delete(ctx context.Context, in *DeleteRequest, out *DeleteResponse) error {
 	return h.ConfigHandler.Delete(ctx, in, out)
 }
 
-func (h *configHandler) List(ctx context.Context, in *ListRequest, out *ListResponse) error {
-	return h.ConfigHandler.List(ctx, in, out)
-}
-
 func (h *configHandler) Read(ctx context.Context, in *ReadRequest, out *ReadResponse) error {
 	return h.ConfigHandler.Read(ctx, in, out)
-}
-
-func (h *configHandler) Watch(ctx context.Context, stream server.Stream) error {
-	m := new(WatchRequest)
-	if err := stream.Recv(m); err != nil {
-		return err
-	}
-	return h.ConfigHandler.Watch(ctx, m, &configWatchStream{stream})
-}
-
-type Config_WatchStream interface {
-	Context() context.Context
-	SendMsg(interface{}) error
-	RecvMsg(interface{}) error
-	Close() error
-	Send(*WatchResponse) error
-}
-
-type configWatchStream struct {
-	stream server.Stream
-}
-
-func (x *configWatchStream) Close() error {
-	return x.stream.Close()
-}
-
-func (x *configWatchStream) Context() context.Context {
-	return x.stream.Context()
-}
-
-func (x *configWatchStream) SendMsg(m interface{}) error {
-	return x.stream.Send(m)
-}
-
-func (x *configWatchStream) RecvMsg(m interface{}) error {
-	return x.stream.Recv(m)
-}
-
-func (x *configWatchStream) Send(m *WatchResponse) error {
-	return x.stream.Send(m)
 }

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package broker;
+
 option go_package = "github.com/lack-io/vine/proto/broker;broker";
 
 service Broker {

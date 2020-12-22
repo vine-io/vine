@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package client;
+
 option go_package = "github.com/lack-io/vine/proto/client;client";
 
 // Client is the vine client interface
@@ -9,7 +10,7 @@ service Client {
   rpc Call(Request) returns (Response) {};
   // Stream is a bidirectional stream
   rpc Stream(stream Request) returns (stream Response) {};
-  // Publish publishes a message returns an empty Message
+  // Publish publishes a message and returns an empty Message
   rpc Publish(Message) returns (Message) {};
 }
 

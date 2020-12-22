@@ -98,6 +98,62 @@ func (f *Float64Flag) Apply(set *flag.FlagSet) error {
 	return nil
 }
 
+func (a *App) float64Var(p *float64, name, alias string, value float64, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &Float64Flag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// Float64Var defines a float64 flag with specified name, default value, usage string and env string.
+// The argument p points to a float64 variable in which to store the value of the flag.
+func (a *App) Float64Var(p *float64, name string, value float64, usage, env string) {
+	a.float64Var(p, name, "", value, usage, env)
+}
+
+// Float64VarP is like Float64Var, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Float64VarP(p *float64, name, alias string, value float64, usage, env string) {
+	a.float64Var(p, name, alias, value, usage, env)
+}
+
+// Float64Var defines a float64 flag with specified name, default value, usage string and env string.
+// The argument p points to a float64 variable in which to store the value of the flag.
+func Float64Var(p *float64, name string, value float64, usage, env string) {
+	CommandLine.Float64Var(p, name, value, usage, env)
+}
+
+// Float64VarP is like Float64Var, but accepts a shorthand letter that can be used after a single dash.
+func Float64VarP(p *float64, name, alias string, value float64, usage, env string) {
+	CommandLine.Float64VarP(p, name, alias, value, usage, env)
+}
+
+// Float64 defines a float64 flag with specified name, default value, usage string and env string.
+// The return value is the address of a float64 variable that stores the value of the flag.
+func (a *App) Float64(name string, value float64, usage, env string) *float64 {
+	p := new(float64)
+	a.Float64Var(p, name, value, usage, env)
+	return p
+}
+
+// Float64P is like Float64, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Float64P(name, alias string, value float64, usage, env string) *float64 {
+	p := new(float64)
+	a.Float64VarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Float64 looks up the value of a local Float64Flag, returns
 // 0 if not found
 func (c *Context) Float64(name string) float64 {

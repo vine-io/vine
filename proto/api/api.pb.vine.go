@@ -11,9 +11,9 @@ import (
 
 import (
 	context "context"
-	api "github.com/lack-io/vine/api"
-	client "github.com/lack-io/vine/client"
-	server "github.com/lack-io/vine/server"
+	api "github.com/lack-io/vine/service/api"
+	client "github.com/lack-io/vine/service/client"
+	server "github.com/lack-io/vine/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -41,7 +41,7 @@ func NewApiEndpoints() []*api.Endpoint {
 // Client API for Api service
 type ApiService interface {
 	Register(ctx context.Context, in *Endpoint, opts ...client.CallOption) (*EmptyResponse, error)
-	DeRegister(ctx context.Context, in *Endpoint, opts ...client.CallOption) (*EmptyResponse, error)
+	Deregister(ctx context.Context, in *Endpoint, opts ...client.CallOption) (*EmptyResponse, error)
 }
 
 type apiService struct {
@@ -66,8 +66,8 @@ func (c *apiService) Register(ctx context.Context, in *Endpoint, opts ...client.
 	return out, nil
 }
 
-func (c *apiService) DeRegister(ctx context.Context, in *Endpoint, opts ...client.CallOption) (*EmptyResponse, error) {
-	req := c.c.NewRequest(c.name, "Api.DeRegister", in)
+func (c *apiService) Deregister(ctx context.Context, in *Endpoint, opts ...client.CallOption) (*EmptyResponse, error) {
+	req := c.c.NewRequest(c.name, "Api.Deregister", in)
 	out := new(EmptyResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -79,13 +79,13 @@ func (c *apiService) DeRegister(ctx context.Context, in *Endpoint, opts ...clien
 // Server API for Api service
 type ApiHandler interface {
 	Register(context.Context, *Endpoint, *EmptyResponse) error
-	DeRegister(context.Context, *Endpoint, *EmptyResponse) error
+	Deregister(context.Context, *Endpoint, *EmptyResponse) error
 }
 
 func RegisterApiHandler(s server.Server, hdlr ApiHandler, opts ...server.HandlerOption) error {
 	type apiImpl interface {
 		Register(ctx context.Context, in *Endpoint, out *EmptyResponse) error
-		DeRegister(ctx context.Context, in *Endpoint, out *EmptyResponse) error
+		Deregister(ctx context.Context, in *Endpoint, out *EmptyResponse) error
 	}
 	type Api struct {
 		apiImpl
@@ -102,6 +102,6 @@ func (h *apiHandler) Register(ctx context.Context, in *Endpoint, out *EmptyRespo
 	return h.ApiHandler.Register(ctx, in, out)
 }
 
-func (h *apiHandler) DeRegister(ctx context.Context, in *Endpoint, out *EmptyResponse) error {
-	return h.ApiHandler.DeRegister(ctx, in, out)
+func (h *apiHandler) Deregister(ctx context.Context, in *Endpoint, out *EmptyResponse) error {
+	return h.ApiHandler.Deregister(ctx, in, out)
 }

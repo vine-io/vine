@@ -11,9 +11,9 @@ import (
 
 import (
 	context "context"
-	api "github.com/lack-io/vine/api"
-	client "github.com/lack-io/vine/client"
-	server "github.com/lack-io/vine/server"
+	api "github.com/lack-io/vine/service/api"
+	client "github.com/lack-io/vine/service/client"
+	server "github.com/lack-io/vine/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -131,6 +131,8 @@ func NewAccountsEndpoints() []*api.Endpoint {
 // Client API for Accounts service
 type AccountsService interface {
 	List(ctx context.Context, in *ListAccountsRequest, opts ...client.CallOption) (*ListAccountsResponse, error)
+	Delete(ctx context.Context, in *DeleteAccountRequest, opts ...client.CallOption) (*DeleteAccountResponse, error)
+	ChangeSecret(ctx context.Context, in *ChangeSecretRequest, opts ...client.CallOption) (*ChangeSecretResponse, error)
 }
 
 type accountsService struct {
@@ -155,14 +157,38 @@ func (c *accountsService) List(ctx context.Context, in *ListAccountsRequest, opt
 	return out, nil
 }
 
+func (c *accountsService) Delete(ctx context.Context, in *DeleteAccountRequest, opts ...client.CallOption) (*DeleteAccountResponse, error) {
+	req := c.c.NewRequest(c.name, "Accounts.Delete", in)
+	out := new(DeleteAccountResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountsService) ChangeSecret(ctx context.Context, in *ChangeSecretRequest, opts ...client.CallOption) (*ChangeSecretResponse, error) {
+	req := c.c.NewRequest(c.name, "Accounts.ChangeSecret", in)
+	out := new(ChangeSecretResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Accounts service
 type AccountsHandler interface {
 	List(context.Context, *ListAccountsRequest, *ListAccountsResponse) error
+	Delete(context.Context, *DeleteAccountRequest, *DeleteAccountResponse) error
+	ChangeSecret(context.Context, *ChangeSecretRequest, *ChangeSecretResponse) error
 }
 
 func RegisterAccountsHandler(s server.Server, hdlr AccountsHandler, opts ...server.HandlerOption) error {
 	type accountsImpl interface {
 		List(ctx context.Context, in *ListAccountsRequest, out *ListAccountsResponse) error
+		Delete(ctx context.Context, in *DeleteAccountRequest, out *DeleteAccountResponse) error
+		ChangeSecret(ctx context.Context, in *ChangeSecretRequest, out *ChangeSecretResponse) error
 	}
 	type Accounts struct {
 		accountsImpl
@@ -177,6 +203,14 @@ type accountsHandler struct {
 
 func (h *accountsHandler) List(ctx context.Context, in *ListAccountsRequest, out *ListAccountsResponse) error {
 	return h.AccountsHandler.List(ctx, in, out)
+}
+
+func (h *accountsHandler) Delete(ctx context.Context, in *DeleteAccountRequest, out *DeleteAccountResponse) error {
+	return h.AccountsHandler.Delete(ctx, in, out)
+}
+
+func (h *accountsHandler) ChangeSecret(ctx context.Context, in *ChangeSecretRequest, out *ChangeSecretResponse) error {
+	return h.AccountsHandler.ChangeSecret(ctx, in, out)
 }
 
 // Api Endpoints for Rules service

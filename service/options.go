@@ -1,10 +1,8 @@
-// Copyright 2020 The vine Authors
-//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,22 +13,19 @@
 package service
 
 import (
-	"context"
 	"time"
 
-	"github.com/lack-io/vine/broker"
-	"github.com/lack-io/vine/client"
-	"github.com/lack-io/vine/registry"
-	"github.com/lack-io/vine/server"
-	"github.com/lack-io/vine/transport"
+	"github.com/lack-io/vine/cmd"
+	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/service/server"
 )
 
+// Options for vine service
 type Options struct {
-	Broker    broker.Broker
-	Client    client.Client
-	Server    server.Server
-	Registry  registry.Registry
-	Transport transport.Transport
+	Cmd cmd.Cmd
+
+	Name    string
+	Version string
 
 	// Before and After funcs
 	BeforeStart []func() error
@@ -38,125 +33,73 @@ type Options struct {
 	AfterStart  []func() error
 	AfterStop   []func() error
 
-	// Other options for implementations of the interface
-	// can be stored in a context
-	Context context.Context
+	Signal bool
 }
 
-type Option func(*Options)
-
-func NewOptions(opts ...Option) Options {
+func newOptions(opts ...Option) Options {
 	opt := Options{
-		Broker:    broker.DefaultBroker,
-		Client:    client.DefaultClient,
-		Server:    server.DefaultServer,
-		Registry:  registry.DefaultRegistry,
-		Transport: transport.DefaultTransport,
-		Context:   context.Background(),
+		Cmd:    cmd.DefaultCmd,
+		Signal: true,
 	}
 
 	for _, o := range opts {
 		o(&opt)
 	}
-
 	return opt
 }
 
-func Broker(b broker.Broker) Option {
+type Option func(o *Options)
+
+// HandleSignal toggles automatic installation of the signal handler that
+// traps TERM, INT, and QUIT.  Users of this feature to disable the signal
+// handler, should control liveness of the service through the context.
+func HandleSignal(b bool) Option {
 	return func(o *Options) {
-		o.Broker = b
-		// Update Client and Server
-		o.Client.Init(client.Broker(b))
-		o.Server.Init(server.Broker(b))
+		o.Signal = b
 	}
 }
-
-func Client(c client.Client) Option {
-	return func(o *Options) {
-		o.Client = c
-	}
-}
-
-// Context specifies a context for the service.
-// Can be used to signal shutdown of the service.
-// Can be used for extra option values.
-func Context(ctx context.Context) Option {
-	return func(o *Options) {
-		o.Context = ctx
-	}
-}
-
-func Server(s server.Server) Option {
-	return func(o *Options) {
-		o.Server = s
-	}
-}
-
-// Registry sets the registry for the service
-// and the underlying components
-func Registry(r registry.Registry) Option {
-	return func(o *Options) {
-		o.Registry = r
-		// Update Client and Server
-		o.Client.Init(client.Registry(r))
-		o.Server.Init(server.Registry(r))
-		// Update Broker
-		o.Broker.Init(broker.Registry(r))
-	}
-}
-
-// Transport sets the transport for the service
-// and the underlying components
-func Transport(t transport.Transport) Option {
-	return func(o *Options) {
-		o.Transport = t
-		// Update Client and Server
-		o.Client.Init(client.Transport(t))
-		o.Server.Init(server.Transport(t))
-	}
-}
-
-// Convenience options
 
 // Address sets the address of the server
 func Address(addr string) Option {
 	return func(o *Options) {
-		o.Server.Init(server.Address(addr))
+		server.DefaultServer.Init(server.Address(addr))
 	}
 }
 
 // Name of the service
 func Name(n string) Option {
 	return func(o *Options) {
-		o.Server.Init(server.Name(n))
+		o.Name = n
+		server.DefaultServer.Init(server.Name(n))
 	}
 }
 
 // Version of the service
 func Version(v string) Option {
 	return func(o *Options) {
-		o.Server.Init(server.Version(v))
+		o.Version = v
+		server.DefaultServer.Init(server.Version(v))
 	}
 }
 
 // Metadata associated with the service
 func Metadata(md map[string]string) Option {
 	return func(o *Options) {
-		o.Server.Init(server.Metadata(md))
+		server.DefaultServer.Init(server.Metadata(md))
 	}
 }
 
 // RegisterTTL specifies the TTL to use when registering the service
 func RegisterTTL(t time.Duration) Option {
 	return func(o *Options) {
-		o.Server.Init(server.RegisterTTL(t))
+		server.DefaultServer.Init(server.RegisterTTL(t))
 	}
 }
 
 // RegisterInterval specifies the interval on which to re-register
 func RegisterInterval(t time.Duration) Option {
 	return func(o *Options) {
-		o.Server.Init(server.RegisterInterval(t))
+		server.DefaultServer.Init(server.RegisterInterval(t))
 	}
 }
 
@@ -167,7 +110,7 @@ func WrapClient(w ...client.Wrapper) Option {
 	return func(o *Options) {
 		// apply in reverse
 		for i := len(w); i > 0; i-- {
-			o.Client = w[i-1](o.Client)
+			client.DefaultClient = w[i-1](client.DefaultClient)
 		}
 	}
 }
@@ -175,7 +118,7 @@ func WrapClient(w ...client.Wrapper) Option {
 // WrapCall is a convenience method for wrapping a Client CallFunc
 func WrapCall(w ...client.CallWrapper) Option {
 	return func(o *Options) {
-		o.Client.Init(client.WrapCall(w...))
+		client.DefaultClient.Init(client.WrapCall(w...))
 	}
 }
 
@@ -189,7 +132,7 @@ func WrapHandler(w ...server.HandlerWrapper) Option {
 		}
 
 		// Init once
-		o.Server.Init(wrappers...)
+		server.DefaultServer.Init(wrappers...)
 	}
 }
 
@@ -203,30 +146,34 @@ func WrapSubscriber(w ...server.SubscriberWrapper) Option {
 		}
 
 		// Init once
-		o.Server.Init(wrappers...)
+		server.DefaultServer.Init(wrappers...)
 	}
 }
 
 // Before and Afters
 
+// BeforeStart run funcs before service starts
 func BeforeStart(fn func() error) Option {
 	return func(o *Options) {
 		o.BeforeStart = append(o.BeforeStart, fn)
 	}
 }
 
+// BeforeStop run funcs before service stops
 func BeforeStop(fn func() error) Option {
 	return func(o *Options) {
 		o.BeforeStop = append(o.BeforeStop, fn)
 	}
 }
 
+// AfterStart run funcs after service starts
 func AfterStart(fn func() error) Option {
 	return func(o *Options) {
 		o.AfterStart = append(o.AfterStart, fn)
 	}
 }
 
+// AfterStop run funcs after service stops
 func AfterStop(fn func() error) Option {
 	return func(o *Options) {
 		o.AfterStop = append(o.AfterStop, fn)

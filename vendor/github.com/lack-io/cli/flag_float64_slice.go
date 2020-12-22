@@ -24,52 +24,91 @@ import (
 
 // Float64Slice wraps []float64 to satisfy flag.Value
 type Float64Slice struct {
-	slice      []float64
+	val        *[]float64
 	hasBeenSet bool
 }
 
 // NewFloat64Slice makes a *Float64Slice with default values
 func NewFloat64Slice(defaults ...float64) *Float64Slice {
-	return &Float64Slice{slice: append([]float64{}, defaults...)}
+	return newFloat64Slice(defaults, nil)
+}
+
+func newFloat64Slice(val []float64, p *[]float64) *Float64Slice {
+	slice := new(Float64Slice)
+	if p == nil {
+		p = &[]float64{}
+	}
+	slice.val = p
+	*slice.val = val
+	return slice
 }
 
 // Set parses the value into a float64 and appends it to the list of values
 func (f *Float64Slice) Set(value string) error {
 	if !f.hasBeenSet {
-		f.slice = []float64{}
+		*f.val = []float64{}
 		f.hasBeenSet = true
 	}
 
 	if strings.HasPrefix(value, slPfx) {
 		// Deserializing assumes overwrite
-		_ = json.Unmarshal([]byte(strings.Replace(value, slPfx, "", 1)), &f.slice)
+		_ = json.Unmarshal([]byte(strings.Replace(value, slPfx, "", 1)), &(*f.val))
 		f.hasBeenSet = true
 		return nil
 	}
 
-	tmp, err := strconv.ParseFloat(value, 64)
+	tmp, err := float64SliceConv(value)
 	if err != nil {
 		return err
 	}
 
-	f.slice = append(f.slice, tmp)
+	*f.val = append(*f.val, tmp...)
 	return nil
+}
+
+func float64SliceConv(val string) ([]float64, error) {
+	val = strings.Trim(val, "[]")
+	// Empty string would cause a slice with one (empty) entry
+	if len(val) == 0 {
+		return []float64{}, nil
+	}
+	ss := strings.Split(val, ",")
+	out := make([]float64, len(ss))
+	for i, d := range ss {
+		var err error
+		out[i], err = strconv.ParseFloat(strings.TrimSpace(d), 64)
+		if err != nil {
+			return nil, err
+		}
+
+	}
+	return out, nil
 }
 
 // String returns a readable representation of this value (for usage defaults)
 func (f *Float64Slice) String() string {
-	return fmt.Sprintf("%#v", f.slice)
+	if f.val == nil {
+		return "[]"
+	}
+	out := make([]string, len(*f.val))
+	for i, d := range *f.val {
+		out[i] = fmt.Sprintf("%f", d)
+	}
+	return "[" + strings.Join(out, ",") + "]"
 }
 
 // Serialize allows Float64Slice to fulfill Serializer
 func (f *Float64Slice) Serialize() string {
-	jsonBytes, _ := json.Marshal(f.slice)
+	jsonBytes, _ := json.Marshal(*f.val)
 	return fmt.Sprintf("%s%s", slPfx, string(jsonBytes))
 }
 
 // Value returns the slice of float64s set by this flag
 func (f *Float64Slice) Value() []float64 {
-	return f.slice
+	if f.val == nil {
+		return []float64{}
+	}
+	return *f.val
 }
 
 // Get returns the slice of float64s set by this flag
@@ -155,6 +194,61 @@ func (f *Float64SliceFlag) Apply(set *flag.FlagSet) error {
 	}
 
 	return nil
+}
+
+func (a *App) float64SliceVar(p *[]float64, name, alias string, value []float64, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &Float64SliceFlag{
+		Name:  name,
+		Usage: usage,
+		Value: newFloat64Slice(value, p),
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// Float64SliceVar defines a []float64 flag with specified name, default value, usage string and env string.
+// The argument p points to a []float64 variable in which to store the value of the flag.
+func (a *App) Float64SliceVar(p *[]float64, name string, value []float64, usage, env string) {
+	a.float64SliceVar(p, name, "", value, usage, env)
+}
+
+// Float64SliceVarP is like Float64SliceVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Float64SliceVarP(p *[]float64, name, alias string, value []float64, usage, env string) {
+	a.float64SliceVar(p, name, alias, value, usage, env)
+}
+
+// Float64SliceVar defines a []float64 flag with specified name, default value, usage string and env string.
+// The argument p points to a []float64 variable in which to store the value of the flag.
+func Float64SliceVar(p *[]float64, name string, value []float64, usage, env string) {
+	CommandLine.Float64SliceVar(p, name, value, usage, env)
+}
+
+// Float64SliceVarP is like Float64SliceVar, but accepts a shorthand letter that can be used after a single dash.
+func Float64SliceVarP(p *[]float64, name, alias string, value []float64, usage, env string) {
+	CommandLine.Float64SliceVarP(p, name, alias, value, usage, env)
+}
+
+// Float64Slice defines a []float64 flag with specified name, default value, usage string and env string.
+// The return value is the address of a []float64 variable that stores the value of the flag.
+func (a *App) Float64Slice(name string, value []float64, usage, env string) *[]float64 {
+	p := new([]float64)
+	a.Float64SliceVar(p, name, value, usage, env)
+	return p
+}
+
+// Float64SliceP is like Float64Slice, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Float64SliceP(name, alias string, value []float64, usage, env string) *[]float64 {
+	p := new([]float64)
+	a.Float64SliceVarP(p, name, alias, value, usage, env)
+	return p
 }
 
 // Float64Slice looks up the value of a local Float64SliceFlag, returns

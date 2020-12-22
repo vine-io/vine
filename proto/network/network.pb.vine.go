@@ -12,9 +12,9 @@ import (
 
 import (
 	context "context"
-	api "github.com/lack-io/vine/api"
-	client "github.com/lack-io/vine/client"
-	server "github.com/lack-io/vine/server"
+	api "github.com/lack-io/vine/service/api"
+	client "github.com/lack-io/vine/service/client"
+	server "github.com/lack-io/vine/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

@@ -1,38 +1,36 @@
 syntax = "proto3";
 
 package router;
+
 option go_package = "github.com/lack-io/vine/proto/router;router";
 
 // Router service is used by the proxy to lookup routes
 service Router {
   rpc Lookup(LookupRequest) returns (LookupResponse) {};
   rpc Watch(WatchRequest) returns (stream Event) {};
-  rpc Advertise(Request) returns (stream Advert) {};
-  rpc Process(Advert) returns (ProcessResponse) {};
 }
 
 service Table {
   rpc Create(Route) returns (CreateResponse) {};
   rpc Delete(Route) returns (DeleteResponse) {};
   rpc Update(Route) returns (UpdateResponse) {};
-  rpc List(Request) returns (ListResponse) {};
-  rpc Query(QueryRequest) returns (QueryResponse) {};
+  rpc Read(ReadRequest) returns (ReadResponse) {};
 }
 
 // Empty request
-message Request {}
+message ReadRequest {
+  string service = 1;
+}
 
 // Empty response
-message Response {}
-
-// ListResponse is returned by List
-message ListResponse {
+message ReadResponse {
   repeated Route routes = 1;
 }
 
 // LookupRequest is made to Lookup
 message LookupRequest {
-  Query query = 1;
+  string service = 1;
+  LookupOptions options = 2;
 }
 
 // LookupResponse is returned by Lookup
@@ -40,41 +38,8 @@ message LookupResponse {
   repeated Route routes = 1;
 }
 
-// QueryRequest queries Table for Routes
-message QueryRequest{
-  Query query = 1;
-}
-
-// QueryResponse is returned by Query
-message QueryResponse {
-  repeated Route routes = 1;
-}
-
 // WatchRequest is made to Watch Router
 message WatchRequest {}
-
-// AdvertType defines the type of advert
-enum AdvertType {
-  AdvertAnnounce = 0;
-  AdvertUpdate = 1;
-}
-
-// Advert is router advertsement streamed by Watch
-message Advert {
-  // id of the advertising router
-  string id = 1;
-  // type of advertisement
-  AdvertType type = 2;
-  // unix timestamp of the advertisement
-  int64 timestamp = 3;
-  // TTL of the Advert
-  int64 ttl = 4;
-  // events is a list of advertised events
-  repeated Event events = 5;
-}
-
-// ProcessResponse is returned by Process
-message ProcessResponse {}
 
 // CreateResponse is returned by Create
 message CreateResponse {}
@@ -104,14 +69,13 @@ message Event {
   Route route = 4;
 }
 
-// Query is passed in a LookupRequest
-message Query {
-  // service to lookup
-  string service = 1;
-  // gateway to lookup
+// LookupOptions are passed in a LookupRequest
+message LookupOptions {
+  string address = 1;
   string gateway = 2;
-  // network to lookup
   string network = 3;
+  string router = 4;
+  string link = 5;
 }
 
 // Route is a service route
@@ -130,4 +94,6 @@ message Route {
   string link = 6;
   // the metric / score of this route
   int64 metric = 7;
+  // metadata for the route
+  map<string,string> metadata = 8;
 }

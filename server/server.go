@@ -1,10 +1,8 @@
-// Copyright 2020 The vine Authors
-//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,238 +10,224 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package server is the vine server which runs the whole system
 package server
 
 import (
-	"context"
 	"os"
-	"os/signal"
-	"time"
+	"strings"
 
-	"github.com/google/uuid"
+	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/codec"
-	"github.com/lack-io/vine/log"
-	"github.com/lack-io/vine/registry"
-	signalutil "github.com/lack-io/vine/util/signal"
+	"github.com/lack-io/vine/cmd"
+	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine/service/auth"
+	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/service/runtime"
 )
-
-// Server is a simple vine server abstraction
-type Server interface {
-	// Initialise options
-	Init(...Option) error
-	// Retrieve the options
-	Options() Options
-	// Register a handler
-	Handle(Handler) error
-	// Create a new handler
-	NewHandler(interface{}, ...HandlerOption) Handler
-	// Create a new subscriber
-	NewSubscriber(string, interface{}, ...SubscriberOption) Subscriber
-	// Register a subscriber
-	Subscribe(Subscriber) error
-	// Start the server
-	Start() error
-	// Stop the server
-	Stop() error
-	// Server implementation
-	String() string
-}
-
-// Router handle serving messages
-type Router interface {
-	// ProcessMessage processes a message
-	ProcessMessage(context.Context, Message) error
-	// ServerRequest processes a request to completion
-	ServeRequest(context.Context, Request, Response) error
-}
-
-// Message is an async message interface
-type Message interface {
-	// Topic of the message
-	Topic() string
-	// The decoded payload value
-	Payload() interface{}
-	// The content type of the payload
-	ContentType() string
-	// The raw headers of the message
-	Header() map[string]string
-	// The raw body of the message
-	Body() []byte
-	// Codec used tp decode the message
-	Codec() codec.Reader
-}
-
-// Request is a synchronous request interface
-type Request interface {
-	// Service name requested
-	Service() string
-	// The action requested
-	Method() string
-	// Endpoint name requested
-	Endpoint() string
-	// Content Type provided
-	ContentType() string
-	// Header of the request
-	Header() map[string]string
-	// Body is the initial decoded value
-	Body() interface{}
-	// Read the undecoded request body
-	Read() ([]byte, error)
-	// The encoded message body
-	Codec() codec.Reader
-	// Indicates whether its a stream
-	Stream() bool
-}
-
-// Response is the response write for unencoded messages
-type Response interface {
-	// Encoded writer
-	Codec() codec.Writer
-	// Write the header
-	WriteHeader(map[string]string)
-	// Write a response directly to the client
-	Write([]byte) error
-}
-
-// Stream represents a stream established with a client.
-// A stream can be bidirectional which is indicated by the request.
-// The last error will be left in Error().
-// EOF indicates end of the stream.
-type Stream interface {
-	Context() context.Context
-	Request() Request
-	Send(interface{}) error
-	Recv(interface{}) error
-	Error() error
-	Close() error
-}
-
-// Handler interface represents a request handler. It's generated
-// by passing any type of public concrete object with endpoints into server.NewHandler.
-// Most will pass in a struct.
-//
-// Example:
-//
-//		type Greeter struct{}
-//
-//		func (g *Greeter) Hello(context, request, response) error {
-//			return nil
-//		}
-//
-type Handler interface {
-	Name() string
-	Handler() interface{}
-	Endpoints() []*registry.Endpoint
-	Options() HandlerOptions
-}
-
-// Subscriber interface represents a subscription to a given topic using
-// a specific subscriber function or object with endpoints. It mirrors
-// the handler in its behaviour.
-type Subscriber interface {
-	Topic() string
-	Subscriber() interface{}
-	Endpoints() []*registry.Endpoint
-	Options() SubscriberOptions
-}
-
-type Option func(*Options)
 
 var (
-	DefaultAddress = ":0"
-	DefaultName = "go.vine.server"
-	DefaultVersion = "latest"
-	DefaultId = uuid.New().String()
-	DefaultServer Server = newRpcServer()
-	DefaultRouter = newRpcRouter()
-	DefaultRegisterCheck = func(context.Context) error { return nil }
-	DefaultRegisterInterval = time.Second * 30
-	DefaultRegisterTTL = time.Second * 90
-
-	// NewServer creates a new server
-	NewServer func(...Option) Server = newRpcServer
+	// list of services managed
+	services = []string{
+		"network",  // :8443
+		"runtime",  // :8088
+		"registry", // :8000
+		"config",   // :8001
+		"store",    // :8002
+		"broker",   // :8003
+		"events",   // :unset
+		"auth",     // :8010
+		"proxy",    // :8081
+		"api",      // :8080
+	}
 )
 
-// DefaultOptions returns config options for the default service
-func DefaultOptions() Options {
-	return DefaultServer.Options()
-}
+var (
+	// Name of the server vineservice
+	Name = "server"
+	// Address is the server address
+	Address = ":10001"
+)
 
-// Init initialises the default server with options passed in
-func Init(opts ...Option) {
-	if DefaultServer == nil {
-		DefaultServer = newRpcServer(opts...)
+func init() {
+	command := &cli.Command{
+		Name:  "server",
+		Usage: "Run the vine server",
+		Description: `Launching the vine server ('vine server') will enable one to connect to it by
+		setting the appropriate Vine environment (see 'vine env' && 'vine env --help') commands.`,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "address",
+				Usage:   "Set the vine server address :10001",
+				EnvVars: []string{"VINE_SERVER_ADDRESS"},
+			},
+			&cli.StringFlag{
+				Name:    "image",
+				Usage:   "Set the vine server image",
+				EnvVars: []string{"VINE_SERVER_IMAGE"},
+				Value:   "vine/vine:latest",
+			},
+		},
+		Action: func(ctx *cli.Context) error {
+			Run(ctx)
+			return nil
+		},
 	}
-	DefaultServer.Init(opts...)
+
+	for _, p := range Plugins() {
+		if cmds := p.Commands(); len(cmds) > 0 {
+			command.Subcommands = append(command.Subcommands, cmds...)
+		}
+
+		if flags := p.Flags(); len(flags) > 0 {
+			command.Flags = append(command.Flags, flags...)
+		}
+	}
+
+	cmd.Register(command)
 }
 
-// NewRouter returns a new router
-func NewRouter() *router {
-	return newRpcRouter()
-}
+// Run runs the entire platform
+func Run(context *cli.Context) error {
+	if context.Args().Len() > 0 {
+		cli.ShowSubcommandHelp(context)
+		os.Exit(1)
+	}
 
-// NewSubscriber creates a new subscriber interface with the given topic
-// and handler using the default server
-func NewSubscriber(topic string, h interface{}, opts ...SubscriberOption) Subscriber {
-	return DefaultServer.NewSubscriber(topic, h, opts...)
-}
+	// TODO: reimplement peering of servers e.g --peer=node1,node2,node3
+	// peers are configured as network nodes to cluster between
+	log.Info("Starting server")
 
-// NewHandler creates a new handler interface using the default server
-// Handlers are required to be a public object with public
-// endpoint. Call to a service endpoint such as Foo.Bar expects
-// the type:
-//
-// type Foo struct{}
-// func (f *Foo) Bar(ctx, req, rsp) error {
-//     return nil
-// }
-//
-func NewHandler(h interface{}, opts ...HandlerOption) Handler {
-	return DefaultServer.NewHandler(h, opts...)
-}
+	// parse the env vars
+	var envvars []string
+	for _, val := range os.Environ() {
+		comps := strings.Split(val, "=")
+		if len(comps) != 2 {
+			continue
+		}
 
-// Handle registers a handler interface with the default server to
-// handle inbound requests.
-func Handle(h Handler) error {
-	return DefaultServer.Handle(h)
-}
+		// only process VINE_ values
+		if !strings.HasPrefix(comps[0], "VINE_") {
+			continue
+		}
 
-// Subscribe registers a subscriber interface with the default server
-// which subscribes to specified topic with the broker
-func Subscribe(s Subscriber) error {
-	return DefaultServer.Subscribe(s)
-}
+		// skip the profile and proxy, that's set below since it can be service specific
+		if comps[0] == "VINE_PROFILE" || comps[0] == "VINE_PROXY" {
+			continue
+		}
 
-// Run starts the default server and waits for a kill
-// signal before existing. Also registers/deregisters the server
-func Run() error {
-	if err := Start(); err != nil {
+		envvars = append(envvars, val)
+	}
+
+	// start the services
+	for _, service := range services {
+		log.Infof("Registering %s", service)
+
+		// all things run by the server are `vine service [name]`
+		cmdArgs := []string{"service"}
+
+		// override the profile for api & proxy
+		env := envvars
+		if service == "proxy" || service == "api" {
+			env = append(env, "VINE_PROFILE=client")
+		} else {
+			env = append(env, "VINE_PROFILE="+context.String("profile"))
+		}
+
+		// set the proxy addres, default to the network running locally
+		if service != "network" {
+			proxy := context.String("proxy-address")
+			if len(proxy) == 0 {
+				proxy = "127.0.0.1:8443"
+			}
+			env = append(env, "VINE_PROXY="+proxy)
+		}
+
+		// for kubernetes we want to provide a port and instruct the service to bind to it. we don't do
+		// this locally because the services are not isolated and the ports will conflict
+		var port string
+		if runtime.DefaultRuntime.String() == "kubernetes" {
+			switch service {
+			case "api":
+				// run the api on :443, the standard port for HTTPs
+				port = "443"
+				env = append(env, "VINE_API_ADDRESS=:443")
+				// pass :8080 for the internal service address, since this is the default port used for the
+				// static (k8s) router. Because the http api will register on :443 it won't conflict
+				env = append(env, "VINE_SERVICE_ADDRESS=:8080")
+			case "proxy":
+				// run the proxy on :443, the standard port for HTTPs
+				port = "443"
+				env = append(env, "VINE_PROXY_ADDRESS=:443")
+				// pass :8080 for the internal service address, since this is the default port used for the
+				// static (k8s) router. Because the grpc proxy will register on :443 it won't conflict
+				env = append(env, "VINE_SERVICE_ADDRESS=:8080")
+			case "network":
+				port = "8443"
+				env = append(env, "VINE_SERVICE_ADDRESS=:8443")
+			default:
+				port = "8080"
+				env = append(env, "VINE_SERVICE_ADDRESS=:8080")
+			}
+		}
+
+		// we want to pass through the global args so go up one level in the context lineage
+		if len(context.Lineage()) > 1 {
+			globCtx := context.Lineage()[1]
+			for _, f := range globCtx.FlagNames() {
+				cmdArgs = append(cmdArgs, "--"+f, context.String(f))
+			}
+		}
+		cmdArgs = append(cmdArgs, service)
+
+		// runtime based on environment we run the service in
+		args := []runtime.CreateOption{
+			runtime.WithCommand(os.Args[0]),
+			runtime.WithArgs(cmdArgs...),
+			runtime.WithEnv(env),
+			runtime.WithPort(port),
+			runtime.WithRetries(10),
+			runtime.WithServiceAccount("vine"),
+			runtime.WithVolume("store-pvc", "/store"),
+			runtime.CreateImage(context.String("image")),
+			runtime.CreateNamespace("vine"),
+			runtime.WithSecret("VINE_AUTH_PUBLIC_KEY", auth.DefaultAuth.Options().PublicKey),
+			runtime.WithSecret("VINE_AUTH_PRIVATE_KEY", auth.DefaultAuth.Options().PrivateKey),
+		}
+
+		// NOTE: we use Version right now to check for the latest release
+		muService := &runtime.Service{Name: service, Version: "latest"}
+		if err := runtime.Create(muService, args...); err != nil {
+			log.Errorf("Failed to create runtime environment: %v", err)
+			return err
+		}
+	}
+
+	// server is deployed as a pod in k8s, meaning it should exit once the services have been created.
+	if runtime.DefaultRuntime.String() == "kubernetes" {
+		return nil
+	}
+
+	log.Info("Starting server runtime")
+
+	// start the runtime
+	if err := runtime.DefaultRuntime.Start(); err != nil {
+		log.Fatal(err)
 		return err
 	}
+	defer runtime.DefaultRuntime.Stop()
 
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, signalutil.Shutdown()...)
+	// internal server
+	srv := service.New(
+		service.Name(Name),
+		service.Address(Address),
+	)
 
-	log.Infof("Received signal %s", <-ch)
+	// start the server
+	if err := srv.Run(); err != nil {
+		log.Fatalf("Error running server: %v", err)
+	}
 
-	return Stop()
-}
-
-// Start starts the default server
-func Start() error {
-	config := DefaultServer.Options()
-	log.Infof("Starting server %s id %s", config.Name, config.Id)
-	return DefaultServer.Start()
-}
-
-// Stop stops the default server
-func Stop() error {
-	log.Infof("Stopping server")
-	return DefaultServer.Stop()
-}
-
-// String returns name of Server implementation
-func String() string {
-	return DefaultServer.String()
+	log.Info("Stopped server")
+	return nil
 }

@@ -23,48 +23,87 @@ import (
 
 // StringSlice wraps a []string to satisfy flag.Value
 type StringSlice struct {
-	slice      []string
+	value      *[]string
 	hasBeenSet bool
 }
 
 // NewStringSlice creates a *StringSlice with default values
 func NewStringSlice(defaults ...string) *StringSlice {
-	return &StringSlice{slice: append([]string{}, defaults...)}
+	return newStringSlice(defaults, nil)
+}
+
+func newStringSlice(value []string, p *[]string) *StringSlice {
+	slice := new(StringSlice)
+	if p == nil {
+		p = &[]string{}
+	}
+	slice.value = p
+	*slice.value = value
+	return slice
 }
 
 // Set appends the string value to the list of values
 func (s *StringSlice) Set(value string) error {
 	if !s.hasBeenSet {
-		s.slice = []string{}
+		s.value = &[]string{}
 		s.hasBeenSet = true
 	}
 
 	if strings.HasPrefix(value, slPfx) {
 		// Deserializing assumes overwrite
-		_ = json.Unmarshal([]byte(strings.Replace(value, slPfx, "", 1)), &s.slice)
+		_ = json.Unmarshal([]byte(strings.Replace(value, slPfx, "", 1)), &(*s.value))
 		s.hasBeenSet = true
 		return nil
 	}
 
-	s.slice = append(s.slice, value)
+	tmp, err := stringSliceConv(value)
+	if err != nil {
+		return err
+	}
+
+	*s.value = append(*s.value, tmp...)
 
 	return nil
 }
 
+func stringSliceConv(val string) ([]string, error) {
+	val = strings.Trim(val, "[]")
+	// Empty string would cause a slice with one (empty) entry
+	if len(val) == 0 {
+		return []string{}, nil
+	}
+	ss := strings.Split(val, ",")
+	out := make([]string, len(ss))
+	for i, s := range ss {
+		out[i] = strings.TrimSpace(s)
+	}
+	return out, nil
+}
+
 // String returns a readable representation of this value (for usage defaults)
 func (s *StringSlice) String() string {
-	return fmt.Sprintf("%s", s.slice)
+	if s.value == nil {
+		return "[]"
+	}
+	out := make([]string, len(*s.value))
+	for i, s := range *s.value {
+		out[i] = strings.TrimSpace(s)
+	}
+	return "[" + strings.Join(out, ",") + "]"
 }
 
 // Serialize allows StringSlice to fulfill Serializer
 func (s *StringSlice) Serialize() string {
-	jsonBytes, _ := json.Marshal(s.slice)
+	jsonBytes, _ := json.Marshal(*s.value)
 	return fmt.Sprintf("%s%s", slPfx, string(jsonBytes))
 }
 
 // Value returns the slice of strings set by this flag
 func (s *StringSlice) Value() []string {
-	return s.slice
+	if s.value == nil {
+		return []string{}
+	}
+	return *s.value
 }
 
 // Get returns the slice of strings set by this flag
@@ -149,6 +188,61 @@ func (f *StringSliceFlag) Apply(set *flag.FlagSet) error {
 	}
 
 	return nil
+}
+
+func (a *App) stringSliceVar(p *[]string, name, alias string, value []string, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &StringSliceFlag{
+		Name:  name,
+		Usage: usage,
+		Value: newStringSlice(value, p),
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// StringSliceVar defines a []string flag with specified name, default value, usage string and env string.
+// The argument p points to a []string variable in which to store the value of the flag.
+func (a *App) StringSliceVar(p *[]string, name string, value []string, usage, env string) {
+	a.stringSliceVar(p, name, "", value, usage, env)
+}
+
+// StringSliceVarP is like StringSliceVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) StringSliceVarP(p *[]string, name, alias string, value []string, usage, env string) {
+	a.stringSliceVar(p, name, alias, value, usage, env)
+}
+
+// StringSliceVar defines a string flag with specified name, default value, usage string and env string.
+// The argument p points to a string variable in which to store the value of the flag.
+func StringSliceVar(p *[]string, name string, value []string, usage, env string) {
+	CommandLine.StringSliceVar(p, name, value, usage, env)
+}
+
+// StringSliceVarP is like StringSliceVar, but accepts a shorthand letter that can be used after a single dash.
+func StringSliceVarP(p *[]string, name, alias string, value []string, usage, env string) {
+	CommandLine.StringSliceVarP(p, name, alias, value, usage, env)
+}
+
+// StringSlice defines a string flag with specified name, default value, usage string and env string.
+// The return value is the address of a string variable that stores the value of the flag.
+func (a *App) StringSlice(name string, value []string, usage, env string) *[]string {
+	p := new([]string)
+	a.StringSliceVar(p, name, value, usage, env)
+	return p
+}
+
+// StringSliceP is like StringSlice, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) StringSliceP(name, alias string, value []string, usage, env string) *[]string {
+	p := new([]string)
+	a.StringSliceVarP(p, name, alias, value, usage, env)
+	return p
 }
 
 // StringSlice looks up the value of a local StringSliceFlag, returns

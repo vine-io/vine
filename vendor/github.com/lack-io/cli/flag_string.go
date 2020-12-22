@@ -87,6 +87,62 @@ func (f *StringFlag) Apply(set *flag.FlagSet) error {
 	return nil
 }
 
+func (a *App) stringVar(p *string, name, alias string, value string, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &StringFlag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// StringVar defines a string flag with specified name, default value, usage string and env string.
+// The argument p points to a string variable in which to store the value of the flag.
+func (a *App) StringVar(p *string, name string, value string, usage, env string) {
+	a.stringVar(p, name, "", value, usage, env)
+}
+
+// StringVarP is like StringVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) StringVarP(p *string, name, alias string, value string, usage, env string) {
+	a.stringVar(p, name, alias, value, usage, env)
+}
+
+// StringVar defines a string flag with specified name, default value, usage string and env string.
+// The argument p points to a string variable in which to store the value of the flag.
+func StringVar(p *string, name string, value string, usage, env string) {
+	CommandLine.StringVar(p, name, value, usage, env)
+}
+
+// StringVarP is like StringVar, but accepts a shorthand letter that can be used after a single dash.
+func StringVarP(p *string, name, alias string, value string, usage, env string) {
+	CommandLine.StringVarP(p, name, alias, value, usage, env)
+}
+
+// String defines a string flag with specified name, default value, usage string and env string.
+// The return value is the address of a string variable that stores the value of the flag.
+func (a *App) String(name string, value string, usage, env string) *string {
+	p := new(string)
+	a.StringVar(p, name, value, usage, env)
+	return p
+}
+
+// StringP is like String, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) StringP(name, alias string, value string, usage, env string) *string {
+	p := new(string)
+	a.StringVarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // String looks up the value of a local StringFlag, returns
 // "" if not found
 func (c *Context) String(name string) string {

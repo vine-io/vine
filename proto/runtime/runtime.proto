@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package runtime;
+
 option go_package = "github.com/lack-io/vine/proto/runtime;runtime";
 
 service Runtime {
@@ -9,6 +10,58 @@ service Runtime {
 	rpc Delete(DeleteRequest) returns (DeleteResponse) {};
 	rpc Update(UpdateRequest) returns (UpdateResponse) {};
 	rpc Logs(LogsRequest) returns (stream LogRecord) {};
+}
+
+message Resource {
+	Namespace namespace = 1;
+	NetworkPolicy networkpolicy = 2;
+	Service service = 3;
+	ResourceQuota resourcequota = 4;
+}
+
+message Namespace {
+	// name of the namespace
+	string name = 1;
+}
+
+message NetworkPolicy {
+	// the labels allowed ingress by this policy
+	map<string,string> allowedlabels = 1;
+	// name of the network policy
+	string name = 2;
+	// namespace the network policy belongs to
+	string namespace = 3;
+}
+
+message ResourceQuota {
+	// name of the resource quota
+	string name = 1;
+	// namespace the resource quota belongs to
+	string namespace = 2;
+	// resource requests
+	Resources requests = 3;
+	// resource limits
+	Resources limits = 4;
+}
+
+message Resources {
+	int32 Memory = 1; // in MiB
+	int32 CPU = 2; // in millicores
+	int32 EphemeralStorage = 3; // in MiB
+}
+
+// Source service is used by the CLI to upload source to the service. The service will return
+// a unique ID representing the location of that source. This ID can then be used as a source
+// for the service when doing Runtime.Create. The server will handle cleanup of uploaded source.
+service Source {
+	rpc Upload(stream UploadRequest) returns (UploadResponse) {};
+}
+
+// Build service is used by containers to download prebuilt binaries. The client will pass the 
+// service (name and version are required attributed) and the server will then stream the latest
+// binary to the client.
+service Build {
+	rpc Read(Service) returns (stream BuildReadResponse) {};
 }
 
 message Service {
@@ -20,13 +73,8 @@ message Service {
 	string source = 3;
 	// service metadata
 	map<string,string> metadata = 4;
-}
-
-message Event {
-	string type = 1;
-	int64 timestamp = 2;
-	string service = 3;
-	string version = 4;
+	// status of the service
+	int32 status = 5;
 }
 
 message CreateOptions {
@@ -42,10 +90,18 @@ message CreateOptions {
 	string type = 5;
 	// image to use
 	string image = 6;
+	// namespace to create the service in
+	string namespace = 7;
+	// secrets to use for the service
+	map<string,string> secrets = 8;
+	// entrypoint within the source
+	string entrypoint = 9;
+	// volumes to mount
+	map<string,string> volumes = 10;
 }
 
 message CreateRequest {
-	Service service = 1;
+	Resource resource = 1;
 	CreateOptions options = 2;
 }
 
@@ -58,6 +114,8 @@ message ReadOptions {
 	string version = 2;
 	// type of service
 	string type = 3;
+	// namespace of the service
+	string namespace = 4;
 }
 
 message ReadRequest {
@@ -69,26 +127,34 @@ message ReadResponse {
 }
 
 message DeleteOptions {
+	// namespace of the service
+	string namespace = 1;
 }
 
 message DeleteRequest {
-	Service service = 1;
+	Resource resource = 1;
 	DeleteOptions options = 2;
 }
 
 message DeleteResponse {}
 
 message UpdateOptions {
+	// namespace of the service
+	string namespace = 1;
+	// entrypoint within the source
+	string entrypoint = 2;
 }
 
 message UpdateRequest {
-	Service service = 1;
+	Resource resource = 1;
 	UpdateOptions options = 2;
 }
 
 message UpdateResponse {}
 
 message ListOptions {
+	// namespace of the service
+	string namespace = 1;
 }
 
 message ListRequest {
@@ -100,6 +166,8 @@ message ListResponse {
 }
 
 message LogsOptions {
+	// namespace of the service
+	string namespace = 1;
 }
 
 message LogsRequest{
@@ -126,3 +194,15 @@ message LogRecord {
 	string message = 3;
 }
 
+message UploadRequest {
+	Service service = 1;
+	bytes data = 2;
+}
+
+message UploadResponse {
+	string id = 1;
+}
+
+message BuildReadResponse {
+	bytes data = 1;
+}

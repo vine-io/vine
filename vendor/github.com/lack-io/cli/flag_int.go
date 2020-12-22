@@ -98,6 +98,62 @@ func (f *IntFlag) Apply(set *flag.FlagSet) error {
 	return nil
 }
 
+func (a *App) intVar(p *int, name, alias string, value int, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &IntFlag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// IntVar defines a int flag with specified name, default value, usage string and env string.
+// The argument p points to a int variable in which to store the value of the flag.
+func (a *App) IntVar(p *int, name string, value int, usage, env string) {
+	a.intVar(p, name, "", value, usage, env)
+}
+
+// IntVarP is like IntVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) IntVarP(p *int, name, alias string, value int, usage, env string) {
+	a.intVar(p, name, alias, value, usage, env)
+}
+
+// IntVar defines a int flag with specified name, default value, usage string and env string.
+// The argument p points to a int variable in which to store the value of the flag.
+func IntVar(p *int, name string, value int, usage, env string) {
+	CommandLine.IntVar(p, name, value, usage, env)
+}
+
+// IntVarP is like IntVar, but accepts a shorthand letter that can be used after a single dash.
+func IntVarP(p *int, name, alias string, value int, usage, env string) {
+	CommandLine.IntVarP(p, name, alias, value, usage, env)
+}
+
+// Int defines a int flag with specified name, default value, usage string and env string.
+// The return value is the address of a int variable that stores the value of the flag.
+func (a *App) Int(name string, value int, usage, env string) *int {
+	p := new(int)
+	a.IntVar(p, name, value, usage, env)
+	return p
+}
+
+// IntP is like Int, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) IntP(name, alias string, value int, usage, env string) *int {
+	p := new(int)
+	a.IntVarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Int looks up the value of a local IntFlag, returns
 // 0 if not found
 func (c *Context) Int(name string) int {

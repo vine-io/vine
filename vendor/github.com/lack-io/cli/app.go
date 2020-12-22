@@ -34,6 +34,20 @@ var (
 		fmt.Sprintf("See %s", appActionDeprecationURL), 2)
 )
 
+// CommandLine is the App instance.
+var CommandLine *App
+
+func initCommandLine() {
+	CommandLine = NewApp()
+	CommandLine.CustomAppHelpTemplate = CommandLineHelpTemplate
+	CommandLine.Action = func(ctx *Context) error { return nil }
+	CommandLine.HideVersion = true
+}
+
+func init() {
+	initCommandLine()
+}
+
 // App is the main structure of a cli application. It is recommended that
 // an app be created with the cli.NewApp() function
 type App struct {

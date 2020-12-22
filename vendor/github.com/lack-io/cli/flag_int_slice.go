@@ -24,64 +24,102 @@ import (
 
 // IntSlice wraps []int to satisfy flag.Value
 type IntSlice struct {
-	slice      []int
+	value      *[]int
 	hasBeenSet bool
 }
 
 // NewIntSlice makes an *IntSlice with default values
 func NewIntSlice(defaults ...int) *IntSlice {
-	return &IntSlice{slice: append([]int{}, defaults...)}
+	return newIntSlice(defaults, nil)
+}
+
+func newIntSlice(value []int, p *[]int) *IntSlice {
+	slice := new(IntSlice)
+	if p == nil {
+		p = &[]int{}
+	}
+	slice.value = p
+	*slice.value = value
+	return slice
 }
 
 // TODO: Consistently have specific Set function for Int64 and Float64 ?
 // SetInt directly adds an integer to the list of values
 func (i *IntSlice) SetInt(value int) {
 	if !i.hasBeenSet {
-		i.slice = []int{}
+		i.value = &[]int{}
 		i.hasBeenSet = true
 	}
 
-	i.slice = append(i.slice, value)
+	*i.value = append(*i.value, value)
 }
 
 // Set parses the value into an integer and appends it to the list of values
 func (i *IntSlice) Set(value string) error {
 	if !i.hasBeenSet {
-		i.slice = []int{}
+		i.value = &[]int{}
 		i.hasBeenSet = true
 	}
 
 	if strings.HasPrefix(value, slPfx) {
 		// Deserializing assumes overwrite
-		_ = json.Unmarshal([]byte(strings.Replace(value, slPfx, "", 1)), &i.slice)
+		_ = json.Unmarshal([]byte(strings.Replace(value, slPfx, "", 1)), &(*i.value))
 		i.hasBeenSet = true
 		return nil
 	}
 
-	tmp, err := strconv.ParseInt(value, 0, 64)
+	tmp, err := intSliceConv(value)
 	if err != nil {
 		return err
 	}
-
-	i.slice = append(i.slice, int(tmp))
+	*i.value = append(*i.value, tmp...)
 
 	return nil
 }
 
+func intSliceConv(val string) ([]int, error) {
+	val = strings.Trim(val, "[]")
+	// Empty string would cause a slice with one (empty) entry
+	if len(val) == 0 {
+		return []int{}, nil
+	}
+	ss := strings.Split(val, ",")
+	out := make([]int, len(ss))
+	for i, d := range ss {
+		var err error
+		i64, err := strconv.ParseInt(strings.TrimSpace(d), 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		out[i] = int(i64)
+	}
+	return out, nil
+}
+
 // String returns a readable representation of this value (for usage defaults)
 func (i *IntSlice) String() string {
-	return fmt.Sprintf("%#v", i.slice)
+	if i.value == nil {
+		return "[]"
+	}
+	out := make([]string, len(*i.value))
+	for i, d := range *i.value {
+		out[i] = fmt.Sprintf("%d", d)
+	}
+	return "[" + strings.Join(out, ",") + "]"
 }
 
 // Serialize allows IntSlice to fulfill Serializer
 func (i *IntSlice) Serialize() string {
-	jsonBytes, _ := json.Marshal(i.slice)
+	jsonBytes, _ := json.Marshal(*i.value)
 	return fmt.Sprintf("%s%s", slPfx, string(jsonBytes))
 }
 
 // Value returns the slice of ints set by this flag
 func (i *IntSlice) Value() []int {
-	return i.slice
+	if i.value == nil {
+		return []int{}
+	}
+	return *i.value
 }
 
 // Get returns the slice of ints set by this flag
@@ -165,6 +203,61 @@ func (f *IntSliceFlag) Apply(set *flag.FlagSet) error {
 	}
 
 	return nil
+}
+
+func (a *App) intSliceVar(p *[]int, name, alias string, value []int, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &IntSliceFlag{
+		Name:  name,
+		Usage: usage,
+		Value: newIntSlice(value, p),
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// IntSliceVar defines a []int flag with specified name, default value, usage string and env string.
+// The argument p points to a []int variable in which to store the value of the flag.
+func (a *App) IntSliceVar(p *[]int, name string, value []int, usage, env string) {
+	a.intSliceVar(p, name, "", value, usage, env)
+}
+
+// IntSliceVarP is like IntSliceVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) IntSliceVarP(p *[]int, name, alias string, value []int, usage, env string) {
+	a.intSliceVar(p, name, alias, value, usage, env)
+}
+
+// IntSliceVar defines a []int flag with specified name, default value, usage string and env string.
+// The argument p points to a []int variable in which to store the value of the flag.
+func IntSliceVar(p *[]int, name string, value []int, usage, env string) {
+	CommandLine.IntSliceVar(p, name, value, usage, env)
+}
+
+// IntSliceVarP is like IntSliceVar, but accepts a shorthand letter that can be used after a single dash.
+func IntSliceVarP(p *[]int, name, alias string, value []int, usage, env string) {
+	CommandLine.IntSliceVarP(p, name, alias, value, usage, env)
+}
+
+// IntSlice defines a []int flag with specified name, default value, usage string and env string.
+// The return value is the address of a []int variable that stores the value of the flag.
+func (a *App) IntSlice(name string, value []int, usage, env string) *[]int {
+	p := new([]int)
+	a.IntSliceVar(p, name, value, usage, env)
+	return p
+}
+
+// IntSliceP is like IntSlice, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) IntSliceP(name, alias string, value []int, usage, env string) *[]int {
+	p := new([]int)
+	a.IntSliceVarP(p, name, alias, value, usage, env)
+	return p
 }
 
 // IntSlice looks up the value of a local IntSliceFlag, returns

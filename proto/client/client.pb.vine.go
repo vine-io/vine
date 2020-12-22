@@ -11,9 +11,9 @@ import (
 
 import (
 	context "context"
-	api "github.com/lack-io/vine/api"
-	client "github.com/lack-io/vine/client"
-	server "github.com/lack-io/vine/server"
+	api "github.com/lack-io/vine/service/api"
+	client "github.com/lack-io/vine/service/client"
+	server "github.com/lack-io/vine/service/server"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -44,7 +44,7 @@ type ClientService interface {
 	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	// Stream is a bidirectional stream
 	Stream(ctx context.Context, opts ...client.CallOption) (Client_StreamService, error)
-	// Publish publishes a message returns an empty Message
+	// Publish publishes a message and returns an empty Message
 	Publish(ctx context.Context, in *Message, opts ...client.CallOption) (*Message, error)
 }
 
@@ -137,7 +137,7 @@ type ClientHandler interface {
 	Call(context.Context, *Request, *Response) error
 	// Stream is a bidirectional stream
 	Stream(context.Context, Client_StreamStream) error
-	// Publish publishes a message returns an empty Message
+	// Publish publishes a message and returns an empty Message
 	Publish(context.Context, *Message, *Message) error
 }
 
