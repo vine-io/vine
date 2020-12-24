@@ -15,8 +15,8 @@
 package mucp
 
 import (
-	"github.com/lack-io/vine/internal/codec"
-	"github.com/lack-io/vine/internal/network/transport"
+	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/util/network/transport"
 )
 
 type rpcResponse struct {

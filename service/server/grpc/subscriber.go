@@ -21,12 +21,12 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/lack-io/vine/internal/context/metadata"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/util/context/metadata"
 )
 
 const (

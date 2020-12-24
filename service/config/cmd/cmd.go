@@ -22,14 +22,6 @@ import (
 
 	"github.com/lack-io/cli"
 
-	authutil "github.com/lack-io/vine/internal/auth"
-	"github.com/lack-io/vine/internal/auth/provider"
-	"github.com/lack-io/vine/internal/debug/profile"
-	"github.com/lack-io/vine/internal/debug/profile/http"
-	"github.com/lack-io/vine/internal/debug/profile/pprof"
-	"github.com/lack-io/vine/internal/debug/trace"
-	"github.com/lack-io/vine/internal/network/transport"
-	"github.com/lack-io/vine/internal/wrapper"
 	"github.com/lack-io/vine/service/auth"
 	rpcAuth "github.com/lack-io/vine/service/auth/grpc"
 	"github.com/lack-io/vine/service/broker"
@@ -43,6 +35,14 @@ import (
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/service/store/bolt"
+	authutil "github.com/lack-io/vine/util/auth"
+	"github.com/lack-io/vine/util/auth/provider"
+	"github.com/lack-io/vine/util/debug/profile"
+	"github.com/lack-io/vine/util/debug/profile/http"
+	"github.com/lack-io/vine/util/debug/profile/pprof"
+	"github.com/lack-io/vine/util/debug/trace"
+	"github.com/lack-io/vine/util/network/transport"
+	"github.com/lack-io/vine/util/wrapper"
 
 	// clients
 	cgrpc "github.com/lack-io/vine/service/client/grpc"
@@ -72,8 +72,8 @@ import (
 	staticSelector "github.com/lack-io/vine/service/client/selector/static"
 
 	// transports
-	thttp "github.com/lack-io/vine/internal/network/transport/http"
-	tmem "github.com/lack-io/vine/internal/network/transport/memory"
+	thttp "github.com/lack-io/vine/util/network/transport/http"
+	tmem "github.com/lack-io/vine/util/network/transport/memory"
 
 	// stores
 	svcStore "github.com/lack-io/vine/service/store/grpc"
@@ -83,13 +83,13 @@ import (
 	configSrv "github.com/lack-io/vine/service/config/source/service"
 
 	// tracers
-	memTracer "github.com/lack-io/vine/internal/debug/trace/memory"
+	memTracer "github.com/lack-io/vine/util/debug/trace/memory"
 
 	// auth
-	jwtAuth "github.com/lack-io/vine/internal/auth/jwt"
+	jwtAuth "github.com/lack-io/vine/util/auth/jwt"
 	// auth providers
-	"github.com/lack-io/vine/internal/auth/provider/basic"
-	"github.com/lack-io/vine/internal/auth/provider/oauth"
+	"github.com/lack-io/vine/util/auth/provider/basic"
+	"github.com/lack-io/vine/util/auth/provider/oauth"
 )
 
 func init() {

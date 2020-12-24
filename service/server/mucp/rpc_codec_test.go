@@ -19,8 +19,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/lack-io/vine/internal/codec"
-	"github.com/lack-io/vine/internal/network/transport"
+	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/util/network/transport"
 )
 
 // testCodec is a dummy codec that only knows how to encode nil bodies

@@ -15,10 +15,6 @@
 package service
 
 import (
-	"github.com/lack-io/vine/internal/debug/trace"
-	memTrace "github.com/lack-io/vine/internal/debug/trace/memory"
-	"github.com/lack-io/vine/internal/network/transport"
-	httpTransport "github.com/lack-io/vine/internal/network/transport/http"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/auth/noop"
 	"github.com/lack-io/vine/service/broker"
@@ -38,6 +34,10 @@ import (
 	mucpServer "github.com/lack-io/vine/service/server/mucp"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"
+	"github.com/lack-io/vine/util/debug/trace"
+	memTrace "github.com/lack-io/vine/util/debug/trace/memory"
+	"github.com/lack-io/vine/util/network/transport"
+	httpTransport "github.com/lack-io/vine/util/network/transport/http"
 )
 
 func init() {

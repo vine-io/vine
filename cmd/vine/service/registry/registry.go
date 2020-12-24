@@ -23,12 +23,12 @@ import (
 
 	rcli "github.com/lack-io/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/registry/handler"
-	"github.com/lack-io/vine/internal/helper"
 	pb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/grpc"
+	"github.com/lack-io/vine/util/helper"
 )
 
 var (

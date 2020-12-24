@@ -22,11 +22,11 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/lack-io/vine/internal/context/metadata"
 	"github.com/lack-io/vine/proto/errors"
 	pb "github.com/lack-io/vine/proto/store"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/util/context/metadata"
 )
 
 type gRPCStore struct {

@@ -21,7 +21,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/internal/ring"
 	"github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/proto/debug/trace"
 	"github.com/lack-io/vine/proto/errors"
@@ -29,6 +28,7 @@ import (
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/ring"
 )
 
 // New initialises and returns a new trace service handler

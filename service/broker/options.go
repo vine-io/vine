@@ -18,8 +18,8 @@ import (
 	"context"
 	"crypto/tls"
 
-	"github.com/lack-io/vine/internal/codec"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/codec"
 )
 
 type Options struct {

@@ -17,9 +17,9 @@ package manager
 import (
 	"testing"
 
-	"github.com/lack-io/vine/internal/namespace"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/store/memory"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 func TestServices(t *testing.T) {

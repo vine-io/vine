@@ -26,18 +26,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/internal/addr"
-	"github.com/lack-io/vine/internal/backoff"
-	"github.com/lack-io/vine/internal/codec"
-	raw "github.com/lack-io/vine/internal/codec/bytes"
-	"github.com/lack-io/vine/internal/context/metadata"
-	mnet "github.com/lack-io/vine/internal/net"
-	"github.com/lack-io/vine/internal/network/transport"
-	"github.com/lack-io/vine/internal/socket"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/util/addr"
+	"github.com/lack-io/vine/util/backoff"
+	"github.com/lack-io/vine/util/codec"
+	raw "github.com/lack-io/vine/util/codec/bytes"
+	"github.com/lack-io/vine/util/context/metadata"
+	mnet "github.com/lack-io/vine/util/net"
+	"github.com/lack-io/vine/util/network/transport"
+	"github.com/lack-io/vine/util/socket"
 )
 
 type rpcServer struct {

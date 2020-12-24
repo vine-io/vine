@@ -27,12 +27,12 @@ import (
 
 	"github.com/lack-io/cli"
 
-	botc "github.com/lack-io/vine/internal/command/bot"
 	proto "github.com/lack-io/vine/proto/bot"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/agent/command"
 	"github.com/lack-io/vine/service/agent/input"
 	log "github.com/lack-io/vine/service/logger"
+	botc "github.com/lack-io/vine/util/command/bot"
 
 	// inputs
 	_ "github.com/lack-io/vine/service/agent/input/discord"

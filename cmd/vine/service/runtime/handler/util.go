@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/lack-io/vine/internal/namespace"
 	pb "github.com/lack-io/vine/proto/runtime"
 	"github.com/lack-io/vine/service/runtime"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 func toProto(s *runtime.Service) *pb.Service {

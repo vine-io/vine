@@ -30,13 +30,6 @@ import (
 	"github.com/lack-io/vine/service/server"
 	smucp "github.com/lack-io/vine/service/server/mucp"
 
-	"github.com/lack-io/vine/internal/backoff"
-	"github.com/lack-io/vine/internal/network/resolver/dns"
-	"github.com/lack-io/vine/internal/network/transport"
-	"github.com/lack-io/vine/internal/network/tunnel"
-	bun "github.com/lack-io/vine/internal/network/tunnel/broker"
-	tun "github.com/lack-io/vine/internal/network/tunnel/transport"
-	pbUtil "github.com/lack-io/vine/internal/proto"
 	pbNet "github.com/lack-io/vine/proto/network"
 	pbRtr "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/service/client"
@@ -45,6 +38,13 @@ import (
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/router"
+	"github.com/lack-io/vine/util/backoff"
+	"github.com/lack-io/vine/util/network/resolver/dns"
+	"github.com/lack-io/vine/util/network/transport"
+	"github.com/lack-io/vine/util/network/tunnel"
+	bun "github.com/lack-io/vine/util/network/tunnel/broker"
+	tun "github.com/lack-io/vine/util/network/tunnel/transport"
+	pbUtil "github.com/lack-io/vine/util/proto"
 )
 
 var (

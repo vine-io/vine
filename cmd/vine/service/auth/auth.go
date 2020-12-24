@@ -26,11 +26,6 @@ import (
 	"github.com/lack-io/vine/cmd/vine/service/auth/api"
 	authHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/auth"
 	rulesHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/rules"
-	"github.com/lack-io/vine/internal/auth/token"
-	"github.com/lack-io/vine/internal/auth/token/jwt"
-	"github.com/lack-io/vine/internal/client"
-	"github.com/lack-io/vine/internal/config"
-	"github.com/lack-io/vine/internal/helper"
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service"
@@ -38,6 +33,11 @@ import (
 	srvAuth "github.com/lack-io/vine/service/auth/grpc"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/util/auth/token"
+	"github.com/lack-io/vine/util/auth/token/jwt"
+	"github.com/lack-io/vine/util/client"
+	"github.com/lack-io/vine/util/config"
+	"github.com/lack-io/vine/util/helper"
 )
 
 var (

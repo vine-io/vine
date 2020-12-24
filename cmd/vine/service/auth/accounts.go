@@ -24,9 +24,9 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/internal/client"
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/service/auth"
+	"github.com/lack-io/vine/util/client"
 )
 
 func listAccounts(ctx *cli.Context) {

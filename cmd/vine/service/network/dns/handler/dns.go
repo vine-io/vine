@@ -20,9 +20,9 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/provider"
-	"github.com/lack-io/vine/internal/context/metadata"
 	dns "github.com/lack-io/vine/proto/network/dns"
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/util/context/metadata"
 )
 
 // DNS handles incoming gRPC requests

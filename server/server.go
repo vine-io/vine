@@ -21,13 +21,13 @@ import (
 
 	"github.com/lack-io/cli"
 
-	handler "github.com/lack-io/vine/internal/file"
-	"github.com/lack-io/vine/internal/platform"
-	"github.com/lack-io/vine/internal/update"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	gorun "github.com/lack-io/vine/service/runtime"
+	handler "github.com/lack-io/vine/util/file"
+	"github.com/lack-io/vine/util/platform"
+	"github.com/lack-io/vine/util/update"
 )
 
 var (

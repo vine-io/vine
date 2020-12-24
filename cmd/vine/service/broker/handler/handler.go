@@ -17,11 +17,11 @@ package handler
 import (
 	"context"
 
-	"github.com/lack-io/vine/internal/namespace"
 	pb "github.com/lack-io/vine/proto/broker"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 type Broker struct {

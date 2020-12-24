@@ -20,12 +20,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lack-io/vine/internal/namespace"
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 const (

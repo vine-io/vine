@@ -19,7 +19,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lack-io/vine/internal/namespace"
 	"github.com/lack-io/vine/proto/errors"
 	pb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service"
@@ -27,6 +26,7 @@ import (
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/grpc"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 type Registry struct {

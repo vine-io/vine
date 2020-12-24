@@ -14,7 +14,7 @@
 
 package grpc
 
-import "github.com/lack-io/vine/internal/codec"
+import "github.com/lack-io/vine/util/codec"
 
 type rpcResponse struct {
 	header map[string]string

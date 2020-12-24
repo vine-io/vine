@@ -18,11 +18,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/internal/codec"
-	"github.com/lack-io/vine/internal/network/transport"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/util/network/transport"
 )
 
 type Options struct {

@@ -40,10 +40,6 @@ import (
 	"github.com/lack-io/vine/cmd/vine/service/router"
 	"github.com/lack-io/vine/cmd/vine/service/runtime"
 	"github.com/lack-io/vine/cmd/vine/service/store"
-	inauth "github.com/lack-io/vine/internal/auth"
-	"github.com/lack-io/vine/internal/helper"
-	"github.com/lack-io/vine/internal/platform"
-	"github.com/lack-io/vine/internal/update"
 	"github.com/lack-io/vine/plugin"
 	"github.com/lack-io/vine/plugin/build"
 	"github.com/lack-io/vine/server"
@@ -52,6 +48,10 @@ import (
 	"github.com/lack-io/vine/service/health"
 	gostore "github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/service/tunnel"
+	inauth "github.com/lack-io/vine/util/auth"
+	"github.com/lack-io/vine/util/helper"
+	"github.com/lack-io/vine/util/platform"
+	"github.com/lack-io/vine/util/update"
 )
 
 var (

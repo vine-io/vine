@@ -29,8 +29,8 @@ import (
 	"github.com/lack-io/cli"
 	"github.com/xlab/treeprint"
 
-	tmpl "github.com/lack-io/vine/internal/template"
-	"github.com/lack-io/vine/internal/usage"
+	tmpl "github.com/lack-io/vine/util/template"
+	"github.com/lack-io/vine/util/usage"
 )
 
 func protoComments(goDir, alias string) []string {

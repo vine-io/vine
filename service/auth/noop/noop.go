@@ -17,8 +17,8 @@ package noop
 import (
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/internal/auth/provider/basic"
 	"github.com/lack-io/vine/service/auth"
+	"github.com/lack-io/vine/util/auth/provider/basic"
 )
 
 func NewAuth(opts ...auth.Option) auth.Auth {

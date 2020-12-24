@@ -29,14 +29,14 @@ import (
 	"google.golang.org/grpc/encoding"
 	gmetadata "google.golang.org/grpc/metadata"
 
-	raw "github.com/lack-io/vine/internal/codec/bytes"
-	"github.com/lack-io/vine/internal/context/metadata"
-	mnet "github.com/lack-io/vine/internal/net"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/registry"
+	raw "github.com/lack-io/vine/util/codec/bytes"
+	"github.com/lack-io/vine/util/context/metadata"
+	mnet "github.com/lack-io/vine/util/net"
 )
 
 type grpcClient struct {

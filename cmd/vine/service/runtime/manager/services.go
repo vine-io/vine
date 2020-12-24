@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lack-io/vine/internal/namespace"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 // service is the object persisted in the store

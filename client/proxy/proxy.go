@@ -22,13 +22,6 @@ import (
 	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/internal/api/server/acme"
-	"github.com/lack-io/vine/internal/api/server/acme/autocert"
-	"github.com/lack-io/vine/internal/api/server/acme/certmagic"
-	"github.com/lack-io/vine/internal/helper"
-	"github.com/lack-io/vine/internal/muxer"
-	"github.com/lack-io/vine/internal/sync/memory"
-	"github.com/lack-io/vine/internal/wrapper"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/auth"
 	bmem "github.com/lack-io/vine/service/broker/memory"
@@ -47,6 +40,13 @@ import (
 	"github.com/lack-io/vine/service/server"
 	sgrpc "github.com/lack-io/vine/service/server/grpc"
 	mucpServer "github.com/lack-io/vine/service/server/mucp"
+	"github.com/lack-io/vine/util/api/server/acme"
+	"github.com/lack-io/vine/util/api/server/acme/autocert"
+	"github.com/lack-io/vine/util/api/server/acme/certmagic"
+	"github.com/lack-io/vine/util/helper"
+	"github.com/lack-io/vine/util/muxer"
+	"github.com/lack-io/vine/util/sync/memory"
+	"github.com/lack-io/vine/util/wrapper"
 )
 
 var (

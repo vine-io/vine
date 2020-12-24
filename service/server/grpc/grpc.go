@@ -37,15 +37,15 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
-	"github.com/lack-io/vine/internal/addr"
-	"github.com/lack-io/vine/internal/backoff"
-	meta "github.com/lack-io/vine/internal/context/metadata"
-	mnet "github.com/lack-io/vine/internal/net"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/util/addr"
+	"github.com/lack-io/vine/util/backoff"
+	meta "github.com/lack-io/vine/util/context/metadata"
+	mnet "github.com/lack-io/vine/util/net"
 )
 
 var (

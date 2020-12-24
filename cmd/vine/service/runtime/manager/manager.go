@@ -15,11 +15,11 @@
 package manager
 
 import (
-	"github.com/lack-io/vine/internal/namespace"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/service/store/memory"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 // Init initializes the runtime

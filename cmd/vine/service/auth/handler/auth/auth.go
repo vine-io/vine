@@ -24,15 +24,15 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/lack-io/vine/internal/auth/token"
-	"github.com/lack-io/vine/internal/auth/token/basic"
-	"github.com/lack-io/vine/internal/namespace"
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"
+	"github.com/lack-io/vine/util/auth/token"
+	"github.com/lack-io/vine/util/auth/token/basic"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 const (

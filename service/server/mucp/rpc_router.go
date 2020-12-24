@@ -26,10 +26,10 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/lack-io/vine/internal/codec"
 	verrors "github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/util/codec"
 )
 
 var (

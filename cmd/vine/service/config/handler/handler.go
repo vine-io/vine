@@ -21,7 +21,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/internal/namespace"
 	pb "github.com/lack-io/vine/proto/config"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/client"
@@ -29,6 +28,7 @@ import (
 	jr "github.com/lack-io/vine/service/config/reader/json"
 	"github.com/lack-io/vine/service/config/source"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 var (

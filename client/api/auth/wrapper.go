@@ -21,13 +21,13 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/lack-io/vine/internal/api/resolver"
-	"github.com/lack-io/vine/internal/api/server"
-	inauth "github.com/lack-io/vine/internal/auth"
-	"github.com/lack-io/vine/internal/ctx"
-	"github.com/lack-io/vine/internal/namespace"
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/util/api/resolver"
+	"github.com/lack-io/vine/util/api/server"
+	inauth "github.com/lack-io/vine/util/auth"
+	"github.com/lack-io/vine/util/ctx"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 // Wrapper wraps a handler and authenticates requests

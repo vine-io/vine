@@ -28,16 +28,16 @@ import (
 
 	"github.com/lack-io/cli"
 
-	maddr "github.com/lack-io/vine/internal/addr"
-	authutil "github.com/lack-io/vine/internal/auth"
-	"github.com/lack-io/vine/internal/backoff"
-	mhttp "github.com/lack-io/vine/internal/http"
-	mnet "github.com/lack-io/vine/internal/net"
-	signalutil "github.com/lack-io/vine/internal/signal"
-	mls "github.com/lack-io/vine/internal/tls"
 	srv "github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
+	maddr "github.com/lack-io/vine/util/addr"
+	authutil "github.com/lack-io/vine/util/auth"
+	"github.com/lack-io/vine/util/backoff"
+	mhttp "github.com/lack-io/vine/util/http"
+	mnet "github.com/lack-io/vine/util/net"
+	signalutil "github.com/lack-io/vine/util/signal"
+	mls "github.com/lack-io/vine/util/tls"
 )
 
 type service struct {

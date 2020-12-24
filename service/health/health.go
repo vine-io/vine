@@ -23,11 +23,11 @@ import (
 	"github.com/lack-io/cli"
 
 	mcli "github.com/lack-io/vine/client/cli"
-	qcli "github.com/lack-io/vine/internal/command/cli"
 	proto "github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/client"
 	log "github.com/lack-io/vine/service/logger"
+	qcli "github.com/lack-io/vine/util/command/cli"
 )
 
 var (

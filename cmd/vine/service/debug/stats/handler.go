@@ -20,13 +20,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/internal/ring"
 	"github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/proto/debug/stats"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/ring"
 )
 
 // New initialises and returns a new Stats service handler

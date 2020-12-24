@@ -23,10 +23,10 @@ import (
 
 	"github.com/google/uuid"
 
-	maddr "github.com/lack-io/vine/internal/addr"
-	mnet "github.com/lack-io/vine/internal/net"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/logger"
+	maddr "github.com/lack-io/vine/util/addr"
+	mnet "github.com/lack-io/vine/util/net"
 )
 
 type memoryBroker struct {

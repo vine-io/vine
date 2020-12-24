@@ -18,11 +18,11 @@ package debug
 import (
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/internal/debug/log"
 	pblog "github.com/lack-io/vine/proto/debug/log"
 	pbstats "github.com/lack-io/vine/proto/debug/stats"
 	pbtrace "github.com/lack-io/vine/proto/debug/trace"
 	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine/util/debug/log"
 
 	// "github.com/lack-io/vine/debug/log/kubernetes"
 	dservice "github.com/lack-io/vine/service/debug"

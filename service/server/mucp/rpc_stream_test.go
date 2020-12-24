@@ -25,8 +25,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	"github.com/lack-io/vine/internal/codec/json"
-	protoCodec "github.com/lack-io/vine/internal/codec/proto"
+	"github.com/lack-io/vine/util/codec/json"
+	protoCodec "github.com/lack-io/vine/util/codec/proto"
 )
 
 // protoStruct implements proto.Message

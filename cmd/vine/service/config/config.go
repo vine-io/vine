@@ -24,12 +24,12 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine/cmd/vine/service/config/handler"
-	"github.com/lack-io/vine/internal/client"
-	"github.com/lack-io/vine/internal/helper"
 	proto "github.com/lack-io/vine/proto/config"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/util/client"
+	"github.com/lack-io/vine/util/helper"
 )
 
 var (

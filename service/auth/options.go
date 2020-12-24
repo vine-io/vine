@@ -18,9 +18,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/internal/auth/provider"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/util/auth/provider"
 )
 
 func NewOptions(opts ...Option) Options {

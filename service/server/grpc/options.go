@@ -22,12 +22,12 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 
-	"github.com/lack-io/vine/internal/codec"
-	"github.com/lack-io/vine/internal/network/transport"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/util/network/transport"
 )
 
 type codecsKey struct{}

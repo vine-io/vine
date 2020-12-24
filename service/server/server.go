@@ -22,10 +22,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/internal/codec"
-	signalutil "github.com/lack-io/vine/internal/signal"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/codec"
+	signalutil "github.com/lack-io/vine/util/signal"
 )
 
 // Server is a simple vine server abstraction

@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/internal/network/transport"
 	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/util/network/transport"
 )
 
 func TestCallOptions(t *testing.T) {

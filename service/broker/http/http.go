@@ -33,14 +33,14 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/net/http2"
 
-	maddr "github.com/lack-io/vine/internal/addr"
-	"github.com/lack-io/vine/internal/codec/json"
-	mnet "github.com/lack-io/vine/internal/net"
-	mls "github.com/lack-io/vine/internal/tls"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/cache"
+	maddr "github.com/lack-io/vine/util/addr"
+	"github.com/lack-io/vine/util/codec/json"
+	mnet "github.com/lack-io/vine/util/net"
+	mls "github.com/lack-io/vine/util/tls"
 )
 
 // HTTP Broker is a point to point async broker

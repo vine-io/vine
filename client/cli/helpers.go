@@ -27,11 +27,11 @@ import (
 	"github.com/lack-io/cli"
 
 	cliutil "github.com/lack-io/vine/client/cli/util"
-	cbytes "github.com/lack-io/vine/internal/codec/bytes"
-	clic "github.com/lack-io/vine/internal/command/cli"
-	"github.com/lack-io/vine/internal/file"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/config/cmd"
+	cbytes "github.com/lack-io/vine/util/codec/bytes"
+	clic "github.com/lack-io/vine/util/command/cli"
+	"github.com/lack-io/vine/util/file"
 )
 
 type exec func(*cli.Context, []string) ([]byte, error)

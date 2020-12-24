@@ -19,12 +19,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/internal/debug/log"
-	"github.com/lack-io/vine/internal/debug/stats"
-	"github.com/lack-io/vine/internal/debug/trace"
 	proto "github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/util/debug/log"
+	"github.com/lack-io/vine/util/debug/stats"
+	"github.com/lack-io/vine/util/debug/trace"
 )
 
 // NewHandler returns an instance of the Debug Handler

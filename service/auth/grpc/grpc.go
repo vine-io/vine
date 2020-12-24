@@ -18,12 +18,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lack-io/vine/internal/auth/rules"
-	"github.com/lack-io/vine/internal/auth/token"
-	"github.com/lack-io/vine/internal/auth/token/jwt"
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/util/auth/rules"
+	"github.com/lack-io/vine/util/auth/token"
+	"github.com/lack-io/vine/util/auth/token/jwt"
 )
 
 // gRPC is the service implementation of the Auth interface

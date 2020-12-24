@@ -17,7 +17,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/internal/codec"
+	"github.com/lack-io/vine/util/codec"
 )
 
 func TestBackoff(t *testing.T) {

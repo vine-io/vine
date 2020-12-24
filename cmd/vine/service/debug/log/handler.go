@@ -18,9 +18,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/lack-io/vine/internal/debug/log"
 	pb "github.com/lack-io/vine/proto/debug/log"
 	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/util/debug/log"
 )
 
 type Log struct {

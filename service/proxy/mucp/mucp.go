@@ -24,9 +24,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/internal/codec"
-	"github.com/lack-io/vine/internal/codec/bytes"
-	"github.com/lack-io/vine/internal/context/metadata"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
@@ -34,6 +31,9 @@ import (
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/router"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/util/codec/bytes"
+	"github.com/lack-io/vine/util/context/metadata"
 )
 
 // Proxy will transparently proxy requests to an endpoint.

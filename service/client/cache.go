@@ -21,7 +21,7 @@ import (
 
 	cache "github.com/patrickmn/go-cache"
 
-	"github.com/lack-io/vine/internal/context/metadata"
+	"github.com/lack-io/vine/util/context/metadata"
 )
 
 // NewCache returns an initialised cache.

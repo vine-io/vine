@@ -30,9 +30,9 @@ import (
 	"github.com/google/uuid"
 	json "github.com/json-iterator/go"
 
-	"github.com/lack-io/vine/internal/mdns"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/mdns"
 )
 
 var (

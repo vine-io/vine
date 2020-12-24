@@ -22,18 +22,18 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/internal/client/buf"
-	"github.com/lack-io/vine/internal/client/pool"
-	"github.com/lack-io/vine/internal/codec"
-	raw "github.com/lack-io/vine/internal/codec/bytes"
-	"github.com/lack-io/vine/internal/context/metadata"
-	"github.com/lack-io/vine/internal/net"
-	"github.com/lack-io/vine/internal/network/transport"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/client/buf"
+	"github.com/lack-io/vine/util/client/pool"
+	"github.com/lack-io/vine/util/codec"
+	raw "github.com/lack-io/vine/util/codec/bytes"
+	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/lack-io/vine/util/net"
+	"github.com/lack-io/vine/util/network/transport"
 )
 
 type rpcClient struct {

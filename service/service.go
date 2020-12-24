@@ -21,10 +21,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lack-io/vine/internal/debug/stats"
-	"github.com/lack-io/vine/internal/debug/trace"
-	signalutil "github.com/lack-io/vine/internal/signal"
-	"github.com/lack-io/vine/internal/wrapper"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/config/cmd"
@@ -33,6 +29,10 @@ import (
 	"github.com/lack-io/vine/service/plugin"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/util/debug/stats"
+	"github.com/lack-io/vine/util/debug/trace"
+	signalutil "github.com/lack-io/vine/util/signal"
+	"github.com/lack-io/vine/util/wrapper"
 )
 
 type service struct {

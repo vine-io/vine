@@ -21,11 +21,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/internal/context/metadata"
-	"github.com/lack-io/vine/internal/namespace"
 	"github.com/lack-io/vine/proto/errors"
 	pb "github.com/lack-io/vine/proto/store"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 type Store struct {

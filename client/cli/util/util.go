@@ -26,8 +26,8 @@ import (
 	ccli "github.com/lack-io/cli"
 
 	"github.com/lack-io/vine/cmd/vine/service/runtime/profile"
-	"github.com/lack-io/vine/internal/config"
-	"github.com/lack-io/vine/internal/platform"
+	"github.com/lack-io/vine/util/config"
+	"github.com/lack-io/vine/util/platform"
 )
 
 const (

@@ -20,9 +20,9 @@ import (
 	"sync"
 	"time"
 
-	util "github.com/lack-io/vine/internal/registry"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
+	util "github.com/lack-io/vine/util/registry"
 )
 
 // Cache is the registry cache interface

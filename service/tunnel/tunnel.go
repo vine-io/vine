@@ -21,9 +21,6 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/internal/muxer"
-	tun "github.com/lack-io/vine/internal/network/tunnel"
-	"github.com/lack-io/vine/internal/network/tunnel/transport"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/client"
 	cmucp "github.com/lack-io/vine/service/client/mucp"
@@ -35,6 +32,9 @@ import (
 	regRouter "github.com/lack-io/vine/service/router/registry"
 	"github.com/lack-io/vine/service/server"
 	smucp "github.com/lack-io/vine/service/server/mucp"
+	"github.com/lack-io/vine/util/muxer"
+	tun "github.com/lack-io/vine/util/network/tunnel"
+	"github.com/lack-io/vine/util/network/tunnel/transport"
 )
 
 var (

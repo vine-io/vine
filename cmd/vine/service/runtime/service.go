@@ -31,13 +31,13 @@ import (
 
 	cliutil "github.com/lack-io/vine/client/cli/util"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/handler"
-	"github.com/lack-io/vine/internal/client"
-	"github.com/lack-io/vine/internal/file"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/service/runtime"
 	srvRuntime "github.com/lack-io/vine/service/runtime/grpc"
 	"github.com/lack-io/vine/service/runtime/local/git"
+	"github.com/lack-io/vine/util/client"
+	"github.com/lack-io/vine/util/file"
 )
 
 const (

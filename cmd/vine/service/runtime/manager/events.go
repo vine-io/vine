@@ -21,10 +21,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/internal/namespace"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/util/namespace"
 )
 
 var (
