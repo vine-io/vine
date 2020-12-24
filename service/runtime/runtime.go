@@ -22,7 +22,9 @@ import (
 
 var (
 	// DefaultRuntime is default vine runtime
-	DefaultRuntime Runtime
+	DefaultRuntime Runtime = NewRuntime()
+	// DefaultName is default runtime service name
+	DefaultName = "go.vine.runtime"
 
 	ErrAlreadyExists = errors.New("already exists")
 )

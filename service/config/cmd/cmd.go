@@ -23,18 +23,16 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine/service/auth"
-	rpcAuth "github.com/lack-io/vine/service/auth/grpc"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/config"
 	configSrc "github.com/lack-io/vine/service/config/source"
-	"github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
-	"github.com/lack-io/vine/service/store/bolt"
 	authutil "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/auth/provider"
 	"github.com/lack-io/vine/util/debug/profile"
@@ -44,6 +42,9 @@ import (
 	"github.com/lack-io/vine/util/network/transport"
 	"github.com/lack-io/vine/util/wrapper"
 
+	// registry
+	registrySrv "github.com/lack-io/vine/service/registry/grpc"
+
 	// clients
 	cgrpc "github.com/lack-io/vine/service/client/grpc"
 	cmucp "github.com/lack-io/vine/service/client/mucp"
@@ -52,29 +53,29 @@ import (
 	sgrpc "github.com/lack-io/vine/service/server/grpc"
 	smucp "github.com/lack-io/vine/service/server/mucp"
 
-	srvBroker "github.com/lack-io/vine/service/broker/grpc"
+	brokerSrv "github.com/lack-io/vine/service/broker/grpc"
 	// brokers
-	httpBroker "github.com/lack-io/vine/service/broker/http"
-	memBroker "github.com/lack-io/vine/service/broker/memory"
+	brokerHttp "github.com/lack-io/vine/service/broker/http"
+	"github.com/lack-io/vine/service/broker/memory"
 
-	// registries
 	regSrv "github.com/lack-io/vine/service/registry/grpc"
+	// registries
 	"github.com/lack-io/vine/service/registry/mdns"
 	rmem "github.com/lack-io/vine/service/registry/memory"
 
-	// runtimes
 	srvRuntime "github.com/lack-io/vine/service/runtime/grpc"
+	// runtimes
 	lRuntime "github.com/lack-io/vine/service/runtime/local"
 
 	// selectors
-	dnsSelector "github.com/lack-io/vine/service/client/selector/dns"
-	regSelector "github.com/lack-io/vine/service/client/selector/registry"
-	staticSelector "github.com/lack-io/vine/service/client/selector/static"
+	"github.com/lack-io/vine/service/client/selector/dns"
+	"github.com/lack-io/vine/service/client/selector/static"
 
 	// transports
 	thttp "github.com/lack-io/vine/util/network/transport/http"
 	tmem "github.com/lack-io/vine/util/network/transport/memory"
 
+	fileStore "github.com/lack-io/vine/service/store/bolt"
 	// stores
 	svcStore "github.com/lack-io/vine/service/store/grpc"
 	memStore "github.com/lack-io/vine/service/store/memory"
@@ -85,8 +86,10 @@ import (
 	// tracers
 	memTracer "github.com/lack-io/vine/util/debug/trace/memory"
 
+	svcAuth "github.com/lack-io/vine/service/auth/grpc"
 	// auth
 	jwtAuth "github.com/lack-io/vine/util/auth/jwt"
+
 	// auth providers
 	"github.com/lack-io/vine/util/auth/provider/basic"
 	"github.com/lack-io/vine/util/auth/provider/oauth"
@@ -340,9 +343,9 @@ var (
 	}
 
 	DefaultBrokers = map[string]func(...broker.Option) broker.Broker{
-		"service": srvBroker.NewBroker,
-		"memory":  memBroker.NewBroker,
-		"http":    httpBroker.NewBroker,
+		"service": brokerSrv.NewBroker,
+		"memory":  memory.NewBroker,
+		"http":    brokerHttp.NewBroker,
 	}
 
 	DefaultClients = map[string]func(...client.Option) client.Client{
@@ -357,9 +360,8 @@ var (
 	}
 
 	DefaultSelectors = map[string]func(...selector.Option) selector.Selector{
-		"dns":      dnsSelector.NewSelector,
-		"registry": regSelector.NewSelector,
-		"static":   staticSelector.NewSelector,
+		"dns":    dns.NewSelector,
+		"static": static.NewSelector,
 	}
 
 	DefaultServers = map[string]func(...server.Option) server.Server{
@@ -378,7 +380,7 @@ var (
 	}
 
 	DefaultStores = map[string]func(...store.Option) store.Store{
-		"file":    bolt.NewStore,
+		"file":    fileStore.NewStore,
 		"memory":  memStore.NewStore,
 		"service": svcStore.NewStore,
 	}
@@ -389,7 +391,7 @@ var (
 	}
 
 	DefaultAuths = map[string]func(...auth.Option) auth.Auth{
-		"service": rpcAuth.NewAuth,
+		"service": svcAuth.NewAuth,
 		"jwt":     jwtAuth.NewAuth,
 	}
 
@@ -606,18 +608,18 @@ func (c *cmd) Before(ctx *cli.Context) error {
 			return fmt.Errorf("registry %s not found", name)
 		}
 
-		*c.opts.Registry = r(regSrv.WithClient(vineClient))
+		*c.opts.Registry = r(registrySrv.WithClient(vineClient))
 		serverOpts = append(serverOpts, server.Registry(*c.opts.Registry))
 		clientOpts = append(clientOpts, client.Registry(*c.opts.Registry))
 
 		if err := (*c.opts.Selector).Init(selector.Registry(*c.opts.Registry)); err != nil {
-			logger.Fatalf("Error configuring registry: %v", err)
+			log.Fatalf("Error configuring registry: %v", err)
 		}
 
 		clientOpts = append(clientOpts, client.Selector(*c.opts.Selector))
 
 		if err := (*c.opts.Broker).Init(broker.Registry(*c.opts.Registry)); err != nil {
-			logger.Errorf("Error configuring broker: %v", err)
+			log.Errorf("Error configuring broker: %v", err)
 		}
 	}
 
@@ -692,37 +694,37 @@ func (c *cmd) Before(ctx *cli.Context) error {
 
 	if addrs := ctx.String("broker-address"); len(addrs) > 0 {
 		if err := (*c.opts.Broker).Init(broker.Addrs(strings.Split(addrs, ",")...)); err != nil {
-			logger.Fatalf("Error configuring broker: %v", err)
+			log.Fatalf("Error configuring broker: %v", err)
 		}
 	}
 
 	if addrs := ctx.String("registry-address"); len(addrs) > 0 {
 		if err := (*c.opts.Registry).Init(registry.Addrs(strings.Split(addrs, ",")...)); err != nil {
-			logger.Fatalf("Error configuring registry: %v", err)
+			log.Fatalf("Error configuring registry: %v", err)
 		}
 	}
 
 	if addrs := ctx.String("transport-address"); len(addrs) > 0 {
 		if err := (*c.opts.Transport).Init(transport.Addrs(strings.Split(addrs, ",")...)); err != nil {
-			logger.Fatalf("Error configuring store: %v", err)
+			log.Fatalf("Error configuring store: %v", err)
 		}
 	}
 
 	if addrs := ctx.String("store-address"); len(addrs) > 0 {
 		if err := (*c.opts.Store).Init(store.Nodes(strings.Split(addrs, ",")...)); err != nil {
-			logger.Fatalf("Error configuring store: %v", err)
+			log.Fatalf("Error configuring store: %v", err)
 		}
 	}
 
 	if db := ctx.String("store-database"); len(db) > 0 {
 		if err := (*c.opts.Store).Init(store.Database(db)); err != nil {
-			logger.Fatalf("Error configuring store database option: %v", err)
+			log.Fatalf("Error configuring store database option: %v", err)
 		}
 	}
 
 	if table := ctx.String("store-table"); len(table) > 0 {
 		if err := (*c.opts.Store).Init(store.Table(table)); err != nil {
-			logger.Fatalf("Error configuring store table option: %v", err)
+			log.Fatalf("Error configuring store table option: %v", err)
 		}
 	}
 
@@ -756,14 +758,14 @@ func (c *cmd) Before(ctx *cli.Context) error {
 
 	if source := ctx.String("runtime-source"); len(source) > 0 {
 		if err := (*c.opts.Runtime).Init(runtime.WithSource(source)); err != nil {
-			logger.Fatalf("Error configuring runtime: %v", err)
+			log.Fatalf("Error configuring runtime: %v", err)
 		}
 	}
 
 	if ctx.String("config") == "service" {
 		opt := config.WithSource(configSrv.NewSource(configSrc.WithClient(vineClient)))
 		if err := (*c.opts.Config).Init(opt); err != nil {
-			logger.Fatalf("Error configuring config: %v", err)
+			log.Fatalf("Error configuring config: %v", err)
 		}
 	}
 
@@ -796,14 +798,14 @@ func (c *cmd) Before(ctx *cli.Context) error {
 	// Lets set it up
 	if len(serverOpts) > 0 {
 		if err := (*c.opts.Server).Init(serverOpts...); err != nil {
-			logger.Fatalf("Error configuring server: %v", err)
+			log.Fatalf("Error configuring server: %v", err)
 		}
 	}
 
 	// Use an init option?
 	if len(clientOpts) > 0 {
 		if err := (*c.opts.Client).Init(clientOpts...); err != nil {
-			logger.Fatalf("Error configuring client: %v", err)
+			log.Fatalf("Error configuring client: %v", err)
 		}
 	}
 

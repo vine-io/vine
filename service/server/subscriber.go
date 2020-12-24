@@ -12,21 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package grpc
+package server
 
 import (
-	"context"
 	"fmt"
 	"reflect"
-	"runtime/debug"
-	"strings"
 
-	"github.com/lack-io/vine/proto/errors"
-	"github.com/lack-io/vine/service/broker"
-	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/service/server"
-	"github.com/lack-io/vine/util/context/metadata"
 )
 
 const (
@@ -46,11 +38,11 @@ type subscriber struct {
 	subscriber interface{}
 	handlers   []*handler
 	endpoints  []*registry.Endpoint
-	opts       server.SubscriberOptions
+	opts       SubscriberOptions
 }
 
-func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOption) server.Subscriber {
-	options := server.SubscriberOptions{AutoAck: true}
+func newSubscriber(topic string, sub interface{}, opts ...SubscriberOption) Subscriber {
+	options := SubscriberOptions{AutoAck: true}
 
 	for _, o := range opts {
 		o(&options)
@@ -60,7 +52,9 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 	var handlers []*handler
 
 	if typ := reflect.TypeOf(sub); typ.Kind() == reflect.Func {
-		h := &handler{method: reflect.ValueOf(sub)}
+		h := &handler{
+			method: reflect.ValueOf(sub),
+		}
 
 		switch typ.NumIn() {
 		case 1:
@@ -86,7 +80,9 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 
 		for m := 0; m < typ.NumMethod(); m++ {
 			method := typ.Method(m)
-			h := &handler{method: method.Func}
+			h := &handler{
+				method: method.Func,
+			}
 
 			switch method.Type.NumIn() {
 			case 2:
@@ -120,7 +116,7 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 	}
 }
 
-func validateSubscriber(sub server.Subscriber) error {
+func validateSubscriber(sub Subscriber) error {
 	typ := reflect.TypeOf(sub.Subscriber())
 	var argType reflect.Type
 
@@ -130,14 +126,13 @@ func validateSubscriber(sub server.Subscriber) error {
 		case 2:
 			argType = typ.In(1)
 		default:
-			return fmt.Errorf("subscriber %v takes wrong number of args: %v required signature %s", name, typ.NumIn(), subSig)
+			return fmt.Errorf("subsciber %v takes wrong number of args: %v required sigature %s", name, typ.NumIn(), subSig)
 		}
-		if !isExportedOrBuiltinType(argType) {
+		if !IsExportedOrBuiltinType(argType) {
 			return fmt.Errorf("subscriber %v argument type not exported: %v", name, argType)
 		}
 		if typ.NumOut() != 1 {
-			return fmt.Errorf("subscriber %v has wrong number of outs: %v require signature %s",
-				name, typ.NumOut(), subSig)
+			return fmt.Errorf("subscriber %v has wrong number of outs: %v require signature %s", name, typ.NumOut(), subSig)
 		}
 		if returnType := typ.Out(0); returnType != typeOfError {
 			return fmt.Errorf("subscriber %v returns %v not error", name, returnType.String())
@@ -153,15 +148,16 @@ func validateSubscriber(sub server.Subscriber) error {
 			case 3:
 				argType = method.Type.In(2)
 			default:
-				return fmt.Errorf("subscriber %v.%v takes wrong number of args: %v required signature %s",
+				return fmt.Errorf("subscriber %v.%v takes wrong number of args: %v required sigatire %s",
 					name, method.Name, method.Type.NumIn(), subSig)
 			}
 
-			if !isExportedOrBuiltinType(argType) {
+			if !IsExportedOrBuiltinType(argType) {
 				return fmt.Errorf("%v argument type not exported: %v", name, argType)
 			}
 			if method.Type.NumOut() != 1 {
-				return fmt.Errorf("subscriber %v.%v has wrong number of outs: %v require signature %s",
+				return fmt.Errorf(
+					"subscriber %v.%v has wrong number of outs: %v require signature %s",
 					name, method.Name, method.Type.NumOut(), subSig)
 			}
 			if returnType := method.Type.Out(0); returnType != typeOfError {
@@ -171,116 +167,6 @@ func validateSubscriber(sub server.Subscriber) error {
 	}
 
 	return nil
-}
-
-func (g *grpcServer) createSubHandler(sb *subscriber, opts server.Options) broker.Handler {
-	return func(p broker.Event) (err error) {
-
-		defer func() {
-			if r := recover(); r != nil {
-				log.Error("panic recovered: ", r)
-				log.Error(string(debug.Stack()))
-				err = errors.InternalServerError(server.DefaultName, "panic recovered: %v", r)
-			}
-		}()
-
-		msg := p.Message()
-		// if we don't have headers, create empty map
-		if msg.Header == nil {
-			msg.Header = make(map[string]string)
-		}
-
-		ct := msg.Header["Content-Type"]
-		if len(ct) == 0 {
-			msg.Header["Content-Type"] = defaultContentType
-			ct = defaultContentType
-		}
-		cf, err := g.newGRPCCodec(ct)
-		if err != nil {
-			return err
-		}
-
-		hdr := make(map[string]string, len(msg.Header))
-		for k, v := range msg.Header {
-			hdr[k] = v
-		}
-		delete(hdr, "Content-Type")
-		ctx := metadata.NewContext(context.Background(), hdr)
-
-		results := make(chan error, len(sb.handlers))
-
-		for i := 0; i < len(sb.handlers); i++ {
-			handler := sb.handlers[i]
-
-			var isVal bool
-			var req reflect.Value
-
-			if handler.reqType.Kind() == reflect.Ptr {
-				req = reflect.New(handler.reqType.Elem())
-			} else {
-				req = reflect.New(handler.reqType)
-				isVal = true
-			}
-			if isVal {
-				req = req.Elem()
-			}
-
-			if err = cf.Unmarshal(msg.Body, req.Interface()); err != nil {
-				return err
-			}
-
-			fn := func(ctx context.Context, msg server.Message) error {
-				var vals []reflect.Value
-				if sb.typ.Kind() != reflect.Func {
-					vals = append(vals, sb.rcvr)
-				}
-				if handler.ctxType != nil {
-					vals = append(vals, reflect.ValueOf(ctx))
-				}
-
-				vals = append(vals, reflect.ValueOf(msg.Payload()))
-
-				returnValues := handler.method.Call(vals)
-				if rerr := returnValues[0].Interface(); rerr != nil {
-					return rerr.(error)
-				}
-				return nil
-			}
-
-			for i := len(opts.SubWrappers); i > 0; i-- {
-				fn = opts.SubWrappers[i-1](fn)
-			}
-
-			if g.wg != nil {
-				g.wg.Add(1)
-			}
-			go func() {
-				if g.wg != nil {
-					defer g.wg.Done()
-				}
-				err := fn(ctx, &rpcMessage{
-					topic:       sb.topic,
-					contentType: ct,
-					payload:     req.Interface(),
-					header:      msg.Header,
-					body:        msg.Body,
-				})
-				results <- err
-			}()
-		}
-
-		var errors []string
-		for i := 0; i < len(sb.handlers); i++ {
-			if rerr := <-results; rerr != nil {
-				errors = append(errors, rerr.Error())
-			}
-		}
-		if len(errors) > 0 {
-			err = fmt.Errorf("subscriber error: %s", strings.Join(errors, "\n"))
-		}
-
-		return err
-	}
 }
 
 func (s *subscriber) Topic() string {
@@ -295,6 +181,6 @@ func (s *subscriber) Endpoints() []*registry.Endpoint {
 	return s.endpoints
 }
 
-func (s *subscriber) Options() server.SubscriberOptions {
+func (s *subscriber) Options() SubscriberOptions {
 	return s.opts
 }

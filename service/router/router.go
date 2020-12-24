@@ -14,17 +14,7 @@
 
 package router
 
-import (
-	"errors"
-	"time"
-)
-
-var (
-	// ErrRouteNotFound is returned when no route was found in the routing table
-	ErrRouteNotFound = errors.New("route not found")
-	// ErrDuplicateRoute is returned when the route already exists
-	ErrDuplicateRoute = errors.New("duplicate route")
-)
+import "time"
 
 var (
 	// DefaultAddress is default router address
@@ -34,7 +24,7 @@ var (
 	// DefaultNetwork is default router service name
 	DefaultNetwork = "go.vine"
 	// DefaultRouter is default network router
-	DefaultRouter Router
+	DefaultRouter = NewRouter()
 )
 
 // Router is an interface for a routing control plane
@@ -155,4 +145,9 @@ func (s Strategy) String() string {
 	default:
 		return "unknown"
 	}
+}
+
+// NewRouter creates new Router and returns it
+func NewRouter(opts ...Option) Router {
+	return newRouter(opts...)
 }

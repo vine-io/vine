@@ -39,7 +39,6 @@ import (
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/client/selector"
-	regSelector "github.com/lack-io/vine/service/client/selector/registry"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
@@ -504,7 +503,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 			// Default to type path
 			Type:      Resolver,
 			Namespace: namespace.NewResolver(Type, Namespace).ResolveWithType,
-			Selector: regSelector.NewSelector(
+			Selector: selector.NewSelector(
 				selector.Registry(reg),
 			),
 		},

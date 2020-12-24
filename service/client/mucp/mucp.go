@@ -18,5 +18,5 @@ import "github.com/lack-io/vine/service/client"
 
 // NewClient returns a new vine client interface
 func NewClient(opts ...client.Option) client.Client {
-	return newRpcClient(opts...)
+	return client.NewClient(opts...)
 }

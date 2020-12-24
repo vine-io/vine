@@ -12,13 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package registry
+package server
 
 import (
-	"github.com/lack-io/vine/service/router"
+	"context"
+	"sync"
 )
 
-// NewRouter creates new Router and returns it
-func NewRouter(opts ...router.Option) router.Router {
-	return router.NewRouter(opts...)
+type serverKey struct{}
+
+func wait(ctx context.Context) *sync.WaitGroup {
+	if ctx == nil {
+		return nil
+	}
+	wg, ok := ctx.Value("wait").(*sync.WaitGroup)
+	if !ok {
+		return nil
+	}
+	return wg
+}
+
+func FromContext(ctx context.Context) (Server, bool) {
+	c, ok := ctx.Value(serverKey{}).(Server)
+	return c, ok
+}
+
+func NewContext(ctx context.Context, s Server) context.Context {
+	return context.WithValue(ctx, serverKey{}, s)
 }

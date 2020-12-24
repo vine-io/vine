@@ -22,7 +22,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/codec"
 	signalutil "github.com/lack-io/vine/util/signal"
@@ -151,15 +151,18 @@ type Subscriber interface {
 type Option func(*Options)
 
 var (
-	DefaultServer           Server
-	DefaultRouter           Router
-	DefaultAddress          = ":0"
-	DefaultName             = "go.vine.server"
-	DefaultVersion          = "latest"
-	DefaultId               = uuid.New().String()
-	DefaultRegisterCheck    = func(context.Context) error { return nil }
-	DefaultRegisterInterval = time.Second * 30
-	DefaultRegisterTTL      = time.Second * 90
+	DefaultAddress                 = ":0"
+	DefaultName                    = "go.vine.server"
+	DefaultVersion                 = "latest"
+	DefaultId                      = uuid.New().String()
+	DefaultServer           Server = newRpcServer()
+	DefaultRouter                  = newRpcRouter()
+	DefaultRegisterCheck           = func(context.Context) error { return nil }
+	DefaultRegisterInterval        = time.Second * 30
+	DefaultRegisterTTL             = time.Second * 90
+
+	// NewServer creates a new server
+	NewServer func(...Option) Server = newRpcServer
 )
 
 // DefaultOptions returns config options for the default service
@@ -169,7 +172,15 @@ func DefaultOptions() Options {
 
 // Init initialises the default server with options passed in
 func Init(opts ...Option) {
+	if DefaultServer == nil {
+		DefaultServer = newRpcServer(opts...)
+	}
 	DefaultServer.Init(opts...)
+}
+
+// NewRouter returns a new router
+func NewRouter() *router {
+	return newRpcRouter()
 }
 
 // NewSubscriber creates a new subscriber interface with the given topic
@@ -214,7 +225,7 @@ func Run() error {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, signalutil.Shutdown()...)
 
-	logger.Infof("Received signal %s", <-ch)
+	log.Infof("Received signal %s", <-ch)
 
 	return Stop()
 }
@@ -222,13 +233,13 @@ func Run() error {
 // Start starts the default server
 func Start() error {
 	config := DefaultServer.Options()
-	logger.Infof("Starting server %s id %s", config.Name, config.Id)
+	log.Infof("Starting server %s id %s", config.Name, config.Id)
 	return DefaultServer.Start()
 }
 
 // Stop stops the default server
 func Stop() error {
-	logger.Infof("Stopping server")
+	log.Infof("Stopping server")
 	return DefaultServer.Stop()
 }
 

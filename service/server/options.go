@@ -62,6 +62,57 @@ type Options struct {
 	Context context.Context
 }
 
+func newOptions(opts ...Option) Options {
+	options := Options{
+		Codecs:           make(map[string]codec.NewCodec),
+		Metadata:         map[string]string{},
+		RegisterInterval: DefaultRegisterInterval,
+		RegisterTTL:      DefaultRegisterTTL,
+	}
+
+	for _, o := range opts {
+		o(&options)
+	}
+
+	if options.Auth == nil {
+		options.Auth = auth.DefaultAuth
+	}
+
+	if options.Broker == nil {
+		options.Broker = broker.DefaultBroker
+	}
+
+	if options.Registry == nil {
+		options.Registry = registry.DefaultRegistry
+	}
+
+	if options.Transport == nil {
+		options.Transport = transport.DefaultTransport
+	}
+
+	if options.RegisterCheck == nil {
+		options.RegisterCheck = DefaultRegisterCheck
+	}
+
+	if len(options.Address) == 0 {
+		options.Address = DefaultAddress
+	}
+
+	if len(options.Name) == 0 {
+		options.Name = DefaultName
+	}
+
+	if len(options.Id) == 0 {
+		options.Id = DefaultId
+	}
+
+	if len(options.Version) == 0 {
+		options.Version = DefaultVersion
+	}
+
+	return options
+}
+
 // Server name
 func Name(n string) Option {
 	return func(o *Options) {

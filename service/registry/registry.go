@@ -17,7 +17,7 @@ package registry
 import "errors"
 
 var (
-	DefaultRegistry Registry
+	DefaultRegistry = NewRegistry()
 
 	// Not found error when GetService is called
 	ErrNotFound = errors.New("service not found")

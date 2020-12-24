@@ -39,7 +39,7 @@ import (
 
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
-	"github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/util/addr"
@@ -380,8 +380,8 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 		fn := func(ctx context.Context, req server.Request, rsp interface{}) (err error) {
 			defer func() {
 				if r := recover(); r != nil {
-					logger.Error("panic recovered: ", r)
-					logger.Error(string(debug.Stack()))
+					log.Error("panic recovered: ", r)
+					log.Error(string(debug.Stack()))
 					err = errors.InternalServerError(server.DefaultName, "panic recovered: %v", r)
 				}
 			}()
@@ -703,7 +703,7 @@ func (g *grpcServer) Register() error {
 	g.RUnlock()
 
 	if !registered {
-		logger.Infof("Registry [%s] Registering node: %s", config.Registry.String(), node.Id)
+		log.Infof("Registry [%s] Registering node: %s", config.Registry.String(), node.Id)
 	}
 
 	// register the service
@@ -734,7 +734,7 @@ func (g *grpcServer) Register() error {
 			opts = append(opts, broker.DisableAutoAck())
 		}
 
-		logger.Infof("Subscribing to topic: %s", sb.Topic())
+		log.Infof("Subscribing to topic: %s", sb.Topic())
 		sub, err := config.Broker.Subscribe(sb.Topic(), handler, opts...)
 		if err != nil {
 			return err
@@ -793,7 +793,7 @@ func (g *grpcServer) Deregister() error {
 		Nodes:   []*registry.Node{node},
 	}
 
-	logger.Infof("Deregistering node: %s", node.Id)
+	log.Infof("Deregistering node: %s", node.Id)
 	if err := config.Registry.Deregister(service); err != nil {
 		return err
 	}
@@ -814,7 +814,7 @@ func (g *grpcServer) Deregister() error {
 			wg.Add(1)
 			go func(s broker.Subscriber) {
 				defer wg.Done()
-				logger.Infof("unsubscribing from topic: %s", s.Topic())
+				log.Infof("unsubscribing from topic: %s", s.Topic())
 				s.Unsubscribe()
 			}(sub)
 		}
@@ -862,7 +862,7 @@ func (g *grpcServer) Start() error {
 		}
 	}
 
-	logger.Infof("Server [grpc] Listening on %s", ts.Addr().String())
+	log.Infof("Server [grpc] Listening on %s", ts.Addr().String())
 
 	g.RLock()
 	g.opts.Address = ts.Addr().String()
@@ -872,22 +872,22 @@ func (g *grpcServer) Start() error {
 	if len(g.subscribers) > 0 {
 		// connect to the broker
 		if err := config.Broker.Connect(); err != nil {
-			logger.Errorf("Broker [%s] connect error: %v", config.Broker.String(), err)
+			log.Errorf("Broker [%s] connect error: %v", config.Broker.String(), err)
 			return err
 		}
 
-		logger.Infof("Broker [%s] Connected to %s", config.Broker.String(), config.Broker.Address())
+		log.Infof("Broker [%s] Connected to %s", config.Broker.String(), config.Broker.Address())
 	}
 
 	// announce self to the world
 	if err := g.Register(); err != nil {
-		logger.Errorf("Server register error: %v", err)
+		log.Errorf("Server register error: %v", err)
 	}
 
 	// vine: go ts.Accept(s.accept)
 	go func() {
 		if err := g.srv.Serve(ts); err != nil {
-			logger.Errorf("gRPC Server start error: %v", err)
+			log.Errorf("gRPC Server start error: %v", err)
 		}
 	}()
 
@@ -908,7 +908,7 @@ func (g *grpcServer) Start() error {
 			select {
 			case <-t.C:
 				if err := g.Register(); err != nil {
-					logger.Errorf("Server register error: %v", err)
+					log.Errorf("Server register error: %v", err)
 				}
 			// wait for exit
 			case ch = <-g.exit:
@@ -918,7 +918,7 @@ func (g *grpcServer) Start() error {
 
 		// deregister self
 		if err := g.Deregister(); err != nil {
-			logger.Errorf("Server deregister error: %v", err)
+			log.Errorf("Server deregister error: %v", err)
 		}
 
 		// wait for waitgroup
@@ -943,10 +943,10 @@ func (g *grpcServer) Start() error {
 		// close transport
 		ch <- nil
 
-		logger.Infof("Broker [%s] Disconnected from %s", config.Broker.String(), config.Broker.Address())
+		log.Infof("Broker [%s] Disconnected from %s", config.Broker.String(), config.Broker.Address())
 		// disconnect broker
 		if err := config.Broker.Disconnect(); err != nil {
-			logger.Errorf("Broker [%s] disconnect error: %v", config.Broker.String(), err)
+			log.Errorf("Broker [%s] disconnect error: %v", config.Broker.String(), err)
 		}
 	}()
 

@@ -15,50 +15,20 @@
 package service
 
 import (
-	"github.com/lack-io/vine/service/auth"
-	"github.com/lack-io/vine/service/auth/noop"
-	"github.com/lack-io/vine/service/broker"
-	httpBroker "github.com/lack-io/vine/service/broker/http"
 	"github.com/lack-io/vine/service/client"
 	gcli "github.com/lack-io/vine/service/client/grpc"
-	"github.com/lack-io/vine/service/client/selector"
-	regSelector "github.com/lack-io/vine/service/client/selector/registry"
-	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/service/registry/mdns"
-	"github.com/lack-io/vine/service/router"
-	regRouter "github.com/lack-io/vine/service/router/registry"
-	"github.com/lack-io/vine/service/runtime"
-	localRuntime "github.com/lack-io/vine/service/runtime/local"
 	"github.com/lack-io/vine/service/server"
 	gsrv "github.com/lack-io/vine/service/server/grpc"
-	mucpServer "github.com/lack-io/vine/service/server/mucp"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"
 	"github.com/lack-io/vine/util/debug/trace"
 	memTrace "github.com/lack-io/vine/util/debug/trace/memory"
-	"github.com/lack-io/vine/util/network/transport"
-	httpTransport "github.com/lack-io/vine/util/network/transport/http"
 )
 
 func init() {
-	// default auth
-	auth.DefaultAuth = noop.NewAuth()
-	// default runtime
-	runtime.DefaultRuntime = localRuntime.NewRuntime()
-	// default transport
-	transport.DefaultTransport = httpTransport.NewTransport()
-	// default broker
-	broker.DefaultBroker = httpBroker.NewBroker()
-	// default registry
-	registry.DefaultRegistry = mdns.NewRegistry()
-	// default router
-	router.DefaultRouter = regRouter.NewRouter()
-	// default selector
-	selector.DefaultSelector = regSelector.NewSelector()
 	// default client
 	client.DefaultClient = gcli.NewClient()
 	// default server
-	server.DefaultRouter = mucpServer.NewRpcRouter()
 	server.DefaultServer = gsrv.NewServer()
 	// default store
 	store.DefaultStore = memStore.NewStore()

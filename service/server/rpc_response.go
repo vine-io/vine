@@ -12,26 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package mdns provides a multicast dns registry
-package mdns
+package server
 
 import (
-	"context"
+	"net/http"
 
-	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/util/network/transport"
 )
 
-// NewRegistry returns a new mdns registry
-func NewRegistry(opts ...registry.Option) registry.Registry {
-	return registry.NewRegistry(opts...)
+type rpcResponse struct {
+	header map[string]string
+	socket transport.Socket
+	codec  codec.Codec
 }
 
-// Domain sets the mdnsDomain
-func Domain(d string) registry.Option {
-	return func(o *registry.Options) {
-		if o.Context == nil {
-			o.Context = context.Background()
-		}
-		o.Context = context.WithValue(o.Context, "mdns.domain", d)
+func (r *rpcResponse) Codec() codec.Writer {
+	return r.codec
+}
+
+func (r *rpcResponse) WriteHeader(hdr map[string]string) {
+	for k, v := range hdr {
+		r.header[k] = v
 	}
+}
+
+func (r *rpcResponse) Write(b []byte) error {
+	if _, ok := r.header["Content-Type"]; !ok {
+		r.header["Content-Type"] = http.DetectContentType(b)
+	}
+
+	return r.socket.Send(&transport.Message{
+		Header: r.header,
+		Body:   b,
+	})
 }

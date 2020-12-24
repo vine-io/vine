@@ -26,7 +26,6 @@ import (
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/router"
-	regRouter "github.com/lack-io/vine/service/router/registry"
 )
 
 type routerSelector struct {
@@ -134,11 +133,6 @@ func (r *routerSelector) getRoutes(service string) ([]router.Route, error) {
 }
 
 func (r *routerSelector) Init(opts ...selector.Option) error {
-
-	for _, o := range opts {
-		o(&r.opts)
-	}
-
 	// no op
 	return nil
 }
@@ -230,7 +224,7 @@ func NewSelector(opts ...selector.Option) selector.Selector {
 	r, ok := options.Context.Value(routerKey{}).(router.Router)
 	if !ok {
 		// TODO: Use router.DefaultRouter?
-		r = regRouter.NewRouter(
+		r = router.NewRouter(
 			router.Registry(options.Registry),
 		)
 	}
@@ -266,5 +260,25 @@ func NewSelector(opts ...selector.Option) selector.Selector {
 		addr: routerAddress,
 		// let ourselves know to use the remote router
 		remote: remote,
+	}
+}
+
+// WithClient sets the client for the request
+func WithClient(c client.Client) selector.Option {
+	return func(o *selector.Options) {
+		if o.Context == nil {
+			o.Context = context.Background()
+		}
+		o.Context = context.WithValue(o.Context, clientKey{}, c)
+	}
+}
+
+// WithRouter sets the router as an option
+func WithRouter(r router.Router) selector.Option {
+	return func(o *selector.Options) {
+		if o.Context == nil {
+			o.Context = context.Background()
+		}
+		o.Context = context.WithValue(o.Context, routerKey{}, r)
 	}
 }

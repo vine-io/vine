@@ -21,10 +21,6 @@ import (
 	"time"
 )
 
-var (
-	DefaultAuth Auth
-)
-
 const (
 	// BearerScheme used for Authorization header
 	BearerScheme = "Bearer "

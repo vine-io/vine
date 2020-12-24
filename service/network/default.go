@@ -27,17 +27,16 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/lack-io/vine/service/server"
-	smucp "github.com/lack-io/vine/service/server/mucp"
-
 	pbNet "github.com/lack-io/vine/proto/network"
 	pbRtr "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/service/client"
 	cmucp "github.com/lack-io/vine/service/client/mucp"
 	rtr "github.com/lack-io/vine/service/client/selector/router"
-	"github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/router"
+	"github.com/lack-io/vine/service/server"
+	smucp "github.com/lack-io/vine/service/server/mucp"
 	"github.com/lack-io/vine/util/backoff"
 	"github.com/lack-io/vine/util/network/resolver/dns"
 	"github.com/lack-io/vine/util/network/transport"
@@ -239,7 +238,7 @@ func (n *network) acceptNetConn(l tunnel.Listener, recv chan *message) {
 		conn, err := l.Accept()
 		if err != nil {
 			sleep := backoff.Do(i)
-			logger.Debugf("Network tunnel [%s] accept error: %v, backing off for %v", ControlChannel, err, sleep)
+			log.Debugf("Network tunnel [%s] accept error: %v, backing off for %v", ControlChannel, err, sleep)
 			time.Sleep(sleep)
 			i++
 			continue
@@ -248,7 +247,7 @@ func (n *network) acceptNetConn(l tunnel.Listener, recv chan *message) {
 		select {
 		case <-n.closed:
 			if err := conn.Close(); err != nil {
-				logger.Debugf("Network tunnel [%s] failed to close connection: %v", NetworkChannel, err)
+				log.Debugf("Network tunnel [%s] failed to close connection: %v", NetworkChannel, err)
 			}
 			return
 		default:
@@ -266,7 +265,7 @@ func (n *network) acceptCtrlConn(l tunnel.Listener, recv chan *message) {
 		conn, err := l.Accept()
 		if err != nil {
 			sleep := backoff.Do(i)
-			logger.Debugf("Network tunnel [%s] accept error: %v, backing off for %v", ControlChannel, err, sleep)
+			log.Debugf("Network tunnel [%s] accept error: %v, backing off for %v", ControlChannel, err, sleep)
 			time.Sleep(sleep)
 			i++
 			continue
@@ -275,7 +274,7 @@ func (n *network) acceptCtrlConn(l tunnel.Listener, recv chan *message) {
 		select {
 		case <-n.closed:
 			if err := conn.Close(); err != nil {
-				logger.Debugf("Network tunnel [%s] failed to close connection: %v", ControlChannel, err)
+				log.Debugf("Network tunnel [%s] failed to close connection: %v", ControlChannel, err)
 			}
 			return
 		default:
@@ -371,7 +370,7 @@ func (n *network) advertise(advertChan <-chan *router.Advert) {
 			for i := 0; i < max; i++ {
 				if peer := n.node.GetPeerNode(peers[rnd.Intn(len(peers))].Id()); peer != nil {
 					if err := n.sendTo("advert", ControlChannel, peer, msg); err != nil {
-						logger.Debugf("Network failed to advertise routes to %s: %v", peer.Id(), err)
+						log.Debugf("Network failed to advertise routes to %s: %v", peer.Id(), err)
 					}
 				}
 			}
@@ -387,7 +386,7 @@ func (n *network) initNodes(startup bool) {
 	// NOTE: this condition never fires
 	// as resolveNodes() never returns error
 	if err != nil && !startup {
-		logger.Debugf("Network failed to init nodes: %v", err)
+		log.Debugf("Network failed to init nodes: %v", err)
 		return
 	}
 
@@ -407,7 +406,7 @@ func (n *network) initNodes(startup bool) {
 	}
 
 	// initialize the tunnel
-	logger.Tracef("Network initialising nodes %+v\n", init)
+	log.Debugf("Network initialising nodes %+v\n", init)
 	n.tunnel.Init(
 		tunnel.Nodes(nodes...),
 	)
@@ -418,7 +417,7 @@ func (n *network) resolveNodes() ([]string, error) {
 	// resolve the network address to network nodes
 	records, err := n.options.Resolver.Resolve(n.options.Name)
 	if err != nil {
-		logger.Debugf("Network failed to resolve nodes: %v", err)
+		log.Debugf("Network failed to resolve nodes: %v", err)
 	}
 
 	// sort by lowest priority
@@ -459,7 +458,7 @@ func (n *network) resolveNodes() ([]string, error) {
 		// resolve anything that looks like a host name
 		records, err := dns.Resolve(node)
 		if err != nil {
-			logger.Debugf("Failed to resolve %v %v", node, err)
+			log.Debugf("Failed to resolve %v %v", node, err)
 			continue
 		}
 
@@ -479,7 +478,7 @@ func (n *network) handleNetConn(s tunnel.Session, msg chan *message) {
 	for {
 		m := new(transport.Message)
 		if err := s.Recv(m); err != nil {
-			logger.Debugf("Network tunnel [%s] receive error: %v", NetworkChannel, err)
+			log.Debugf("Network tunnel [%s] receive error: %v", NetworkChannel, err)
 			switch err {
 			case io.EOF, tunnel.ErrReadTimeout:
 				s.Close()
@@ -512,7 +511,7 @@ func (n *network) handleCtrlConn(s tunnel.Session, msg chan *message) {
 	for {
 		m := new(transport.Message)
 		if err := s.Recv(m); err != nil {
-			logger.Debugf("Network tunnel [%s] receive error: %v", ControlChannel, err)
+			log.Debugf("Network tunnel [%s] receive error: %v", ControlChannel, err)
 			switch err {
 			case io.EOF, tunnel.ErrReadTimeout:
 				s.Close()
@@ -590,11 +589,11 @@ func (n *network) getRouteMetric(router string, gateway string, link string) int
 		return 2
 	}
 
-	logger.Tracef("Network looking up %+v link to gateway: %s", link, gateway)
+	log.Debugf("Network looking up %+v link to gateway: %s", link, gateway)
 	// attempt to find link based on gateway address
 	lnk, ok := n.peerLinks[gateway]
 	if !ok {
-		logger.Debugf("Network failed to find a link to gateway: %s", gateway)
+		log.Debugf("Network failed to find a link to gateway: %s", gateway)
 		// no link found so infinite metric returned
 		return math.MaxInt64
 	}
@@ -612,11 +611,11 @@ func (n *network) getRouteMetric(router string, gateway string, link string) int
 
 	// make sure length is non-zero
 	if length == 0 {
-		logger.Debugf("Link length is 0 %v %v", link, lnk.Length())
+		log.Debugf("Link length is 0 %v %v", link, lnk.Length())
 		length = 10e9
 	}
 
-	logger.Tracef("Network calculated metric %+v delay %v length %v distance %v", (delay*length*int64(hops))/10e6, delay, length, hops)
+	log.Debugf("Network calculated metric %+v delay %v length %v distance %v", (delay*length*int64(hops))/10e6, delay, length, hops)
 
 	return (delay * length * int64(hops)) / 10e6
 }
@@ -640,7 +639,7 @@ func (n *network) processCtrlChan(listener tunnel.Listener) {
 				pbRtrAdvert := &pbRtr.Advert{}
 
 				if err := proto.Unmarshal(m.msg.Body, pbRtrAdvert); err != nil {
-					logger.Debugf("Network fail to unmarshal advert message: %v", err)
+					log.Debugf("Network fail to unmarshal advert message: %v", err)
 					continue
 				}
 
@@ -648,13 +647,13 @@ func (n *network) processCtrlChan(listener tunnel.Listener) {
 				if pbRtrAdvert.Id == n.options.Id {
 					continue
 				}
-				logger.Debugf("Network received advert message from: %s", pbRtrAdvert.Id)
+				log.Debugf("Network received advert message from: %s", pbRtrAdvert.Id)
 
 				// loookup advertising node in our peer topology
 				advertNode := n.node.GetPeerNode(pbRtrAdvert.Id)
 				if advertNode == nil {
 					// if we can't find the node in our topology (MaxDepth) we skipp prcessing adverts
-					logger.Debugf("Network skipping advert message from unknown peer: %s", pbRtrAdvert.Id)
+					log.Debugf("Network skipping advert message from unknown peer: %s", pbRtrAdvert.Id)
 					continue
 				}
 
@@ -671,7 +670,7 @@ func (n *network) processCtrlChan(listener tunnel.Listener) {
 						// if the origin router is not the advertising node peer
 						// we can't rule out potential routing loops so we bail here
 						if peer := advertNode.GetPeerNode(event.Route.Router); peer == nil {
-							logger.Debugf("Network skipping advert message from peer: %s", pbRtrAdvert.Id)
+							log.Debugf("Network skipping advert message from peer: %s", pbRtrAdvert.Id)
 							continue
 						}
 					}
@@ -689,7 +688,7 @@ func (n *network) processCtrlChan(listener tunnel.Listener) {
 					// calculate route metric and add to the advertised metric
 					// we need to make sure we do not overflow math.MaxInt64
 					metric := n.getRouteMetric(event.Route.Router, event.Route.Gateway, event.Route.Link)
-					logger.Tracef("Network metric for router %+v and gateway %s: %v", event.Route.Router, event.Route.Gateway, metric)
+					log.Debugf("Network metric for router %+v and gateway %s: %v", event.Route.Router, event.Route.Gateway, metric)
 
 					// check we don't overflow max int 64
 					if d := route.Metric + metric; d <= 0 {
@@ -711,7 +710,7 @@ func (n *network) processCtrlChan(listener tunnel.Listener) {
 
 				// if no events are eligible for processing continue
 				if len(events) == 0 {
-					logger.Tracef("Network no events to be processed by router: %+v", n.options.Id)
+					log.Debugf("Network no events to be processed by router: %+v", n.options.Id)
 					continue
 				}
 
@@ -724,9 +723,9 @@ func (n *network) processCtrlChan(listener tunnel.Listener) {
 					Events:    events,
 				}
 
-				logger.Tracef("Network router %v processing advert: %s", n.Id(), advert.Id)
+				log.Debugf("Network router %+v processing advert: %s", n.Id(), advert.Id)
 				if err := n.router.Process(advert); err != nil {
-					logger.Debugf("Network failed to process advert %s: %v", advert.Id, err)
+					log.Debugf("Network failed to process advert %s: %v", advert.Id, err)
 				}
 			}
 		case <-n.closed:
@@ -756,7 +755,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 
 				pbNetConnect := &pbNet.Connect{}
 				if err := proto.Unmarshal(m.msg.Body, pbNetConnect); err != nil {
-					logger.Debugf("Network tunnel [%s] connect unmarshal error: %v", NetworkChannel, err)
+					log.Debugf("Network tunnel [%s] connect unmarshal error: %v", NetworkChannel, err)
 					continue
 				}
 
@@ -765,7 +764,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					continue
 				}
 
-				logger.Debugf("Network received connect message from: %s", pbNetConnect.Node.Id)
+				log.Debugf("Network received connect message from: %s", pbNetConnect.Node.Id)
 
 				peer := &node{
 					id:       pbNetConnect.Node.Id,
@@ -781,15 +780,15 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 				// TODO: should we do this only if we manage to add a peer
 				// What should we do if the peer links failed to be updated?
 				if err := n.updatePeerLinks(peer); err != nil {
-					logger.Debugf("Network failed updating peer links: %s", err)
+					log.Debugf("Network failed updating peer links: %s", err)
 				}
 
 				// add peer to the list of node peers
 				if err := n.AddPeer(peer); err == ErrPeerExists {
-					logger.Tracef("Network peer exists, refreshing: %+v", peer.id)
+					log.Debugf("Network peer exists, refreshing: %+v", peer.id)
 					// update lastSeen time for the peer
 					if err := n.RefreshPeer(peer.id, peer.link, now); err != nil {
-						logger.Debugf("Network failed refreshing peer %s: %v", peer.id, err)
+						log.Debugf("Network failed refreshing peer %s: %v", peer.id, err)
 					}
 				}
 
@@ -809,14 +808,14 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					// get a list of the best routes for each service in our routing table
 					routes, err := n.getProtoRoutes()
 					if err != nil {
-						logger.Debugf("Network node %s failed listing routes: %v", n.id, err)
+						log.Debugf("Network node %s failed listing routes: %v", n.id, err)
 					}
 					// attached the routes to the message
 					msg.Routes = routes
 
 					// send sync message to the newly connected peer
 					if err := n.sendTo("sync", NetworkChannel, peer, msg); err != nil {
-						logger.Debugf("Network failed to send sync message: %v", err)
+						log.Debugf("Network failed to send sync message: %v", err)
 					}
 				}()
 			case "peer":
@@ -825,7 +824,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 				pbNetPeer := &pbNet.Peer{}
 
 				if err := proto.Unmarshal(m.msg.Body, pbNetPeer); err != nil {
-					logger.Debugf("Network tunnel [%s] peer unmarshal error: %v", NetworkChannel, err)
+					log.Debugf("Network tunnel [%s] peer unmarshal error: %v", NetworkChannel, err)
 					continue
 				}
 
@@ -834,7 +833,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					continue
 				}
 
-				logger.Debugf("Network received peer message from: %s %s", pbNetPeer.Node.Id, pbNetPeer.Node.Address)
+				log.Debugf("Network received peer message from: %s %s", pbNetPeer.Node.Id, pbNetPeer.Node.Address)
 
 				peer := &node{
 					id:       pbNetPeer.Node.Id,
@@ -850,7 +849,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 				// TODO: should we do this only if we manage to add a peer
 				// What should we do if the peer links failed to be updated?
 				if err := n.updatePeerLinks(peer); err != nil {
-					logger.Debugf("Network failed updating peer links: %s", err)
+					log.Debugf("Network failed updating peer links: %s", err)
 				}
 
 				// if it's a new peer i.e. we do not have it in our graph, we request full sync
@@ -866,29 +865,29 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 						// get a list of the best routes for each service in our routing table
 						routes, err := n.getProtoRoutes()
 						if err != nil {
-							logger.Debugf("Network node %s failed listing routes: %v", n.id, err)
+							log.Debugf("Network node %s failed listing routes: %v", n.id, err)
 						}
 						// attached the routes to the message
 						msg.Routes = routes
 
 						// send sync message to the newly connected peer
 						if err := n.sendTo("sync", NetworkChannel, peer, msg); err != nil {
-							logger.Debugf("Network failed to send sync message: %v", err)
+							log.Debugf("Network failed to send sync message: %v", err)
 						}
 					}()
 
 					continue
 					// if we already have the peer in our graph, skip further steps
 				} else if err != ErrPeerExists {
-					logger.Debugf("Network got error adding peer %v", err)
+					log.Debugf("Network got error adding peer %v", err)
 					continue
 				}
 
-				logger.Tracef("Network peer exists, refreshing: %+v", pbNetPeer.Node.Id)
+				log.Debugf("Network peer exists, refreshing: %+v", pbNetPeer.Node.Id)
 
 				// update lastSeen time for the peer
 				if err := n.RefreshPeer(peer.id, peer.link, now); err != nil {
-					logger.Debugf("Network failed refreshing peer %s: %v", pbNetPeer.Node.Id, err)
+					log.Debugf("Network failed refreshing peer %s: %v", pbNetPeer.Node.Id, err)
 				}
 
 				// NOTE: we don't unpack MaxDepth toplogy
@@ -896,9 +895,9 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 				// update the link
 				peer.link = m.msg.Header["Vine-Link"]
 
-				logger.Tracef("Network updating topology of node: %+v", n.node.id)
+				log.Debugf("Network updating topology of node: %+v", n.node.id)
 				if err := n.node.UpdatePeer(peer); err != nil {
-					logger.Debugf("Network failed to update peers: %v", err)
+					log.Debugf("Network failed to update peers: %v", err)
 				}
 
 				// tell the connect loop that we've been discovered
@@ -914,7 +913,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 
 				pbNetSync := &pbNet.Sync{}
 				if err := proto.Unmarshal(m.msg.Body, pbNetSync); err != nil {
-					logger.Debugf("Network tunnel [%s] sync unmarshal error: %v", NetworkChannel, err)
+					log.Debugf("Network tunnel [%s] sync unmarshal error: %v", NetworkChannel, err)
 					continue
 				}
 
@@ -923,7 +922,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					continue
 				}
 
-				logger.Debugf("Network received sync message from: %s", pbNetSync.Peer.Node.Id)
+				log.Debugf("Network received sync message from: %s", pbNetSync.Peer.Node.Id)
 
 				peer := &node{
 					id:       pbNetSync.Peer.Node.Id,
@@ -939,15 +938,15 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 				// TODO: should we do this only if we manage to add a peer
 				// What should we do if the peer links failed to be updated?
 				if err := n.updatePeerLinks(peer); err != nil {
-					logger.Debugf("Network failed updating peer links: %s", err)
+					log.Debugf("Network failed updating peer links: %s", err)
 				}
 
 				// add peer to the list of node peers
 				if err := n.node.AddPeer(peer); err == ErrPeerExists {
-					logger.Tracef("Network peer exists, refreshing: %+v", peer.id)
+					log.Debugf("Network peer exists, refreshing: %+v", peer.id)
 					// update lastSeen time for the existing node
 					if err := n.RefreshPeer(peer.id, peer.link, now); err != nil {
-						logger.Debugf("Network failed refreshing peer %s: %v", peer.id, err)
+						log.Debugf("Network failed refreshing peer %s: %v", peer.id, err)
 					}
 				}
 
@@ -960,7 +959,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					route := pbUtil.ProtoToRoute(pbRoute)
 					// continue if we are the originator of the route
 					if route.Router == n.router.Options().Id {
-						logger.Debugf("Network node %s skipping route addition: route already present", n.id)
+						log.Debugf("Network node %s skipping route addition: route already present", n.id)
 						continue
 					}
 
@@ -985,7 +984,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 
 					routes, err := n.router.Table().Query(q...)
 					if err != nil && err != router.ErrRouteNotFound {
-						logger.Debugf("Network node %s failed listing best routes for %s: %v", n.id, route.Service, err)
+						log.Debugf("Network node %s failed listing best routes for %s: %v", n.id, route.Service, err)
 						continue
 					}
 
@@ -993,7 +992,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					// create the new route we have just received
 					if len(routes) == 0 {
 						if err := n.router.Table().Create(route); err != nil && err != router.ErrDuplicateRoute {
-							logger.Debugf("Network node %s failed to add route: %v", n.id, err)
+							log.Debugf("Network node %s failed to add route: %v", n.id, err)
 						}
 						continue
 					}
@@ -1019,14 +1018,14 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 
 					// add route to the routing table
 					if err := n.router.Table().Create(route); err != nil && err != router.ErrDuplicateRoute {
-						logger.Debugf("Network node %s failed to add route: %v", n.id, err)
+						log.Debugf("Network node %s failed to add route: %v", n.id, err)
 					}
 				}
 
 				// update your sync timestamp
 				// NOTE: this might go away as we will be doing full table advert to random peer
 				if err := n.RefreshSync(now); err != nil {
-					logger.Debugf("Network failed refreshing sync time: %v", err)
+					log.Debugf("Network failed refreshing sync time: %v", err)
 				}
 
 				go func() {
@@ -1035,13 +1034,13 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 
 					// advertise yourself to the new node
 					if err := n.sendTo("peer", NetworkChannel, peer, msg); err != nil {
-						logger.Debugf("Network failed to advertise peers: %v", err)
+						log.Debugf("Network failed to advertise peers: %v", err)
 					}
 				}()
 			case "close":
 				pbNetClose := &pbNet.Close{}
 				if err := proto.Unmarshal(m.msg.Body, pbNetClose); err != nil {
-					logger.Debugf("Network tunnel [%s] close unmarshal error: %v", NetworkChannel, err)
+					log.Debugf("Network tunnel [%s] close unmarshal error: %v", NetworkChannel, err)
 					continue
 				}
 
@@ -1050,7 +1049,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					continue
 				}
 
-				logger.Debugf("Network received close message from: %s", pbNetClose.Node.Id)
+				log.Debugf("Network received close message from: %s", pbNetClose.Node.Id)
 
 				peer := &node{
 					id:      pbNetClose.Node.Id,
@@ -1058,11 +1057,11 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 				}
 
 				if err := n.DeletePeerNode(peer.id); err != nil {
-					logger.Debugf("Network failed to delete node %s routes: %v", peer.id, err)
+					log.Debugf("Network failed to delete node %s routes: %v", peer.id, err)
 				}
 
 				if err := n.prunePeerRoutes(peer); err != nil {
-					logger.Debugf("Network failed pruning peer %s routes: %v", peer.id, err)
+					log.Debugf("Network failed pruning peer %s routes: %v", peer.id, err)
 				}
 
 				// NOTE: we should maybe advertise this to the network so we converge faster on closed nodes
@@ -1179,7 +1178,7 @@ func (n *network) manage() {
 						// set the link via peer links
 						l, ok := n.peerLinks[peer.address]
 						if ok {
-							logger.Debugf("Network link not found for peer %s cannot announce", peer.id)
+							log.Debugf("Network link not found for peer %s cannot announce", peer.id)
 							continue
 						}
 						link = l.Id()
@@ -1205,7 +1204,7 @@ func (n *network) manage() {
 			for _, peer := range peers {
 				// advertise yourself to the network
 				if err := n.sendTo("peer", NetworkChannel, peer, msg); err != nil {
-					logger.Debugf("Network failed to advertise peer %s: %v", peer.id, err)
+					log.Debugf("Network failed to advertise peer %s: %v", peer.id, err)
 					continue
 				}
 
@@ -1227,31 +1226,31 @@ func (n *network) manage() {
 
 				// unknown link and peer so lets do the connect flow
 				if err := n.sendTo("connect", NetworkChannel, peer, msg); err != nil {
-					logger.Debugf("Network failed to connect %s: %v", peer.id, err)
+					log.Debugf("Network failed to connect %s: %v", peer.id, err)
 					continue
 				}
 
 				links[peer.link] = time.Now()
 			}
 		case <-prune.C:
-			logger.Debugf("Network node %s pruning stale peers", n.id)
+			log.Debugf("Network node %s pruning stale peers", n.id)
 			pruned := n.PruneStalePeers(PruneTime)
 
 			for id, peer := range pruned {
-				logger.Debugf("Network peer exceeded prune time: %s", id)
+				log.Debugf("Network peer exceeded prune time: %s", id)
 				n.Lock()
 				delete(n.peerLinks, peer.address)
 				n.Unlock()
 
 				if err := n.prunePeerRoutes(peer); err != nil {
-					logger.Debugf("Network failed pruning peer %s routes: %v", id, err)
+					log.Debugf("Network failed pruning peer %s routes: %v", id, err)
 				}
 			}
 
 			// get a list of all routes
 			routes, err := n.options.Router.Table().List()
 			if err != nil {
-				logger.Debugf("Network failed listing routes when pruning peers: %v", err)
+				log.Debugf("Network failed listing routes when pruning peers: %v", err)
 				continue
 			}
 
@@ -1273,7 +1272,7 @@ func (n *network) manage() {
 				}
 				// otherwise delete all the routes originated by it
 				if err := n.pruneRoutes(router.QueryRouter(route.Router)); err != nil {
-					logger.Debugf("Network failed deleting routes by %s: %v", route.Router, err)
+					log.Debugf("Network failed deleting routes by %s: %v", route.Router, err)
 				}
 			}
 		case <-netsync.C:
@@ -1303,14 +1302,14 @@ func (n *network) manage() {
 				// get a list of the best routes for each service in our routing table
 				routes, err := n.getProtoRoutes()
 				if err != nil {
-					logger.Debugf("Network node %s failed listing routes: %v", n.id, err)
+					log.Debugf("Network node %s failed listing routes: %v", n.id, err)
 				}
 				// attached the routes to the message
 				msg.Routes = routes
 
 				// send sync message to the newly connected peer
 				if err := n.sendTo("sync", NetworkChannel, peer, msg); err != nil {
-					logger.Debugf("Network failed to send sync message: %v", err)
+					log.Debugf("Network failed to send sync message: %v", err)
 				}
 			}()
 		case <-resolve.C:
@@ -1360,7 +1359,7 @@ func (n *network) sendConnect() {
 	}
 
 	if err := n.sendMsg("connect", NetworkChannel, msg); err != nil {
-		logger.Debugf("Network failed to send connect message: %s", err)
+		log.Debugf("Network failed to send connect message: %s", err)
 	}
 }
 
@@ -1379,9 +1378,9 @@ func (n *network) sendTo(method, channel string, peer *node, msg proto.Message) 
 		if peerNode := n.GetPeerNode(peer.id); peerNode != nil {
 			// update node status when error happens
 			peerNode.status.err.Update(err)
-			logger.Debugf("Network increment peer %v error count to: %d", peerNode, peerNode, peerNode.status.Error().Count())
+			log.Debugf("Network increment peer %v error count to: %d", peerNode, peerNode, peerNode.status.Error().Count())
 			if count := peerNode.status.Error().Count(); count == MaxPeerErrors {
-				logger.Debugf("Network peer %v error count exceeded %d. Prunning.", peerNode, MaxPeerErrors)
+				log.Debugf("Network peer %v error count exceeded %d. Prunning.", peerNode, MaxPeerErrors)
 				n.PrunePeer(peerNode.id)
 			}
 		}
@@ -1395,7 +1394,7 @@ func (n *network) sendTo(method, channel string, peer *node, msg proto.Message) 
 		id = peer.link
 	}
 
-	logger.Debugf("Network sending %s message from: %s to %s", method, n.options.Id, id)
+	log.Debugf("Network sending %s message from: %s to %s", method, n.options.Id, id)
 	tmsg := &transport.Message{
 		Header: map[string]string{
 			"Vine-Method": method,
@@ -1411,12 +1410,12 @@ func (n *network) sendTo(method, channel string, peer *node, msg proto.Message) 
 	if err := c.Send(tmsg); err != nil {
 		// TODO: Lookup peer in our graph
 		if peerNode := n.GetPeerNode(peer.id); peerNode != nil {
-			logger.Debugf("Network found peer %s: %v", peer.id, peerNode)
+			log.Debugf("Network found peer %s: %v", peer.id, peerNode)
 			// update node status when error happens
 			peerNode.status.err.Update(err)
-			logger.Debugf("Network increment node peer %p %v count to: %d", peerNode, peerNode, peerNode.status.Error().Count())
+			log.Debugf("Network increment node peer %p %v count to: %d", peerNode, peerNode, peerNode.status.Error().Count())
 			if count := peerNode.status.Error().Count(); count == MaxPeerErrors {
-				logger.Debugf("Network node peer %v count exceeded %d: %d", peerNode, MaxPeerErrors, peerNode.status.Error().Count())
+				log.Debugf("Network node peer %v count exceeded %d: %d", peerNode, MaxPeerErrors, peerNode.status.Error().Count())
 				n.PrunePeer(peerNode.id)
 			}
 		}
@@ -1442,7 +1441,7 @@ func (n *network) sendMsg(method, channel string, msg proto.Message) error {
 	}
 	n.RUnlock()
 
-	logger.Debugf("Network sending %s message from: %s", method, n.options.Id)
+	log.Debugf("Network sending %s message from: %s", method, n.options.Id)
 
 	return client.Send(&transport.Message{
 		Header: map[string]string{
@@ -1459,7 +1458,7 @@ func (n *network) updatePeerLinks(peer *node) error {
 
 	linkId := peer.link
 
-	logger.Tracef("Network looking up link %+v in the peer links", linkId)
+	log.Debugf("Network looking up link %+v in the peer links", linkId)
 
 	// lookup the peer link
 	var peerLink tunnel.Link
@@ -1476,7 +1475,7 @@ func (n *network) updatePeerLinks(peer *node) error {
 	}
 
 	// if the peerLink is found in the returned links update peerLinks
-	logger.Tracef("Network updating peer links for peer %+v", peer.address)
+	log.Debugf("Network updating peer links for peer %+v", peer.address)
 
 	// lookup a link and update it if better link is available
 	if link, ok := n.peerLinks[peer.address]; ok {
@@ -1558,7 +1557,7 @@ func (n *network) connect() {
 			// well functioning tunnel clients as "discovered" will be false until the
 			// n.discovered channel is read at some point later on.
 			if err := n.createClients(); err != nil {
-				logger.Debugf("Failed to recreate network/control clients: %v", err)
+				log.Debugf("Failed to recreate network/control clients: %v", err)
 				continue
 			}
 
@@ -1767,7 +1766,7 @@ func (n *network) Close() error {
 		}
 
 		if err := n.sendMsg("close", NetworkChannel, msg); err != nil {
-			logger.Debugf("Network failed to send close message: %s", err)
+			log.Debugf("Network failed to send close message: %s", err)
 		}
 		<-time.After(time.Millisecond * 100)
 	}
