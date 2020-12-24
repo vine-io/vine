@@ -97,6 +97,62 @@ func (f *Int64Flag) Apply(set *flag.FlagSet) error {
 	return nil
 }
 
+func (a *App) int64Var(p *int64, name, alias string, value int64, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &Int64Flag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// Int64Var defines a int64 flag with specified name, default value, usage string and env string.
+// The argument p points to a int64 variable in which to store the value of the flag.
+func (a *App) Int64Var(p *int64, name string, value int64, usage, env string) {
+	a.int64Var(p, name, "", value, usage, env)
+}
+
+// Int64VarP is like Int64Var, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Int64VarP(p *int64, name, alias string, value int64, usage, env string) {
+	a.int64Var(p, name, alias, value, usage, env)
+}
+
+// Int64Var defines a int64 flag with specified name, default value, usage string and env string.
+// The argument p points to a int64 variable in which to store the value of the flag.
+func Int64Var(p *int64, name string, value int64, usage, env string) {
+	CommandLine.Int64Var(p, name, value, usage, env)
+}
+
+// Int64VarP is like Int64Var, but accepts a shorthand letter that can be used after a single dash.
+func Int64VarP(p *int64, name, alias string, value int64, usage, env string) {
+	CommandLine.Int64VarP(p, name, alias, value, usage, env)
+}
+
+// Int64 defines a int64 flag with specified name, default value, usage string and env string.
+// The return value is the address of a int64 variable that stores the value of the flag.
+func (a *App) Int64(name string, value int64, usage, env string) *int64 {
+	p := new(int64)
+	a.Int64Var(p, name, value, usage, env)
+	return p
+}
+
+// Int64P is like Int64, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Int64P(name, alias string, value int64, usage, env string) *int64 {
+	p := new(int64)
+	a.Int64VarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Int64 looks up the value of a local Int64Flag, returns
 // 0 if not found
 func (c *Context) Int64(name string) int64 {

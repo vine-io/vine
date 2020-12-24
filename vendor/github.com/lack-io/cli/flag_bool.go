@@ -98,6 +98,62 @@ func (f *BoolFlag) Apply(set *flag.FlagSet) error {
 	return nil
 }
 
+func (a *App) boolVar(p *bool, name, alias string, value bool, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &BoolFlag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// BoolVar defines a bool flag with specified name, default value, usage string and env string.
+// The argument p points to a bool variable in which to store the value of the flag.
+func (a *App) BoolVar(p *bool, name string, value bool, usage, env string) {
+	a.boolVar(p, name, "", value, usage, env)
+}
+
+// BoolVarP is like BoolVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) BoolVarP(p *bool, name, alias string, value bool, usage, env string) {
+	a.boolVar(p, name, alias, value, usage, env)
+}
+
+// BoolVar defines a bool flag with specified name, default value, usage string and env string.
+// The argument p points to a bool variable in which to store the value of the flag.
+func BoolVar(p *bool, name string, value bool, usage, env string) {
+	CommandLine.BoolVar(p, name, value, usage, env)
+}
+
+// BoolVarP is like BoolVar, but accepts a shorthand letter that can be used after a single dash.
+func BoolVarP(p *bool, name, alias string, value bool, usage, env string) {
+	CommandLine.BoolVarP(p, name, alias, value, usage, env)
+}
+
+// Bool defines a bool flag with specified name, default value, usage string and env string.
+// The return value is the address of a bool variable that stores the value of the flag.
+func (a *App) Bool(name string, value bool, usage, env string) *bool {
+	p := new(bool)
+	a.BoolVar(p, name, value, usage, env)
+	return p
+}
+
+// BoolP is like Bool, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) BoolP(name, alias string, value bool, usage, env string) *bool {
+	p := new(bool)
+	a.BoolVarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Bool looks up the value of a local BoolFlag, returns
 // false if not found
 func (c *Context) Bool(name string) bool {

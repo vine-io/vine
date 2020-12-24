@@ -98,6 +98,62 @@ func (f *DurationFlag) Apply(set *flag.FlagSet) error {
 	return nil
 }
 
+func (a *App) durationVar(p *time.Duration, name, alias string, value time.Duration, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &DurationFlag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// DurationVar defines a time.Duration flag with specified name, default value, usage string and env string.
+// The argument p points to a time.Duration variable in which to store the value of the flag.
+func (a *App) DurationVar(p *time.Duration, name string, value time.Duration, usage, env string) {
+	a.durationVar(p, name, "", value, usage, env)
+}
+
+// DurationVarP is like DurationVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) DurationVarP(p *time.Duration, name, alias string, value time.Duration, usage, env string) {
+	a.durationVar(p, name, alias, value, usage, env)
+}
+
+// DurationVar defines a time.Duration flag with specified name, default value, usage string and env string.
+// The argument p points to a time.Duration variable in which to store the value of the flag.
+func DurationVar(p *time.Duration, name string, value time.Duration, usage, env string) {
+	CommandLine.DurationVar(p, name, value, usage, env)
+}
+
+// DurationVarP is like DurationVar, but accepts a shorthand letter that can be used after a single dash.
+func DurationVarP(p *time.Duration, name, alias string, value time.Duration, usage, env string) {
+	CommandLine.DurationVarP(p, name, alias, value, usage, env)
+}
+
+// Duration defines a time.Duration flag with specified name, default value, usage string and env string.
+// The return value is the address of a time.Duration variable that stores the value of the flag.
+func (a *App) Duration(name string, value time.Duration, usage, env string) *time.Duration {
+	p := new(time.Duration)
+	a.DurationVar(p, name, value, usage, env)
+	return p
+}
+
+// DurationP is like Duration, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) DurationP(name, alias string, value time.Duration, usage, env string) *time.Duration {
+	p := new(time.Duration)
+	a.DurationVarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Duration looks up the value of a local DurationFlag, returns
 // 0 if not found
 func (c *Context) Duration(name string) time.Duration {

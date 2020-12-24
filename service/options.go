@@ -18,19 +18,36 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/broker"
-	"github.com/lack-io/vine/client"
-	"github.com/lack-io/vine/registry"
-	"github.com/lack-io/vine/server"
-	"github.com/lack-io/vine/transport"
+	"github.com/lack-io/cli"
+
+	"github.com/lack-io/vine/internal/debug/profile"
+	"github.com/lack-io/vine/internal/debug/trace"
+	"github.com/lack-io/vine/internal/network/transport"
+	"github.com/lack-io/vine/service/auth"
+	"github.com/lack-io/vine/service/broker"
+	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/service/client/selector"
+	"github.com/lack-io/vine/service/config"
+	"github.com/lack-io/vine/service/config/cmd"
+	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/service/runtime"
+	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/service/store"
 )
 
+// Options for vine service
 type Options struct {
+	Auth      auth.Auth
 	Broker    broker.Broker
+	Cmd       cmd.Cmd
 	Client    client.Client
+	Config    config.Config
 	Server    server.Server
+	Store     store.Store
 	Registry  registry.Registry
+	Runtime   runtime.Runtime
 	Transport transport.Transport
+	Profile   profile.Profile
 
 	// Before and After funcs
 	BeforeStart []func() error
@@ -41,18 +58,24 @@ type Options struct {
 	// Other options for implementations of the interface
 	// can be stored in a context
 	Context context.Context
+
+	Signal bool
 }
 
-type Option func(*Options)
-
-func NewOptions(opts ...Option) Options {
+func newOptions(opts ...Option) Options {
 	opt := Options{
+		Auth:      auth.DefaultAuth,
 		Broker:    broker.DefaultBroker,
+		Cmd:       cmd.DefaultCmd,
+		Config:    config.DefaultConfig,
 		Client:    client.DefaultClient,
 		Server:    server.DefaultServer,
+		Store:     store.DefaultStore,
 		Registry:  registry.DefaultRegistry,
+		Runtime:   runtime.DefaultRuntime,
 		Transport: transport.DefaultTransport,
 		Context:   context.Background(),
+		Signal:    true,
 	}
 
 	for _, o := range opts {
@@ -62,15 +85,23 @@ func NewOptions(opts ...Option) Options {
 	return opt
 }
 
+// Broker to be used for service
 func Broker(b broker.Broker) Option {
 	return func(o *Options) {
 		o.Broker = b
-		// Update Client and Server
+		// Update Client and Service
 		o.Client.Init(client.Broker(b))
 		o.Server.Init(server.Broker(b))
 	}
 }
 
+func Cmd(c cmd.Cmd) Option {
+	return func(o *Options) {
+		o.Cmd = c
+	}
+}
+
+// Client to be used for service
 func Client(c client.Client) Option {
 	return func(o *Options) {
 		o.Client = c
@@ -78,17 +109,40 @@ func Client(c client.Client) Option {
 }
 
 // Context specifies a context for the service.
-// Can be used to signal shutdown of the service.
-// Can be used for extra option values.
+// Can be used to signal shutdown of the service and for extra option values.
 func Context(ctx context.Context) Option {
 	return func(o *Options) {
 		o.Context = ctx
 	}
 }
 
+// HandleSignal toggle automatic installation of the signal handler that
+// traps TERM, INT, and QUIT. Users of this future to disable the signal
+// handler, should control liveness of the service through the context
+func HandleSignal(b bool) Option {
+	return func(o *Options) {
+		o.Signal = true
+	}
+}
+
+// Profile to be used for debug profile
+func Profile(p profile.Profile) Option {
+	return func(o *Options) {
+		o.Profile = p
+	}
+}
+
+// Server to be used for service
 func Server(s server.Server) Option {
 	return func(o *Options) {
 		o.Server = s
+	}
+}
+
+// Store sets the store to use
+func Store(s store.Store) Option {
+	return func(o *Options) {
+		o.Store = s
 	}
 }
 
@@ -105,6 +159,35 @@ func Registry(r registry.Registry) Option {
 	}
 }
 
+// Tracer sets the tracer for the service
+func Tracer(t trace.Tracer) Option {
+	return func(o *Options) {
+		o.Server.Init(server.Tracer(t))
+	}
+}
+
+// Auth sets the auth for the service
+func Auth(a auth.Auth) Option {
+	return func(o *Options) {
+		o.Auth = a
+		o.Server.Init(server.Auth(a))
+	}
+}
+
+// Config sets the config for the service
+func Config(c config.Config) Option {
+	return func(o *Options) {
+		o.Config = c
+	}
+}
+
+// Selector sets the selector for the service client
+func Selector(s selector.Selector) Option {
+	return func(o *Options) {
+		o.Client.Init(client.Selector(s))
+	}
+}
+
 // Transport sets the transport for the service
 // and the underlying components
 func Transport(t transport.Transport) Option {
@@ -116,7 +199,12 @@ func Transport(t transport.Transport) Option {
 	}
 }
 
-// Convenience options
+// Runtime sets the runtime
+func Runtime(r runtime.Runtime) Option {
+	return func(o *Options) {
+		o.Runtime = r
+	}
+}
 
 // Address sets the address of the server
 func Address(addr string) Option {
@@ -143,6 +231,20 @@ func Version(v string) Option {
 func Metadata(md map[string]string) Option {
 	return func(o *Options) {
 		o.Server.Init(server.Metadata(md))
+	}
+}
+
+// Flags that can be passed to service
+func Flags(flags ...cli.Flag) Option {
+	return func(o *Options) {
+		o.Cmd.App().Flags = append(o.Cmd.App().Flags, flags...)
+	}
+}
+
+// Action can be used to parse user provided cli options
+func Action(a func(*cli.Context) error) Option {
+	return func(o *Options) {
+		o.Cmd.App().Action = a
 	}
 }
 
@@ -188,12 +290,12 @@ func WrapHandler(w ...server.HandlerWrapper) Option {
 			wrappers = append(wrappers, server.WrapHandler(wrap))
 		}
 
-		// Init once
+		// Init Once
 		o.Server.Init(wrappers...)
 	}
 }
 
-// WrapSubscriber adds a subscriber Wrapper to a list of options passed into the server
+// WrapSubscriber adds subscriber Wrapper to a list of options passed into the server
 func WrapSubscriber(w ...server.SubscriberWrapper) Option {
 	return func(o *Options) {
 		var wrappers []server.Option
@@ -209,24 +311,28 @@ func WrapSubscriber(w ...server.SubscriberWrapper) Option {
 
 // Before and Afters
 
+// BeforeStart run functions before service starts
 func BeforeStart(fn func() error) Option {
 	return func(o *Options) {
 		o.BeforeStart = append(o.BeforeStart, fn)
 	}
 }
 
+// BeforeStop run funcs before service stops
 func BeforeStop(fn func() error) Option {
 	return func(o *Options) {
 		o.BeforeStop = append(o.BeforeStop, fn)
 	}
 }
 
+// AfterStart run funcs after service starts
 func AfterStart(fn func() error) Option {
 	return func(o *Options) {
 		o.AfterStart = append(o.AfterStart, fn)
 	}
 }
 
+// AfterStop run funcs after service stops
 func AfterStop(fn func() error) Option {
 	return func(o *Options) {
 		o.AfterStop = append(o.AfterStop, fn)

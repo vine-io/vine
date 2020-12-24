@@ -97,6 +97,62 @@ func (f *UintFlag) GetValue() string {
 	return fmt.Sprintf("%d", f.Value)
 }
 
+func (a *App) uintVar(p *uint, name, alias string, value uint, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &UintFlag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// UintVar defines a uint flag with specified name, default value, usage string and env string.
+// The argument p points to a uint variable in which to store the value of the flag.
+func (a *App) UintVar(p *uint, name string, value uint, usage, env string) {
+	a.uintVar(p, name, "", value, usage, env)
+}
+
+// UintVarP is like UintVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) UintVarP(p *uint, name, alias string, value uint, usage, env string) {
+	a.uintVar(p, name, alias, value, usage, env)
+}
+
+// UintVar defines a uint flag with specified name, default value, usage string and env string.
+// The argument p points to a uint variable in which to store the value of the flag.
+func UintVar(p *uint, name string, value uint, usage, env string) {
+	CommandLine.UintVar(p, name, value, usage, env)
+}
+
+// UintVarP is like UintVar, but accepts a shorthand letter that can be used after a single dash.
+func UintVarP(p *uint, name, alias string, value uint, usage, env string) {
+	CommandLine.UintVarP(p, name, alias, value, usage, env)
+}
+
+// Uint defines a uint flag with specified name, default value, usage string and env string.
+// The return value is the address of a uint variable that stores the value of the flag.
+func (a *App) Uint(name string, value uint, usage, env string) *uint {
+	p := new(uint)
+	a.UintVar(p, name, value, usage, env)
+	return p
+}
+
+// UintP is like Uint, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) UintP(name, alias string, value uint, usage, env string) *uint {
+	p := new(uint)
+	a.UintVarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Uint looks up the value of a local UintFlag, returns
 // 0 if not found
 func (c *Context) Uint(name string) uint {

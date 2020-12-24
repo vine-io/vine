@@ -97,6 +97,62 @@ func (f *Uint64Flag) GetValue() string {
 	return fmt.Sprintf("%d", f.Value)
 }
 
+func (a *App) uint64Var(p *uint64, name, alias string, value uint64, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &Uint64Flag{
+		Name:        name,
+		Usage:       usage,
+		Value:       value,
+		Destination: p,
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// Uint64Var defines a uint64 flag with specified name, default value, usage string and env string.
+// The argument p points to a uint64 variable in which to store the value of the flag.
+func (a *App) Uint64Var(p *uint64, name string, value uint64, usage, env string) {
+	a.uint64Var(p, name, "", value, usage, env)
+}
+
+// Uint64VarP is like Uint64Var, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Uint64VarP(p *uint64, name, alias string, value uint64, usage, env string) {
+	a.uint64Var(p, name, alias, value, usage, env)
+}
+
+// Uint64Var defines a uint64 flag with specified name, default value, usage string and env string.
+// The argument p points to a uint64 variable in which to store the value of the flag.
+func Uint64Var(p *uint64, name string, value uint64, usage, env string) {
+	CommandLine.Uint64Var(p, name, value, usage, env)
+}
+
+// Uint64VarP is like Uint64Var, but accepts a shorthand letter that can be used after a single dash.
+func Uint64VarP(p *uint64, name, alias string, value uint64, usage, env string) {
+	CommandLine.Uint64VarP(p, name, alias, value, usage, env)
+}
+
+// Uint64 defines a uint64 flag with specified name, default value, usage string and env string.
+// The return value is the address of a uint64 variable that stores the value of the flag.
+func (a *App) Uint64(name string, value uint64, usage, env string) *uint64 {
+	p := new(uint64)
+	a.Uint64Var(p, name, value, usage, env)
+	return p
+}
+
+// Uint64P is like Uint64, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) Uint64P(name, alias string, value uint64, usage, env string) *uint64 {
+	p := new(uint64)
+	a.Uint64VarP(p, name, alias, value, usage, env)
+	return p
+}
+
 // Uint64 looks up the value of a local Uint64Flag, returns
 // 0 if not found
 func (c *Context) Uint64(name string) uint64 {

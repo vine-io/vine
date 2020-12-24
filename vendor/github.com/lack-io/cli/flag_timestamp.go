@@ -29,7 +29,17 @@ type Timestamp struct {
 
 // Timestamp constructor
 func NewTimestamp(timestamp time.Time) *Timestamp {
-	return &Timestamp{timestamp: &timestamp}
+	return newTimestamp(timestamp, nil)
+}
+
+func newTimestamp(timestamp time.Time, p *time.Time) *Timestamp {
+	t := new(Timestamp)
+	if p == nil {
+		p = new(time.Time)
+	}
+	t.timestamp = p
+	*t.timestamp = timestamp
+	return t
 }
 
 // Set the timestamp value directly
@@ -146,6 +156,61 @@ func (f *TimestampFlag) Apply(set *flag.FlagSet) error {
 		set.Var(f.Value, name, f.Usage)
 	}
 	return nil
+}
+
+func (a *App) timestampVar(p *time.Time, name, alias string, value time.Time, usage, env string) {
+	if a.Flags == nil {
+		a.Flags = make([]Flag, 0)
+	}
+	flag := &TimestampFlag{
+		Name:  name,
+		Usage: usage,
+		Value: newTimestamp(value, p),
+	}
+	if alias != "" {
+		flag.Aliases = []string{alias}
+	}
+	if env != "" {
+		flag.EnvVars = []string{env}
+	}
+	a.Flags = append(a.Flags, flag)
+}
+
+// TimestampVar defines a time.Time flag with specified name, default value, usage string and env string.
+// The argument p points to a time.Time variable in which to store the value of the flag.
+func (a *App) TimestampVar(p *time.Time, name string, value time.Time, usage, env string) {
+	a.timestampVar(p, name, "", value, usage, env)
+}
+
+// TimestampVarP is like TimestampVar, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) TimestampVarP(p *time.Time, name, alias string, value time.Time, usage, env string) {
+	a.timestampVar(p, name, alias, value, usage, env)
+}
+
+// TimestampVar defines a Timestamp flag with specified name, default value, usage string and env string.
+// The argument p points to a time.Time variable in which to store the value of the flag.
+func TimestampVar(p *time.Time, name string, value time.Time, usage, env string) {
+	CommandLine.TimestampVar(p, name, value, usage, env)
+}
+
+// TimestampVarP is like TimestampVar, but accepts a shorthand letter that can be used after a single dash.
+func TimestampVarP(p *time.Time, name, alias string, value time.Time, usage, env string) {
+	CommandLine.TimestampVarP(p, name, alias, value, usage, env)
+}
+
+// Timestamp defines a time.Time flag with specified name, default value, usage string and env string.
+// The return value is the address of a time.Time variable that stores the value of the flag.
+func (a *App) Timestamp(name string, value time.Time, usage, env string) *time.Time {
+	p := new(time.Time)
+	a.TimestampVar(p, name, value, usage, env)
+	return p
+}
+
+// TimestampP is like Timestamp, but accepts a shorthand letter that can be used after a single dash.
+func (a *App) TimestampP(name, alias string, value time.Time, usage, env string) *time.Time {
+	p := new(time.Time)
+	a.TimestampVarP(p, name, alias, value, usage, env)
+	return p
 }
 
 // Timestamp gets the timestamp from a flag name
