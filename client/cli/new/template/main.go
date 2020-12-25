@@ -5,16 +5,16 @@ var (
 
 import (
   	log	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service"
+	vine "github.com/lack-io/vine/service"
 	"{{.Dir}}/handler"
 	"{{.Dir}}/subscriber"
 )
 
 func main() {
 	// New Service
-	function := service.NewFunction(
-		service.Name("{{.FQDN}}"),
-		service.Version("latest"),
+	function := vine.NewFunction(
+		vine.Name("{{.FQDN}}"),
+		vine.Version("latest"),
 	)
 
 	// Initialise function
@@ -37,7 +37,7 @@ func main() {
 
 import (
 	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service"
+	vine "github.com/lack-io/vine/service"
 	"{{.Dir}}/handler"
 	"{{.Dir}}/subscriber"
 
@@ -46,22 +46,22 @@ import (
 
 func main() {
 	// New Service
-	srv := service.NewService(
-		service.Name("{{.FQDN}}"),
-		service.Version("latest"),
+	service := vine.NewService(
+		vine.Name("{{.FQDN}}"),
+		vine.Version("latest"),
 	)
 
 	// Initialise service
-	srv.Init()
+	service.Init()
 
 	// Register Handler
 	{{.Alias}}.Register{{title .Alias}}Handler(service.Server(), new(handler.{{title .Alias}}))
 
 	// Register Struct as Subscriber
-	service.RegisterSubscriber("{{.FQDN}}", srv.Server(), new(subscriber.{{title .Alias}}))
+	vine.RegisterSubscriber("{{.FQDN}}", service.Server(), new(subscriber.{{title .Alias}}))
 
 	// Run service
-	if err := srv.Run(); err != nil {
+	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -71,7 +71,7 @@ func main() {
 import (
 	log "github.com/lack-io/vine/service/logger"
 
-	"github.com/lack-io/vine/service"
+	vine "github.com/lack-io/vine/service"
 	"{{.Dir}}/handler"
 	"{{.Dir}}/client"
 
@@ -80,22 +80,22 @@ import (
 
 func main() {
 	// New Service
-	srv := service.NewService(
-		service.Name("{{.FQDN}}"),
-		service.Version("latest"),
+	service := vine.NewService(
+		vine.Name("{{.FQDN}}"),
+		vine.Version("latest"),
 	)
 
 	// Initialise service
-	srv.Init(
+	service.Init(
 		// create wrap for the {{title .Alias}} service client
-		service.WrapHandler(client.{{title .Alias}}Wrapper(srv)),
+		vine.WrapHandler(client.{{title .Alias}}Wrapper(srv)),
 	)
 
 	// Register Handler
 	{{.Alias}}.Register{{title .Alias}}Handler(service.Server(), new(handler.{{title .Alias}}))
 
 	// Run service
-	if err := srv.Run(); err != nil {
+	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -103,8 +103,9 @@ func main() {
 	MainWEB = `package main
 
 import (
-        log "github.com/lack-io/vine/service/logger"
     	"net/http"
+
+        log "github.com/lack-io/vine/service/logger"
         "github.com/lack-io/vine/service/web"
         "{{.Dir}}/handler"
 )

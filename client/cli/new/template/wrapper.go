@@ -6,8 +6,7 @@ var (
 import (
 	"context"
 
-	"github.com/lack-io/vine/service"
-	"github.com/lack-io/vine/service"
+	vine "github.com/lack-io/vine/service"
 	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
 
@@ -20,8 +19,8 @@ func {{title .Alias}}FromContext(ctx context.Context) ({{.Alias}}.{{title .Alias
 }
 
 // Client returns a wrapper for the {{title .Alias}}Client
-func {{title .Alias}}Wrapper(srv service.Service) server.HandlerWrapper {
-	client := {{.Alias}}.New{{title .Alias}}Service("go.vine.service.template", srv.Client())
+func {{title .Alias}}Wrapper(service vine.Service) server.HandlerWrapper {
+	client := {{.Alias}}.New{{title .Alias}}Service("go.vine.service.template", service.Client())
 
 	return func(fn server.HandlerFunc) server.HandlerFunc {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
