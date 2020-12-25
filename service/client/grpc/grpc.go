@@ -33,8 +33,8 @@ import (
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
+	raw "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/registry"
-	raw "github.com/lack-io/vine/util/codec/bytes"
 	"github.com/lack-io/vine/util/context/metadata"
 	mnet "github.com/lack-io/vine/util/net"
 )

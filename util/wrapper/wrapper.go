@@ -22,10 +22,10 @@ import (
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/service/debug/stats"
+	"github.com/lack-io/vine/service/debug/trace"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/util/context/metadata"
-	"github.com/lack-io/vine/util/debug/stats"
-	"github.com/lack-io/vine/util/debug/trace"
 )
 
 type fromServiceWrapper struct {

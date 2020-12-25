@@ -25,6 +25,8 @@ import (
 	"github.com/lack-io/vine/service/client"
 	cmucp "github.com/lack-io/vine/service/client/mucp"
 	log "github.com/lack-io/vine/service/logger"
+	tun "github.com/lack-io/vine/service/network/tunnel"
+	"github.com/lack-io/vine/service/network/tunnel/transport"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/proxy/mucp"
 	"github.com/lack-io/vine/service/registry/memory"
@@ -33,8 +35,6 @@ import (
 	"github.com/lack-io/vine/service/server"
 	smucp "github.com/lack-io/vine/service/server/mucp"
 	"github.com/lack-io/vine/util/muxer"
-	tun "github.com/lack-io/vine/util/network/tunnel"
-	"github.com/lack-io/vine/util/network/tunnel/transport"
 )
 
 var (

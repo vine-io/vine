@@ -24,10 +24,11 @@ import (
 	"time"
 
 	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
-	"github.com/lack-io/vine/util/api/server/acme"
-	cert "github.com/lack-io/vine/util/api/server/acme/certmagic"
+
+	"github.com/lack-io/vine/service/api/server/acme"
+	cert "github.com/lack-io/vine/service/api/server/acme/certmagic"
+	"github.com/lack-io/vine/service/sync/memory"
 	cfstore "github.com/lack-io/vine/util/plugins/store/cloudflare"
-	"github.com/lack-io/vine/util/sync/memory"
 )
 
 func TestCertMagic(t *testing.T) {

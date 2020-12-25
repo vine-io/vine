@@ -27,12 +27,12 @@ import (
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
+	"github.com/lack-io/vine/service/codec"
+	"github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/router"
 	"github.com/lack-io/vine/service/server"
-	"github.com/lack-io/vine/util/codec"
-	"github.com/lack-io/vine/util/codec/bytes"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 

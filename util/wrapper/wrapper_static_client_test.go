@@ -21,9 +21,9 @@ import (
 	"github.com/lack-io/vine/service/broker"
 	bmemory "github.com/lack-io/vine/service/broker/memory"
 	"github.com/lack-io/vine/service/client"
+	tmemory "github.com/lack-io/vine/service/network/transport/memory"
 	rmemory "github.com/lack-io/vine/service/registry/memory"
 	"github.com/lack-io/vine/service/server"
-	tmemory "github.com/lack-io/vine/util/network/transport/memory"
 	wrapper "github.com/lack-io/vine/util/wrapper"
 )
 

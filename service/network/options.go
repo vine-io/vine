@@ -17,12 +17,12 @@ package network
 import (
 	"github.com/google/uuid"
 
+	"github.com/lack-io/vine/service/network/resolver"
+	"github.com/lack-io/vine/service/network/resolver/registry"
+	"github.com/lack-io/vine/service/network/tunnel"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/proxy/mucp"
 	"github.com/lack-io/vine/service/router"
-	"github.com/lack-io/vine/util/network/resolver"
-	"github.com/lack-io/vine/util/network/resolver/registry"
-	"github.com/lack-io/vine/util/network/tunnel"
 )
 
 type Option func(*Options)

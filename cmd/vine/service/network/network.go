@@ -31,6 +31,13 @@ import (
 	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network"
+	"github.com/lack-io/vine/service/network/resolver"
+	"github.com/lack-io/vine/service/network/resolver/dns"
+	"github.com/lack-io/vine/service/network/resolver/http"
+	"github.com/lack-io/vine/service/network/resolver/registry"
+	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/network/transport/quic"
+	"github.com/lack-io/vine/service/network/tunnel"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/proxy/mucp"
 	"github.com/lack-io/vine/service/router"
@@ -38,13 +45,6 @@ import (
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/util/helper"
 	mux "github.com/lack-io/vine/util/muxer"
-	"github.com/lack-io/vine/util/network/resolver"
-	"github.com/lack-io/vine/util/network/resolver/dns"
-	"github.com/lack-io/vine/util/network/resolver/http"
-	"github.com/lack-io/vine/util/network/resolver/registry"
-	"github.com/lack-io/vine/util/network/transport"
-	"github.com/lack-io/vine/util/network/transport/quic"
-	"github.com/lack-io/vine/util/network/tunnel"
 )
 
 var (

@@ -39,7 +39,7 @@ type Build struct {
 	// Commit is git commit sha
 	Commit string `json:"commit,omitempty"`
 	// Image is Docker build timestamp
-	Image string `json:"image"`
+	Image string `json:"image,omitempty"`
 	// Release is vine release tag
 	Release string `json:"release,omitempty"`
 }

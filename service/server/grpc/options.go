@@ -24,10 +24,10 @@ import (
 
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/broker"
+	"github.com/lack-io/vine/service/codec"
+	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/server"
-	"github.com/lack-io/vine/util/codec"
-	"github.com/lack-io/vine/util/network/transport"
 )
 
 type codecsKey struct{}

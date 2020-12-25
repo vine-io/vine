@@ -20,7 +20,7 @@ import (
 
 	pb "github.com/lack-io/vine/proto/debug/log"
 	"github.com/lack-io/vine/proto/errors"
-	"github.com/lack-io/vine/util/debug/log"
+	"github.com/lack-io/vine/service/debug/log"
 )
 
 type Log struct {

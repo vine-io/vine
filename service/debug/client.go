@@ -21,7 +21,7 @@ import (
 
 	pb "github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/service/client"
-	"github.com/lack-io/vine/util/debug/log"
+	"github.com/lack-io/vine/service/debug/log"
 )
 
 // Debug provides debug service client

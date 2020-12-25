@@ -25,14 +25,14 @@ import (
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client/selector"
+	"github.com/lack-io/vine/service/codec"
+	raw "github.com/lack-io/vine/service/codec/bytes"
+	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/client/buf"
 	"github.com/lack-io/vine/util/client/pool"
-	"github.com/lack-io/vine/util/codec"
-	raw "github.com/lack-io/vine/util/codec/bytes"
 	"github.com/lack-io/vine/util/context/metadata"
 	"github.com/lack-io/vine/util/net"
-	"github.com/lack-io/vine/util/network/transport"
 )
 
 type rpcClient struct {

@@ -19,15 +19,15 @@ import (
 	errs "errors"
 
 	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/service/codec"
+	raw "github.com/lack-io/vine/service/codec/bytes"
+	"github.com/lack-io/vine/service/codec/grpc"
+	"github.com/lack-io/vine/service/codec/json"
+	"github.com/lack-io/vine/service/codec/jsonrpc"
+	"github.com/lack-io/vine/service/codec/proto"
+	"github.com/lack-io/vine/service/codec/protorpc"
+	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/util/codec"
-	raw "github.com/lack-io/vine/util/codec/bytes"
-	"github.com/lack-io/vine/util/codec/grpc"
-	"github.com/lack-io/vine/util/codec/json"
-	"github.com/lack-io/vine/util/codec/jsonrpc"
-	"github.com/lack-io/vine/util/codec/proto"
-	"github.com/lack-io/vine/util/codec/protorpc"
-	"github.com/lack-io/vine/util/network/transport"
 )
 
 const (

@@ -34,11 +34,11 @@ import (
 	proto "github.com/lack-io/vine/proto/debug"
 	dns "github.com/lack-io/vine/proto/network/dns"
 	"github.com/lack-io/vine/service/client"
+	cbytes "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/grpc"
 	inclient "github.com/lack-io/vine/util/client"
-	cbytes "github.com/lack-io/vine/util/codec/bytes"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 

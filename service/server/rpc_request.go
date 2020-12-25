@@ -17,9 +17,9 @@ package server
 import (
 	"bytes"
 
+	"github.com/lack-io/vine/service/codec"
+	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/util/client/buf"
-	"github.com/lack-io/vine/util/codec"
-	"github.com/lack-io/vine/util/network/transport"
 )
 
 type rpcRequest struct {

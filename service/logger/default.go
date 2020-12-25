@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	dlog "github.com/lack-io/vine/util/debug/log"
+	dlog "github.com/lack-io/vine/service/debug/log"
 )
 
 func init() {

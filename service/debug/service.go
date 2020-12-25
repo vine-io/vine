@@ -17,7 +17,7 @@ package debug
 import (
 	"time"
 
-	"github.com/lack-io/vine/util/debug/log"
+	"github.com/lack-io/vine/service/debug/log"
 )
 
 type serviceLog struct {

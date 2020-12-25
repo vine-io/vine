@@ -35,10 +35,10 @@ import (
 	"golang.org/x/net/http2"
 
 	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/service/codec/json"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/cache"
 	maddr "github.com/lack-io/vine/util/addr"
-	"github.com/lack-io/vine/util/codec/json"
 	mnet "github.com/lack-io/vine/util/net"
 	mls "github.com/lack-io/vine/util/tls"
 )

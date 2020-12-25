@@ -22,7 +22,7 @@ import (
 	pbstats "github.com/lack-io/vine/proto/debug/stats"
 	pbtrace "github.com/lack-io/vine/proto/debug/trace"
 	"github.com/lack-io/vine/service"
-	"github.com/lack-io/vine/util/debug/log"
+	"github.com/lack-io/vine/service/debug/log"
 
 	// "github.com/lack-io/vine/debug/log/kubernetes"
 	dservice "github.com/lack-io/vine/service/debug"

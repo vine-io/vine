@@ -24,8 +24,8 @@ import (
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/lack-io/vine/util/codec"
-	"github.com/lack-io/vine/util/codec/bytes"
+	"github.com/lack-io/vine/service/codec"
+	"github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/util/jsonpb"
 )
 

@@ -17,7 +17,7 @@ package auth
 import (
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/util/auth/provider/basic"
+	"github.com/lack-io/vine/service/auth/provider/basic"
 )
 
 var (

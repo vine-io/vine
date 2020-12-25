@@ -22,9 +22,9 @@ import (
 
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/grpc"
+	"github.com/lack-io/vine/service/codec"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/server"
-	"github.com/lack-io/vine/util/codec"
 )
 
 // Proxy will transparently proxy requests to the backend.

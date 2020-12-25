@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
+
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	gorun "github.com/lack-io/vine/service/runtime"

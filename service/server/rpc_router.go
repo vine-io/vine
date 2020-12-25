@@ -27,8 +27,8 @@ import (
 	"unicode/utf8"
 
 	verrors "github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/service/codec"
 	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/util/codec"
 )
 
 var (

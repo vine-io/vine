@@ -20,7 +20,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/service/codec"
 )
 
 // Implements the Streamer interface

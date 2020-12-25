@@ -23,6 +23,9 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine/service/api/server/acme"
+	"github.com/lack-io/vine/service/api/server/acme/autocert"
+	"github.com/lack-io/vine/service/api/server/acme/certmagic"
 	"github.com/lack-io/vine/service/auth"
 	bmem "github.com/lack-io/vine/service/broker/memory"
 	"github.com/lack-io/vine/service/client"
@@ -40,12 +43,9 @@ import (
 	"github.com/lack-io/vine/service/server"
 	sgrpc "github.com/lack-io/vine/service/server/grpc"
 	mucpServer "github.com/lack-io/vine/service/server/mucp"
-	"github.com/lack-io/vine/util/api/server/acme"
-	"github.com/lack-io/vine/util/api/server/acme/autocert"
-	"github.com/lack-io/vine/util/api/server/acme/certmagic"
+	"github.com/lack-io/vine/service/sync/memory"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/muxer"
-	"github.com/lack-io/vine/util/sync/memory"
 	"github.com/lack-io/vine/util/wrapper"
 )
 

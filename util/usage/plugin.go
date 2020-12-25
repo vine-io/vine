@@ -23,10 +23,9 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine/plugin"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/backoff"
-
-	"github.com/lack-io/vine/plugin"
 )
 
 func init() {

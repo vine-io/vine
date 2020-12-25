@@ -27,11 +27,11 @@ import (
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/auth"
+	"github.com/lack-io/vine/service/auth/token"
+	"github.com/lack-io/vine/service/auth/token/basic"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"
-	"github.com/lack-io/vine/util/auth/token"
-	"github.com/lack-io/vine/util/auth/token/basic"
 	"github.com/lack-io/vine/util/namespace"
 )
 

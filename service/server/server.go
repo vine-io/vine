@@ -22,9 +22,9 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/lack-io/vine/service/codec"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/util/codec"
 	signalutil "github.com/lack-io/vine/util/signal"
 )
 

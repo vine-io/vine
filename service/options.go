@@ -26,13 +26,13 @@ import (
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/config"
 	"github.com/lack-io/vine/service/config/cmd"
+	"github.com/lack-io/vine/service/debug/profile"
+	"github.com/lack-io/vine/service/debug/trace"
+	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
-	"github.com/lack-io/vine/util/debug/profile"
-	"github.com/lack-io/vine/util/debug/trace"
-	"github.com/lack-io/vine/util/network/transport"
 )
 
 // Options for vine service

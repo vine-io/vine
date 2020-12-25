@@ -17,7 +17,7 @@ package pool
 import (
 	"time"
 
-	"github.com/lack-io/vine/util/network/transport"
+	"github.com/lack-io/vine/service/network/transport"
 )
 
 type Options struct {

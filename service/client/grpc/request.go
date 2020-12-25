@@ -19,7 +19,7 @@ import (
 	"strings"
 
 	"github.com/lack-io/vine/service/client"
-	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/service/codec"
 )
 
 type grpcRequest struct {

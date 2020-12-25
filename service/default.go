@@ -17,12 +17,12 @@ package service
 import (
 	"github.com/lack-io/vine/service/client"
 	gcli "github.com/lack-io/vine/service/client/grpc"
+	"github.com/lack-io/vine/service/debug/trace"
+	memTrace "github.com/lack-io/vine/service/debug/trace/memory"
 	"github.com/lack-io/vine/service/server"
 	gsrv "github.com/lack-io/vine/service/server/grpc"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"
-	"github.com/lack-io/vine/util/debug/trace"
-	memTrace "github.com/lack-io/vine/util/debug/trace/memory"
 )
 
 func init() {

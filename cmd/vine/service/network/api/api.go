@@ -31,7 +31,7 @@ import (
 	goapi "github.com/lack-io/vine/service/api"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network"
-	"github.com/lack-io/vine/util/network/resolver"
+	"github.com/lack-io/vine/service/network/resolver"
 )
 
 var (

@@ -21,10 +21,10 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/lack-io/vine/service/api/resolver"
+	"github.com/lack-io/vine/service/api/server"
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/util/api/resolver"
-	"github.com/lack-io/vine/util/api/server"
 	inauth "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/ctx"
 	"github.com/lack-io/vine/util/namespace"

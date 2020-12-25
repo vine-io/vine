@@ -18,7 +18,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/util/codec"
+	"github.com/lack-io/vine/service/codec"
 )
 
 // Client is the interface used to make requests to services.

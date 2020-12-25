@@ -23,23 +23,23 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine/service/auth"
+	"github.com/lack-io/vine/service/auth/provider"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/config"
 	configSrc "github.com/lack-io/vine/service/config/source"
+	"github.com/lack-io/vine/service/debug/profile"
+	"github.com/lack-io/vine/service/debug/profile/http"
+	"github.com/lack-io/vine/service/debug/profile/pprof"
+	"github.com/lack-io/vine/service/debug/trace"
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
 	authutil "github.com/lack-io/vine/util/auth"
-	"github.com/lack-io/vine/util/auth/provider"
-	"github.com/lack-io/vine/util/debug/profile"
-	"github.com/lack-io/vine/util/debug/profile/http"
-	"github.com/lack-io/vine/util/debug/profile/pprof"
-	"github.com/lack-io/vine/util/debug/trace"
-	"github.com/lack-io/vine/util/network/transport"
 	"github.com/lack-io/vine/util/wrapper"
 
 	// registry
@@ -72,8 +72,8 @@ import (
 	"github.com/lack-io/vine/service/client/selector/static"
 
 	// transports
-	thttp "github.com/lack-io/vine/util/network/transport/http"
-	tmem "github.com/lack-io/vine/util/network/transport/memory"
+	thttp "github.com/lack-io/vine/service/network/transport/http"
+	tmem "github.com/lack-io/vine/service/network/transport/memory"
 
 	// stores
 	fileStore "github.com/lack-io/vine/service/store/bolt"
@@ -84,15 +84,15 @@ import (
 	configSrv "github.com/lack-io/vine/service/config/source/service"
 
 	// tracers
-	memTracer "github.com/lack-io/vine/util/debug/trace/memory"
+	memTracer "github.com/lack-io/vine/service/debug/trace/memory"
 
 	// auth
 	svcAuth "github.com/lack-io/vine/service/auth/grpc"
-	jwtAuth "github.com/lack-io/vine/util/auth/jwt"
+	jwtAuth "github.com/lack-io/vine/service/auth/jwt"
 
 	// auth providers
-	"github.com/lack-io/vine/util/auth/provider/basic"
-	"github.com/lack-io/vine/util/auth/provider/oauth"
+	"github.com/lack-io/vine/service/auth/provider/basic"
+	"github.com/lack-io/vine/service/auth/provider/oauth"
 )
 
 func init() {

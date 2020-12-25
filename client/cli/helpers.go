@@ -28,8 +28,8 @@ import (
 
 	cliutil "github.com/lack-io/vine/client/cli/util"
 	"github.com/lack-io/vine/service/client"
+	cbytes "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/config/cmd"
-	cbytes "github.com/lack-io/vine/util/codec/bytes"
 	clic "github.com/lack-io/vine/util/command/cli"
 	"github.com/lack-io/vine/util/file"
 )
