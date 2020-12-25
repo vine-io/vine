@@ -123,8 +123,6 @@ var (
 	DefaultPoolSize = 100
 	// DefaultPoolTTL sets the connection pool ttl
 	DefaultPoolTTL = time.Minute
-	// DefaultName is default client name
-	DefaultName = "go.vine.client"
 	// NewClient returns a new client
 	NewClient func(...Option) Client = newRpcClient
 )

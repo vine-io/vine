@@ -62,55 +62,55 @@ type Options struct {
 	Context context.Context
 }
 
-func newOptions(opts ...Option) Options {
-	options := Options{
+func newOptions(opt ...Option) Options {
+	opts := Options{
 		Codecs:           make(map[string]codec.NewCodec),
 		Metadata:         map[string]string{},
 		RegisterInterval: DefaultRegisterInterval,
 		RegisterTTL:      DefaultRegisterTTL,
 	}
 
-	for _, o := range opts {
-		o(&options)
+	for _, o := range opt {
+		o(&opts)
 	}
 
-	if options.Auth == nil {
-		options.Auth = auth.DefaultAuth
+	if opts.Auth == nil {
+		opts.Auth = auth.DefaultAuth
 	}
 
-	if options.Broker == nil {
-		options.Broker = broker.DefaultBroker
+	if opts.Broker == nil {
+		opts.Broker = broker.DefaultBroker
 	}
 
-	if options.Registry == nil {
-		options.Registry = registry.DefaultRegistry
+	if opts.Registry == nil {
+		opts.Registry = registry.DefaultRegistry
 	}
 
-	if options.Transport == nil {
-		options.Transport = transport.DefaultTransport
+	if opts.Transport == nil {
+		opts.Transport = transport.DefaultTransport
 	}
 
-	if options.RegisterCheck == nil {
-		options.RegisterCheck = DefaultRegisterCheck
+	if opts.RegisterCheck == nil {
+		opts.RegisterCheck = DefaultRegisterCheck
 	}
 
-	if len(options.Address) == 0 {
-		options.Address = DefaultAddress
+	if len(opts.Address) == 0 {
+		opts.Address = DefaultAddress
 	}
 
-	if len(options.Name) == 0 {
-		options.Name = DefaultName
+	if len(opts.Name) == 0 {
+		opts.Name = DefaultName
 	}
 
-	if len(options.Id) == 0 {
-		options.Id = DefaultId
+	if len(opts.Id) == 0 {
+		opts.Id = DefaultId
 	}
 
-	if len(options.Version) == 0 {
-		options.Version = DefaultVersion
+	if len(opts.Version) == 0 {
+		opts.Version = DefaultVersion
 	}
 
-	return options
+	return opts
 }
 
 // Server name
@@ -134,7 +134,7 @@ func Version(v string) Option {
 	}
 }
 
-// Address to bind so - host:port
+// Address to bind to - host:port
 func Address(a string) Option {
 	return func(o *Options) {
 		o.Address = a
@@ -255,7 +255,7 @@ func WithRouter(r Router) Option {
 }
 
 // Wait tells the server to wait for requests to finish before exiting
-// If `wg` is nil, server only wait for completion to rpc handler.
+// If `wg` is nil, server only wait for completion of rpc handler.
 // For user need finer grained control, pass a concrete `wg` here, server will
 // wait against it on stop.
 func Wait(wg *sync.WaitGroup) Option {

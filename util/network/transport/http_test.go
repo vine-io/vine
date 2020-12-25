@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package http
+package transport
 
 import (
 	"sync"
 	"testing"
-
-	"github.com/lack-io/vine/util/network/transport"
 )
 
 func call(b *testing.B, c int) {
@@ -34,11 +32,11 @@ func call(b *testing.B, c int) {
 	defer l.Close()
 
 	// socket func
-	fn := func(sock transport.Socket) {
+	fn := func(sock Socket) {
 		defer sock.Close()
 
 		for {
-			var m transport.Message
+			var m Message
 			if err := sock.Recv(&m); err != nil {
 				return
 			}
@@ -62,7 +60,7 @@ func call(b *testing.B, c int) {
 		}
 	}()
 
-	m := transport.Message{
+	m := Message{
 		Header: map[string]string{
 			"Content-Type": "application/json",
 		},
@@ -75,13 +73,13 @@ func call(b *testing.B, c int) {
 		b.Fatalf("Unexpected dial err: %v", err)
 	}
 
-	send := func(c transport.Client) {
+	send := func(c Client) {
 		// send message
 		if err := c.Send(&m); err != nil {
 			b.Fatalf("Unexpected send err: %v", err)
 		}
 
-		var rm transport.Message
+		var rm Message
 		// receive message
 		if err := c.Recv(&rm); err != nil {
 			b.Fatalf("Unexpected recv err: %v", err)

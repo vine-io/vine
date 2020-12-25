@@ -53,18 +53,18 @@ import (
 	sgrpc "github.com/lack-io/vine/service/server/grpc"
 	smucp "github.com/lack-io/vine/service/server/mucp"
 
-	brokerSrv "github.com/lack-io/vine/service/broker/grpc"
 	// brokers
+	brokerSrv "github.com/lack-io/vine/service/broker/grpc"
 	brokerHttp "github.com/lack-io/vine/service/broker/http"
 	"github.com/lack-io/vine/service/broker/memory"
 
-	regSrv "github.com/lack-io/vine/service/registry/grpc"
 	// registries
+	regSrv "github.com/lack-io/vine/service/registry/grpc"
 	"github.com/lack-io/vine/service/registry/mdns"
 	rmem "github.com/lack-io/vine/service/registry/memory"
 
-	srvRuntime "github.com/lack-io/vine/service/runtime/grpc"
 	// runtimes
+	srvRuntime "github.com/lack-io/vine/service/runtime/grpc"
 	lRuntime "github.com/lack-io/vine/service/runtime/local"
 
 	// selectors
@@ -75,8 +75,8 @@ import (
 	thttp "github.com/lack-io/vine/util/network/transport/http"
 	tmem "github.com/lack-io/vine/util/network/transport/memory"
 
-	fileStore "github.com/lack-io/vine/service/store/bolt"
 	// stores
+	fileStore "github.com/lack-io/vine/service/store/bolt"
 	svcStore "github.com/lack-io/vine/service/store/grpc"
 	memStore "github.com/lack-io/vine/service/store/memory"
 
@@ -86,8 +86,8 @@ import (
 	// tracers
 	memTracer "github.com/lack-io/vine/util/debug/trace/memory"
 
-	svcAuth "github.com/lack-io/vine/service/auth/grpc"
 	// auth
+	svcAuth "github.com/lack-io/vine/service/auth/grpc"
 	jwtAuth "github.com/lack-io/vine/util/auth/jwt"
 
 	// auth providers

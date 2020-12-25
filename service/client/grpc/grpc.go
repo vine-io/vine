@@ -101,9 +101,9 @@ func (g *grpcClient) next(request client.Request, opts client.CallOptions) (sele
 	next, err := g.opts.Selector.Select(service, opts.SelectOptions...)
 	if err != nil {
 		if err == selector.ErrNotFound {
-			return nil, errors.InternalServerError(client.DefaultName, "service %s: %s", service, err.Error())
+			return nil, errors.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
 		}
-		return nil, errors.InternalServerError(client.DefaultName, "error selecting %s node: %s", service, err.Error())
+		return nil, errors.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
 	}
 
 	return next, nil
@@ -134,7 +134,7 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 
 	cf, err := g.newGRPCCodec(req.ContentType())
 	if err != nil {
-		return errors.InternalServerError(client.DefaultName, err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	maxRecvMsgSize := g.maxRecvMsgSizeValue()
@@ -157,7 +157,7 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 
 	cc, err := g.pool.getConn(address, grpcDialOptions...)
 	if err != nil {
-		return errors.InternalServerError(client.DefaultName, fmt.Sprintf("Error sending request: %v", err))
+		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error sending request: %v", err))
 	}
 	defer func() {
 		// defer execution of release
@@ -181,7 +181,7 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 	case err := <-ch:
 		grr = err
 	case <-ctx.Done():
-		grr = errors.Timeout(client.DefaultName, "%v", ctx.Err())
+		grr = errors.Timeout("go.vine.client", "%v", ctx.Err())
 	}
 
 	return grr
@@ -213,7 +213,7 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 
 	cf, err := g.newGRPCCodec(req.ContentType())
 	if err != nil {
-		return errors.InternalServerError(client.DefaultName, err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	var dialCtx context.Context
@@ -238,7 +238,7 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 
 	cc, err := grpc.DialContext(dialCtx, address, grpcDialOptions...)
 	if err != nil {
-		return errors.InternalServerError(client.DefaultName, fmt.Sprintf("Error sending request: %v", err))
+		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error sending request: %v", err))
 	}
 
 	desc := &grpc.StreamDesc{
@@ -266,7 +266,7 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 		// close the connection
 		cc.Close()
 		// now return the error
-		return errors.InternalServerError(client.DefaultName, fmt.Sprintf("Error creating stream: %v", err))
+		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error creating stream: %v", err))
 	}
 
 	codec := &grpcCodec{
@@ -393,9 +393,9 @@ func (g *grpcClient) NewRequest(service, method string, req interface{}, reqOpts
 
 func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	if req == nil {
-		return errors.InternalServerError(client.DefaultName, "req is nil")
+		return errors.InternalServerError("go.vine.client", "req is nil")
 	} else if rsp == nil {
-		return errors.InternalServerError(client.DefaultName, "rsp is nil")
+		return errors.InternalServerError("go.vine.client", "rsp is nil")
 	}
 
 	// make a copy of call opts
@@ -426,7 +426,7 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return errors.New(client.DefaultName, fmt.Sprintf("%v", ctx.Err()), 408)
+		return errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 	default:
 	}
 
@@ -438,12 +438,12 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 		gcall = callOpts.CallWrappers[i-1](gcall)
 	}
 
-	// return errors.New(client.DefaultName, "request timeout", 408)
+	// return errors.New("go.vine.client", "request timeout", 408)
 	call := func(i int) error {
 		// call backoff first. Someone may want an initial start delay
 		t, err := callOpts.Backoff(ctx, req, i)
 		if err != nil {
-			return errors.InternalServerError(client.DefaultName, err.Error())
+			return errors.InternalServerError("go.vine.client", err.Error())
 		}
 
 		// only sleep if greater than 0
@@ -456,9 +456,9 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 		service := req.Service()
 		if err != nil {
 			if err == selector.ErrNotFound {
-				return errors.InternalServerError(client.DefaultName, "service %s: %s", service, err.Error())
+				return errors.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
 			}
-			return errors.InternalServerError(client.DefaultName, "error selecting %s node: %s", service, err.Error())
+			return errors.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
 		}
 
 		// make the call
@@ -481,7 +481,7 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 
 		select {
 		case <-ctx.Done():
-			return errors.New(client.DefaultName, fmt.Sprintf("%v", ctx.Err()), 408)
+			return errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 		case err := <-ch:
 			// if the call succeeded lets bail early
 			if err == nil {
@@ -521,7 +521,7 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return nil, errors.New(client.DefaultName, fmt.Sprintf("%v", ctx.Err()), 408)
+		return nil, errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 	default:
 	}
 
@@ -537,7 +537,7 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 		// call backoff first. Someone may want an initial start delay
 		t, err := callOpts.Backoff(ctx, req, i)
 		if err != nil {
-			return nil, errors.InternalServerError(client.DefaultName, err.Error())
+			return nil, errors.InternalServerError("go.vine.client", err.Error())
 		}
 
 		// only sleep if greater than 0
@@ -549,9 +549,9 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 		service := req.Service()
 		if err != nil {
 			if err == selector.ErrNotFound {
-				return nil, errors.InternalServerError(client.DefaultName, "service %s: %s", service, err.Error())
+				return nil, errors.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
 			}
-			return nil, errors.InternalServerError(client.DefaultName, "error selecting %s node: %s", service, err.Error())
+			return nil, errors.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
 		}
 
 		// make the call
@@ -578,7 +578,7 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 
 		select {
 		case <-ctx.Done():
-			return nil, errors.New(client.DefaultName, fmt.Sprintf("%v", ctx.Err()), 408)
+			return nil, errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 		case rsp := <-ch:
 			// if the call succeeded lets bail early
 			if rsp.err == nil {
@@ -616,7 +616,7 @@ func (g *grpcClient) Publish(ctx context.Context, p client.Message, opts ...clie
 
 	cf, err := g.newGRPCCodec(p.ContentType())
 	if err != nil {
-		return errors.InternalServerError(client.DefaultName, err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	var body []byte
@@ -628,14 +628,14 @@ func (g *grpcClient) Publish(ctx context.Context, p client.Message, opts ...clie
 		// set the body
 		b, err := cf.Marshal(p.Payload())
 		if err != nil {
-			return errors.InternalServerError(client.DefaultName, err.Error())
+			return errors.InternalServerError("go.vine.client", err.Error())
 		}
 		body = b
 	}
 
 	if !g.once.Load().(bool) {
 		if err = g.opts.Broker.Connect(); err != nil {
-			return errors.InternalServerError(client.DefaultName, err.Error())
+			return errors.InternalServerError("go.vine.client", err.Error())
 		}
 		g.once.Store(true)
 	}

@@ -496,7 +496,6 @@ func writeResponse(w http.ResponseWriter, r *http.Request, rsp []byte) {
 	if err != nil {
 		logger.Error(err)
 	}
-
 }
 
 func NewHandler(opts ...handler.Option) handler.Handler {

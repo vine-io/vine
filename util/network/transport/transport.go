@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	DefaultTransport Transport
+	DefaultTransport Transport = NewTransport()
 
 	DefaultDialTimeout = time.Second * 5
 )
