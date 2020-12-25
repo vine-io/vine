@@ -38,9 +38,9 @@ func vineError(err error) error {
 	}
 
 	// return first error from details
-	if details := s.Details(); len(details) > 0 {
-		return vineError(details[0].(error))
-	}
+	//if details := s.Details(); len(details) > 0 {
+	//	return vineError(details[0].(error))
+	//}
 
 	// try to decode vine *errors.Error
 	if e := errors.Parse(s.Message()); e.Code > 0 {
