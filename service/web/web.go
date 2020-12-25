@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package web provides web based micro services
+// Package web provides web based vine services
 package web
 
 import (

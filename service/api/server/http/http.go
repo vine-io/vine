@@ -19,10 +19,7 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
-	"os"
 	"sync"
-
-	"github.com/gorilla/handlers"
 
 	"github.com/lack-io/vine/service/api/server"
 	"github.com/lack-io/vine/service/api/server/cors"
@@ -79,7 +76,7 @@ func (s *httpServer) Handle(path string, handler http.Handler) {
 	}
 
 	// wrap with logger
-	handler = handlers.CombinedLoggingHandler(os.Stdout, handler)
+	handler = loggingHandler(handler)
 
 	s.mux.Handle(path, handler)
 }

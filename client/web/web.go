@@ -202,7 +202,7 @@ func (s *srv) proxy() *proxy {
 		var err error
 		if endpoint == nil {
 			if endpoint, err = s.resolver.Resolve(r); err != nil {
-				fmt.Printf("Failed to resolve url: %v: %v\n", r.URL, err)
+				log.Errorf("Failed to resolve url: %v: %v\n", r.URL, err)
 				kill()
 				return
 			}
@@ -592,7 +592,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	} else if ctx.Bool("enable-tls") {
 		config, err := helper.TLSConfig(ctx)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Errorf(err.Error())
 			return
 		}
 

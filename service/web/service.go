@@ -394,31 +394,31 @@ func (s *service) Init(opts ...Option) error {
 		s.Lock()
 		defer s.Unlock()
 
-		if ttl := ctx.Int("register_ttl"); ttl > 0 {
+		if ttl := ctx.Int("register-ttl"); ttl > 0 {
 			s.opts.RegisterTTL = time.Duration(ttl) * time.Second
 		}
 
-		if interval := ctx.Int("register_interval"); interval > 0 {
+		if interval := ctx.Int("register-interval"); interval > 0 {
 			s.opts.RegisterInterval = time.Duration(interval) * time.Second
 		}
 
-		if name := ctx.String("server_name"); len(name) > 0 {
+		if name := ctx.String("server-name"); len(name) > 0 {
 			s.opts.Name = name
 		}
 
-		if ver := ctx.String("server_version"); len(ver) > 0 {
+		if ver := ctx.String("server-version"); len(ver) > 0 {
 			s.opts.Version = ver
 		}
 
-		if id := ctx.String("server_id"); len(id) > 0 {
+		if id := ctx.String("server-id"); len(id) > 0 {
 			s.opts.Id = id
 		}
 
-		if addr := ctx.String("server_address"); len(addr) > 0 {
+		if addr := ctx.String("server-address"); len(addr) > 0 {
 			s.opts.Address = addr
 		}
 
-		if adv := ctx.String("server_advertise"); len(adv) > 0 {
+		if adv := ctx.String("server-advertise"); len(adv) > 0 {
 			s.opts.Advertise = adv
 		}
 

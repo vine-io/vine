@@ -169,7 +169,7 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/service/client"
-	{{.Alias}} "path/to/service/proto/{{.Alias}}"
+	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
 
 func {{title .Alias}}Call(w http.ResponseWriter, r *http.Request) {

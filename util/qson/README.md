@@ -17,7 +17,7 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Println(string(b))
+  vine/service/apiln(string(b))
   // Should output: {"bar":{"one":{"red":112,"two":2}}}
 }
 ```

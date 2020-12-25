@@ -6,9 +6,9 @@ var (
 import (
 	"context"
 
-	"github.com/micro/go-micro/v2"
-	"github.com/micro/go-micro/v2/server"
-	{{.Alias}} "path/to/service/proto/{{.Alias}}"
+	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine/service"
+	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
 
 type {{.Alias}}Key struct {}
@@ -20,8 +20,8 @@ func {{title .Alias}}FromContext(ctx context.Context) ({{.Alias}}.{{title .Alias
 }
 
 // Client returns a wrapper for the {{title .Alias}}Client
-func {{title .Alias}}Wrapper(service micro.Service) server.HandlerWrapper {
-	client := {{.Alias}}.New{{title .Alias}}Service("go.micro.service.template", service.Client())
+func {{title .Alias}}Wrapper(srv service.Service) server.HandlerWrapper {
+	client := {{.Alias}}.New{{title .Alias}}Service("go.vine.service.template", srv.Client())
 
 	return func(fn server.HandlerFunc) server.HandlerFunc {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {

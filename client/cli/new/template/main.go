@@ -4,17 +4,17 @@ var (
 	MainFNC = `package main
 
 import (
-  log	"github.com/micro/go-micro/v2/logger"
-	"github.com/micro/go-micro/v2"
+  	log	"github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/service"
 	"{{.Dir}}/handler"
 	"{{.Dir}}/subscriber"
 )
 
 func main() {
 	// New Service
-	function := micro.NewFunction(
-		micro.Name("{{.FQDN}}"),
-		micro.Version("latest"),
+	function := service.NewFunction(
+		service.Name("{{.FQDN}}"),
+		service.Version("latest"),
 	)
 
 	// Initialise function
@@ -36,8 +36,8 @@ func main() {
 	MainSRV = `package main
 
 import (
-	log "github.com/micro/go-micro/v2/logger"
-	"github.com/micro/go-micro/v2"
+	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/service"
 	"{{.Dir}}/handler"
 	"{{.Dir}}/subscriber"
 
@@ -46,22 +46,22 @@ import (
 
 func main() {
 	// New Service
-	service := micro.NewService(
-		micro.Name("{{.FQDN}}"),
-		micro.Version("latest"),
+	srv := service.NewService(
+		service.Name("{{.FQDN}}"),
+		service.Version("latest"),
 	)
 
 	// Initialise service
-	service.Init()
+	srv.Init()
 
 	// Register Handler
 	{{.Alias}}.Register{{title .Alias}}Handler(service.Server(), new(handler.{{title .Alias}}))
 
 	// Register Struct as Subscriber
-	micro.RegisterSubscriber("{{.FQDN}}", service.Server(), new(subscriber.{{title .Alias}}))
+	service.RegisterSubscriber("{{.FQDN}}", srv.Server(), new(subscriber.{{title .Alias}}))
 
 	// Run service
-	if err := service.Run(); err != nil {
+	if err := srv.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -69,9 +69,9 @@ func main() {
 	MainAPI = `package main
 
 import (
-	log "github.com/micro/go-micro/v2/logger"
+	log "github.com/lack-io/vine/service/logger"
 
-	"github.com/micro/go-micro/v2"
+	"github.com/lack-io/vine/service"
 	"{{.Dir}}/handler"
 	"{{.Dir}}/client"
 
@@ -80,22 +80,22 @@ import (
 
 func main() {
 	// New Service
-	service := micro.NewService(
-		micro.Name("{{.FQDN}}"),
-		micro.Version("latest"),
+	srv := service.NewService(
+		service.Name("{{.FQDN}}"),
+		service.Version("latest"),
 	)
 
 	// Initialise service
-	service.Init(
+	srv.Init(
 		// create wrap for the {{title .Alias}} service client
-		micro.WrapHandler(client.{{title .Alias}}Wrapper(service)),
+		service.WrapHandler(client.{{title .Alias}}Wrapper(srv)),
 	)
 
 	// Register Handler
 	{{.Alias}}.Register{{title .Alias}}Handler(service.Server(), new(handler.{{title .Alias}}))
 
 	// Run service
-	if err := service.Run(); err != nil {
+	if err := srv.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -103,9 +103,9 @@ func main() {
 	MainWEB = `package main
 
 import (
-        log "github.com/micro/go-micro/v2/logger"
-	      "net/http"
-        "github.com/micro/go-micro/v2/web"
+        log "github.com/lack-io/vine/service/logger"
+    	"net/http"
+        "github.com/lack-io/vine/service/web"
         "{{.Dir}}/handler"
 )
 

@@ -150,7 +150,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	} else if ctx.Bool("enable-tls") {
 		config, err := helper.TLSConfig(ctx)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Errorf(err.Error())
 			return
 		}
 

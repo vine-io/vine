@@ -14,10 +14,8 @@
 package new
 
 import (
-	"errors"
 	"fmt"
 	"go/build"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -137,11 +135,6 @@ func create(c config) error {
 		}
 	}
 
-	dst, err := copyAPIProto(c)
-	if err != nil {
-		return err
-	}
-	addFileToTree(t, dst)
 	// print tree
 	fmt.Println(t.String())
 
@@ -153,44 +146,6 @@ func create(c config) error {
 	<-time.After(time.Millisecond * 250)
 
 	return nil
-}
-
-func copyAPIProto(c config) (string, error) {
-	// Find and copy the api proto from vine located *somewhere* on local machine.
-	// Required because proto can't do imports from random places on the internet like github.com,
-	// needs to be somewhere local. Let's try and find it from go mod. This doesn't work if vine
-	// wasn't built on the user's machine
-	basedir := build.Default.GOPATH
-
-	contents, err := ioutil.ReadDir(filepath.Join(basedir, "pkg", "mod", "github.com", "lack-io", "vine"))
-	if err != nil {
-		return "", errors.New("Unable to find vine version. Please try `go get github.com/lack-io/vine`")
-	}
-	newestDir := ""
-	for _, v := range contents {
-		if v.IsDir() && strings.HasPrefix(v.Name(), "v2") && strings.Compare(newestDir, v.Name()) < 0 {
-			newestDir = v.Name()
-		}
-	}
-	if newestDir == "" {
-		return "", errors.New("Unable to find vine version. Please try `go get github.com/lack-io/vine`")
-	}
-
-	input, err := ioutil.ReadFile(fmt.Sprintf("%s/pkg/mod/github.com/lack-io/vine/%s/api/proto/api.proto", basedir, newestDir))
-	if err != nil {
-		return "", err
-	}
-	f := filepath.Join(c.GoDir, "proto", "imports", "api.proto")
-	importsDir := filepath.Dir(f)
-	if err := os.Mkdir(importsDir, 0755); err != nil {
-		return "", err
-	}
-	err = ioutil.WriteFile(f, input, 0644)
-	if err != nil {
-		return "", err
-	}
-	return f[len(c.GoDir)+1:], nil
-
 }
 
 func addFileToTree(root treeprint.Tree, file string) {
@@ -208,7 +163,6 @@ func addFileToTree(root treeprint.Tree, file string) {
 	if curr.FindByValue(split[len(split)-1]) == nil {
 		curr.AddNode(split[len(split)-1])
 	}
-
 }
 
 func Run(ctx *cli.Context) {
@@ -430,6 +384,7 @@ func Commands() []*cli.Command {
 				&cli.BoolFlag{
 					Name:  "gopath",
 					Usage: "Create the service in the gopath.",
+					Value: true,
 				},
 			},
 			Action: func(c *cli.Context) error {
