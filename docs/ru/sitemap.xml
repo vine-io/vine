@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://lack.github.io/vine/ru/categories/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://lack.github.io/vine/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="https://lack.github.io/vine/zh/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://lack.github.io/vine/ru/categories/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/ru/tags/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://lack.github.io/vine/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="https://lack.github.io/vine/zh/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://lack.github.io/vine/ru/tags/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/ru/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://lack.github.io/vine/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="https://lack.github.io/vine/zh/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="ru"
+                href="https://lack.github.io/vine/ru/"
+                />
+  </url>
+  
+</urlset>

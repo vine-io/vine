@@ -1,14 +1,14 @@
 {
-  "name": "My New Hugo Site",
-  "short_name": "My New Hugo Site",
-  "start_url": "/",
-  "scope": "/",
+  "name": "vine document",
+  "short_name": "vine document",
+  "start_url": "/vine/",
+  "scope": "/vine/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/vine/favicon.svg",
       "sizes": "512x512"
     }
   ]
