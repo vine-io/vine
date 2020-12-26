@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>简介 on vine 框架</title>
-    <link>https://lack.github.io/vine/</link>
-    <description>Recent content in 简介 on vine 框架</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://lack.github.io/vine/index.xml" rel="self" type="application/rss+xml" />
+    <title>vine 框架</title>
+    <link>https://lack.github.io/vine/docs/info/</link>
+    <description>Recent content on vine 框架</description>
+    <generator>Hugo -- gohugo.io</generator><atom:link href="https://lack.github.io/vine/docs/info/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title></title>
       <link>https://lack.github.io/vine/docs/info/buttons/</link>
@@ -65,24 +65,6 @@ Example #  {{&amp;lt; katex [display] [class=&amp;#34;text-center&amp;#34;] &amp
       <guid>https://lack.github.io/vine/docs/info/mermaid/</guid>
       <description>Mermaid Chart #   Mermaid is library for generating svg charts and diagrams from text.
 Example #  {{&amp;lt; mermaid [class=&amp;#34;text-center&amp;#34;]&amp;gt;}} sequenceDiagram Alice-&amp;gt;&amp;gt;Bob: Hello Bob, how are you? alt is sick Bob-&amp;gt;&amp;gt;Alice: Not so good :( else is well Bob-&amp;gt;&amp;gt;Alice: Feeling fresh like a daisy end opt Extra response Bob-&amp;gt;&amp;gt;Alice: Thanks for asking end {{&amp;lt; /mermaid &amp;gt;}}    mermaid.initialize({ &#34;flowchart&#34;: { &#34;useMaxWidth&#34;:true }, &#34;theme&#34;: &#34;default&#34; } ) sequenceDiagram Alice-Bob: Hello Bob, how are you?</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://lack.github.io/vine/docs/info/section/page1/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://lack.github.io/vine/docs/info/section/page1/</guid>
-      <description>Page 1 #  </description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://lack.github.io/vine/docs/info/section/page2/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://lack.github.io/vine/docs/info/section/page2/</guid>
-      <description>Page 2 #  </description>
     </item>
     
     <item>

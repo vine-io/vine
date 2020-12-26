@@ -313,7 +313,7 @@ func setup(app *ccli.App) {
 }
 
 func buildVersion() string {
-	vineVersion := version
+	vineVersion := name
 
 	if GitTag != "" {
 		vineVersion = GitTag

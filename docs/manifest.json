@@ -1,6 +1,6 @@
 {
-  "name": "vine document",
-  "short_name": "vine document",
+  "name": "vine 框架",
+  "short_name": "vine 框架",
   "start_url": "/vine/",
   "scope": "/vine/",
   "display": "standalone",

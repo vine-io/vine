@@ -475,7 +475,7 @@ func (c *cmd) Init(opts ...Option) error {
 		o(&c.opts)
 	}
 	if len(c.opts.Name) > 0 {
-		c.app.Name = c.opts.Version
+		c.app.Name = c.opts.Name
 	}
 	if len(c.opts.Version) > 0 {
 		c.app.Version = c.opts.Version

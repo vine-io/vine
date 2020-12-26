@@ -104,7 +104,7 @@ func main() {
 # 启动 api
 
 ```bash
-vineadm api --handler=rpc
+vine api --handler=rpc
 ```
 
 # 验证

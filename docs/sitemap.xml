@@ -1,21 +1,83 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
-  <sitemap>
-    <loc>https://lack.github.io/vine/en/sitemap.xml</loc>
-    
-      <lastmod>2020-12-26T09:13:01+08:00</lastmod>
-    
-  </sitemap>
+  <url>
+    <loc>https://lack.github.io/vine/docs/quickstart/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
   
-  <sitemap>
-    <loc>https://lack.github.io/vine/ru/sitemap.xml</loc>
-    
-  </sitemap>
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
   
-  <sitemap>
-    <loc>https://lack.github.io/vine/zh/sitemap.xml</loc>
-    
-  </sitemap>
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/buttons/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
   
-</sitemapindex>
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/columns/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/expand/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/hints/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/katex/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/mermaid/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/section/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/section/page1/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/section/page2/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/info/tabs/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/categories/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/docs/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/tags/</loc>
+  </url>
+  
+  <url>
+    <loc>https://lack.github.io/vine/</loc>
+    <lastmod>2020-12-26T12:04:50+08:00</lastmod>
+  </url>
+  
+</urlset>
