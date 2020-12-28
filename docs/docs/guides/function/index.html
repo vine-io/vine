@@ -5,7 +5,12 @@
   <meta name="generator" content="Hugo 0.76.5" />
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="asdf">
+<meta name="description" content="这是一份关于如何编写 Function 服务的指南。Function 是指只执行一次的服务。
+// Function 一次性执行服务 type Function interface { // 内置服务接口 	Service // 接口服务 	Done() error // 处理 rpc 请求 	Handle(v interface{}) error // 订阅者 	Subscribe(topic string, v interface{}) error } 1.初始化 #  使用 service.NewFunction 创建 Function
+import vine &#34;github.com/lack-io/vine/service&#34; function = vine.NewFunction() 创建时使用选项
+function = vine.NewService( vine.Name(&#34;greeter&#34;), vine.Version(&#34;latest&#34;), ) 支持的选项，请看 这里
+Vine 同时支持使用service.Flags 来提供命令行参数:
+import ( &#34;fmt&#34; &#34;github.com/lack-io/cli&#34; vine &#34;github.com/lack-io/vine/service&#34; ) function := vine.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Function" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
@@ -15,7 +20,7 @@
 <link rel="manifest" href="/vine/manifest.json">
 <link rel="icon" href="/vine/favicon.png" type="image/x-icon">
 <link rel="stylesheet" href="/vine/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY=">
-<script defer src="/vine/en.search.min.fac6e1751cf4898930ab6ecceab8e61faa74e16d22c443402fa0aa6325dd3c0f.js" integrity="sha256-&#43;sbhdRz0iYkwq27M6rjmH6p04W0ixENAL6CqYyXdPA8="></script>
+<script defer src="/vine/en.search.min.972165bb346059cc60a594a5fd83582f8f504405eb93b03ea49693a2ae298975.js" integrity="sha256-lyFluzRgWcxgpZSl/YNYL49QRAXrk7A&#43;pJaToq4piXU="></script>
 
 <script defer src="/vine/sw.min.5db699425a43f38be2ead56ed40312d2b34b5e88646db603a2ac9e4a1106beff.js" integrity="sha256-XbaZQlpD84vi6tVu1AMS0rNLXohkbbYDoqyeShEGvv8="></script>
 <link rel="alternate" type="application/rss+xml" href="https://lack.github.io/vine/docs/guides/function/index.xml" title="vine 框架" />
@@ -132,7 +137,16 @@ https://github.com/alex-shpak/hugo-book
   
   <aside class="hidden clearfix">
     
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1初始化">1.初始化</a></li>
+    <li><a href="#2定义-api">2.定义 API</a></li>
+    <li><a href="#3生成-api-接口">3.生成 API 接口</a></li>
+    <li><a href="#5启动-function">5.启动 Function</a></li>
+    <li><a href="#6完整的服务端代码">6.完整的服务端代码</a></li>
+    <li><a href="#客户端">客户端</a></li>
+  </ul>
+</nav>
 
 
   </aside>
@@ -142,8 +156,221 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"><p>asdf</p>
-</article>
+  <article class="markdown"><p>这是一份关于如何编写 Function 服务的指南。Function 是指只执行一次的服务。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Function 一次性执行服务
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Function</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#75715e">// 内置服务接口
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Service</span>
+	<span style="color:#75715e">// 接口服务
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Done</span>() <span style="color:#66d9ef">error</span>
+	<span style="color:#75715e">// 处理 rpc 请求
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">v</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span>
+	<span style="color:#75715e">// 订阅者
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Subscribe</span>(<span style="color:#a6e22e">topic</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">v</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">error</span>
+}
+</code></pre></div><h1 id="1初始化">
+  1.初始化
+  <a class="anchor" href="#1%e5%88%9d%e5%a7%8b%e5%8c%96">#</a>
+</h1>
+<p>使用 <code>service.NewFunction</code> 创建 Function</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> <span style="color:#a6e22e">vine</span> <span style="color:#e6db74">&#34;github.com/lack-io/vine/service&#34;</span>
+
+<span style="color:#a6e22e">function</span> = <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">NewFunction</span>()
+</code></pre></div><p>创建时使用选项</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">function</span> = <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">NewService</span>(
+    <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">Name</span>(<span style="color:#e6db74">&#34;greeter&#34;</span>),
+    <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">Version</span>(<span style="color:#e6db74">&#34;latest&#34;</span>),
+)
+</code></pre></div><p>支持的选项，请看
+  <a href="https://pkg.go.dev/github.com/lack-io/vine/service#Option">这里</a></p>
+<p><strong>Vine</strong> 同时支持使用<code>service.Flags</code> 来提供命令行参数:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+
+	<span style="color:#e6db74">&#34;github.com/lack-io/cli&#34;</span>
+	<span style="color:#a6e22e">vine</span> <span style="color:#e6db74">&#34;github.com/lack-io/vine/service&#34;</span>
+)
+
+	<span style="color:#a6e22e">function</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">NewFunction</span>(
+		<span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">Flags</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">StringFlag</span>{
+			<span style="color:#a6e22e">Name</span>:  <span style="color:#e6db74">&#34;environment&#34;</span>,
+			<span style="color:#a6e22e">Usage</span>: <span style="color:#e6db74">&#34;The environment&#34;</span>,
+		}),
+	)
+</code></pre></div><p>使用 <code>service.Init</code> 解析参数，并且使用 <code>service.Action</code> 选项来访问参数：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">function</span>.<span style="color:#a6e22e">Init</span>(
+		<span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">Action</span>(<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">Context</span>) <span style="color:#66d9ef">error</span> {
+			<span style="color:#a6e22e">env</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;environment&#34;</span>)
+			<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">env</span>) &gt; <span style="color:#ae81ff">0</span> {
+				<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Environment set to&#34;</span>, <span style="color:#a6e22e">env</span>)
+			}
+
+			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+		}),
+	)
+</code></pre></div><p><code>service.Init</code> 支持的选择看
+  <a href="https://pkg.go.dev/github.com/lack-io/vine/service/config/cmd#pkg-variables">这里</a></p>
+<h1 id="2定义-api">
+  2.定义 API
+  <a class="anchor" href="#2%e5%ae%9a%e4%b9%89-api">#</a>
+</h1>
+<p>使用 protobuf 文件定义服务的 API 接口。它可以能便利的提供严谨的 API 接口，同时为服务端和客户端提供具体的接口。
+greeter.proto</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;proto3&#34;</span>;<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">service</span> Greeter {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>	<span style="color:#66d9ef">rpc</span> Hello(Request) <span style="color:#66d9ef">returns</span> (Response) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">message</span> <span style="color:#a6e22e">Request</span> {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>	<span style="color:#66d9ef">string</span> name <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">message</span> <span style="color:#a6e22e">Response</span> {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>	<span style="color:#66d9ef">string</span> greeting <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>这里我们定义一个 Greeter 服务，提供 Hello 方法。Request 和 Response 是 Hello 方法的入参和返回值。</p>
+<h1 id="3生成-api-接口">
+  3.生成 API 接口
+  <a class="anchor" href="#3%e7%94%9f%e6%88%90-api-%e6%8e%a5%e5%8f%a3">#</a>
+</h1>
+<p>使用 protoc、protoc-gen-gogofaster、protoc-gen-vine 来生成 protobuf code</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
+go get github.com/gogo/googleapis
+go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
+go get github.com/lack-io/vine/cmd/protoc-gen-vine
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#f92672">=</span>$GOPATH/src -I<span style="color:#f92672">=</span>$GOPATH/src/github.com/gogo/protobuf/protobuf --gogofaster_out<span style="color:#f92672">=</span>plugins<span style="color:#f92672">=</span>grpc:. --vine_out<span style="color:#f92672">=</span>. greeter.proto
+</code></pre></div><p>它会生成以下代码:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Request</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Name</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`protobuf:&#34;bytes,1,opt,name=name&#34; json:&#34;name,omitempty&#34;`</span>
+}
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Response</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Greeting</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`protobuf:&#34;bytes,2,opt,name=greeting&#34; json:&#34;greeting,omitempty&#34;`</span>
+}
+
+<span style="color:#75715e">// Client API for Greeter service
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GreeterClient</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">Hello</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">in</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">CallOption</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">error</span>)
+}
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">greeterClient</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">c</span>           <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Client</span>
+	<span style="color:#a6e22e">serviceName</span> <span style="color:#66d9ef">string</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewGreeterClient</span>(<span style="color:#a6e22e">serviceName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">c</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Client</span>) <span style="color:#a6e22e">GreeterClient</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">c</span> = <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">NewClient</span>()
+	}
+	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">serviceName</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">serviceName</span> = <span style="color:#e6db74">&#34;greeter&#34;</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">greeterClient</span>{
+		<span style="color:#a6e22e">c</span>:           <span style="color:#a6e22e">c</span>,
+		<span style="color:#a6e22e">serviceName</span>: <span style="color:#a6e22e">serviceName</span>,
+	}
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">greeterClient</span>) <span style="color:#a6e22e">Hello</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">in</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">CallOption</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">Response</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">req</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">NewRequest</span>(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">serviceName</span>, <span style="color:#e6db74">&#34;Greeter.Hello&#34;</span>, <span style="color:#a6e22e">in</span>)
+	<span style="color:#a6e22e">out</span> <span style="color:#f92672">:=</span> new(<span style="color:#a6e22e">Response</span>)
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Call</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">out</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">out</span>, <span style="color:#66d9ef">nil</span>
+}
+
+<span style="color:#75715e">// Server API for Greeter service
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GreeterHandler</span> <span style="color:#66d9ef">interface</span> {
+	<span style="color:#a6e22e">Hello</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">Request</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">Response</span>) <span style="color:#66d9ef">error</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">RegisterGreeterHandler</span>(<span style="color:#a6e22e">s</span> <span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">Server</span>, <span style="color:#a6e22e">hdlr</span> <span style="color:#a6e22e">GreeterHandler</span>) {
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">NewHandler</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Greeter</span>{<span style="color:#a6e22e">hdlr</span>}))
+}
+</code></pre></div><p>4.实现 handler</p>
+<p>handler.go</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> <span style="color:#a6e22e">proto</span> <span style="color:#e6db74">&#34;github.com/vine/examples/service/proto&#34;</span>
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Greeter</span> <span style="color:#66d9ef">struct</span>{}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">g</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Greeter</span>) <span style="color:#a6e22e">Hello</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Request</span>, <span style="color:#a6e22e">rsp</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#a6e22e">rsp</span>.<span style="color:#a6e22e">Greeting</span> = <span style="color:#e6db74">&#34;Hello &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Name</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><p>这个 handler 将被注册为服务，就像 http.Handler.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">function</span> = <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">NewFunction</span>(
+    <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">Name</span>(<span style="color:#e6db74">&#34;greeter&#34;</span>),
+)
+
+<span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">RegisterGreeterHandler</span>(<span style="color:#a6e22e">function</span>.<span style="color:#a6e22e">Server</span>, new(<span style="color:#a6e22e">Greeter</span>))
+</code></pre></div><h1 id="5启动-function">
+  5.启动 Function
+  <a class="anchor" href="#5%e5%90%af%e5%8a%a8-function">#</a>
+</h1>
+<p>服务通过调用 <code>function.Run</code> 来启动。它会绑定到配置参数提供的地址上并且监听请求。
+服务启动时会通过 registry 组件注册服务，在接收到 kill 信号时注销服务。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">function</span>.<span style="color:#a6e22e">Run</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+}
+</code></pre></div><h1 id="6完整的服务端代码">
+  6.完整的服务端代码
+  <a class="anchor" href="#6%e5%ae%8c%e6%95%b4%e7%9a%84%e6%9c%8d%e5%8a%a1%e7%ab%af%e4%bb%a3%e7%a0%81">#</a>
+</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+        <span style="color:#e6db74">&#34;log&#34;</span>
+        <span style="color:#e6db74">&#34;context&#34;</span>
+
+        <span style="color:#a6e22e">vine</span> <span style="color:#e6db74">&#34;github.com/lack-io/vine/service&#34;</span>
+        <span style="color:#a6e22e">pb</span> <span style="color:#e6db74">&#34;github.com/lack-io/examples/service/proto&#34;</span>
+)
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Greeter</span> <span style="color:#66d9ef">struct</span>{}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">g</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Greeter</span>) <span style="color:#a6e22e">Hello</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Request</span>, <span style="color:#a6e22e">rsp</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Response</span>) <span style="color:#66d9ef">error</span> {
+        <span style="color:#a6e22e">rsp</span>.<span style="color:#a6e22e">Greeting</span> = <span style="color:#e6db74">&#34;Hello &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Name</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+        <span style="color:#a6e22e">function</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">NewFunction</span>(
+                <span style="color:#a6e22e">vine</span>.<span style="color:#a6e22e">Name</span>(<span style="color:#e6db74">&#34;greeter&#34;</span>),
+        )
+
+        <span style="color:#a6e22e">function</span>.<span style="color:#a6e22e">Init</span>()
+
+        <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">RegisterGreeterHandler</span>(<span style="color:#a6e22e">function</span>.<span style="color:#a6e22e">Server</span>(), new(<span style="color:#a6e22e">Greeter</span>))
+
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">function</span>.<span style="color:#a6e22e">Run</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+                <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+        }
+}
+</code></pre></div><h1 id="客户端">
+  客户端
+  <a class="anchor" href="#%e5%ae%a2%e6%88%b7%e7%ab%af">#</a>
+</h1>
+<p>查询上面的 Function，可以使用以下的代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 创建 greeter 服务的客户端
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">greeter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">NewGreeterService</span>(<span style="color:#e6db74">&#34;greeter&#34;</span>, <span style="color:#a6e22e">function</span>.<span style="color:#a6e22e">Client</span>())
+
+<span style="color:#75715e">// 请求 Greeter 的 Hello 方法
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">rsp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">greeter</span>.<span style="color:#a6e22e">Hello</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">TODO</span>(), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Request</span>{
+	<span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;John&#34;</span>,
+})
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+	<span style="color:#66d9ef">return</span>
+}
+
+<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">rsp</span>.<span style="color:#a6e22e">Greeting</span>)
+</code></pre></div></article>
  
       
 
@@ -175,7 +402,16 @@ https://github.com/alex-shpak/hugo-book
     
     <aside class="book-toc">
       
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1初始化">1.初始化</a></li>
+    <li><a href="#2定义-api">2.定义 API</a></li>
+    <li><a href="#3生成-api-接口">3.生成 API 接口</a></li>
+    <li><a href="#5启动-function">5.启动 Function</a></li>
+    <li><a href="#6完整的服务端代码">6.完整的服务端代码</a></li>
+    <li><a href="#客户端">客户端</a></li>
+  </ul>
+</nav>
 
  
     </aside>
