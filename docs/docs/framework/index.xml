@@ -1,12 +1,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vine – 框架</title>
-    <link>/docs/framework/</link>
+    <link>https://lack-io.github.io/vine/docs/framework/</link>
     <description>Recent content in 框架 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Tue, 29 Dec 2020 10:54:20 +0800</lastBuildDate>
     
-	  <atom:link href="/docs/framework/index.xml" rel="self" type="application/rss+xml" />
+	  <atom:link href="https://lack-io.github.io/vine/docs/framework/index.xml" rel="self" type="application/rss+xml" />
     
     
       
@@ -16,10 +16,10 @@
     
     <item>
       <title>Docs: 接口</title>
-      <link>/docs/framework/interface/</link>
+      <link>https://lack-io.github.io/vine/docs/framework/interface/</link>
       <pubDate>Tue, 29 Dec 2020 11:15:20 +0800</pubDate>
       
-      <guid>/docs/framework/interface/</guid>
+      <guid>https://lack-io.github.io/vine/docs/framework/interface/</guid>
       <description>
         
         

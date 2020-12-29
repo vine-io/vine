@@ -1,12 +1,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vine – 欢迎来到 Vine 文档</title>
-    <link>/docs/</link>
+    <link>https://lack-io.github.io/vine/docs/</link>
     <description>Recent content in 欢迎来到 Vine 文档 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Tue, 29 Dec 2020 09:54:20 +0800</lastBuildDate>
     
-	  <atom:link href="/docs/index.xml" rel="self" type="application/rss+xml" />
+	  <atom:link href="https://lack-io.github.io/vine/docs/index.xml" rel="self" type="application/rss+xml" />
     
     
       
@@ -16,10 +16,10 @@
     
     <item>
       <title>Docs: 接口</title>
-      <link>/docs/framework/interface/</link>
+      <link>https://lack-io.github.io/vine/docs/framework/interface/</link>
       <pubDate>Tue, 29 Dec 2020 11:15:20 +0800</pubDate>
       
-      <guid>/docs/framework/interface/</guid>
+      <guid>https://lack-io.github.io/vine/docs/framework/interface/</guid>
       <description>
         
         
@@ -67,10 +67,10 @@
     
     <item>
       <title>Docs: Service</title>
-      <link>/docs/guides/service/</link>
+      <link>https://lack-io.github.io/vine/docs/guides/service/</link>
       <pubDate>Tue, 29 Dec 2020 10:30:20 +0800</pubDate>
       
-      <guid>/docs/guides/service/</guid>
+      <guid>https://lack-io.github.io/vine/docs/guides/service/</guid>
       <description>
         
         
@@ -284,10 +284,10 @@ fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(rsp.Greeting)
     
     <item>
       <title>Docs: Function</title>
-      <link>/docs/guides/function/</link>
+      <link>https://lack-io.github.io/vine/docs/guides/function/</link>
       <pubDate>Tue, 29 Dec 2020 10:32:20 +0800</pubDate>
       
-      <guid>/docs/guides/function/</guid>
+      <guid>https://lack-io.github.io/vine/docs/guides/function/</guid>
       <description>
         
         
