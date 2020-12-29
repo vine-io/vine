@@ -65,5 +65,367 @@
       </description>
     </item>
     
+    <item>
+      <title>Docs: 错误</title>
+      <link>https://lack-io.github.io/vine/docs/framework/errors/</link>
+      <pubDate>Tue, 29 Dec 2020 14:55:02 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/errors/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;我们定义以下错误类型&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Error &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+	Id       &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;id,omitempty&amp;#34;`&lt;/span&gt;
+	Code     &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt;  &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;code,omitempty&amp;#34;`&lt;/span&gt;
+	Detail   &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;detail,omitempty&amp;#34;`&lt;/span&gt;
+	Status   &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;status,omitempty&amp;#34;`&lt;/span&gt;
+	Position &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;position,omitempty&amp;#34;`&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 &lt;strong&gt;Vine&lt;/strong&gt; 错误，或者应该生成错误。默认情况下，我们返回 &lt;code&gt;errors.InternalServerError&lt;/code&gt;，如果出现错误错误则返回 &lt;code&gt;errors.Timeout&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;让我们假设程序中发生错误，然后，你应该确定返回哪种错误，并执行以下操作。
+假设提供的数据无效：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;badRequest&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;com.example.srv.service&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;invalid field&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果发生内部错误&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;InternalServerError&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;com.example.srv.service&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;failed to read db: %v&amp;#34;&lt;/span&gt;, err.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;())
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果你从客户端收到一些错误，可以按照以下方式处理:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewGreeterService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv.greeter&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
+rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;Clinet&lt;/span&gt;(ctx, req)
+&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// parse out the error 
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    e &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;Parse&lt;/span&gt;(err.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;())
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// inspect the value
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; e.Code &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;401&lt;/span&gt; {
+        &lt;span style=&#34;color:#6272a4&#34;&gt;// unauthorized
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;错误列表&#34;&gt;错误列表&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;BadGateway&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;BadRequest&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Conflict&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Forbidden&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;GatewayTimeout&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;InternalServerError&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;MethodNotAllowed&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NotFound&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NotImplemented&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;ServiceUnavailable&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Timeout&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Unauthorized&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;自定义错误&#34;&gt;自定义错误&lt;/h2&gt;
+&lt;p&gt;除了内置的错误类型之外，&lt;strong&gt;Vine&lt;/strong&gt; 支持自定义错误类型&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// 自定义错误，并记录错误位置
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;customErr &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv.example&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;custom error&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;510&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;true&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;其他&#34;&gt;其他&lt;/h2&gt;
+&lt;p&gt;判断错误类型是否相同&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;b &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;Equal&lt;/span&gt;(err1, err2)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 选项</title>
+      <link>https://lack-io.github.io/vine/docs/framework/options/</link>
+      <pubDate>Tue, 29 Dec 2020 14:55:49 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/options/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
+选项通常定义如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Options &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+    Name        &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+    Version     &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+    Broker      broker.Broker
+    Registry    registry.Registry
+}
+
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Option &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options)
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// set the name
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(n &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) Option {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(o &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options) {
+        o.Name = n
+    }
+}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// set the broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(b broker.Broker) Option {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(o &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options) {
+        o.Broker = b
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后这安装如下方式设置这些选项&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;foobar&amp;#34;&lt;/span&gt;),
+    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(broker),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;服务选项&#34;&gt;服务选项&lt;/h2&gt;
+&lt;p&gt;在 &lt;strong&gt;Vine&lt;/strong&gt; 中，我们有许多选项可以设置，包括用于身份验证，配置和存储等内容的基础包。你可以使用 &lt;code&gt;service.Options()&lt;/code&gt; 来访问这些。&lt;/p&gt;
+&lt;p&gt;auth、config、registry、store 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 &lt;code&gt;service.Init()&lt;/code&gt; 后生效。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;## as an env vars&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_STORE&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;file go run main.go
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;## or as a flag&lt;/span&gt;
+go run main.go --store&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;file
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后在内部，可以通过选项访问存储：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;foobar&amp;#34;&lt;/span&gt;),
+)
+
+service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+store &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;().Store
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 &lt;code&gt;context.Context&lt;/code&gt; 中。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 插件</title>
+      <link>https://lack-io.github.io/vine/docs/framework/plugins/</link>
+      <pubDate>Tue, 29 Dec 2020 14:56:43 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/plugins/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 构建在 Go 接口之上。因此这些接口的实现是可插拔的。&lt;/p&gt;
+&lt;p&gt;默认情况下，&lt;strong&gt;Vine&lt;/strong&gt; 只提供核心上每个接口的几个实现，但它完全是可插拔的。而额外的实现保存在 &lt;a href=&#34;https://github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;添加插件&#34;&gt;添加插件&lt;/h2&gt;
+&lt;p&gt;如果要集成插件，只需将它们链接到单独的文件中并重新生成。
+创建 plugins.go 文件并导入所需的插件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// consul registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/registry/consul&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// rabbitmq transport
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/transport/rabbitmq&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// kafka broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/broker/kafka&amp;#34;&lt;/span&gt;
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过包含插件文件来构建应用程序：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go build -o service main.go plugins.go
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用插件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;service --registry&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;consul --transport&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;nats --broker&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;kafka
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;或者使用环境变量&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_REGISTRY&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;consule &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_TRANSPORT&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rabbitmq &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_BROKER&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;kafka service
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;插件选项&#34;&gt;插件选项&lt;/h2&gt;
+&lt;p&gt;或者你可以将插件设置在选项中&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+    vine &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service&amp;#34;&lt;/span&gt;
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// consul registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/registry/consul&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// rabbitmq transport
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/transport/rabbitmq&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// kafka broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/broker/kafka&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    registry &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; consul.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
+    broker &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; kafka.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()
+    transport &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; rabbitmq.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewTransport&lt;/span&gt;()
+
+    service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+        vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;greeter&amp;#34;&lt;/span&gt;),
+        vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(registry),
+        vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(broker),
+        vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Transport&lt;/span&gt;(transport),
+    )
+
+    service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+    service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;编写插件&#34;&gt;编写插件&lt;/h2&gt;
+&lt;p&gt;插件是一个建立在 Go 接口上的概念。每个包都维护一个高级接口抽象。只需实现接口并将其作为服务选项传递给它即可.&lt;/p&gt;
+&lt;p&gt;服务发现接口称为 &lt;a href=&#34;https://pkg.go.dev/github.com/lack-io/vine/service/registry#Registry&#34;&gt;Registry&lt;/a&gt;. 实现此接口的任何内容都可以用作 &lt;strong&gt;Registry&lt;/strong&gt;。这同样适用于其他包.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查阅 &lt;a href=&#34;https://github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt; 可以更好地了解实现细节。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 配置</title>
+      <link>https://lack-io.github.io/vine/docs/framework/config/</link>
+      <pubDate>Tue, 29 Dec 2020 14:56:14 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/config/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 编码解码器</title>
+      <link>https://lack-io.github.io/vine/docs/framework/codec/</link>
+      <pubDate>Tue, 29 Dec 2020 14:57:07 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/codec/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 服务发现</title>
+      <link>https://lack-io.github.io/vine/docs/framework/registry/</link>
+      <pubDate>Tue, 29 Dec 2020 14:57:27 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/registry/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: API处理器</title>
+      <link>https://lack-io.github.io/vine/docs/framework/api/</link>
+      <pubDate>Tue, 29 Dec 2020 14:58:34 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/api/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 订阅发布</title>
+      <link>https://lack-io.github.io/vine/docs/framework/broker/</link>
+      <pubDate>Tue, 29 Dec 2020 14:59:08 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/broker/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 服务端</title>
+      <link>https://lack-io.github.io/vine/docs/framework/server/</link>
+      <pubDate>Tue, 29 Dec 2020 15:00:10 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/server/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 客户端</title>
+      <link>https://lack-io.github.io/vine/docs/framework/client/</link>
+      <pubDate>Tue, 29 Dec 2020 14:59:49 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/client/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 身份验证</title>
+      <link>https://lack-io.github.io/vine/docs/framework/auth/</link>
+      <pubDate>Tue, 29 Dec 2020 15:00:40 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/auth/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 网络服务</title>
+      <link>https://lack-io.github.io/vine/docs/framework/network/</link>
+      <pubDate>Tue, 29 Dec 2020 15:00:45 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/network/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 数据存储</title>
+      <link>https://lack-io.github.io/vine/docs/framework/store/</link>
+      <pubDate>Tue, 29 Dec 2020 15:01:40 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/store/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: web服务</title>
+      <link>https://lack-io.github.io/vine/docs/framework/web/</link>
+      <pubDate>Tue, 29 Dec 2020 15:01:46 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/web/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 请求代理</title>
+      <link>https://lack-io.github.io/vine/docs/framework/proxy/</link>
+      <pubDate>Tue, 29 Dec 2020 15:03:13 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/proxy/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
   </channel>
 </rss>

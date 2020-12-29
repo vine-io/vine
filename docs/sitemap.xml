@@ -3,18 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://lack-io.github.io/vine/docs/plotform/cli/</loc>
+    <lastmod>2020-12-29T15:05:02+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://lack-io.github.io/vine/docs/framework/interface/</loc>
-    <lastmod>2020-12-29T14:33:10+08:00</lastmod>
+    <lastmod>2020-12-29T14:46:03+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://lack-io.github.io/vine/docs/guides/service/</loc>
-    <lastmod>2020-12-29T14:33:10+08:00</lastmod>
+    <lastmod>2020-12-29T14:46:03+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/errors/</loc>
+    <lastmod>2020-12-29T14:55:02+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://lack-io.github.io/vine/docs/guides/function/</loc>
-    <lastmod>2020-12-29T14:33:10+08:00</lastmod>
+    <lastmod>2020-12-29T14:46:03+08:00</lastmod>
   </url>
   
   <url>
@@ -23,8 +33,83 @@
   </url>
   
   <url>
+    <loc>https://lack-io.github.io/vine/docs/plotform/</loc>
+    <lastmod>2020-12-29T15:04:24+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/options/</loc>
+    <lastmod>2020-12-29T14:55:49+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://lack-io.github.io/vine/docs/framework/</loc>
     <lastmod>2020-12-29T14:33:10+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/plugins/</loc>
+    <lastmod>2020-12-29T14:56:43+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/config/</loc>
+    <lastmod>2020-12-29T14:56:14+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/codec/</loc>
+    <lastmod>2020-12-29T14:57:07+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/registry/</loc>
+    <lastmod>2020-12-29T14:57:27+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/api/</loc>
+    <lastmod>2020-12-29T14:58:34+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/broker/</loc>
+    <lastmod>2020-12-29T14:59:08+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/server/</loc>
+    <lastmod>2020-12-29T15:00:10+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/client/</loc>
+    <lastmod>2020-12-29T14:59:49+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/auth/</loc>
+    <lastmod>2020-12-29T15:00:40+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/network/</loc>
+    <lastmod>2020-12-29T15:00:45+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/store/</loc>
+    <lastmod>2020-12-29T15:01:40+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/web/</loc>
+    <lastmod>2020-12-29T15:01:46+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://lack-io.github.io/vine/docs/framework/proxy/</loc>
+    <lastmod>2020-12-29T15:03:13+08:00</lastmod>
   </url>
   
   <url>
