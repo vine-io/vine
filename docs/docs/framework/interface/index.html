@@ -3,9 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.76.5" /><link rel="alternate" type="application/rss&#43;xml" href="/docs/index.xml">
-<link rel="alternate" type="text/html" href="/docs/_print/">
-<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+<meta name="generator" content="Hugo 0.76.5" /><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
 
 <link rel="shortcut icon" href="/favicons/favicon.ico" >
@@ -19,16 +17,27 @@
 <link rel="icon" type="image/png" href="/favicons/android-144x144.png" sizes="144x144">
 <link rel="icon" type="image/png" href="/favicons/android-192x192.png" sizes="192x192">
 
-<title>欢迎来到 Vine 文档 | Vine</title><meta property="og:title" content="欢迎来到 Vine 文档" />
-<meta property="og:description" content="Vine 文档" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="/docs/" />
-<meta property="og:updated_time" content="2020-12-29T09:54:20+08:00" /><meta property="og:site_name" content="Vine" />
-<meta itemprop="name" content="欢迎来到 Vine 文档">
-<meta itemprop="description" content="Vine 文档">
+<title>接口 | Vine</title><meta property="og:title" content="接口" />
+<meta property="og:description" content="Vine 是一个可插拔的框架，它利用接口进行抽象和构建基础模块。这使我们能够为分布式系统的概念建立强定义的抽象和可替换的实现。
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/docs/framework/interface/" />
+<meta property="article:published_time" content="2020-12-29T11:15:20+08:00" />
+<meta property="article:modified_time" content="2020-12-29T11:15:20+08:00" /><meta property="og:site_name" content="Vine" />
+<meta itemprop="name" content="接口">
+<meta itemprop="description" content="Vine 是一个可插拔的框架，它利用接口进行抽象和构建基础模块。这使我们能够为分布式系统的概念建立强定义的抽象和可替换的实现。
+">
+<meta itemprop="datePublished" content="2020-12-29T11:15:20+08:00" />
+<meta itemprop="dateModified" content="2020-12-29T11:15:20+08:00" />
+<meta itemprop="wordCount" content="123">
+
+
+
+<meta itemprop="keywords" content="" />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="欢迎来到 Vine 文档"/>
-<meta name="twitter:description" content="Vine 文档"/>
+<meta name="twitter:title" content="接口"/>
+<meta name="twitter:description" content="Vine 是一个可插拔的框架，它利用接口进行抽象和构建基础模块。这使我们能够为分布式系统的概念建立强定义的抽象和可替换的实现。
+"/>
 
 
 
@@ -47,7 +56,7 @@
 
 
   </head>
-  <body class="td-section">
+  <body class="td-page">
     <header>
       
 <nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
@@ -127,7 +136,7 @@
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/docs/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">文档</a>
+    <a  href="/docs/" class="align-left pl-0 pr-2 td-sidebar-link td-sidebar-link__section">文档</a>
   </li>
   <ul>
     <li class="collapse show" id="docs">
@@ -186,10 +195,10 @@
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/docs/framework/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">框架</a>
+    <a  href="/docs/framework/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">框架</a>
   </li>
   <ul>
-    <li class="collapse " id="docsframework">
+    <li class="collapse show" id="docsframework">
       
       
       
@@ -197,7 +206,7 @@
         
           
           
-          <a class="td-sidebar-link td-sidebar-link__page " id="m-docsframeworkinterface" href="/docs/framework/interface/">接口</a>
+          <a class="td-sidebar-link td-sidebar-link__page  active" id="m-docsframeworkinterface" href="/docs/framework/interface/">接口</a>
         
       
       
@@ -239,9 +248,9 @@
     
     
 
-    <a href="https://github.com/lack-io/vine-docs/edit/master/userguide/content/zh/docs/_index.md" target="_blank"><i class="fa fa-edit fa-fw"></i> 编辑此页</a>
-    <a href="https://github.com/lack-io/vine-docs/new/master/userguide/content/zh/docs/_index.md?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" target="_blank"><i class="fa fa-edit fa-fw"></i> 添加子页面</a>
-    <a href="https://github.com/lack-io/vine-docs/issues/new?title=%e6%ac%a2%e8%bf%8e%e6%9d%a5%e5%88%b0%20Vine%20%e6%96%87%e6%a1%a3" target="_blank"><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
+    <a href="https://github.com/lack-io/vine-docs/edit/master/userguide/content/zh/docs/framework/interface.md" target="_blank"><i class="fa fa-edit fa-fw"></i> 编辑此页</a>
+    <a href="https://github.com/lack-io/vine-docs/new/master/userguide/content/zh/docs/framework/interface.md?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" target="_blank"><i class="fa fa-edit fa-fw"></i> 添加子页面</a>
+    <a href="https://github.com/lack-io/vine-docs/issues/new?title=%e6%8e%a5%e5%8f%a3" target="_blank"><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
     
       
       <a href="https://github.com/lack-io/vine/issues/new" target="_blank"><i class="fas fa-tasks fa-fw"></i> 提交项目问题</a>
@@ -249,7 +258,7 @@
 
   
   
-    <a id="print" href="/docs/_print/"><i class="fa fa-print fa-fw"></i> Print entire section</a>
+    <a id="print" href="/docs/framework/_print/"><i class="fa fa-print fa-fw"></i> Print entire section</a>
   
   </div>
 
@@ -259,19 +268,16 @@
 
 <nav id="TableOfContents">
   <ul>
-    <li><a href="#简介">简介</a></li>
-    <li><a href="#主要功能">主要功能</a></li>
-    <li><a href="#许可">许可</a></li>
-    <li><a href="#起步">起步</a>
-      <ul>
-        <li><a href="#安装">安装</a></li>
-        <li><a href="#proto-文件">proto 文件</a></li>
-        <li><a href="#服务端">服务端</a></li>
-        <li><a href="#客户端">客户端</a></li>
-        <li><a href="#启动-api">启动 api</a></li>
-        <li><a href="#验证">验证</a></li>
-      </ul>
-    </li>
+    <li><a href="#接口">接口</a></li>
+    <li><a href="#broker">Broker</a></li>
+    <li><a href="#client">Client</a></li>
+    <li><a href="#codec">Codec</a></li>
+    <li><a href="#config">Config</a></li>
+    <li><a href="#server">Server</a></li>
+    <li><a href="#store">Store</a></li>
+    <li><a href="#registry">Registry</a></li>
+    <li><a href="#selector">Selector</a></li>
+    <li><a href="#transport">Transport</a></li>
   </ul>
 </nav>
 
@@ -289,8 +295,28 @@
 
 
 
-<li class="breadcrumb-item active" aria-current="page">
+
+
+
+
+
+
+<li class="breadcrumb-item" >
 	<a href="/docs/">文档</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item" >
+	<a href="/docs/framework/">框架</a>
+</li>
+
+
+
+
+<li class="breadcrumb-item active" aria-current="page">
+	<a href="/docs/framework/interface/">接口</a>
 </li>
 
 	</ol>
@@ -298,184 +324,54 @@
 
             
 <div class="td-content">
-	<h1>欢迎来到 Vine 文档</h1>
-        
-	
-	<p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/lack/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/lack-io/vine"><img src="https://api.travis-ci.org/lack-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/lack-io/vine"><img src="https://goreportcard.com/badge/lack-io/vine" alt="Go Report Card"></a></p>
-<p>Vine (<em>/vaɪn/</em>) 一套简单、高效、可插拔的分布式 RPC 框架。</p>
-<h2 id="简介">简介</h2>
-<p><strong>Vine</strong> 基于 <a href="https://github.com/asim/go-micro">go-micro</a> 框架，因此继承了它的优点。并在此基础上增加性能和可用性。</p>
-<h2 id="主要功能">主要功能</h2>
-<p><strong>Vine</strong> 抽象化分布式系统的内部细节. 以下是主要功能.</p>
+	<h1>接口</h1>
+    <div class="lead">Vine 是一个可插拔的框架，它利用接口进行抽象和构建基础模块。这使我们能够为分布式系统的概念建立强定义的抽象和可替换的实现。</div>
+	       
+	<p><img src="2020-12-29-08-51-23.png" alt="service内部结构"></p>
+<h2 id="接口">接口</h2>
+<p><strong>Vine</strong> 内置以下的接口列表</p>
 <ul>
-<li>
-<p><strong>身份验证 (Authentication)</strong> - 身份验证和授权作为一等公民而存在。身份验证和授权通过为每个服务提供一个身份和证书来确保内部服务安全。其中海包括基于规则的访问控制。</p>
-</li>
-<li>
-<p><strong>动态配置 (Dynamic Config)</strong> - 从任意地方加载和热加载动态配置。配置接口提供了一种方法，可以从任何源（如环境变量，文件，etcd）加载应用级别配置。同时支持合并源、甚至定义回退。</p>
-</li>
-<li>
-<p><strong>数据存储 (Data Storage)</strong> - 一个简单的数据存储接口，用于查询，创建，删除数据记录。内置 memory，file，postgresSQL 等</p>
-</li>
-<li>
-<p><strong>服务发现 (Service disconvery)</strong> - 自动服务注册和名称解析。服务发现是微服务开发的核心功能。当服务A与服务B通讯时，需要知道服务B的IP地址等信息。<strong>Vine</strong> 内置(mdns)作为服务发现组件，它是零配置系统。</p>
-</li>
-<li>
-<p><strong>负载均衡 (Load Balancing)</strong> - 基于服务发现的客户端负载均衡。当内部存在多个服务实例的地址时，我们需要一种方式确定路由到哪个节点，默认使用随机指定其中一个地址。同时在请求错误时重试不同的节点。</p>
-</li>
-<li>
-<p><strong>消息编码 (Message Encoding)</strong> - 基于<code>Content-Type</code>的动态消息编码。Codec 为客户端和服务端提供 Go 类型的编码和解码，支持各种不同的类型。默认使用 protobuf 和 json。</p>
-</li>
-<li>
-<p><strong>gRPC 传输 (gRPC transport)</strong> - 基于 gRPC 的请求响应，同时支持双向流。<strong>Vine</strong> 为同步通讯提供一个抽象，使发向服务的请求被自动解析、负载均衡、拨号和流化。</p>
-</li>
-<li>
-<p><strong>异步消息 (Async Messaging)</strong> - 内置订阅发布模型，作为异步通讯和事件驱动架构。事件通知属于微服务开发中的核心模式。默认的消息系统为 HTTP 事件代理。</p>
-</li>
-<li>
-<p><strong>同步 (Synchronization)</strong> - 分布式系统通常以最终一致性的方式构建。内置的 <strong>Sync</strong> 接口实现分布式锁和领导选举。</p>
-</li>
-<li>
-<p><strong>可插拔接口 (Pluggable Interfaces)</strong> - 得益于 Go 语言的抽象特性。 <strong>Vine</strong> 为每个模块提供抽象接口，正因为如此，这些接口都是可插拔的。可以在 <a href="https://github.com/lack-io/plugins">github.com/lack-io/plugins</a> 查询你需要的插件。</p>
-</li>
+<li><strong>Auth</strong> - 身份验证和授权</li>
+<li><strong>broker</strong> - 异步消息</li>
+<li><strong>client</strong> - 高级请求/响应和消息通知</li>
+<li><strong>config</strong> - 动态配置</li>
+<li><strong>codec</strong> - 消息编码和解码</li>
+<li><strong>debug</strong> - debug 日志，跟踪，统计信息</li>
+<li><strong>network</strong> - 多云下的网络</li>
+<li><strong>registry</strong> - 服务发现</li>
+<li><strong>runtime</strong> - 服务运行时状态</li>
+<li><strong>selector</strong> - 均衡负载</li>
+<li><strong>server</strong> - 处理请求和通知</li>
+<li><strong>store</strong> - 数据存储</li>
+<li><strong>sync</strong> - 同步，锁和领导选举</li>
+<li><strong>transport</strong> - 同步通讯</li>
+<li><strong>tunnel</strong> - vpn 隧道</li>
 </ul>
-<h2 id="许可">许可</h2>
-<p>Vine 遵守 Apache 2.0 开源许可.</p>
-<h2 id="起步">起步</h2>
-<h3 id="安装">安装</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/gogo/googleapis
-go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
-go get github.com/lack-io/vine/cmd/protoc-gen-vine
-go get github.com/lack-io/vine
-</code></pre></div><h3 id="proto-文件">proto 文件</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
-
-<span style="color:#ff79c6">package</span> testdata;
-
-<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/gogo/googleapis/google/api/annotations.proto&#34;</span>;
-
-<span style="color:#8be9fd;font-style:italic">service</span> Rpc {
-  <span style="color:#ff79c6">rpc</span> HelloWorld(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {
-    <span style="color:#ff79c6">option</span> (google.api.http) <span style="color:#ff79c6">=</span> { post<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;/api/{name}&#34;</span>; body<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;*&#34;</span>; };
-  };
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
-  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldResponse</span> {
-  <span style="color:#8be9fd">string</span> reply <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><p>生成 golang 代码</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span>. <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>. example/proto/test.proto
-</code></pre></div><h3 id="服务端">服务端</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-
-	vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
-	pb <span style="color:#f1fa8c">&#34;example/proto&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">type</span> HelloWorld <span style="color:#8be9fd;font-style:italic">struct</span> {
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (t <span style="color:#ff79c6">*</span>HelloWorld) <span style="color:#50fa7b">HelloWorld</span>(ctx context.Context, req <span style="color:#ff79c6">*</span>pb.HelloWorldRequest, rsp <span style="color:#ff79c6">*</span>pb.HelloWorldResponse) <span style="color:#8be9fd">error</span> {
-	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;get echo request&#34;</span>)
-	rsp.Reply = <span style="color:#f1fa8c">&#34;hello &#34;</span> <span style="color:#ff79c6">+</span> req.Name
-	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>),
-		vine.<span style="color:#50fa7b">Address</span>(<span style="color:#f1fa8c">&#34;127.0.0.1:9000&#34;</span>),
-	)
-
-	service.<span style="color:#50fa7b">Init</span>()
-
-	pb.<span style="color:#50fa7b">RegisterRpcHandler</span>(service.<span style="color:#50fa7b">Server</span>(), <span style="color:#8be9fd;font-style:italic">new</span>(HelloWorld))
-
-	service.<span style="color:#50fa7b">Run</span>()
-}
-</code></pre></div><h3 id="客户端">客户端</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-
-	vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
-	pb <span style="color:#f1fa8c">&#34;example/proto&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	srv <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>))
-	service <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewRpcService</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>, srv.<span style="color:#50fa7b">Client</span>())
-
-	rsp, err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">HelloWorld</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.HelloWorldRequest{Name: <span style="color:#f1fa8c">&#34;world&#34;</span>})
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		fmt.<span style="color:#50fa7b">Println</span>(err)
-		<span style="color:#ff79c6">return</span>
-	}
-	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;result: %v\n&#34;</span>, rsp)
-}
-
-</code></pre></div><h3 id="启动-api">启动 api</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine api --handler<span style="color:#ff79c6">=</span>rpc
-</code></pre></div><h3 id="验证">验证</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> -d <span style="color:#f1fa8c">&#39;{}&#39;</span> http://localhost:8080/api/vine
-</code></pre></div>
-        <div class="section-index">
-    
-    
-    
-    
-    
-    <hr class="panel-line">
-        
-            
-        
-            
-        
-            
-        
-            
-                <div class="entry">
-                    <h5>
-                        <a href="/docs/guides/">开始</a>
-                    </h5>
-                    <p>我们将在这里学会如何创建 Service 和 Function 类型的服务。</p>
-                </div>
-            
-        
-            
-                <div class="entry">
-                    <h5>
-                        <a href="/docs/framework/">框架</a>
-                    </h5>
-                    <p>我们将深入了解 Vine 框架的内部原理。</p>
-                </div>
-            
-        
-            
-        
-    
-</div>
+<h2 id="broker">Broker</h2>
+<p><strong>Broker</strong> 为异步 pub/sub 子通讯提供消息代理的接口。这是事件驱动结构和微服务的基本要求之一。在默认情况下，我们使用 HTTP 协议实现 Broker 接口，以减少依赖。在 <a href="github.com/lack-io/plugins">plugins</a> 中有许多 Broker 的实现。例如：RabbitMQ，NATS，NSQ等。</p>
+<h2 id="client">Client</h2>
+<p><strong>Client</strong> 提供一个接口来向服务发出请求。和 Server 一样，它构建在其他包上并提供统一的接口。使用 Registry 来查找服务，使用Transport进行同步请求。</p>
+<h2 id="codec">Codec</h2>
+<p><strong>Codec</strong> 用于编码和解码消息。这些数据格式可能是 json, protobuf, beson 等。同时还是各种 RPC 数据格式，例如 PROTO-RPC, JSON-RPC, BSON-RPC等。它将编码解码与 Client/Server 分离，并提供继承其他系统的强大方法。</p>
+<h2 id="config">Config</h2>
+<p><strong>Config</strong> 是一个接口。用于从任意数量的源进行动态配置加载，这些源可以合并。大多数系统都主动要求有独立于代码进行更改的配置。通过<strong>Config</strong>接口，可以根据需要动态加载这些值，它还支持各种不同的配置格式。</p>
+<h2 id="server">Server</h2>
+<p><strong>Server</strong> 是编写服务器基础模块。在这里，你可以为服务命名，注册请求处理器，添加中间件等。该服务基于上述包，为服务请求提供统一接口。目前有 gRPC 和 HTTP 两种内置实现。<strong>Server</strong> 还允许你定义多个 Codec 以服务不同的编码消息。</p>
+<h2 id="store">Store</h2>
+<p><strong>Store</strong> 是一个简单的键值对存储接口，用于抽象轻量级的数据存储。我们不是在试图实现一个完整的 sql 语言或者存储，只是仅仅保存服务状态。</p>
+<h2 id="registry">Registry</h2>
+<p><strong>Registry</strong> 提供一种服务发现机制，能将服务名称解析为对应的IP地址。它可以由 consul，etcd，zookeeper，dns等支持。服务在启动时注册到 <strong>Registry</strong> 中，并在关闭是注销。服务可能选择提供 TTL，并在这个间隔时间内重新注册，以确保服务在失效时进行清理。</p>
+<h2 id="selector">Selector</h2>
+<p><strong>Selector</strong> 是负载均衡的一种抽象，它建立在 <em>Registry</em> 上。它允许通过对应的策略选择服务，如随机，循环，最小等算法选择服务。<strong>Client</strong> 在请求时使用 <strong>Selector</strong> 来实现客户端均衡负载。</p>
+<h2 id="transport">Transport</h2>
+<p><strong>Transport</strong> 是服务之间同步请求/响应的接口。它类似与 golang 网络包，但提供一个更高级别的抽象，允许我们切换通讯机制，例如 http、rabbitmq、websocket、NATS等。它还支持双向流。</p>
 
 	
 	
 	<div class="text-muted mt-5 pt-3 border-top">最后修改 December 29, 2020
 </div>
 </div>
+
 
           </main>
         </div>

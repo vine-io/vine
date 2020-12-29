@@ -1,1 +1,0 @@
-if(navigator.serviceWorker){navigator.serviceWorker.register("/vine/sw.js",{scope:"/vine/"});}

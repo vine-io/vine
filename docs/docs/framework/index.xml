@@ -1,0 +1,69 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vine – 框架</title>
+    <link>/docs/framework/</link>
+    <description>Recent content in 框架 on Vine</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 29 Dec 2020 10:54:20 +0800</lastBuildDate>
+    
+	  <atom:link href="/docs/framework/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: 接口</title>
+      <link>/docs/framework/interface/</link>
+      <pubDate>Tue, 29 Dec 2020 11:15:20 +0800</pubDate>
+      
+      <guid>/docs/framework/interface/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;img src=&#34;2020-12-29-08-51-23.png&#34; alt=&#34;service内部结构&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;接口&#34;&gt;接口&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 内置以下的接口列表&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Auth&lt;/strong&gt; - 身份验证和授权&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;broker&lt;/strong&gt; - 异步消息&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;client&lt;/strong&gt; - 高级请求/响应和消息通知&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;config&lt;/strong&gt; - 动态配置&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;codec&lt;/strong&gt; - 消息编码和解码&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;debug&lt;/strong&gt; - debug 日志，跟踪，统计信息&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;network&lt;/strong&gt; - 多云下的网络&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;registry&lt;/strong&gt; - 服务发现&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;runtime&lt;/strong&gt; - 服务运行时状态&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;selector&lt;/strong&gt; - 均衡负载&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;server&lt;/strong&gt; - 处理请求和通知&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;store&lt;/strong&gt; - 数据存储&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sync&lt;/strong&gt; - 同步，锁和领导选举&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;transport&lt;/strong&gt; - 同步通讯&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;tunnel&lt;/strong&gt; - vpn 隧道&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;broker&#34;&gt;Broker&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Broker&lt;/strong&gt; 为异步 pub/sub 子通讯提供消息代理的接口。这是事件驱动结构和微服务的基本要求之一。在默认情况下，我们使用 HTTP 协议实现 Broker 接口，以减少依赖。在 &lt;a href=&#34;github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt; 中有许多 Broker 的实现。例如：RabbitMQ，NATS，NSQ等。&lt;/p&gt;
+&lt;h2 id=&#34;client&#34;&gt;Client&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Client&lt;/strong&gt; 提供一个接口来向服务发出请求。和 Server 一样，它构建在其他包上并提供统一的接口。使用 Registry 来查找服务，使用Transport进行同步请求。&lt;/p&gt;
+&lt;h2 id=&#34;codec&#34;&gt;Codec&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Codec&lt;/strong&gt; 用于编码和解码消息。这些数据格式可能是 json, protobuf, beson 等。同时还是各种 RPC 数据格式，例如 PROTO-RPC, JSON-RPC, BSON-RPC等。它将编码解码与 Client/Server 分离，并提供继承其他系统的强大方法。&lt;/p&gt;
+&lt;h2 id=&#34;config&#34;&gt;Config&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Config&lt;/strong&gt; 是一个接口。用于从任意数量的源进行动态配置加载，这些源可以合并。大多数系统都主动要求有独立于代码进行更改的配置。通过&lt;strong&gt;Config&lt;/strong&gt;接口，可以根据需要动态加载这些值，它还支持各种不同的配置格式。&lt;/p&gt;
+&lt;h2 id=&#34;server&#34;&gt;Server&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Server&lt;/strong&gt; 是编写服务器基础模块。在这里，你可以为服务命名，注册请求处理器，添加中间件等。该服务基于上述包，为服务请求提供统一接口。目前有 gRPC 和 HTTP 两种内置实现。&lt;strong&gt;Server&lt;/strong&gt; 还允许你定义多个 Codec 以服务不同的编码消息。&lt;/p&gt;
+&lt;h2 id=&#34;store&#34;&gt;Store&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Store&lt;/strong&gt; 是一个简单的键值对存储接口，用于抽象轻量级的数据存储。我们不是在试图实现一个完整的 sql 语言或者存储，只是仅仅保存服务状态。&lt;/p&gt;
+&lt;h2 id=&#34;registry&#34;&gt;Registry&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Registry&lt;/strong&gt; 提供一种服务发现机制，能将服务名称解析为对应的IP地址。它可以由 consul，etcd，zookeeper，dns等支持。服务在启动时注册到 &lt;strong&gt;Registry&lt;/strong&gt; 中，并在关闭是注销。服务可能选择提供 TTL，并在这个间隔时间内重新注册，以确保服务在失效时进行清理。&lt;/p&gt;
+&lt;h2 id=&#34;selector&#34;&gt;Selector&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Selector&lt;/strong&gt; 是负载均衡的一种抽象，它建立在 &lt;em&gt;Registry&lt;/em&gt; 上。它允许通过对应的策略选择服务，如随机，循环，最小等算法选择服务。&lt;strong&gt;Client&lt;/strong&gt; 在请求时使用 &lt;strong&gt;Selector&lt;/strong&gt; 来实现客户端均衡负载。&lt;/p&gt;
+&lt;h2 id=&#34;transport&#34;&gt;Transport&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Transport&lt;/strong&gt; 是服务之间同步请求/响应的接口。它类似与 golang 网络包，但提供一个更高级别的抽象，允许我们切换通讯机制，例如 http、rabbitmq、websocket、NATS等。它还支持双向流。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>
