@@ -26,8 +26,8 @@ func TestFromError(t *testing.T) {
 	if merr.Id != "go.vine.test" || merr.Code != 404 {
 		t.Fatalf("invalid conversation %v != %v", err, merr)
 	}
-	err = er.New(err.Error())
-	merr = FromErr(err)
+	err1 := er.New(err.Error())
+	merr = FromErr(err1)
 	if merr.Id != "go.vine.test" || merr.Code != 404 {
 		t.Fatalf("invalid conversation %v != %v", err, merr)
 	}
@@ -88,4 +88,23 @@ func TestErrors(t *testing.T) {
 			t.Fatalf("Expected %s got %s", e.Status, pe.Status)
 		}
 	}
+}
+
+func TestError_Caller(t *testing.T) {
+	e := BadRequest("go.vine.client", "test").Caller()
+	t.Log(e)
+}
+
+func TestError_Stack(t *testing.T) {
+	e := New("go.vine.client", "test stack", 400)
+	if len(e.Stacks) != 0 {
+		t.Fatalf("Stack = %v", e.Stacks)
+	}
+
+	e.Stack(10001, "stack information", true)
+	if len(e.Stacks) == 0 {
+		t.Fatalf("call Stack() failed")
+	}
+
+	t.Log(e)
 }

@@ -10,4 +10,11 @@ message Error {
   string detail = 3;
   string status = 4;
   string position = 5;
+  repeated Stack stacks = 6;
+}
+
+message Stack {
+  int32 code = 1;
+  string detail = 2;
+  string position = 3;
 }

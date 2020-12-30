@@ -26,28 +26,49 @@ import (
 
 // protoc -I. -I$GOPATH/src --gogofast_out=plugins=grpc:. --vine_out=:. errors.proto
 
-func (e *Error) Error() string {
-	b, _ := json.Marshal(e)
-	return string(b)
-}
-
 // New generates a custom error.
-func New(id, detail string, code int32, pos ...bool) error {
+func New(id, detail string, code int32) *Error {
 	e := &Error{
 		Id:     id,
 		Code:   code,
 		Detail: detail,
 		Status: http.StatusText(int(code)),
 	}
-	if pos != nil && pos[0] == true {
+	return e
+}
+
+// Caller fills Error.Position
+func (e *Error) Caller() *Error {
+	_, file, line, _ := runtime.Caller(1)
+	if index := strings.Index(file, "/src/"); index != -1 {
+		file = file[index+5:]
+	}
+	file = strings.Replace(file, string(filepath.Separator), "/", -1)
+	e.Position = fmt.Sprintf("%s:%d", file, line)
+	return e
+}
+
+// Stack push stack information to Error
+func (e *Error) Stack(code int32, detail string, pos ...bool) *Error {
+	if e.Stacks == nil {
+		e.Stacks = make([]*Stack, 0)
+	}
+	stack := &Stack{Code: code, Detail: detail}
+	if pos != nil && pos[0] {
 		_, file, line, _ := runtime.Caller(1)
-		if index := strings.Index(file, "/src"); index != -1 {
-			file = file[index+4:]
+		if index := strings.Index(file, "/src/"); index != -1 {
+			file = file[index+5:]
 		}
 		file = strings.Replace(file, string(filepath.Separator), "/", -1)
-		e.Position = fmt.Sprintf("%s:%d", file, line)
+		stack.Position = fmt.Sprintf("%s:%d", file, line)
 	}
+	e.Stacks = append(e.Stacks, stack)
 	return e
+}
+
+func (e *Error) Error() string {
+	b, _ := json.Marshal(e)
+	return string(b)
 }
 
 // Parse tries to parse a JSON string into an error. If that
@@ -62,47 +83,47 @@ func Parse(err string) *Error {
 }
 
 // BadRequest generates a 400 error.
-func BadRequest(id, format string, a ...interface{}) error {
+func BadRequest(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 400)
 }
 
 // Unauthorized generates a 401 error.
-func Unauthorized(id, format string, a ...interface{}) error {
+func Unauthorized(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 401)
 }
 
 // Forbidden generates a 403 error.
-func Forbidden(id, format string, a ...interface{}) error {
+func Forbidden(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 403)
 }
 
 // NotFound generates a 404 error.
-func NotFound(id, format string, a ...interface{}) error {
+func NotFound(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 404)
 }
 
 // MethodNotAllowed generates a 405 error.
-func MethodNotAllowed(id, format string, a ...interface{}) error {
+func MethodNotAllowed(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 405)
 }
 
 // Timeout generates a 408 error.
-func Timeout(id, format string, a ...interface{}) error {
+func Timeout(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 408)
 }
 
 // Conflict generates a 409 error.
-func Conflict(id, format string, a ...interface{}) error {
+func Conflict(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 409)
 }
 
 // InternalServerError generates a 500 error.
-func InternalServerError(id, format string, a ...interface{}) error {
+func InternalServerError(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 500)
 }
 
 // NotImplemented generates a 501 error
-func NotImplemented(id, format string, a ...interface{}) error {
+func NotImplemented(id, format string, a ...interface{}) *Error {
 	return &Error{
 		Id:     id,
 		Code:   501,
@@ -112,7 +133,7 @@ func NotImplemented(id, format string, a ...interface{}) error {
 }
 
 // BadGateway generates a 502 error
-func BadGateway(id, format string, a ...interface{}) error {
+func BadGateway(id, format string, a ...interface{}) *Error {
 	return &Error{
 		Id:     id,
 		Code:   502,
@@ -122,7 +143,7 @@ func BadGateway(id, format string, a ...interface{}) error {
 }
 
 // ServiceUnavailable generates a 503 error
-func ServiceUnavailable(id, format string, a ...interface{}) error {
+func ServiceUnavailable(id, format string, a ...interface{}) *Error {
 	return &Error{
 		Id:     id,
 		Code:   503,
@@ -132,7 +153,7 @@ func ServiceUnavailable(id, format string, a ...interface{}) error {
 }
 
 // GatewayTimeout generates a 504 error
-func GatewayTimeout(id, format string, a ...interface{}) error {
+func GatewayTimeout(id, format string, a ...interface{}) *Error {
 	return &Error{
 		Id:     id,
 		Code:   504,
