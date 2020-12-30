@@ -454,6 +454,10 @@ func writeError(w http.ResponseWriter, r *http.Request, err error) {
 		ce.Detail = "error during request: " + ce.Detail
 		w.WriteHeader(500)
 	default:
+		// handle unknown error code
+		if ce.Code < 100 || ce.Code > 999 {
+			ce.Code = 500
+		}
 		w.WriteHeader(int(ce.Code))
 	}
 
