@@ -35,8 +35,8 @@ import (
 	"github.com/lack-io/vine/service/codec/protorpc"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
+	ctx "github.com/lack-io/vine/util/context"
 	"github.com/lack-io/vine/util/context/metadata"
-	"github.com/lack-io/vine/util/ctx"
 	"github.com/lack-io/vine/util/qson"
 )
 

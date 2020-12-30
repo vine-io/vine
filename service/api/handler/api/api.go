@@ -24,7 +24,7 @@ import (
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
-	"github.com/lack-io/vine/util/ctx"
+	ctx "github.com/lack-io/vine/util/context"
 )
 
 const (

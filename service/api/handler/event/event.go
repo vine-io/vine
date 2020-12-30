@@ -29,7 +29,7 @@ import (
 
 	proto "github.com/lack-io/vine/proto/api"
 	"github.com/lack-io/vine/service/api/handler"
-	"github.com/lack-io/vine/util/ctx"
+	ctx "github.com/lack-io/vine/util/context"
 )
 
 var (

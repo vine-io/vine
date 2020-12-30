@@ -26,7 +26,7 @@ import (
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
 	inauth "github.com/lack-io/vine/util/auth"
-	"github.com/lack-io/vine/util/ctx"
+	ctx "github.com/lack-io/vine/util/context"
 	"github.com/lack-io/vine/util/namespace"
 )
 
