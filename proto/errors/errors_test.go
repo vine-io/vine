@@ -16,6 +16,7 @@ package errors
 
 import (
 	er "errors"
+	"fmt"
 	"net/http"
 	"testing"
 )
@@ -90,18 +91,23 @@ func TestErrors(t *testing.T) {
 	}
 }
 
-func TestError_Caller(t *testing.T) {
-	e := BadRequest("go.vine.client", "test").Caller()
+func TestError_WithPos(t *testing.T) {
+	e := BadRequest("go.vine.client", "test").WithPos()
 	t.Log(e)
 }
 
-func TestError_Stack(t *testing.T) {
+func TestError_WithChild(t *testing.T) {
+	e := BadRequest("go.vine.client", "test").WithChild(111, "%v", fmt.Errorf("err1"))
+	t.Log(e)
+}
+
+func TestError_WithStack(t *testing.T) {
 	e := New("go.vine.client", "test stack", 400)
 	if len(e.Stacks) != 0 {
 		t.Fatalf("Stack = %v", e.Stacks)
 	}
 
-	e.Stack(10001, "stack information", true)
+	e.WithStack(10001, "stack information", true)
 	if len(e.Stacks) == 0 {
 		t.Fatalf("call Stack() failed")
 	}

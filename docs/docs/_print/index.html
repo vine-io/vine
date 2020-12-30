@@ -912,8 +912,9 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">b <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Equal</span>(err1, err2)
 </code></pre></div><p>链式调用</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;name must be set&#34;</span>, <span style="color:#bd93f9">404</span>).
-        <span style="color:#50fa7b">Caller</span>(). <span style="color:#6272a4">// 记录错误位置 
-</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">Stack</span>(<span style="color:#bd93f9">10001</span>, <span style="color:#f1fa8c">&#34;stack context&#34;</span>) <span style="color:#6272a4">// 追加上下文信息 
+        <span style="color:#50fa7b">WithChild</span>(<span style="color:#bd93f9">111</span>, <span style="color:#f1fa8c">&#34;%v&#34;</span>, <span style="color:#f1fa8c">&#34;child error&#34;</span>). <span style="color:#6272a4">// 添加额外错误
+</span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">WithPos</span>(). <span style="color:#6272a4">// 记录错误位置 
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">WithStack</span>(<span style="color:#bd93f9">10001</span>, <span style="color:#f1fa8c">&#34;stack context&#34;</span>) <span style="color:#6272a4">// 追加上下文信息 
 </span></code></pre></div>
 </div>
 

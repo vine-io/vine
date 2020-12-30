@@ -37,8 +37,17 @@ func New(id, detail string, code int32) *Error {
 	return e
 }
 
-// Caller fills Error.Position
-func (e *Error) Caller() *Error {
+// WithChild fills Error.Child
+func (e *Error) WithChild(code int32, format string, a ...interface{}) *Error {
+	e.Child = &Child{
+		Code:   code,
+		Detail: fmt.Sprintf(format, a...),
+	}
+	return e
+}
+
+// WithPos fills Error.Position
+func (e *Error) WithPos() *Error {
 	_, file, line, _ := runtime.Caller(1)
 	if index := strings.Index(file, "/src/"); index != -1 {
 		file = file[index+5:]
@@ -48,8 +57,8 @@ func (e *Error) Caller() *Error {
 	return e
 }
 
-// Stack push stack information to Error
-func (e *Error) Stack(code int32, detail string, pos ...bool) *Error {
+// WithStack push stack information to Error
+func (e *Error) WithStack(code int32, detail string, pos ...bool) *Error {
 	if e.Stacks == nil {
 		e.Stacks = make([]*Stack, 0)
 	}
