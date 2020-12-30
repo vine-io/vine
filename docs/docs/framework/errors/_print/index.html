@@ -24,7 +24,7 @@
 " />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/framework/errors/" />
-<meta property="og:updated_time" content="2020-12-29T14:55:02+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2020-12-29T19:37:17+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="错误">
 <meta itemprop="description" content="Vine 为错误提供抽象和类型。通过提供一组核心错误和定义详细错误类型，我们可以始终如一地了解运行时出现的错误。
 ">
@@ -134,11 +134,12 @@ This the multi-page printable view of this section.
       <h2 id="概述">概述</h2>
 <p>我们定义以下错误类型</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Error <span style="color:#8be9fd;font-style:italic">struct</span> {
-	Id       <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;id,omitempty&#34;`</span>
-	Code     <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`json:&#34;code,omitempty&#34;`</span>
-	Detail   <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;detail,omitempty&#34;`</span>
-	Status   <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;status,omitempty&#34;`</span>
-	Position <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;position,omitempty&#34;`</span>
+	Id       <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;id,omitempty&#34;`</span>
+	Code     <span style="color:#8be9fd">int32</span>      <span style="color:#f1fa8c">`json:&#34;code,omitempty&#34;`</span>
+	Detail   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;detail,omitempty&#34;`</span>
+	Status   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;status,omitempty&#34;`</span>
+    Position <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;position,omitempty&#34;`</span>
+    Stacks   []<span style="color:#ff79c6">*</span>Stack   <span style="color:#f1fa8c">`json:&#34;stacks,omitempty&#34;`</span>
 }
 </code></pre></div><p>在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 <strong>Vine</strong> 错误，或者应该生成错误。默认情况下，我们返回 <code>errors.InternalServerError</code>，如果出现错误错误则返回 <code>errors.Timeout</code>。</p>
 <h2 id="使用">使用</h2>
@@ -162,18 +163,18 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 </span><span style="color:#6272a4"></span>    }
 }
 </code></pre></div><h2 id="错误列表">错误列表</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadGateway</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadRequest</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Conflict</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Forbidden</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">GatewayTimeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">InternalServerError</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">MethodNotAllowed</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotFound</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotImplemented</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ServiceUnavailable</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Timeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Unauthorized</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadGateway</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadRequest</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Conflict</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Forbidden</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">GatewayTimeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">InternalServerError</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">MethodNotAllowed</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotFound</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotImplemented</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ServiceUnavailable</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Timeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Unauthorized</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
 </code></pre></div><h2 id="自定义错误">自定义错误</h2>
 <p>除了内置的错误类型之外，<strong>Vine</strong> 支持自定义错误类型</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 自定义错误，并记录错误位置
@@ -181,7 +182,11 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 </code></pre></div><h2 id="其他">其他</h2>
 <p>判断错误类型是否相同</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">b <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Equal</span>(err1, err2)
-</code></pre></div>
+</code></pre></div><p>链式调用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;name must be set&#34;</span>, <span style="color:#bd93f9">404</span>).
+        <span style="color:#50fa7b">Caller</span>(). <span style="color:#6272a4">// 记录错误位置 
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">Stack</span>(<span style="color:#bd93f9">10001</span>, <span style="color:#f1fa8c">&#34;stack context&#34;</span>) <span style="color:#6272a4">// 追加上下文信息 
+</span></code></pre></div>
 </div>
 </div>
 
