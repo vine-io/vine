@@ -24,7 +24,7 @@
 " />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/framework/errors/" />
-<meta property="og:updated_time" content="2020-12-30T10:09:47+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2020-12-30T11:14:56+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="错误">
 <meta itemprop="description" content="Vine 为错误提供抽象和类型。通过提供一组核心错误和定义详细错误类型，我们可以始终如一地了解运行时出现的错误。
 ">
@@ -139,6 +139,7 @@ This the multi-page printable view of this section.
 	Detail   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;detail,omitempty&#34;`</span>
 	Status   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;status,omitempty&#34;`</span>
     Position <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;position,omitempty&#34;`</span>
+    Child    <span style="color:#ff79c6">*</span>Child     <span style="color:#f1fa8c">`json:&#34;child,omitempty&#34;`</span>
     Stacks   []<span style="color:#ff79c6">*</span>Stack   <span style="color:#f1fa8c">`json:&#34;stacks,omitempty&#34;`</span>
 }
 </code></pre></div><p>在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 <strong>Vine</strong> 错误，或者应该生成错误。默认情况下，我们返回 <code>errors.InternalServerError</code>，如果出现错误错误则返回 <code>errors.Timeout</code>。</p>

@@ -20,15 +20,18 @@
 <link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
 
 <title>web服务 | Vine</title><meta property="og:title" content="web服务" />
-<meta property="og:description" content="Vine 文档" />
+<meta property="og:description" content="Web 为 vine web 应用提供了一个接口
+" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/framework/web/" />
 <meta property="og:updated_time" content="2020-12-29T19:37:17+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="web服务">
-<meta itemprop="description" content="Vine 文档">
+<meta itemprop="description" content="Web 为 vine web 应用提供了一个接口
+">
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="web服务"/>
-<meta name="twitter:description" content="Vine 文档"/>
+<meta name="twitter:description" content="Web 为 vine web 应用提供了一个接口
+"/>
 
 
 
@@ -121,14 +124,62 @@ This the multi-page printable view of this section.
 
 
 <h1 class="title">web服务</h1>
-
+<div class="lead">Web 为 vine web 应用提供了一个接口</div>
 
 
 
 
 
 <div class="content">
-      
+      <h2 id="概述">概述</h2>
+<p><strong>Web</strong> 提供了一个很小的 HTTP Web 服务器库，利用 <strong>Vine</strong> 创建 vine web 服务。它包装了 <strong>Vine</strong>, 为用户提供服务发现，检测信号以及将 web 应用创建为微服务的功能.</p>
+<h2 id="特性">特性</h2>
+<ul>
+<li>服务发现 - 服务在启动时自动注册在 <strong>Registry</strong> 中。<strong>Web</strong> 包括一个具有预初始化的 http.Client, 它利用服务发现，以便您可以使用 web 服务。</li>
+<li>健康检测 - <strong>Web</strong> 应用将定期使用服务发现进行检测信号，以提供实时更新。如果服务失败，将在预定义的过期时间后将其从 <strong>Registry</strong> 中删除.</li>
+<li>自定义处理程序 - 指定您自己的 http 路由器以处理请求。这允许您完全控制要路由到内部处理程序的方式.</li>
+<li>静态服务 - <strong>Web</strong> 自动检测本地静态 html 目录，如果未指定路由处理程序，则提供文件。对于那些希望将 JS Web 应用程序编写为微服务的用户的快速解决方案.</li>
+</ul>
+<h2 id="依赖">依赖</h2>
+<p>Web 使用 <strong>Vine</strong>, 这意味着它需要 <strong>Registry</strong></p>
+<h2 id="使用">使用</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
+)
+
+service.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/foo&#34;</span>, fooHandler)
+
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    log.<span style="color:#50fa7b">Fatal</span>(err)
+}
+
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    log.<span style="color:#50fa7b">Fatal</span>(err)
+}
+</code></pre></div><h2 id="设置-handler">设置 handler</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/gorilla/mux&#34;</span>
+
+r <span style="color:#ff79c6">:=</span> mux.<span style="color:#50fa7b">NewRouter</span>()
+r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/&#34;</span>, indexHandler)
+r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/objects/{object}&#34;</span>, objectHandler)
+
+service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Handler</span>(r)
+)
+</code></pre></div><h2 id="调用服务">调用服务</h2>
+<p>web 包括一个具有自定义 http.RoundTripper 并使用服务发现 http.Client</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">c <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Client</span>()
+
+rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;http://example.com/foo&#34;</span>)
+</code></pre></div><p>这将查找 example.com 服务发现以及路由到其中一个可用节点。</p>
+<h2 id="静态文件">静态文件</h2>
+<p><strong>Web</strong> 总是意味着注册 Web 应用， 其中大多数代码将用 JS 编写。 默认情况下， 如果 “/“ 上没有注册任何处理程序，并且我们发现本地的 “html” 目录，则将提供静态文件.</p>
+<p>如果要手动设置此路径，请使用 StaticDir 选项。如果指定了相对路径，我们将使用 <code>os.Getwd()</code> 和前缀.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
+    web.<span style="color:#50fa7b">StaticDir</span>(<span style="color:#f1fa8c">&#34;/tmp/example.com/html&#34;</span>),
+)
+</code></pre></div>
 </div>
 </div>
 

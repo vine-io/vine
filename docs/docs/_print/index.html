@@ -867,6 +867,7 @@ fmt.<span style="color:#50fa7b">Println</span>(rsp.Greeting)
 	Detail   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;detail,omitempty&#34;`</span>
 	Status   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;status,omitempty&#34;`</span>
     Position <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;position,omitempty&#34;`</span>
+    Child    <span style="color:#ff79c6">*</span>Child     <span style="color:#f1fa8c">`json:&#34;child,omitempty&#34;`</span>
     Stacks   []<span style="color:#ff79c6">*</span>Stack   <span style="color:#f1fa8c">`json:&#34;stacks,omitempty&#34;`</span>
 }
 </code></pre></div><p>在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 <strong>Vine</strong> 错误，或者应该生成错误。默认情况下，我们返回 <code>errors.InternalServerError</code>，如果出现错误错误则返回 <code>errors.Timeout</code>。</p>
@@ -1444,8 +1445,88 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 <div class="td-content" style="page-break-before: always">
     
 	<h1 id="pg-cc3c52fffa628c35132ab5716e6d881d">2.8 - API处理器</h1>
-    
-	
+    <div class="lead">用于定义 api 路由和处理程序的包</div>
+	<h2 id="概述">概述</h2>
+<p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
+<p><strong>API</strong> 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 <strong>API</strong> 使用在 <strong>Registry</strong> 元数据中定义的路由来生成路由规则并服务 http 请求.</p>
+<p><img src="2020-12-30-11-14-15.png" alt="vine api"></p>
+<p><code>vine api</code> 基于 <strong>API</strong>。</p>
+<h2 id="handler">handler</h2>
+<p>处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。</p>
+<ul>
+<li>api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。</li>
+<li>broker - 实现 vine 代理接口的 http 处理程序。</li>
+<li>event - 处理任何 HTTP 请求并发布到消息总线。</li>
+<li>http - 处理任何 HTTP 请求，并作为反向代理转发。</li>
+<li>registry - 实现 vine <strong>Registry</strong> 接口的 http 处理程序。</li>
+<li>rpc - 处理 json 和原始 POST 请求。转发为 RPC。</li>
+<li>web - 包含 websocket 支持的 HTTP 处理程序。</li>
+</ul>
+<h2 id="api-handler">API handler</h2>
+<p>API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.</p>
+<ul>
+<li>Content-Type：任何</li>
+<li>Body： 任何</li>
+<li>Forward Format: api.Request/api.Response</li>
+<li>Path: /[service]/[method]</li>
+<li>Resolver: 路径用于解析服务和方法的路径</li>
+</ul>
+<h2 id="proxy-handler">proxy handler</h2>
+<p>代理处理程序是一个 http 处理程序，它服务于 vine 代理接口</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP</li>
+<li>PATH: /</li>
+<li>Resolver: 指定为查询参数的主题</li>
+</ul>
+<p>发布请求并将发布</p>
+<h2 id="event-handler">event handler</h2>
+<p>事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.</p>
+<ul>
+<li>Content-Type: Any</li>
+<li>Body: Any</li>
+<li>Forward Format: 请求格式为 go-api/proto.Event</li>
+<li>Path：/[topic]/[event]</li>
+<li>Resolver: 用于解析主题和事件名称路径</li>
+</ul>
+<h2 id="http-handler">http handler</h2>
+<p>http 处理程序是具有内置服务发现的 http 反向代理.</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP 反向代理</li>
+<li>Path: /[service]</li>
+<li>Resolver: 用于解析服务名称路径</li>
+</ul>
+<h2 id="registry-handler">registry handler</h2>
+<p>registry handler 是一个 http 处理程序，它为 vine <strong>Registry</strong> 接口提供服务</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: JSON</li>
+<li>Forward Format: HTTP</li>
+<li>Path: /</li>
+<li>Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法</li>
+</ul>
+<h2 id="rpc-handler">rpc handler</h2>
+<p>rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.</p>
+<ul>
+<li>Content-Type: application/json 或 application/protobuf</li>
+<li>Body: JSON 或 Protobuf</li>
+<li>Forward Format: 基于内容的 json-rpc 或 proto-rpc</li>
+<li>Path: /[service]/[method]</li>
+<li>Resolver: 用于解析服务和方法路径</li>
+</ul>
+<h2 id="web-handler">web handler</h2>
+<p>web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP 反向代理，包括 websocket</li>
+<li>Path: /[service]</li>
+<li>Resolver: 用于解析服务名称路径</li>
+</ul>
+
 </div>
 
 
@@ -1473,8 +1554,38 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 <div class="td-content" style="page-break-before: always">
     
 	<h1 id="pg-5e968c411e9a826b9fc69750bc235104">2.9 - 订阅发布</h1>
-    
-	
+    <div class="lead">用 <strong>Broker</strong> 构建微服务的发布订阅事件驱动</div>
+	<h2 id="概述">概述</h2>
+<p>微服务是一种事件驱动的体系结构模式，因此 <strong>Vine</strong> 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Broker is an interface used for asynchronous messaging.
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Broker <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">Address</span>() <span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">Connect</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Disconnect</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Publish</span>(topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/lack-io/plugins">plugins</a> 替换实现。</p>
+<h2 id="发布消息">发布消息</h2>
+<p>使用 topic 名称和服务客户端创建一个新的发布者</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
+</code></pre></div><p>发布 proto 消息</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>proto.Event{Name: <span style="color:#f1fa8c">&#34;event&#34;</span>})
+<span style="color:#f1fa8c">``</span>
+## 订阅
+创建消息处理程序。它的签名应该是 <span style="color:#f1fa8c">`func(context.Context, v interface{}) error`</span>
+<span style="color:#f1fa8c">``</span>`<span style="color:#ff79c6">go</span>
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
+    fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;Got event %+v\n&#34;</span>, event)
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+</code></pre></div><p>使用 topic 注册消息处理程序</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
+</code></pre></div><p>完整实例可以看 <a href="https://github.com/lack-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
+
 </div>
 
 
@@ -1647,8 +1758,56 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 <div class="td-content" style="page-break-before: always">
     
 	<h1 id="pg-8d7a2ff4f0009b4270026942706ae2cf">2.15 - web服务</h1>
-    
-	
+    <div class="lead">Web 为 vine web 应用提供了一个接口</div>
+	<h2 id="概述">概述</h2>
+<p><strong>Web</strong> 提供了一个很小的 HTTP Web 服务器库，利用 <strong>Vine</strong> 创建 vine web 服务。它包装了 <strong>Vine</strong>, 为用户提供服务发现，检测信号以及将 web 应用创建为微服务的功能.</p>
+<h2 id="特性">特性</h2>
+<ul>
+<li>服务发现 - 服务在启动时自动注册在 <strong>Registry</strong> 中。<strong>Web</strong> 包括一个具有预初始化的 http.Client, 它利用服务发现，以便您可以使用 web 服务。</li>
+<li>健康检测 - <strong>Web</strong> 应用将定期使用服务发现进行检测信号，以提供实时更新。如果服务失败，将在预定义的过期时间后将其从 <strong>Registry</strong> 中删除.</li>
+<li>自定义处理程序 - 指定您自己的 http 路由器以处理请求。这允许您完全控制要路由到内部处理程序的方式.</li>
+<li>静态服务 - <strong>Web</strong> 自动检测本地静态 html 目录，如果未指定路由处理程序，则提供文件。对于那些希望将 JS Web 应用程序编写为微服务的用户的快速解决方案.</li>
+</ul>
+<h2 id="依赖">依赖</h2>
+<p>Web 使用 <strong>Vine</strong>, 这意味着它需要 <strong>Registry</strong></p>
+<h2 id="使用">使用</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
+)
+
+service.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/foo&#34;</span>, fooHandler)
+
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    log.<span style="color:#50fa7b">Fatal</span>(err)
+}
+
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    log.<span style="color:#50fa7b">Fatal</span>(err)
+}
+</code></pre></div><h2 id="设置-handler">设置 handler</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/gorilla/mux&#34;</span>
+
+r <span style="color:#ff79c6">:=</span> mux.<span style="color:#50fa7b">NewRouter</span>()
+r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/&#34;</span>, indexHandler)
+r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/objects/{object}&#34;</span>, objectHandler)
+
+service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Handler</span>(r)
+)
+</code></pre></div><h2 id="调用服务">调用服务</h2>
+<p>web 包括一个具有自定义 http.RoundTripper 并使用服务发现 http.Client</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">c <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Client</span>()
+
+rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;http://example.com/foo&#34;</span>)
+</code></pre></div><p>这将查找 example.com 服务发现以及路由到其中一个可用节点。</p>
+<h2 id="静态文件">静态文件</h2>
+<p><strong>Web</strong> 总是意味着注册 Web 应用， 其中大多数代码将用 JS 编写。 默认情况下， 如果 “/“ 上没有注册任何处理程序，并且我们发现本地的 “html” 目录，则将提供静态文件.</p>
+<p>如果要手动设置此路径，请使用 StaticDir 选项。如果指定了相对路径，我们将使用 <code>os.Getwd()</code> 和前缀.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
+    web.<span style="color:#50fa7b">StaticDir</span>(<span style="color:#f1fa8c">&#34;/tmp/example.com/html&#34;</span>),
+)
+</code></pre></div>
 </div>
 
 

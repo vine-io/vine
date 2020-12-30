@@ -82,6 +82,7 @@
 	Detail   &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;     &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;detail,omitempty&amp;#34;`&lt;/span&gt;
 	Status   &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;     &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;status,omitempty&amp;#34;`&lt;/span&gt;
     Position &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;     &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;position,omitempty&amp;#34;`&lt;/span&gt;
+    Child    &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Child     &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;child,omitempty&amp;#34;`&lt;/span&gt;
     Stacks   []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Stack   &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;stacks,omitempty&amp;#34;`&lt;/span&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 &lt;strong&gt;Vine&lt;/strong&gt; 错误，或者应该生成错误。默认情况下，我们返回 &lt;code&gt;errors.InternalServerError&lt;/code&gt;，如果出现错误错误则返回 &lt;code&gt;errors.Timeout&lt;/code&gt;。&lt;/p&gt;
@@ -564,7 +565,87 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;API&lt;/strong&gt; 是一个可插拔的 API 接口，由 &lt;strong&gt;Registry&lt;/strong&gt; 驱动，可帮助构建强大的公共 API 网关.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;API&lt;/strong&gt; 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 &lt;strong&gt;API&lt;/strong&gt; 使用在 &lt;strong&gt;Registry&lt;/strong&gt; 元数据中定义的路由来生成路由规则并服务 http 请求.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2020-12-30-11-14-15.png&#34; alt=&#34;vine api&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;vine api&lt;/code&gt; 基于 &lt;strong&gt;API&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;handler&#34;&gt;handler&lt;/h2&gt;
+&lt;p&gt;处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。&lt;/li&gt;
+&lt;li&gt;broker - 实现 vine 代理接口的 http 处理程序。&lt;/li&gt;
+&lt;li&gt;event - 处理任何 HTTP 请求并发布到消息总线。&lt;/li&gt;
+&lt;li&gt;http - 处理任何 HTTP 请求，并作为反向代理转发。&lt;/li&gt;
+&lt;li&gt;registry - 实现 vine &lt;strong&gt;Registry&lt;/strong&gt; 接口的 http 处理程序。&lt;/li&gt;
+&lt;li&gt;rpc - 处理 json 和原始 POST 请求。转发为 RPC。&lt;/li&gt;
+&lt;li&gt;web - 包含 websocket 支持的 HTTP 处理程序。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;api-handler&#34;&gt;API handler&lt;/h2&gt;
+&lt;p&gt;API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content-Type：任何&lt;/li&gt;
+&lt;li&gt;Body： 任何&lt;/li&gt;
+&lt;li&gt;Forward Format: api.Request/api.Response&lt;/li&gt;
+&lt;li&gt;Path: /[service]/[method]&lt;/li&gt;
+&lt;li&gt;Resolver: 路径用于解析服务和方法的路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;proxy-handler&#34;&gt;proxy handler&lt;/h2&gt;
+&lt;p&gt;代理处理程序是一个 http 处理程序，它服务于 vine 代理接口&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content-Type: 任何&lt;/li&gt;
+&lt;li&gt;Body: 任何&lt;/li&gt;
+&lt;li&gt;Forward Format: HTTP&lt;/li&gt;
+&lt;li&gt;PATH: /&lt;/li&gt;
+&lt;li&gt;Resolver: 指定为查询参数的主题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;发布请求并将发布&lt;/p&gt;
+&lt;h2 id=&#34;event-handler&#34;&gt;event handler&lt;/h2&gt;
+&lt;p&gt;事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content-Type: Any&lt;/li&gt;
+&lt;li&gt;Body: Any&lt;/li&gt;
+&lt;li&gt;Forward Format: 请求格式为 go-api/proto.Event&lt;/li&gt;
+&lt;li&gt;Path：/[topic]/[event]&lt;/li&gt;
+&lt;li&gt;Resolver: 用于解析主题和事件名称路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;http-handler&#34;&gt;http handler&lt;/h2&gt;
+&lt;p&gt;http 处理程序是具有内置服务发现的 http 反向代理.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content-Type: 任何&lt;/li&gt;
+&lt;li&gt;Body: 任何&lt;/li&gt;
+&lt;li&gt;Forward Format: HTTP 反向代理&lt;/li&gt;
+&lt;li&gt;Path: /[service]&lt;/li&gt;
+&lt;li&gt;Resolver: 用于解析服务名称路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;registry-handler&#34;&gt;registry handler&lt;/h2&gt;
+&lt;p&gt;registry handler 是一个 http 处理程序，它为 vine &lt;strong&gt;Registry&lt;/strong&gt; 接口提供服务&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content-Type: 任何&lt;/li&gt;
+&lt;li&gt;Body: JSON&lt;/li&gt;
+&lt;li&gt;Forward Format: HTTP&lt;/li&gt;
+&lt;li&gt;Path: /&lt;/li&gt;
+&lt;li&gt;Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;rpc-handler&#34;&gt;rpc handler&lt;/h2&gt;
+&lt;p&gt;rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content-Type: application/json 或 application/protobuf&lt;/li&gt;
+&lt;li&gt;Body: JSON 或 Protobuf&lt;/li&gt;
+&lt;li&gt;Forward Format: 基于内容的 json-rpc 或 proto-rpc&lt;/li&gt;
+&lt;li&gt;Path: /[service]/[method]&lt;/li&gt;
+&lt;li&gt;Resolver: 用于解析服务和方法路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;web-handler&#34;&gt;web handler&lt;/h2&gt;
+&lt;p&gt;web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Content-Type: 任何&lt;/li&gt;
+&lt;li&gt;Body: 任何&lt;/li&gt;
+&lt;li&gt;Forward Format: HTTP 反向代理，包括 websocket&lt;/li&gt;
+&lt;li&gt;Path: /[service]&lt;/li&gt;
+&lt;li&gt;Resolver: 用于解析服务名称路径&lt;/li&gt;
+&lt;/ul&gt;
+
       </description>
     </item>
     
@@ -577,7 +658,37 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;微服务是一种事件驱动的体系结构模式，因此 &lt;strong&gt;Vine&lt;/strong&gt; 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Broker is an interface used for asynchronous messaging.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Broker &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Address&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Connect&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Disconnect&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Message, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;PublishOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Subscribe&lt;/span&gt;(topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, h Handler, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;SubscribeOption) (Subscriber, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;默认情况下，vine 实现点对点 http 代理，但可以通过 &lt;a href=&#34;https://github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt; 替换实现。&lt;/p&gt;
+&lt;h2 id=&#34;发布消息&#34;&gt;发布消息&lt;/h2&gt;
+&lt;p&gt;使用 topic 名称和服务客户端创建一个新的发布者&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEvent&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;发布 proto 消息&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;proto.Event{Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;event&amp;#34;&lt;/span&gt;})
+&lt;span style=&#34;color:#f1fa8c&#34;&gt;``&lt;/span&gt;
+## 订阅
+创建消息处理程序。它的签名应该是 &lt;span style=&#34;color:#f1fa8c&#34;&gt;`func(context.Context, v interface{}) error`&lt;/span&gt;
+&lt;span style=&#34;color:#f1fa8c&#34;&gt;``&lt;/span&gt;`&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;ProcessEvent&lt;/span&gt;(ctx context.Context, event &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;proto.Event) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+    fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Got event %+v\n&amp;#34;&lt;/span&gt;, event)
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 topic 注册消息处理程序&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, ProcessEvent)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;完整实例可以看 &lt;a href=&#34;https://github.com/lack-io/vine-example/tree/main/pubsub&#34;&gt;example/pubsub&lt;/a&gt;&lt;/p&gt;
+
       </description>
     </item>
     
@@ -655,7 +766,55 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Web&lt;/strong&gt; 提供了一个很小的 HTTP Web 服务器库，利用 &lt;strong&gt;Vine&lt;/strong&gt; 创建 vine web 服务。它包装了 &lt;strong&gt;Vine&lt;/strong&gt;, 为用户提供服务发现，检测信号以及将 web 应用创建为微服务的功能.&lt;/p&gt;
+&lt;h2 id=&#34;特性&#34;&gt;特性&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;服务发现 - 服务在启动时自动注册在 &lt;strong&gt;Registry&lt;/strong&gt; 中。&lt;strong&gt;Web&lt;/strong&gt; 包括一个具有预初始化的 http.Client, 它利用服务发现，以便您可以使用 web 服务。&lt;/li&gt;
+&lt;li&gt;健康检测 - &lt;strong&gt;Web&lt;/strong&gt; 应用将定期使用服务发现进行检测信号，以提供实时更新。如果服务失败，将在预定义的过期时间后将其从 &lt;strong&gt;Registry&lt;/strong&gt; 中删除.&lt;/li&gt;
+&lt;li&gt;自定义处理程序 - 指定您自己的 http 路由器以处理请求。这允许您完全控制要路由到内部处理程序的方式.&lt;/li&gt;
+&lt;li&gt;静态服务 - &lt;strong&gt;Web&lt;/strong&gt; 自动检测本地静态 html 目录，如果未指定路由处理程序，则提供文件。对于那些希望将 JS Web 应用程序编写为微服务的用户的快速解决方案.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;依赖&#34;&gt;依赖&lt;/h2&gt;
+&lt;p&gt;Web 使用 &lt;strong&gt;Vine&lt;/strong&gt;, 这意味着它需要 &lt;strong&gt;Registry&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; web.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+    web.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;example.com&amp;#34;&lt;/span&gt;),
+)
+
+service.&lt;span style=&#34;color:#50fa7b&#34;&gt;HandleFunc&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/foo&amp;#34;&lt;/span&gt;, fooHandler)
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+    log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+}
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+    log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;设置-handler&#34;&gt;设置 handler&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/gorilla/mux&amp;#34;&lt;/span&gt;
+
+r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; mux.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRouter&lt;/span&gt;()
+r.&lt;span style=&#34;color:#50fa7b&#34;&gt;HandleFunc&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;, indexHandler)
+r.&lt;span style=&#34;color:#50fa7b&#34;&gt;HandleFunc&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/objects/{object}&amp;#34;&lt;/span&gt;, objectHandler)
+
+service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; web.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+    web.&lt;span style=&#34;color:#50fa7b&#34;&gt;Handler&lt;/span&gt;(r)
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;调用服务&#34;&gt;调用服务&lt;/h2&gt;
+&lt;p&gt;web 包括一个具有自定义 http.RoundTripper 并使用服务发现 http.Client&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;c &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;()
+
+rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; c.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;http://example.com/foo&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这将查找 example.com 服务发现以及路由到其中一个可用节点。&lt;/p&gt;
+&lt;h2 id=&#34;静态文件&#34;&gt;静态文件&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Web&lt;/strong&gt; 总是意味着注册 Web 应用， 其中大多数代码将用 JS 编写。 默认情况下， 如果 “/“ 上没有注册任何处理程序，并且我们发现本地的 “html” 目录，则将提供静态文件.&lt;/p&gt;
+&lt;p&gt;如果要手动设置此路径，请使用 StaticDir 选项。如果指定了相对路径，我们将使用 &lt;code&gt;os.Getwd()&lt;/code&gt; 和前缀.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; web.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+    web.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;example.com&amp;#34;&lt;/span&gt;),
+    web.&lt;span style=&#34;color:#50fa7b&#34;&gt;StaticDir&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/tmp/example.com/html&amp;#34;&lt;/span&gt;),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
