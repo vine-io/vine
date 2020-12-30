@@ -936,11 +936,9 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
 </code></pre></div><p>发布 proto 消息</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>proto.Event{Name: <span style="color:#f1fa8c">&#34;event&#34;</span>})
-<span style="color:#f1fa8c">``</span>
-## 订阅
-创建消息处理程序。它的签名应该是 <span style="color:#f1fa8c">`func(context.Context, v interface{}) error`</span>
-<span style="color:#f1fa8c">``</span>`<span style="color:#ff79c6">go</span>
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
+</code></pre></div><h2 id="订阅">订阅</h2>
+<p>创建消息处理程序。它的签名应该是 <code>func(context.Context, v interface{}) error</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
     fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;Got event %+v\n&#34;</span>, event)
     <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
 }

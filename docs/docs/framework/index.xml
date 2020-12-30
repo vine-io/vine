@@ -677,11 +677,9 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEvent&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;发布 proto 消息&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;proto.Event{Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;event&amp;#34;&lt;/span&gt;})
-&lt;span style=&#34;color:#f1fa8c&#34;&gt;``&lt;/span&gt;
-## 订阅
-创建消息处理程序。它的签名应该是 &lt;span style=&#34;color:#f1fa8c&#34;&gt;`func(context.Context, v interface{}) error`&lt;/span&gt;
-&lt;span style=&#34;color:#f1fa8c&#34;&gt;``&lt;/span&gt;`&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt;
-&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;ProcessEvent&lt;/span&gt;(ctx context.Context, event &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;proto.Event) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;订阅&#34;&gt;订阅&lt;/h2&gt;
+&lt;p&gt;创建消息处理程序。它的签名应该是 &lt;code&gt;func(context.Context, v interface{}) error&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;ProcessEvent&lt;/span&gt;(ctx context.Context, event &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;proto.Event) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
     fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Got event %+v\n&amp;#34;&lt;/span&gt;, event)
     &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
 }
