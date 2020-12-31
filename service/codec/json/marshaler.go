@@ -16,15 +16,14 @@ package json
 
 import (
 	"bytes"
+	"encoding/json"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
-	json "github.com/json-iterator/go"
 	"github.com/oxtoacart/bpool"
-
-	mjsonpb "github.com/lack-io/vine/util/jsonpb"
 )
 
-var jsonbMarshaler = &mjsonpb.Marshaler{}
+var jsonbMarshaler = &jsonpb.Marshaler{}
 
 // create buffer pool with 16 instances each preallocated with 256 bytes
 var bufferPool = bpool.NewSizedBufferPool(16, 256)
@@ -45,7 +44,7 @@ func (j Marshaler) Marshal(v interface{}) ([]byte, error) {
 
 func (j Marshaler) Unmarshal(d []byte, v interface{}) error {
 	if pb, ok := v.(proto.Message); ok {
-		return mjsonpb.Unmarshal(bytes.NewReader(d), pb)
+		return jsonpb.Unmarshal(bytes.NewReader(d), pb)
 	}
 	return json.Unmarshal(d, v)
 }

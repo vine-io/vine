@@ -32,6 +32,7 @@ import (
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/codec"
 	"github.com/lack-io/vine/service/codec/jsonrpc"
+	"github.com/lack-io/vine/service/codec/proto"
 	"github.com/lack-io/vine/service/codec/protorpc"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
@@ -154,14 +155,14 @@ func (h *rpcHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	// proto codecs
 	case hasCodec(ct, protoCodecs):
-		request := &Message{}
+		request := &proto.Message{}
 		// if the extracted payload isn't empty lets use it
 		if len(br) > 0 {
-			request = NewMessage(br)
+			request = proto.NewMessage(br)
 		}
 
 		// create request/response
-		response := &Message{}
+		response := &proto.Message{}
 
 		req := c.NewRequest(
 			service.Name,
@@ -270,7 +271,7 @@ func requestPayload(r *http.Request) ([]byte, error) {
 		if err = c.ReadHeader(&msg, codec.Request); err != nil {
 			return nil, err
 		}
-		var raw Message
+		var raw proto.Message
 		if err = c.ReadBody(&raw); err != nil {
 			return nil, err
 		}

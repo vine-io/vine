@@ -27,8 +27,9 @@ import (
 	"sync"
 	"time"
 
+	"encoding/json"
+
 	"github.com/google/uuid"
-	json "github.com/json-iterator/go"
 
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/mdns"
