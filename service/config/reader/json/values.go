@@ -20,9 +20,8 @@ import (
 	"strings"
 	"time"
 
-	"encoding/json"
-
 	simple "github.com/bitly/go-simplejson"
+	json "github.com/json-iterator/go"
 
 	"github.com/lack-io/vine/service/config/reader"
 	"github.com/lack-io/vine/service/config/source"

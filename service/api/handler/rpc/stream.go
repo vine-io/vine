@@ -20,11 +20,10 @@ import (
 	"strings"
 	"time"
 
-	"encoding/json"
-
 	"github.com/gobwas/httphead"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
+	json "github.com/json-iterator/go"
 
 	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/client"

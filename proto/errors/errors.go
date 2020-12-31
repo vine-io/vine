@@ -15,12 +15,13 @@
 package errors
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	json "github.com/json-iterator/go"
 )
 
 // protoc -I. -I$GOPATH/src --gogofast_out=plugins=grpc:. --vine_out=:. errors.proto

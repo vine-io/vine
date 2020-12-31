@@ -16,13 +16,14 @@
 package grpc
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
+	json "github.com/json-iterator/go"
+
 	"github.com/lack-io/vine/service/codec"
 )
 

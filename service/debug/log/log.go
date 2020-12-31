@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"time"
 
-	"encoding/json"
+	json "github.com/json-iterator/go"
 )
 
 var (

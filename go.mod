@@ -14,7 +14,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/evanphx/json-patch/v5 v5.1.0
-	github.com/felixge/httpsnoop v1.0.1
 	github.com/forestgiant/sliceutil v0.0.0-20160425183142-94783f95db6c
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/fsouza/go-dockerclient v1.6.6
@@ -27,10 +26,12 @@ require (
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
 	github.com/google/uuid v1.1.2
+	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/hcl v1.0.0
 	github.com/hpcloud/tail v1.0.0
 	github.com/imdario/mergo v0.3.11
+	github.com/json-iterator/go v1.1.10
 	github.com/kr/pretty v0.2.1
 	github.com/lack-io/cli v1.0.2
 	github.com/lib/pq v1.9.0
