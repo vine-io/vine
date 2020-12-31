@@ -16,17 +16,17 @@ package grpc
 
 import (
 	b "bytes"
+	"encoding/json"
 	"strings"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
-	json "github.com/json-iterator/go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/lack-io/vine/service/codec"
 	"github.com/lack-io/vine/service/codec/bytes"
-	"github.com/lack-io/vine/util/jsonpb"
 )
 
 type jsonCodec struct{}

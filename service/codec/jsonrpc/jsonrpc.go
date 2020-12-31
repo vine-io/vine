@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"io"
 
-	json "github.com/json-iterator/go"
+	"encoding/json"
 
 	"github.com/lack-io/vine/service/codec"
 )

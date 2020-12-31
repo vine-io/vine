@@ -18,8 +18,9 @@ import (
 	"fmt"
 	"time"
 
+	"encoding/json"
+
 	"github.com/google/uuid"
-	json "github.com/json-iterator/go"
 
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/auth/token"

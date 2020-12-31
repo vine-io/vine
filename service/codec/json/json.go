@@ -15,13 +15,13 @@
 package json
 
 import (
+	"encoding/json"
 	"io"
 
 	"github.com/gogo/protobuf/proto"
-	json "github.com/json-iterator/go"
+	"github.com/golang/protobuf/jsonpb"
 
 	"github.com/lack-io/vine/service/codec"
-	mjsonpb "github.com/lack-io/vine/util/jsonpb"
 )
 
 type Codec struct {
@@ -39,7 +39,7 @@ func (c *Codec) ReadBody(b interface{}) error {
 		return nil
 	}
 	if pb, ok := b.(proto.Message); ok {
-		return mjsonpb.UnmarshalNext(c.Decoder, pb)
+		return jsonpb.UnmarshalNext(c.Decoder, pb)
 	}
 	return c.Decoder.Decode(b)
 }

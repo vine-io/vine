@@ -23,7 +23,8 @@ import (
 	"sync"
 	"time"
 
-	json "github.com/json-iterator/go"
+	"encoding/json"
+
 	bolt "go.etcd.io/bbolt"
 
 	"github.com/lack-io/vine/service/store"

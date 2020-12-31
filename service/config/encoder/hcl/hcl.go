@@ -15,8 +15,9 @@
 package hcl
 
 import (
+	"encoding/json"
+
 	"github.com/hashicorp/hcl"
-	json "github.com/json-iterator/go"
 
 	"github.com/lack-io/vine/service/config/encoder"
 )
