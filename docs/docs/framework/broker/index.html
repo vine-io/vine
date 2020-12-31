@@ -366,31 +366,6 @@
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/framework/codec/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">编码解码器</a>
-  </li>
-  <ul>
-    <li class="collapse " id="vinedocsframeworkcodec">
-      
-      
-      
-    </li>
-  </ul>
-</ul>
-
-        
-      
-      
-      
-        
-          
-
-
-
-
-
-
-<ul class="td-sidebar-nav__section pr-md-3">
-  <li class="td-sidebar-nav__section-title">
     <a  href="/vine/docs/framework/registry/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">服务发现</a>
   </li>
   <ul>
@@ -736,6 +711,15 @@
 
 
 
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#发布消息">发布消息</a></li>
+    <li><a href="#订阅">订阅</a></li>
+    <li><a href="#单独使用-broker">单独使用 Broker</a></li>
+  </ul>
+</nav>
+
 
 
           </div>
@@ -810,7 +794,49 @@
 </code></pre></div><p>使用 topic 注册消息处理程序</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
 </code></pre></div><p>完整实例可以看 <a href="https://github.com/lack-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
+<h2 id="单独使用-broker">单独使用 Broker</h2>
+<p><code>Broker</code> 也可以单独使用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/broker&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	topic <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;go.vine.topic.foo&#34;</span>
+
+	b <span style="color:#ff79c6">:=</span> broker.<span style="color:#50fa7b">NewBroker</span>()
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Init error: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Connect</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Connect error: %v&#34;</span>, err)
+	}
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#6272a4">// receive message from broker
+</span><span style="color:#6272a4"></span>		b.<span style="color:#50fa7b">Subscribe</span>(topic, <span style="color:#8be9fd;font-style:italic">func</span>(p broker.Event) <span style="color:#8be9fd">error</span> {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[sub] received message:&#34;</span>, <span style="color:#8be9fd;font-style:italic">string</span>(p.<span style="color:#50fa7b">Message</span>().Body), <span style="color:#f1fa8c">&#34;header&#34;</span>, p.<span style="color:#50fa7b">Message</span>().Header)
+			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+		})
+	}()
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
+		<span style="color:#6272a4">// publish message to broker
+</span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
+	}()
+
+    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
+    
+    b.<span style="color:#50fa7b">Disconnect</span>()
+}
+</code></pre></div>
         <div class="section-index">
     
     
@@ -818,8 +844,6 @@
     
     
     <hr class="panel-line">
-        
-            
         
             
         

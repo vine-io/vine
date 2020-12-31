@@ -530,20 +530,6 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     </item>
     
     <item>
-      <title>Docs: 编码解码器</title>
-      <link>https://lack-io.github.io/vine/docs/framework/codec/</link>
-      <pubDate>Tue, 29 Dec 2020 14:57:07 +0800</pubDate>
-      
-      <guid>https://lack-io.github.io/vine/docs/framework/codec/</guid>
-      <description>
-        
-        
-        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-
-      </description>
-    </item>
-    
-    <item>
       <title>Docs: 服务发现</title>
       <link>https://lack-io.github.io/vine/docs/framework/registry/</link>
       <pubDate>Tue, 29 Dec 2020 14:57:27 +0800</pubDate>
@@ -552,7 +538,87 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// The registry provides an interface for service discovery
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// and an abstraction over varying implementations
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// {consul, etcd, zookeeper, ...}
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;完整实例&#34;&gt;完整实例&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/google/uuid&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/registry&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// create new registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// initialize registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Service{
+		Name:     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;,
+		Version:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;1.0.0&amp;#34;&lt;/span&gt;,
+		Metadata: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{},
+		Endpoints: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Endpoint{{
+			Request: &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Value{},
+		}},
+		Nodes: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node{&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Node{
+			Id:      uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(),
+			Address: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1:1111&amp;#34;&lt;/span&gt;,
+		}},
+	}
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// registry service
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(s)
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// watch registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	w, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;))
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt;
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; w.&lt;span style=&#34;color:#50fa7b&#34;&gt;Stop&lt;/span&gt;()
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; {
+			&lt;span style=&#34;color:#6272a4&#34;&gt;// blocking
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			r, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; w.&lt;span style=&#34;color:#50fa7b&#34;&gt;Next&lt;/span&gt;()
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+				&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt;
+			}
+
+			log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;watch [%v] %v&amp;#34;&lt;/span&gt;, r.Action, r.Service)
+		}
+	}()
+
+	time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second)
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// get service
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	service, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+	}
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%+v\n&amp;#34;&lt;/span&gt;, service)
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// destroy registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(s)
+
+	time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
@@ -686,7 +752,49 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 topic 注册消息处理程序&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, ProcessEvent)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;完整实例可以看 &lt;a href=&#34;https://github.com/lack-io/vine-example/tree/main/pubsub&#34;&gt;example/pubsub&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;单独使用-broker&#34;&gt;单独使用 Broker&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Broker&lt;/code&gt; 也可以单独使用：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/broker&amp;#34;&lt;/span&gt;
+	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/logger&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	topic &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.topic.foo&amp;#34;&lt;/span&gt;
+
+	b &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; broker.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; b.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Broker Init error: %v&amp;#34;&lt;/span&gt;, err)
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; b.&lt;span style=&#34;color:#50fa7b&#34;&gt;Connect&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Broker Connect error: %v&amp;#34;&lt;/span&gt;, err)
+	}
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// receive message from broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		b.&lt;span style=&#34;color:#50fa7b&#34;&gt;Subscribe&lt;/span&gt;(topic, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(p broker.Event) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;[sub] received message:&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;string&lt;/span&gt;(p.&lt;span style=&#34;color:#50fa7b&#34;&gt;Message&lt;/span&gt;().Body), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;header&amp;#34;&lt;/span&gt;, p.&lt;span style=&#34;color:#50fa7b&#34;&gt;Message&lt;/span&gt;().Header)
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+		})
+	}()
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;lt;-&lt;/span&gt;time.&lt;span style=&#34;color:#50fa7b&#34;&gt;After&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;)
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// publish message to broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;        b.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(topic, &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;broker.Message{Header: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;}, Body: []&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;byte&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hello world&amp;#34;&lt;/span&gt;)})
+	}()
+
+    time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;)
+    
+    b.&lt;span style=&#34;color:#50fa7b&#34;&gt;Disconnect&lt;/span&gt;()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     

@@ -747,10 +747,89 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-02d1b61cd0d5617eb116926601841d38">6 - 编码解码器</h1>
-    <div class="lead">Codec 为 <strong>Vine</strong> 提供解析各种格式数据的能力</div>
+	<h1 id="pg-f833617c6f69348c101d928a227dd8f1">6 - 服务发现</h1>
+    <div class="lead">用于服务注册和服务名称解析</div>
 	<h2 id="概述">概述</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// The registry provides an interface for service discovery
+</span><span style="color:#6272a4">// and an abstraction over varying implementations
+</span><span style="color:#6272a4">// {consul, etcd, zookeeper, ...}
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><h2 id="完整实例">完整实例</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/registry&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// create new registry
+</span><span style="color:#6272a4"></span>	r <span style="color:#ff79c6">:=</span> registry.<span style="color:#50fa7b">NewRegistry</span>()
+
+	<span style="color:#6272a4">// initialize registry
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
+
+	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
+		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
+		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
+		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
+		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{{
+			Request: <span style="color:#ff79c6">&amp;</span>registry.Value{},
+		}},
+		Nodes: []<span style="color:#ff79c6">*</span>registry.Node{<span style="color:#ff79c6">&amp;</span>registry.Node{
+			Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
+			Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
+		}},
+	}
+
+	<span style="color:#6272a4">// registry service
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Register</span>(s)
+
+	<span style="color:#6272a4">// watch registry
+</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>))
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		<span style="color:#ff79c6">return</span>
+	}
+	<span style="color:#ff79c6">defer</span> w.<span style="color:#50fa7b">Stop</span>()
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#ff79c6">for</span> {
+			<span style="color:#6272a4">// blocking
+</span><span style="color:#6272a4"></span>			r, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
+			<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+				<span style="color:#ff79c6">return</span>
+			}
+
+			log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;watch [%v] %v&#34;</span>, r.Action, r.Service)
+		}
+	}()
+
+	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+	<span style="color:#6272a4">// get service
+</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%+v\n&#34;</span>, service)
+
+	<span style="color:#6272a4">// destroy registry
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Deregister</span>(s)
+
+	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+}
+</code></pre></div>
 </div>
 
 
@@ -777,36 +856,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-f833617c6f69348c101d928a227dd8f1">7 - 服务发现</h1>
-    
-	
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-cc3c52fffa628c35132ab5716e6d881d">8 - API处理器</h1>
+	<h1 id="pg-cc3c52fffa628c35132ab5716e6d881d">7 - API处理器</h1>
     <div class="lead">用于定义 api 路由和处理程序的包</div>
 	<h2 id="概述">概述</h2>
 <p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
@@ -915,7 +965,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-5e968c411e9a826b9fc69750bc235104">9 - 订阅发布</h1>
+	<h1 id="pg-5e968c411e9a826b9fc69750bc235104">8 - 订阅发布</h1>
     <div class="lead">用 <strong>Broker</strong> 构建微服务的发布订阅事件驱动</div>
 	<h2 id="概述">概述</h2>
 <p>微服务是一种事件驱动的体系结构模式，因此 <strong>Vine</strong> 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。</p>
@@ -945,7 +995,49 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 </code></pre></div><p>使用 topic 注册消息处理程序</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
 </code></pre></div><p>完整实例可以看 <a href="https://github.com/lack-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
+<h2 id="单独使用-broker">单独使用 Broker</h2>
+<p><code>Broker</code> 也可以单独使用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/broker&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	topic <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;go.vine.topic.foo&#34;</span>
+
+	b <span style="color:#ff79c6">:=</span> broker.<span style="color:#50fa7b">NewBroker</span>()
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Init error: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Connect</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Connect error: %v&#34;</span>, err)
+	}
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#6272a4">// receive message from broker
+</span><span style="color:#6272a4"></span>		b.<span style="color:#50fa7b">Subscribe</span>(topic, <span style="color:#8be9fd;font-style:italic">func</span>(p broker.Event) <span style="color:#8be9fd">error</span> {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[sub] received message:&#34;</span>, <span style="color:#8be9fd;font-style:italic">string</span>(p.<span style="color:#50fa7b">Message</span>().Body), <span style="color:#f1fa8c">&#34;header&#34;</span>, p.<span style="color:#50fa7b">Message</span>().Header)
+			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+		})
+	}()
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
+		<span style="color:#6272a4">// publish message to broker
+</span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
+	}()
+
+    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
+    
+    b.<span style="color:#50fa7b">Disconnect</span>()
+}
+</code></pre></div>
 </div>
 
 
@@ -972,94 +1064,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-ecaf623d4e372a9eb3273aaa281180a6">10 - 服务端</h1>
-    
-	
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-2c6a01c956cda1aff241446b8e8f1824">11 - 客户端</h1>
-    
-	
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-3ca81f5fc04e340cf8ec3978f3fcac6a">12 - 身份验证</h1>
-    
-	
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-bc9663724a347e62fe3d19c078dceda8">13 - 网络服务</h1>
+	<h1 id="pg-ecaf623d4e372a9eb3273aaa281180a6">9 - 服务端</h1>
     
 	
 </div>
@@ -1088,7 +1093,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-cfb722c14a3b2c110137b4abce5d562b">14 - 数据存储</h1>
+	<h1 id="pg-2c6a01c956cda1aff241446b8e8f1824">10 - 客户端</h1>
     
 	
 </div>
@@ -1117,7 +1122,94 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-8d7a2ff4f0009b4270026942706ae2cf">15 - web服务</h1>
+	<h1 id="pg-3ca81f5fc04e340cf8ec3978f3fcac6a">11 - 身份验证</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-bc9663724a347e62fe3d19c078dceda8">12 - 网络服务</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-cfb722c14a3b2c110137b4abce5d562b">13 - 数据存储</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-8d7a2ff4f0009b4270026942706ae2cf">14 - web服务</h1>
     <div class="lead">Web 为 vine web 应用提供了一个接口</div>
 	<h2 id="概述">概述</h2>
 <p><strong>Web</strong> 提供了一个很小的 HTTP Web 服务器库，利用 <strong>Vine</strong> 创建 vine web 服务。它包装了 <strong>Vine</strong>, 为用户提供服务发现，检测信号以及将 web 应用创建为微服务的功能.</p>
@@ -1194,7 +1286,7 @@ rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-561b705ca852ca3645eaa6587e433036">16 - 请求代理</h1>
+	<h1 id="pg-561b705ca852ca3645eaa6587e433036">15 - 请求代理</h1>
     
 	
 </div>
