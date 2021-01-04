@@ -59,6 +59,7 @@ import (
 	"github.com/lack-io/vine/service/broker/memory"
 
 	// registries
+	"github.com/lack-io/vine/service/registry/etcd"
 	regSrv "github.com/lack-io/vine/service/registry/grpc"
 	"github.com/lack-io/vine/service/registry/mdns"
 	rmem "github.com/lack-io/vine/service/registry/memory"
@@ -354,6 +355,7 @@ var (
 	}
 
 	DefaultRegistries = map[string]func(...registry.Option) registry.Registry{
+		"etcd":    etcd.NewRegistry,
 		"service": regSrv.NewRegistry,
 		"mdns":    mdns.NewRegistry,
 		"memory":  rmem.NewRegistry,

@@ -10,10 +10,14 @@ require (
 	github.com/caddyserver/certmagic v0.10.6
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/cloudflare/cloudflare-go v0.10.2
+	github.com/coreos/etcd v3.3.25+incompatible
+	github.com/coreos/go-semver v0.3.0 // indirect
+	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/evanphx/json-patch/v5 v5.1.0
+	github.com/felixge/httpsnoop v1.0.1
 	github.com/forestgiant/sliceutil v0.0.0-20160425183142-94783f95db6c
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/fsouza/go-dockerclient v1.6.6
@@ -24,9 +28,8 @@ require (
 	github.com/gobwas/ws v1.0.4
 	github.com/gogo/googleapis v1.4.0
 	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.3
+	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/uuid v1.1.2
-	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/hcl v1.0.0
 	github.com/hpcloud/tail v1.0.0
@@ -37,6 +40,7 @@ require (
 	github.com/lib/pq v1.9.0
 	github.com/lucas-clemente/quic-go v0.19.3
 	github.com/miekg/dns v1.1.35
+	github.com/mitchellh/hashstructure v1.1.0
 	github.com/nlopes/slack v0.6.0
 	github.com/olekukonko/tablewriter v0.0.1
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
@@ -47,6 +51,7 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/xlab/treeprint v1.0.0
 	go.etcd.io/bbolt v1.3.5
+	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
 	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
 	golang.org/x/tools v0.0.0-20201206230334-368bee879bfd
@@ -54,3 +59,5 @@ require (
 	gopkg.in/telegram-bot-api.v4 v4.6.4
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )
+
+replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
