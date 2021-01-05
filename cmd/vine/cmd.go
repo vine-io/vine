@@ -60,8 +60,13 @@ var (
 	BuildDate string
 
 	name        = "vine"
-	description = "A vine service runtime"
-	version     = "latest"
+	description = `A vine service runtime
+        _
+ _   __(_)___  ___
+| | / / / __ \/ _ \
+| |/ / / / / /  __/
+|___/_/_/ /_/\___/`
+	version = "latest"
 )
 
 func init() {
