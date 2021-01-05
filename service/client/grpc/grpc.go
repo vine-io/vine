@@ -169,7 +169,8 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 	go func() {
 		grpcCallOptions := []grpc.CallOption{
 			grpc.ForceCodec(cf),
-			grpc.CallContentSubtype(cf.Name())}
+			grpc.CallContentSubtype(cf.Name()),
+		}
 		if opts := g.getGrpcCallOptions(); opts != nil {
 			grpcCallOptions = append(grpcCallOptions, opts...)
 		}
@@ -647,10 +648,11 @@ func (g *grpcClient) Publish(ctx context.Context, p client.Message, opts ...clie
 		topic = options.Exchange
 	}
 
-	return g.opts.Broker.Publish(topic, &broker.Message{
+	msg := &broker.Message{
 		Header: md,
 		Body:   body,
-	}, broker.PublishContext(options.Context))
+	}
+	return g.opts.Broker.Publish(topic, msg, broker.PublishContext(options.Context))
 }
 
 func (g *grpcClient) String() string {
