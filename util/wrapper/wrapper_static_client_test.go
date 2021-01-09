@@ -24,7 +24,7 @@ import (
 	tmemory "github.com/lack-io/vine/service/network/transport/memory"
 	rmemory "github.com/lack-io/vine/service/registry/memory"
 	"github.com/lack-io/vine/service/server"
-	wrapper "github.com/lack-io/vine/util/wrapper"
+	"github.com/lack-io/vine/util/wrapper"
 )
 
 type TestFoo struct {

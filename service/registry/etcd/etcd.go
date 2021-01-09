@@ -237,12 +237,14 @@ func (e *etcdRegistry) registerNode(s *registry.Service, node *registry.Node, op
 	defer cancel()
 
 	var lgr *clientv3.LeaseGrantResponse
-	if options.TTL.Seconds() > 0 {
-		// get a lease used to expire keys since we have a ttl
-		lgr, err = e.client.Grant(ctx, int64(options.TTL.Seconds()))
-		if err != nil {
-			return err
-		}
+	if options.TTL.Seconds() <= 0 {
+		options.TTL = time.Second * 15
+	}
+
+	// get a lease used to expire keys since we have a ttl
+	lgr, err = e.client.Grant(ctx, int64(options.TTL.Seconds()))
+	if err != nil {
+		return err
 	}
 
 	log.Infof("Registering %s id %s with lease %v and leaseID %v and ttl %v", service.Name, node.Id, lgr, lgr.ID, options.TTL)

@@ -197,7 +197,7 @@ type TokenOptions struct {
 	ID string
 	// Secret for the account
 	Secret string
-	// RefreshToken is used to refesh a token
+	// RefreshToken is used to refresh a token
 	RefreshToken string
 	// Expiry is the time the token should live for
 	Expiry time.Duration
