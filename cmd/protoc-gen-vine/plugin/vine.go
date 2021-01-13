@@ -10,7 +10,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	pb "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
-	"github.com/lack-io/vine/cmd/protoc-gen-vine/generator"
+	"github.com/lack-io/vine/cmd/generator"
 )
 
 // Paths for packages used by code generated in this file,
