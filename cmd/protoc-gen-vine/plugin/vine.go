@@ -1,4 +1,4 @@
-package vine
+package plugin
 
 import (
 	"fmt"
@@ -22,14 +22,14 @@ const (
 	serverPkgPath  = "github.com/lack-io/vine/service/server"
 )
 
-func init() {
-	generator.RegisterPlugin(new(vine))
-}
-
 // vine is an implementation of the Go protocol buffer compiler's
 // plugin architecture.  It generates bindings for vine support.
 type vine struct {
 	gen *generator.Generator
+}
+
+func New() *vine {
+	return &vine{}
 }
 
 // Name returns the name of this plugin, "vine".

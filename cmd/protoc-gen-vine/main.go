@@ -22,7 +22,7 @@
 //		protoc --vine_out=out_directory --go_out=output_directory input_directory/file.proto
 // to generate vine code for the protocol defined by file.proto.
 // With input that, the output will be written to
-//		output_directory/file.vine.go
+//		output_directory/file.vine.pb.go
 //
 // The generated code is documented in the package comment for
 // the library.
@@ -37,15 +37,19 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/lack-io/vine/cmd/protoc-gen-vine/generator"
-	_ "github.com/lack-io/vine/cmd/protoc-gen-vine/plugin/vine"
+	"github.com/lack-io/vine/cmd/generator"
+	"github.com/lack-io/vine/cmd/protoc-gen-vine/plugin"
 )
 
 func main() {
 	// Begin by allocating a generator. The request and response structures are stored there
 	// so we can do error handling easily - the response structure contains the field to
 	// report failure.
-	g := generator.New()
+	vine := plugin.New()
+
+	generator.RegisterPlugin(vine)
+
+	g := generator.New("vine")
 
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
