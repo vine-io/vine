@@ -1,10 +1,6 @@
 package plugin
 
 import (
-	"encoding/json"
-
-	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-
 	"github.com/lack-io/vine/cmd/generator"
 )
 
@@ -52,16 +48,8 @@ func (g *validator) P(args ...interface{}) { g.gen.P(args...) }
 
 // Generate generates code for the services in the given file.
 func (g *validator) Generate(file *generator.FileDescriptor) {
-	for i, service := range file.TagServices() {
-		g.generateService(file, service, i)
-	}
-
 	for i, msg := range file.Messages() {
 		g.generateMessage(file, msg, i)
-	}
-
-	for i, comment := range file.Comments() {
-		g.generateComment(file, comment, i)
 	}
 }
 
@@ -75,34 +63,5 @@ func (g *validator) GenerateImports(file *generator.FileDescriptor, imports map[
 	}
 }
 
-// generateService generates all the code for the named service.
-func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generator.MessageDescriptor, index int) {
-	g.P("// ============ Message ", index, "============")
-	v, err := json.Marshal(msg)
-	if err == nil {
-		g.P(string(v))
-	}
-
-	g.P()
-}
-
-func (g *validator) generateComment(file *generator.FileDescriptor, comment *descriptor.SourceCodeInfo_Location, index string) {
-	g.P("// ============ Comment ", index, "============")
-	v, err := json.Marshal(comment)
-	if err == nil {
-		g.P(string(v))
-	}
-
-	g.P()
-}
-
-// generateService generates all the code for the named service.
-func (g *validator) generateService(file *generator.FileDescriptor, service *generator.ServiceDescriptor, index int) {
-	g.P("// ============ Service ", index, "============")
-	v, err := json.Marshal(service)
-	if err == nil {
-		g.P(string(v))
-	}
-
-	g.P()
+func (g *validator) generateMessage(file *generator.FileDescriptor, comment *generator.MessageDescriptor, index int) {
 }
