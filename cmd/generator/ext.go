@@ -14,18 +14,20 @@ const (
 	MessageType = 4
 )
 
+const NilTag = "nil"
+
 type ServiceDescriptor struct {
 	Proto *descriptor.ServiceDescriptorProto
 
 	Methods []*MethodDescriptor
 
-	TagComments []string
+	Comments []*Comment
 }
 
 type MethodDescriptor struct {
 	Proto *descriptor.MethodDescriptorProto
 
-	TagsComments []string
+	Comments []*Comment
 }
 
 type MessageDescriptor struct {
@@ -33,27 +35,32 @@ type MessageDescriptor struct {
 
 	Fields []*FieldDescriptor
 
-	TagComments []string
+	Comments []*Comment
 }
 
 type FieldDescriptor struct {
 	Proto *descriptor.FieldDescriptorProto
 
-	TagComments []string
+	Comments []*Comment
+}
+
+type Comment struct {
+	Tag  string
+	Text string
 }
 
 func extractFileDescriptor(file *FileDescriptor) {
 	file.messages = make([]*MessageDescriptor, 0)
 	for _, item := range file.desc {
 		md := &MessageDescriptor{
-			Proto:       item,
-			Fields:      []*FieldDescriptor{},
-			TagComments: []string{},
+			Proto:    item,
+			Fields:   []*FieldDescriptor{},
+			Comments: []*Comment{},
 		}
 		for _, field := range item.Field {
 			md.Fields = append(md.Fields, &FieldDescriptor{
-				Proto:       field,
-				TagComments: []string{},
+				Proto:    field,
+				Comments: []*Comment{},
 			})
 		}
 		file.messages = append(file.messages, md)
@@ -62,14 +69,14 @@ func extractFileDescriptor(file *FileDescriptor) {
 	file.tagServices = make([]*ServiceDescriptor, 0)
 	for _, service := range file.Service {
 		sv := &ServiceDescriptor{
-			Proto:       service,
-			Methods:     []*MethodDescriptor{},
-			TagComments: []string{},
+			Proto:    service,
+			Methods:  []*MethodDescriptor{},
+			Comments: []*Comment{},
 		}
 		for _, method := range service.Method {
 			sv.Methods = append(sv.Methods, &MethodDescriptor{
-				Proto:        method,
-				TagsComments: []string{},
+				Proto:    method,
+				Comments: []*Comment{},
 			})
 		}
 		file.tagServices = append(file.tagServices, sv)
@@ -88,11 +95,15 @@ func extractFileDescriptor(file *FileDescriptor) {
 			switch len(parts) {
 			case 2:
 				index, _ := strconv.Atoi(parts[1])
-				file.tagServices[index].TagComments = parseTagComment(comment)
+				if len(file.tagServices) > index {
+					file.tagServices[index].Comments = parseTagComment(comment)
+				}
 			case 4:
 				index, _ := strconv.Atoi(parts[1])
 				mIndex, _ := strconv.Atoi(parts[3])
-				file.tagServices[index].Methods[mIndex].TagsComments = parseTagComment(comment)
+				if len(file.tagServices) > index && len(file.tagServices[index].Methods) > mIndex {
+					file.tagServices[index].Methods[mIndex].Comments = parseTagComment(comment)
+				}
 			case 6:
 				//
 			}
@@ -101,12 +112,16 @@ func extractFileDescriptor(file *FileDescriptor) {
 			// message comment
 			case 2:
 				index, _ := strconv.Atoi(parts[1])
-				file.messages[index].TagComments = parseTagComment(comment)
+				if len(file.messages) > index {
+					file.messages[index].Comments = parseTagComment(comment)
+				}
 			// message field comment
 			case 4:
 				index, _ := strconv.Atoi(parts[1])
 				fIndex, _ := strconv.Atoi(parts[3])
-				file.messages[index].Fields[fIndex].TagComments = parseTagComment(comment)
+				if len(file.messages) > index && len(file.messages[index].Fields) > fIndex {
+					file.messages[index].Fields[fIndex].Comments = parseTagComment(comment)
+				}
 			case 6:
 				//
 			}
@@ -114,16 +129,30 @@ func extractFileDescriptor(file *FileDescriptor) {
 	}
 }
 
-func parseTagComment(comment *descriptor.SourceCodeInfo_Location) []string {
-	comments := make([]string, 0)
+func parseTagComment(comment *descriptor.SourceCodeInfo_Location) []*Comment {
+	comments := make([]*Comment, 0)
 	if comment.LeadingComments == nil {
 		return comments
 	}
 	for _, item := range strings.Split(*comment.LeadingComments, "\n") {
+		var tag string
 		text := strings.TrimSpace(item)
-		if strings.HasPrefix(text, "+") {
-			comments = append(comments, text)
+		if len(text) == 0 {
+			continue
 		}
+		if strings.HasPrefix(text, "+") {
+			if i := strings.Index(text, ":"); i > 0 {
+				tag = text[1:i]
+				text = text[i+1:]
+			} else {
+				tag = NilTag
+				text = text[1:]
+			}
+		}
+		comments = append(comments, &Comment{
+			Tag:  tag,
+			Text: text,
+		})
 	}
 	return comments
 }
