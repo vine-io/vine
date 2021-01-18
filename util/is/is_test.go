@@ -285,3 +285,25 @@ func TestValidate(t *testing.T) {
 
 	t.Log(err)
 }
+
+func TestCrontab(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{name: "test_cron_1", args: args{s: "@every 3m"}, want: true},
+		{name: "test_cron_2", args: args{s: "*/4 * * * * ?"}, want: true},
+		{name: "test_cron_3", args: args{s: "5"}, want: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Crontab(tt.args.s); got != tt.want {
+				t.Errorf("Crontab() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

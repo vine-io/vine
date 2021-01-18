@@ -19,6 +19,8 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+
+	"github.com/lack-io/vine/util/sched/cron"
 )
 
 type Empty struct{}
@@ -105,7 +107,8 @@ func NotIn(arr interface{}, item interface{}) bool {
 }
 
 func Crontab(s string) bool {
-	return false
+	_, err := cron.Parse(s)
+	return err == nil
 }
 
 func MargeErr(errs ...error) error {
