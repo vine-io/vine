@@ -25,7 +25,7 @@ import (
 
 type Empty struct{}
 
-const (
+var (
 	ReEmail = `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`
 
 	ReUuid = `[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}`
