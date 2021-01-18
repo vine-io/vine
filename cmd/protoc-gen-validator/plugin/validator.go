@@ -31,7 +31,6 @@ const (
 
 	// field common tag
 	_required = "required"
-	_const    = "const"
 	_default  = "default"
 	_in       = "in"
 	_enum     = "enum"
@@ -193,24 +192,27 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 }
 
 func (g *validator) generateNumberField(field *generator.FieldDescriptor, index int) {
+	fieldName := generator.CamelCase(*field.Proto.Name)
 	tags := extractTags(field.Comments)
+	if len(tags) == 0 {
+		return
+	}
+	if _, ok := tags[_required]; ok {
+		g.P("if int64(m.", fieldName, ") == 0 {")
+		g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
+		if len(tags) > 1 {
+			g.P("} else {")
+		}
+	} else {
+		if tag, ok := tags[_default]; ok {
+			g.P("if int64(m.", fieldName, ") == 0 {")
+			g.P("m.", fieldName, " = ", tag.Value)
+			g.P("}")
+		}
+		g.P("if int64(m.", fieldName, ") != 0 {")
+	}
 	for _, tag := range tags {
-		fieldName := generator.CamelCase(*field.Proto.Name)
 		switch tag.Key {
-		case _required:
-			g.P("if is.Zero(m.", fieldName, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
-			g.P("}")
-		case _const:
-			g.P("if m.", fieldName, " != ", tag.Value, "{")
-			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' not equal to '%s'\"))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _default:
-			if hasNoTag(tags, _required) && hasNoTag(tags, _const) {
-				g.P("if is.Zero(m.", fieldName, ") {")
-				g.P("m.", fieldName, " = ", tag.Value)
-				g.P("}")
-			}
 		case _enum, _in:
 			value := strings.TrimPrefix(tag.Value, "[")
 			value = strings.TrimSuffix(value, "]")
@@ -249,27 +251,32 @@ func (g *validator) generateNumberField(field *generator.FieldDescriptor, index 
 			g.P("}")
 		}
 	}
+	g.P("}")
 }
 
 func (g *validator) generateStringField(field *generator.FieldDescriptor) {
+	fieldName := generator.CamelCase(*field.Proto.Name)
 	tags := extractTags(field.Comments)
+	if len(tags) == 0 {
+		return
+	}
+	if _, ok := tags[_required]; ok {
+		g.P("if len(m.", fieldName, ") == 0 {")
+		g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
+		if len(tags) > 1 {
+			g.P("} else {")
+		}
+	} else {
+		if tag, ok := tags[_default]; ok {
+			g.P("if len(m.", fieldName, ") == 0 {")
+			g.P("m.", fieldName, " = ", tag.Value)
+			g.P("}")
+		}
+		g.P("if len(m.", fieldName, ") != 0 {")
+	}
 	for _, tag := range tags {
 		fieldName := generator.CamelCase(*field.Proto.Name)
 		switch tag.Key {
-		case _required:
-			g.P("if len(m.", fieldName, ") == 0 {")
-			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
-			g.P("}")
-		case _const:
-			g.P("if m.", fieldName, " != ", tag.Value, "{")
-			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' not equal to '\"%s\"'\"))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _default:
-			if hasNoTag(tags, _required) && hasNoTag(tags, _const) {
-				g.P("if len(m.", fieldName, ") == 0 {")
-				g.P("m.", fieldName, " = ", tag.Value)
-				g.P("}")
-			}
 		case _enum, _in:
 			value := fullStringSlice(tag.Value)
 			g.P(fmt.Sprintf("if is.In([]string{%s}, m.%s) {", value, fieldName))
@@ -281,11 +288,11 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' must not in '[%s]'\"))", *field.Proto.JsonName, strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
 		case _minLen:
-			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
+			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
 			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' length must less than '%s'\"))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
 		case _maxLen:
-			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
+			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
 			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' length must great than '%s'\"))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
 		case _prefix:
@@ -346,17 +353,27 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 			g.P("}")
 		}
 	}
+	g.P("}")
 }
 
 func (g *validator) generateBytesField(field *generator.FieldDescriptor) {
+	fieldName := generator.CamelCase(*field.Proto.Name)
 	tags := extractTags(field.Comments)
+	if len(tags) == 0 {
+		return
+	}
+	if _, ok := tags[_required]; ok {
+		g.P("if len(m.", fieldName, ") == 0 {")
+		g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
+		if len(tags) > 1 {
+			g.P("} else {")
+		}
+	} else {
+		g.P("if len(m.", fieldName, ") != 0 {")
+	}
 	for _, tag := range tags {
 		fieldName := generator.CamelCase(*field.Proto.Name)
 		switch tag.Key {
-		case _required:
-			g.P("if len(m.", fieldName, ") == 0 {")
-			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
-			g.P("}")
 		case _minBytes:
 			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
 			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' length must less than '%s'\"))", *field.Proto.JsonName, tag.Value))
@@ -367,6 +384,7 @@ func (g *validator) generateBytesField(field *generator.FieldDescriptor) {
 			g.P("}")
 		}
 	}
+	g.P("}")
 }
 
 func ignoredMessage(msg *generator.MessageDescriptor) bool {
@@ -424,18 +442,18 @@ func fullStringSlice(s string) string {
 	return strings.Join(out, ",")
 }
 
-func extractTags(comments []*generator.Comment) []*Tag {
+func extractTags(comments []*generator.Comment) map[string]*Tag {
 	if comments == nil || len(comments) == 0 {
 		return nil
 	}
-	tags := make([]*Tag, 0)
+	tags := make(map[string]*Tag, 0)
 	for _, c := range comments {
 		if len(c.Tag) == 0 || len(c.Text) == 0 {
 			continue
 		}
-		tag := new(Tag)
 		parts := strings.Split(c.Text, ";")
 		for _, p := range parts {
+			tag := new(Tag)
 			p = strings.TrimSpace(p)
 			if i := strings.Index(p, "="); i > 0 {
 				tag.Key = strings.TrimSpace(p[:i])
@@ -447,8 +465,8 @@ func extractTags(comments []*generator.Comment) []*Tag {
 			} else {
 				tag.Key = p
 			}
+			tags[tag.Key] = tag
 		}
-		tags = append(tags, tag)
 	}
 
 	return tags
