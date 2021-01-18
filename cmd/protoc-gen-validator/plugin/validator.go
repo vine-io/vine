@@ -5,7 +5,7 @@ import (
 )
 
 // validator is an implementation of the Go protocol buffer compiler's
-// plugin architecture.  It generates bindings for validator support.
+// plugin architecture. It generates bindings for validator support.
 type validator struct {
 	gen *generator.Generator
 }
@@ -63,5 +63,16 @@ func (g *validator) GenerateImports(file *generator.FileDescriptor, imports map[
 	}
 }
 
-func (g *validator) generateMessage(file *generator.FileDescriptor, comment *generator.MessageDescriptor, index int) {
+func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generator.MessageDescriptor, index int) {
+	if msg.Proto.Name != nil && *msg.Proto.Name == "TagsEntry" {
+		return
+	}
+
+	//g.P(fmt.Sprintf("%+v", msg.Comments[0]))
+
+	g.P("func (h *", msg.Proto.Name, ") Validate() error {")
+	if len(msg.Fields) == 0 {
+		g.P("return nil")
+	}
+	defer g.P("}")
 }
