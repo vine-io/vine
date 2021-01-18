@@ -492,6 +492,22 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 		if c.Tag != TagString || len(c.Text) == 0 {
 			continue
 		}
+		if strings.HasPrefix(c.Text, _pattern) {
+			if i := strings.Index(c.Text, "="); i == -1 {
+				panic("invalid pattern format")
+			} else {
+				key := strings.TrimSpace(c.Text[:i])
+				value := strings.TrimSpace(c.Text[i+1:])
+				if len(value) == 0 {
+					panic(fmt.Sprintf("tag '%s' missing value", key))
+				}
+				tags[key] = &Tag{
+					Key:   key,
+					Value: value,
+				}
+			}
+			continue
+		}
 		parts := strings.Split(c.Text, ";")
 		for _, p := range parts {
 			tag := new(Tag)
