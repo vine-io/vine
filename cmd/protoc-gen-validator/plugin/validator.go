@@ -181,7 +181,7 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 				continue
 			}
 			if field.Proto.IsMessage() {
-				g.generateMessageField(file, field)
+				g.generateMessageField(field)
 				continue
 			}
 			switch *field.Proto.Type {
@@ -431,7 +431,7 @@ func (g *validator) generateRepeatedField(field *generator.FieldDescriptor) {
 	g.P("}")
 }
 
-func (g *validator) generateMessageField(file *generator.FileDescriptor, field *generator.FieldDescriptor) {
+func (g *validator) generateMessageField(field *generator.FieldDescriptor) {
 	fieldName := generator.CamelCase(*field.Proto.Name)
 	tags := extractTags(field.Comments)
 	if len(tags) == 0 {

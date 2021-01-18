@@ -136,65 +136,223 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
     </item>
     
     <item>
-      <title>Docs: 选项</title>
-      <link>https://lack-io.github.io/vine/docs/framework/options/</link>
-      <pubDate>Tue, 29 Dec 2020 14:55:49 +0800</pubDate>
+      <title>Docs: Validate</title>
+      <link>https://lack-io.github.io/vine/docs/framework/validate/</link>
+      <pubDate>Mon, 18 Jan 2021 11:11:29 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/options/</guid>
+      <guid>https://lack-io.github.io/vine/docs/framework/validate/</guid>
       <description>
         
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-&lt;p&gt;创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
-选项通常定义如下：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Options &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
-    Name        &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
-    Version     &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
-    Broker      broker.Broker
-    Registry    registry.Registry
+&lt;p&gt;服务运行中，经常需要和其他客户端进行数据交互，验证来自客户端的数据的合法性。但是这些代码编写起来枯燥且易错，&lt;strong&gt;vine&lt;/strong&gt; 提供 &lt;code&gt;protoc-gen-validator&lt;/code&gt; 工具来自动生成结构体 &lt;code&gt;Validate()&lt;/code&gt; 方法，减少一部分代码的手动编写。&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;h3 id=&#34;1先编写-validatorproto-文件&#34;&gt;1.先编写 validator.proto 文件&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Person&lt;/span&gt; {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_len=4
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:max_len=10
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required;gt=10;lt=100
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt; age &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required;min_bytes=3;max_bytes=4;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;bytes&lt;/span&gt; any &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;;
+
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:email
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; email &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2安装-protoc-gen-validator&#34;&gt;2.安装 protoc-gen-validator&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/lack-io/vine/cmd/protoc-gen-validator
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3生成-validate-方法&#34;&gt;3.生成 Validate() 方法&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src/github.com/gogo/googleapis --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:.  --validator_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;validator:. proto/validator.proto
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下代码:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;Validate&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	errs &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;make&lt;/span&gt;([]&lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt;)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Name) &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Name) &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;) {
+			errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;name&amp;#39; length must less than &amp;#39;4&amp;#39;&amp;#34;&lt;/span&gt;))
+		}
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Name) &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;) {
+			errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;name&amp;#39; length must great than &amp;#39;10&amp;#39;&amp;#34;&lt;/span&gt;))
+		}
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;int64&lt;/span&gt;(m.Age) &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;age&amp;#39; is required&amp;#34;&lt;/span&gt;))
+	} &lt;span style=&#34;color:#ff79c6&#34;&gt;else&lt;/span&gt; {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !(m.Age &amp;lt; &lt;span style=&#34;color:#bd93f9&#34;&gt;100&lt;/span&gt;) {
+			errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;age&amp;#39; must less than &amp;#39;100&amp;#39;&amp;#34;&lt;/span&gt;))
+		}
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !(m.Age &amp;gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;) {
+			errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;age&amp;#39; must great than &amp;#39;10&amp;#39;&amp;#34;&lt;/span&gt;))
+		}
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Any) &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;any&amp;#39; is required&amp;#34;&lt;/span&gt;))
+	} &lt;span style=&#34;color:#ff79c6&#34;&gt;else&lt;/span&gt; {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Any) &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;) {
+			errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;any&amp;#39; length must less than &amp;#39;3&amp;#39;&amp;#34;&lt;/span&gt;))
+		}
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Any) &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;) {
+			errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;any&amp;#39; length must great than &amp;#39;4&amp;#39;&amp;#34;&lt;/span&gt;))
+		}
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Email) &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !is.&lt;span style=&#34;color:#50fa7b&#34;&gt;Email&lt;/span&gt;(m.Email) {
+			errs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(errs, errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;email&amp;#39; is not a valid email&amp;#34;&lt;/span&gt;))
+		}
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; is.&lt;span style=&#34;color:#50fa7b&#34;&gt;MargeErr&lt;/span&gt;(errs&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;4验证&#34;&gt;4.验证&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+ 	p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.Person{}
+	p.Age = &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;
+	p.Email = &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;11&amp;#34;&lt;/span&gt;
+ 	err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; p.&lt;span style=&#34;color:#50fa7b&#34;&gt;Validate&lt;/span&gt;()
+ 	log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%v\n&amp;#34;&lt;/span&gt;, err)
+}
+&lt;span style=&#34;color:#6272a4&#34;&gt;// output:  field &amp;#39;age&amp;#39; must great than &amp;#39;10&amp;#39;;field &amp;#39;any&amp;#39; is required;field &amp;#39;email&amp;#39; is not a valid email
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;多个错误时，使用 &lt;code&gt;;&lt;/code&gt; 隔开&lt;/p&gt;
+&lt;h2 id=&#34;语法解析&#34;&gt;语法解析&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;protoc-gen-validator&lt;/code&gt; 通过解析 &lt;code&gt;protobuf&lt;/code&gt; 中的注释来生成 &lt;code&gt;Validate()&lt;/code&gt; 规则。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ignore
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Struct&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; field1 &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+    
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required;email
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_len=3
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; field2 &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;语法规则&#34;&gt;语法规则&lt;/h3&gt;
+&lt;p&gt;有效的注释有以下的规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;注释必须以 &lt;code&gt;+gen&lt;/code&gt; 作为开头&lt;/li&gt;
+&lt;li&gt;注释的内容必须紧贴对应的字段，中间不能有空行&lt;/li&gt;
+&lt;li&gt;支持多行注释，也可以将多行合并成一行，并用 &lt;code&gt;;&lt;/code&gt; 作为分隔符&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;类型支持&#34;&gt;类型支持&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;message&lt;/code&gt; 类型规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ignore: 忽略该 message ，不生成 &lt;code&gt;Validate()&lt;/code&gt; 方法&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ignore
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;P&lt;/span&gt; {
+
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;message&lt;/code&gt; 作为内嵌字段时支持的规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;required: 判断该字段是否为 nil。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;P&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    Sub sub &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
 }
 
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Sub&lt;/span&gt; {
 
-&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Option &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options)
-
-&lt;span style=&#34;color:#6272a4&#34;&gt;// set the name
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(n &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) Option {
-    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(o &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options) {
-        o.Name = n
-    }
 }
-
-&lt;span style=&#34;color:#6272a4&#34;&gt;// set the broker
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(b broker.Broker) Option {
-    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(o &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options) {
-        o.Broker = b
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后这安装如下方式设置这些选项&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
-    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;foobar&amp;#34;&lt;/span&gt;),
-    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(broker),
-)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;服务选项&#34;&gt;服务选项&lt;/h2&gt;
-&lt;p&gt;在 &lt;strong&gt;Vine&lt;/strong&gt; 中，我们有许多选项可以设置，包括用于身份验证，配置和存储等内容的基础包。你可以使用 &lt;code&gt;service.Options()&lt;/code&gt; 来访问这些。&lt;/p&gt;
-&lt;p&gt;auth、config、registry、store 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 &lt;code&gt;service.Init()&lt;/code&gt; 后生效。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;## as an env vars&lt;/span&gt;
-&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_STORE&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;file go run main.go
-
-&lt;span style=&#34;color:#6272a4&#34;&gt;## or as a flag&lt;/span&gt;
-go run main.go --store&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;file
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后在内部，可以通过选项访问存储：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
-    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;foobar&amp;#34;&lt;/span&gt;),
-)
-
-service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
-
-store &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;().Store
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 &lt;code&gt;context.Context&lt;/code&gt; 中。&lt;/p&gt;
+&lt;p&gt;注: 在引用外部的 message 时，请确认 message 存在 Validate() 方法&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;string&lt;/code&gt; 类型支持的规则&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;required: 判断是否为空&lt;/li&gt;
+&lt;li&gt;default: 字段为空时指定的默认值，(不可用 required 同时使用)&lt;/li&gt;
+&lt;li&gt;in, enum: 判断字段的值是否存在于指定的列表中&lt;/li&gt;
+&lt;li&gt;not_in: 判断字段的值是否在指定的列表之外&lt;/li&gt;
+&lt;li&gt;min_len: 指定字段的最小长度&lt;/li&gt;
+&lt;li&gt;max_len: 指定字段的最大长度&lt;/li&gt;
+&lt;li&gt;prefix: 判断字段是否以给定的值为开头&lt;/li&gt;
+&lt;li&gt;suffix: 判断字段是否以给定的值为结尾&lt;/li&gt;
+&lt;li&gt;contains: 判断字段是否包含给定的值&lt;/li&gt;
+&lt;li&gt;pattern: 判断该子弹是否为有效的正则表达式&lt;/li&gt;
+&lt;li&gt;number: 判断该字段是否为有效数字&lt;/li&gt;
+&lt;li&gt;email: 判断该字段是否为有效的邮箱地址&lt;/li&gt;
+&lt;li&gt;ip: 判断该字段是否为有效的 ip 地址&lt;/li&gt;
+&lt;li&gt;ipv4: 判断该字段是否为有效的 ipv4&lt;/li&gt;
+&lt;li&gt;ipv6: 判断该字段是否为有效的 ipv6&lt;/li&gt;
+&lt;li&gt;crontab: 判断该字段是否为有效的 crontab 表达式&lt;/li&gt;
+&lt;li&gt;uuid: 判断该字段是否为有效的 uuid v4&lt;/li&gt;
+&lt;li&gt;uri: 判断该字段是否为有效的 uri&amp;quot;&lt;/li&gt;
+&lt;li&gt;domain: 判断该字段是否为有效的域名&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:default=&amp;#34;hello&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:in=[&amp;#34;1&amp;#34;, &amp;#34;2&amp;#34;, &amp;#34;3&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:enum=[&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;, &amp;#34;c&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:not_in=[&amp;#34;d&amp;#34;, &amp;#34;s&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_len=3
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_max=4
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:prefix=&amp;#34;http&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:suffix=&amp;#34;.com&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:contains=&amp;#34;www&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:pattern=`\d+(\w+){3,5}`
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:number
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ip
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ipv4
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ipv6
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:crontab
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:uuid
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:uri
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:domain
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; m &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注: string pattern 最好单独一行，以免和其他规则冲突&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;数字类型的支持，包含 int32, int64, fixed32, fix64, float, double&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;required: 判断是否为 0&lt;/li&gt;
+&lt;li&gt;default: 字段为空时指定的默认值，(不可用 required 同时使用)&lt;/li&gt;
+&lt;li&gt;in, enum: 判断字段的值是否存在于指定的列表中&lt;/li&gt;
+&lt;li&gt;not_in: 判断字段的值是否在指定的列表之外&lt;/li&gt;
+&lt;li&gt;min: 指定字段的最小值&lt;/li&gt;
+&lt;li&gt;max: 指定字段的最大值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;float&lt;/span&gt; a &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
 
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:default=3.14
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;double&lt;/span&gt; pi &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:in=[1,2,3]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:enum=[2,3]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:not_in=[4,5]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt; b &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;;
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min=3
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:max=10
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt; c &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;bytes&lt;/code&gt; 类型的支持:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;required: 判断字段的长度是否为0&lt;/li&gt;
+&lt;li&gt;min_bytes: 判断字段的最小字节数是否大于给定值&lt;/li&gt;
+&lt;li&gt;max_bytes: 判断字段的最大字节数是否小于给定值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_bytes=10
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_bytes=1024
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;bytes&lt;/span&gt; any &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;repeated 类型的支持：repeated 类型的字段在 golang 中会被解析成切片。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;required: 判断切片的长度是否为0&lt;/li&gt;
+&lt;li&gt;min_len: 判断切片的最小长度是否大于给定值&lt;/li&gt;
+&lt;li&gt;max_len: 判断切片的最大长度是否小于给定值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_len=3
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:max_len=5
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#ff79c6&#34;&gt;repeated&lt;/span&gt; &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
@@ -274,6 +432,69 @@ store &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查阅 &lt;a href=&#34;https://github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt; 可以更好地了解实现细节。&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 选项</title>
+      <link>https://lack-io.github.io/vine/docs/framework/options/</link>
+      <pubDate>Tue, 29 Dec 2020 14:55:49 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/options/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
+选项通常定义如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Options &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+    Name        &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+    Version     &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+    Broker      broker.Broker
+    Registry    registry.Registry
+}
+
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Option &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options)
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// set the name
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(n &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) Option {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(o &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options) {
+        o.Name = n
+    }
+}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// set the broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(b broker.Broker) Option {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(o &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Options) {
+        o.Broker = b
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后这安装如下方式设置这些选项&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;foobar&amp;#34;&lt;/span&gt;),
+    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(broker),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;服务选项&#34;&gt;服务选项&lt;/h2&gt;
+&lt;p&gt;在 &lt;strong&gt;Vine&lt;/strong&gt; 中，我们有许多选项可以设置，包括用于身份验证，配置和存储等内容的基础包。你可以使用 &lt;code&gt;service.Options()&lt;/code&gt; 来访问这些。&lt;/p&gt;
+&lt;p&gt;auth、config、registry、store 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 &lt;code&gt;service.Init()&lt;/code&gt; 后生效。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;## as an env vars&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_STORE&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;file go run main.go
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;## or as a flag&lt;/span&gt;
+go run main.go --store&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;file
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后在内部，可以通过选项访问存储：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+    vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;foobar&amp;#34;&lt;/span&gt;),
+)
+
+service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+store &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;().Store
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 &lt;code&gt;context.Context&lt;/code&gt; 中。&lt;/p&gt;
+&lt;/blockquote&gt;
 
       </description>
     </item>
