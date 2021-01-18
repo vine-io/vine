@@ -25,6 +25,8 @@ import (
 	"github.com/lack-io/vine/cmd/generator"
 )
 
+var TagString = "gen"
+
 const (
 	// message tag
 	_ignore = "ignore"
@@ -397,24 +399,6 @@ func ignoredMessage(msg *generator.MessageDescriptor) bool {
 	return false
 }
 
-func hasTag(tags []*Tag, text string) bool {
-	for _, t := range tags {
-		if t.Key == text {
-			return true
-		}
-	}
-	return false
-}
-
-func hasNoTag(tags []*Tag, text string) bool {
-	for _, t := range tags {
-		if t.Key == text {
-			return false
-		}
-	}
-	return true
-}
-
 func TrimString(s string, c string) string {
 	s = strings.TrimPrefix(s, c)
 	s = strings.TrimSuffix(s, c)
@@ -448,7 +432,7 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 	}
 	tags := make(map[string]*Tag, 0)
 	for _, c := range comments {
-		if len(c.Tag) == 0 || len(c.Text) == 0 {
+		if c.Tag != TagString || len(c.Text) == 0 {
 			continue
 		}
 		parts := strings.Split(c.Text, ";")
