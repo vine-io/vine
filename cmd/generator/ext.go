@@ -14,10 +14,7 @@ const (
 	MessageType = 4
 )
 
-type Comment struct {
-	Tag  bool
-	Text string
-}
+const NilTag = "nil"
 
 type ServiceDescriptor struct {
 	Proto *descriptor.ServiceDescriptorProto
@@ -45,6 +42,11 @@ type FieldDescriptor struct {
 	Proto *descriptor.FieldDescriptorProto
 
 	Comments []*Comment
+}
+
+type Comment struct {
+	Tag  string
+	Text string
 }
 
 func extractFileDescriptor(file *FileDescriptor) {
@@ -93,11 +95,15 @@ func extractFileDescriptor(file *FileDescriptor) {
 			switch len(parts) {
 			case 2:
 				index, _ := strconv.Atoi(parts[1])
-				file.tagServices[index].Comments = parseTagComment(comment)
+				if len(file.tagServices) > index {
+					file.tagServices[index].Comments = parseTagComment(comment)
+				}
 			case 4:
 				index, _ := strconv.Atoi(parts[1])
 				mIndex, _ := strconv.Atoi(parts[3])
-				file.tagServices[index].Methods[mIndex].Comments = parseTagComment(comment)
+				if len(file.tagServices) > index && len(file.tagServices[index].Methods) > mIndex {
+					file.tagServices[index].Methods[mIndex].Comments = parseTagComment(comment)
+				}
 			case 6:
 				//
 			}
@@ -129,9 +135,22 @@ func parseTagComment(comment *descriptor.SourceCodeInfo_Location) []*Comment {
 		return comments
 	}
 	for _, item := range strings.Split(*comment.LeadingComments, "\n") {
+		var tag string
 		text := strings.TrimSpace(item)
+		if len(text) == 0 {
+			continue
+		}
+		if strings.HasPrefix(text, "+") {
+			if i := strings.Index(text, ":"); i > 0 {
+				tag = text[1:i]
+				text = text[i+1:]
+			} else {
+				tag = NilTag
+				text = text[1:]
+			}
+		}
 		comments = append(comments, &Comment{
-			Tag:  strings.HasPrefix(text, "+"),
+			Tag:  tag,
 			Text: text,
 		})
 	}
