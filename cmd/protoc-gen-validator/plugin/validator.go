@@ -66,6 +66,9 @@ const (
 	// bytes tag
 	_maxBytes = "max_bytes"
 	_minBytes = "min_bytes"
+
+	// repeated tag: required, min_len, max_len
+	// message tag: required
 )
 
 type Tag struct {
@@ -172,7 +175,15 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 		g.P("return nil")
 	} else {
 		g.P("errs := make([]error, 0)")
-		for index, field := range msg.Fields {
+		for _, field := range msg.Fields {
+			if field.Proto.IsRepeated() {
+				g.generateRepeatedField(field)
+				continue
+			}
+			if field.Proto.IsMessage() {
+				g.generateMessageField(file, field)
+				continue
+			}
 			switch *field.Proto.Type {
 			case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
 				descriptor.FieldDescriptorProto_TYPE_FLOAT,
@@ -180,7 +191,7 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 				descriptor.FieldDescriptorProto_TYPE_FIXED64,
 				descriptor.FieldDescriptorProto_TYPE_INT32,
 				descriptor.FieldDescriptorProto_TYPE_INT64:
-				g.generateNumberField(field, index)
+				g.generateNumberField(field)
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
 				g.generateStringField(field)
 			case descriptor.FieldDescriptorProto_TYPE_BYTES:
@@ -193,7 +204,7 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 	g.P()
 }
 
-func (g *validator) generateNumberField(field *generator.FieldDescriptor, index int) {
+func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 	fieldName := generator.CamelCase(*field.Proto.Name)
 	tags := extractTags(field.Comments)
 	if len(tags) == 0 {
@@ -387,6 +398,52 @@ func (g *validator) generateBytesField(field *generator.FieldDescriptor) {
 		}
 	}
 	g.P("}")
+}
+
+func (g *validator) generateRepeatedField(field *generator.FieldDescriptor) {
+	fieldName := generator.CamelCase(*field.Proto.Name)
+	tags := extractTags(field.Comments)
+	if len(tags) == 0 {
+		return
+	}
+	if _, ok := tags[_required]; ok {
+		g.P("if len(m.", fieldName, ") == 0 {")
+		g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
+		if len(tags) > 1 {
+			g.P("} else {")
+		}
+	} else {
+		g.P("if len(m.", fieldName, ") != 0 {")
+	}
+	for _, tag := range tags {
+		fieldName := generator.CamelCase(*field.Proto.Name)
+		switch tag.Key {
+		case _minLen:
+			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
+			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' length must less than '%s'\"))", *field.Proto.JsonName, tag.Value))
+			g.P("}")
+		case _maxLen:
+			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
+			g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' length must great than '%s'\"))", *field.Proto.JsonName, tag.Value))
+			g.P("}")
+		}
+	}
+	g.P("}")
+}
+
+func (g *validator) generateMessageField(file *generator.FileDescriptor, field *generator.FieldDescriptor) {
+	fieldName := generator.CamelCase(*field.Proto.Name)
+	tags := extractTags(field.Comments)
+	if len(tags) == 0 {
+		return
+	}
+	if _, ok := tags[_required]; ok {
+		g.P("if m.", fieldName, " == nil {")
+		g.P(fmt.Sprintf("errs = append(errs, errors.New(\"field '%s' is required\"))", *field.Proto.JsonName))
+		g.P("} else {")
+		g.P("errs = append(errs, m.", fieldName, ".Validate())")
+		g.P("}")
+	}
 }
 
 func ignoredMessage(msg *generator.MessageDescriptor) bool {
