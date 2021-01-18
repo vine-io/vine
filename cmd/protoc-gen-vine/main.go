@@ -1,4 +1,4 @@
-// Copyright 2020 The vine Authors
+// Copyright 2020 lack
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ func main() {
 	// so we can do error handling easily - the response structure contains the field to
 	// report failure.
 	vine := plugin.New()
-
 	generator.RegisterPlugin(vine)
 
 	g := generator.New("vine")

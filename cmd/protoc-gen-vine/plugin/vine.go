@@ -1,3 +1,16 @@
+// Copyright 2020 lack
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package plugin
 
 import (
@@ -16,8 +29,8 @@ import (
 // Paths for packages used by code generated in this file,
 // relative to the import_prefix of the generator.Generator.
 const (
-	apiPkgPath     = "github.com/lack-io/vine/service/api"
 	contextPkgPath = "context"
+	apiPkgPath     = "github.com/lack-io/vine/service/api"
 	clientPkgPath  = "github.com/lack-io/vine/service/client"
 	serverPkgPath  = "github.com/lack-io/vine/service/server"
 )
@@ -51,8 +64,8 @@ var (
 // Init initializes the plugin.
 func (g *vine) Init(gen *generator.Generator) {
 	g.gen = gen
-	apiPkg = generator.RegisterUniquePackageName("api", nil)
 	contextPkg = generator.RegisterUniquePackageName("context", nil)
+	apiPkg = generator.RegisterUniquePackageName("api", nil)
 	clientPkg = generator.RegisterUniquePackageName("client", nil)
 	serverPkg = generator.RegisterUniquePackageName("server", nil)
 }
@@ -95,8 +108,8 @@ func (g *vine) GenerateImports(file *generator.FileDescriptor, imports map[gener
 		return
 	}
 	g.P("import (")
-	g.P(apiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPkgPath)))
 	g.P(contextPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, contextPkgPath)))
+	g.P(apiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPkgPath)))
 	g.P(clientPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, clientPkgPath)))
 	g.P(serverPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, serverPkgPath)))
 	g.P(")")

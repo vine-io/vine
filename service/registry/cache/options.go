@@ -1,4 +1,4 @@
-// Copyright 2020 The vine Authors
+// Copyright 2020 lack
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import "time"
 
 // WithTTL sets the cache TTL
 func WithTTL(t time.Duration) Option {
-	return func (o *Options) {
+	return func(o *Options) {
 		o.TTL = t
 	}
 }

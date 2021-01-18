@@ -1,4 +1,4 @@
-// Copyright 2020 The vine Authors
+// Copyright 2020 lack
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 )
 
 func TestIsLocal(t *testing.T) {
-	testData := []struct{
-		addr string
+	testData := []struct {
+		addr   string
 		expect bool
-	} {
+	}{
 		{"localhost", true},
 		{"localhost:8080", true},
 		{"127.0.0.1", true},
@@ -40,11 +40,11 @@ func TestIsLocal(t *testing.T) {
 }
 
 func TestExtractor(t *testing.T) {
-	testData := []struct{
-		addr string
+	testData := []struct {
+		addr   string
 		expect string
-		parse bool
-	} {
+		parse  bool
+	}{
 		{"127.0.0.1", "127.0.0.1", false},
 		{"10.0.0.1", "10.0.0.1", false},
 		{"", "", true},
@@ -71,10 +71,10 @@ func TestExtractor(t *testing.T) {
 }
 
 func TestAppendPrivateBlocks(t *testing.T) {
-	tests := []struct{
-		addr string
+	tests := []struct {
+		addr   string
 		expect bool
-	} {
+	}{
 		{"9.134.71.34", true},
 		{"8.222.33.110", false}, // not in private blocks
 	}

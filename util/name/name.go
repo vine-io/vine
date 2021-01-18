@@ -1,4 +1,4 @@
-// Copyright 2020 The vine Authors
+// Copyright 2020 lack
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ func (n *name) Upper(count int) *name {
 
 // Letter appends letter character to name
 func (n *name) Letter(count int) *name {
-	n.pick(count, lower + upper)
+	n.pick(count, lower+upper)
 	return n
 }
 
@@ -61,7 +61,7 @@ func (n *name) Digit(count int) *name {
 
 // Any appends digits or letters character to name
 func (n *name) Any(count int) *name {
-	n.pick(count, digit + lower + upper)
+	n.pick(count, digit+lower+upper)
 	return n
 }
 
