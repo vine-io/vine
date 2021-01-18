@@ -122,5 +122,5 @@ func MargeErr(errs ...error) error {
 		}
 		parts = append(parts, err.Error())
 	}
-	return errors.New(strings.Join(parts, "\n"))
+	return errors.New(strings.Join(parts, ";"))
 }
