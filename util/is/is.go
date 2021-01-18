@@ -115,7 +115,7 @@ func MargeErr(errs ...error) error {
 	if errs == nil {
 		return nil
 	}
-	parts := make([]string, len(errs))
+	parts := make([]string, 0)
 	for _, err := range errs {
 		if err == nil {
 			continue
