@@ -21,6 +21,7 @@ import (
 	"sort"
 	"sync"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	pb "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
@@ -164,7 +165,7 @@ func (r *routerSelector) Select(service string, opts ...selector.SelectOption) (
 	var i int
 	var mtx sync.Mutex
 
-	return func() (*registry.Node, error) {
+	return func() (*regpb.Node, error) {
 		// get index and increment counter with every call to next
 		mtx.Lock()
 		idx := i
@@ -181,14 +182,14 @@ func (r *routerSelector) Select(service string, opts ...selector.SelectOption) (
 		}
 
 		// return as a node
-		return &registry.Node{
+		return &regpb.Node{
 			// TODO: add id and metadata if we can
 			Address: address,
 		}, nil
 	}, nil
 }
 
-func (r *routerSelector) Mark(service string, node *registry.Node, err error) {
+func (r *routerSelector) Mark(service string, node *regpb.Node, err error) {
 	// TODO: pass back metrics or information to the router
 }
 

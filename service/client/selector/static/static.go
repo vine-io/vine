@@ -16,8 +16,8 @@
 package static
 
 import (
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client/selector"
-	"github.com/lack-io/vine/service/registry"
 )
 
 // staticSelector is a static selector
@@ -37,15 +37,15 @@ func (s *staticSelector) Options() selector.Options {
 }
 
 func (s *staticSelector) Select(service string, opts ...selector.SelectOption) (selector.Next, error) {
-	return func() (*registry.Node, error) {
-		return &registry.Node{
+	return func() (*regpb.Node, error) {
+		return &regpb.Node{
 			Id:      service,
 			Address: service,
 		}, nil
 	}, nil
 }
 
-func (s *staticSelector) Mark(service string, node *registry.Node, err error) {
+func (s *staticSelector) Mark(service string, node *regpb.Node, err error) {
 	return
 }
 

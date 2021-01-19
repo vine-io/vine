@@ -20,12 +20,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/resolver/vpath"
 	"github.com/lack-io/vine/service/api/router"
 	regRouter "github.com/lack-io/vine/service/api/router/registry"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/memory"
 )
 
@@ -38,9 +38,9 @@ func testHttp(t *testing.T, path, service, ns string) {
 	}
 	defer l.Close()
 
-	s := &registry.Service{
+	s := &regpb.Service{
 		Name: service,
-		Nodes: []*registry.Node{
+		Nodes: []*regpb.Node{
 			{
 				Id:      service + "-1",
 				Address: l.Addr().String(),

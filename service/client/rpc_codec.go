@@ -19,6 +19,7 @@ import (
 	errs "errors"
 
 	"github.com/lack-io/vine/proto/errors"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/codec"
 	raw "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/codec/grpc"
@@ -27,7 +28,6 @@ import (
 	"github.com/lack-io/vine/service/codec/proto"
 	"github.com/lack-io/vine/service/codec/protorpc"
 	"github.com/lack-io/vine/service/network/transport"
-	"github.com/lack-io/vine/service/registry"
 )
 
 const (
@@ -142,7 +142,7 @@ func setHeaders(m *codec.Message, stream string) {
 }
 
 // setupProtocol sets up the old protocol
-func setupProtocol(msg *transport.Message, node *registry.Node) codec.NewCodec {
+func setupProtocol(msg *transport.Message, node *regpb.Node) codec.NewCodec {
 	protocol := node.Metadata["protocol"]
 
 	// got protocol

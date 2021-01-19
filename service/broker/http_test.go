@@ -21,18 +21,19 @@ import (
 
 	"github.com/google/uuid"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/memory"
 )
 
 var (
 	// mock data
-	testData = map[string][]*registry.Service{
+	testData = map[string][]*regpb.Service{
 		"foo": {
 			{
 				Name:    "foo",
 				Version: "1.0.0",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "foo-1.0.0-123",
 						Address: "localhost:9999",
@@ -46,7 +47,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.1",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "foo-1.0.1-321",
 						Address: "localhost:6666",
@@ -56,7 +57,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.3",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "foo-1.0.3-345",
 						Address: "localhost:8888",

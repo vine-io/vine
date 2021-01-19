@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	util "github.com/lack-io/vine/util/registry"
@@ -46,7 +47,7 @@ type cache struct {
 
 	// registry cache
 	sync.RWMutex
-	cache   map[string][]*registry.Service
+	cache   map[string][]*regpb.Service
 	ttls    map[string]time.Time
 	watched map[string]bool
 
@@ -85,7 +86,7 @@ func (c *cache) setStatus(err error) {
 }
 
 // isValid checks if the service is valid
-func (c *cache) isValid(services []*registry.Service, ttl time.Time) bool {
+func (c *cache) isValid(services []*regpb.Service, ttl time.Time) bool {
 	// no services exist
 	if len(services) == 0 {
 		return false
@@ -124,7 +125,7 @@ func (c *cache) del(service string) {
 	delete(c.ttls, service)
 }
 
-func (c *cache) get(service string) ([]*registry.Service, error) {
+func (c *cache) get(service string) ([]*regpb.Service, error) {
 	// read lock
 	c.RLock()
 
@@ -143,7 +144,7 @@ func (c *cache) get(service string) ([]*registry.Service, error) {
 	}
 
 	// get does the actual request for a service and cache it
-	get := func(service string, cached []*registry.Service) ([]*registry.Service, error) {
+	get := func(service string, cached []*regpb.Service) ([]*regpb.Service, error) {
 		// ask the registry
 		services, err := c.Registry.GetService(service)
 		if err != nil {
@@ -197,12 +198,12 @@ func (c *cache) get(service string) ([]*registry.Service, error) {
 	return get(service, cp)
 }
 
-func (c *cache) set(service string, services []*registry.Service) {
+func (c *cache) set(service string, services []*regpb.Service) {
 	c.cache[service] = services
 	c.ttls[service] = time.Now().Add(c.opts.TTL)
 }
 
-func (c *cache) update(res *registry.Result) {
+func (c *cache) update(res *regpb.Result) {
 	if res == nil || res.Service == nil {
 		return
 	}
@@ -231,7 +232,7 @@ func (c *cache) update(res *registry.Result) {
 	}
 
 	// existing service found
-	var service *registry.Service
+	var service *regpb.Service
 	var index int
 	for i, s := range services {
 		if s.Version == res.Service.Version {
@@ -269,7 +270,7 @@ func (c *cache) update(res *registry.Result) {
 			return
 		}
 
-		var nodes []*registry.Node
+		var nodes []*regpb.Node
 
 		// filter cur nodes to remove the dead one
 		for _, cur := range service.Nodes {
@@ -304,7 +305,7 @@ func (c *cache) update(res *registry.Result) {
 
 		// still have more than 1 service
 		// check the version and keep what we know
-		var srvs []*registry.Service
+		var srvs []*regpb.Service
 		for _, s := range services {
 			if s.Version != service.Version {
 				srvs = append(srvs, s)
@@ -429,7 +430,7 @@ func (c *cache) watch(w registry.Watcher) error {
 	}
 }
 
-func (c *cache) GetService(service string, opts ...registry.GetOption) ([]*registry.Service, error) {
+func (c *cache) GetService(service string, opts ...registry.GetOption) ([]*regpb.Service, error) {
 	// get the service
 	services, err := c.get(service)
 	if err != nil {
@@ -476,7 +477,7 @@ func New(r registry.Registry, opts ...Option) Cache {
 		Registry: r,
 		opts:     options,
 		watched:  make(map[string]bool),
-		cache:    make(map[string][]*registry.Service),
+		cache:    make(map[string][]*regpb.Service),
 		ttls:     make(map[string]time.Time),
 		exit:     make(chan bool),
 	}

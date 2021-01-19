@@ -15,6 +15,7 @@
 package memory
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/lack-io/vine/service/registry"
@@ -41,4 +42,20 @@ func TestWatcher(t *testing.T) {
 	if _, err := w.Next(); err == nil {
 		t.Fatal("expected error on Next()")
 	}
+}
+
+type A struct {
+	Ref             string `json:"$ref"`
+	ApplicationJson string `json:"application/json"`
+	N               string `json:"n"`
+}
+
+func TestTodo(t *testing.T) {
+	a := &A{
+		Ref:             "http://example.org",
+		ApplicationJson: "aa",
+		N:               "'200'",
+	}
+	v, _ := json.Marshal(a)
+	t.Log(string(v))
 }

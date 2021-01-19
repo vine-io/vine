@@ -21,6 +21,7 @@ import (
 
 	"github.com/coreos/etcd/clientv3"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry"
 )
 
@@ -58,7 +59,7 @@ func newEtcdWatcher(r *etcdRegistry, timeout time.Duration, opts ...registry.Wat
 	}, nil
 }
 
-func (ew *etcdWatcher) Next() (*registry.Result, error) {
+func (ew *etcdWatcher) Next() (*regpb.Result, error) {
 	for wresp := range ew.w {
 		if wresp.Err() != nil {
 			return nil, wresp.Err()
@@ -87,7 +88,7 @@ func (ew *etcdWatcher) Next() (*registry.Result, error) {
 			if service == nil {
 				continue
 			}
-			return &registry.Result{
+			return &regpb.Result{
 				Action:  action,
 				Service: service,
 			}, nil

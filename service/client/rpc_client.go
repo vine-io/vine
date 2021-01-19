@@ -23,12 +23,12 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lack-io/vine/proto/errors"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/codec"
 	raw "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/network/transport"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/client/buf"
 	"github.com/lack-io/vine/util/client/pool"
 	"github.com/lack-io/vine/util/context/metadata"
@@ -78,7 +78,7 @@ func (r *rpcClient) newCodec(contentType string) (codec.NewCodec, error) {
 	return nil, fmt.Errorf("unsupported Content-Type: %s", contentType)
 }
 
-func (r *rpcClient) call(ctx context.Context, node *registry.Node, req Request, resp interface{}, opts CallOptions) error {
+func (r *rpcClient) call(ctx context.Context, node *regpb.Node, req Request, resp interface{}, opts CallOptions) error {
 	address := node.Address
 
 	msg := &transport.Message{
@@ -195,7 +195,7 @@ func (r *rpcClient) call(ctx context.Context, node *registry.Node, req Request, 
 	return nil
 }
 
-func (r *rpcClient) stream(ctx context.Context, node *registry.Node, req Request, opts CallOptions) (Stream, error) {
+func (r *rpcClient) stream(ctx context.Context, node *regpb.Node, req Request, opts CallOptions) (Stream, error) {
 	address := node.Address
 
 	msg := &transport.Message{
@@ -338,10 +338,10 @@ func (r *rpcClient) next(request Request, opts CallOptions) (selector.Next, erro
 
 	// return remote address
 	if len(address) > 0 {
-		nodes := make([]*registry.Node, len(address))
+		nodes := make([]*regpb.Node, len(address))
 
 		for i, addr := range address {
-			nodes[i] = &registry.Node{
+			nodes[i] = &regpb.Node{
 				Address: addr,
 				// Set the protocol
 				Metadata: map[string]string{
@@ -351,7 +351,7 @@ func (r *rpcClient) next(request Request, opts CallOptions) (selector.Next, erro
 		}
 
 		// crude return method
-		return func() (*registry.Node, error) {
+		return func() (*regpb.Node, error) {
 			return nodes[time.Now().Unix()%int64(len(nodes))], nil
 		}, nil
 	}

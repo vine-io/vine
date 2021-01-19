@@ -20,8 +20,8 @@ import (
 	"net"
 	"strconv"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client/selector"
-	"github.com/lack-io/vine/service/registry"
 )
 
 type dnsSelector struct {
@@ -77,15 +77,15 @@ func (d *dnsSelector) Select(service string, opts ...selector.SelectOption) (sel
 		}
 	}
 
-	nodes := make([]*registry.Node, 0, len(srv))
+	nodes := make([]*regpb.Node, 0, len(srv))
 	for _, node := range srv {
-		nodes = append(nodes, &registry.Node{
+		nodes = append(nodes, &regpb.Node{
 			Id:      node.Target,
 			Address: fmt.Sprintf("%s:%d", node.Target, node.Port),
 		})
 	}
 
-	services := []*registry.Service{
+	services := []*regpb.Service{
 		{
 			Name:  service,
 			Nodes: nodes,
@@ -113,7 +113,7 @@ func (d *dnsSelector) Select(service string, opts ...selector.SelectOption) (sel
 	return sopts.Strategy(services), nil
 }
 
-func (d *dnsSelector) Mark(service string, node *registry.Node, err error) {}
+func (d *dnsSelector) Mark(service string, node *regpb.Node, err error) {}
 
 func (d *dnsSelector) Reset(service string) {}
 

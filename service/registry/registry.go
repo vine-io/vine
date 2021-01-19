@@ -14,7 +14,11 @@
 
 package registry
 
-import "errors"
+import (
+	"errors"
+
+	regpb "github.com/lack-io/vine/proto/registry"
+)
 
 var (
 	DefaultRegistry = NewRegistry()
@@ -31,39 +35,13 @@ var (
 type Registry interface {
 	Init(...Option) error
 	Options() Options
-	Register(*Service, ...RegisterOption) error
-	Deregister(*Service, ...DeregisterOption) error
-	GetService(string, ...GetOption) ([]*Service, error)
-	ListServices(...ListOption) ([]*Service, error)
+	Register(*regpb.Service, ...RegisterOption) error
+	Deregister(*regpb.Service, ...DeregisterOption) error
+	GetService(string, ...GetOption) ([]*regpb.Service, error)
+	ListServices(...ListOption) ([]*regpb.Service, error)
 	Watch(...WatchOption) (Watcher, error)
+	GetOpenAPI(...OpenAPIOption) (*regpb.OpenAPI, error)
 	String() string
-}
-
-type Service struct {
-	Name      string            `json:"name"`
-	Version   string            `json:"version"`
-	Metadata  map[string]string `json:"metadata"`
-	Endpoints []*Endpoint       `json:"endpoints"`
-	Nodes     []*Node           `json:"nodes"`
-}
-
-type Node struct {
-	Id       string            `json:"id"`
-	Address  string            `json:"address"`
-	Metadata map[string]string `json:"metadata"`
-}
-
-type Endpoint struct {
-	Name     string            `json:"name"`
-	Request  *Value            `json:"request"`
-	Response *Value            `json:"response"`
-	Metadata map[string]string `json:"metadata"`
-}
-
-type Value struct {
-	Name   string   `json:"name"`
-	Type   string   `json:"type"`
-	Values []*Value `json:"values"`
 }
 
 type Option func(*Options)
@@ -78,23 +56,25 @@ type GetOption func(*GetOptions)
 
 type ListOption func(*ListOptions)
 
+type OpenAPIOption func(*OpenAPIOptions)
+
 // Register a service node. Additionally supply options such as TTL.
-func Register(s *Service, opts ...RegisterOption) error {
+func Register(s *regpb.Service, opts ...RegisterOption) error {
 	return DefaultRegistry.Register(s, opts...)
 }
 
 // Deregister a service node
-func Deregister(s *Service) error {
+func Deregister(s *regpb.Service) error {
 	return DefaultRegistry.Deregister(s)
 }
 
 // Retrieve a service. A slice is returned since we separate Name/Version.
-func GetService(name string) ([]*Service, error) {
+func GetService(name string) ([]*regpb.Service, error) {
 	return DefaultRegistry.GetService(name)
 }
 
 // List the services. Only returns service names
-func ListServices() ([]*Service, error) {
+func ListServices() ([]*regpb.Service, error) {
 	return DefaultRegistry.ListServices()
 }
 

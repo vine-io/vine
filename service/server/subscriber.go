@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
 const (
@@ -37,7 +37,7 @@ type subscriber struct {
 	typ        reflect.Type
 	subscriber interface{}
 	handlers   []*handler
-	endpoints  []*registry.Endpoint
+	endpoints  []*regpb.Endpoint
 	opts       SubscriberOptions
 }
 
@@ -48,7 +48,7 @@ func newSubscriber(topic string, sub interface{}, opts ...SubscriberOption) Subs
 		o(&options)
 	}
 
-	var endpoints []*registry.Endpoint
+	var endpoints []*regpb.Endpoint
 	var handlers []*handler
 
 	if typ := reflect.TypeOf(sub); typ.Kind() == reflect.Func {
@@ -66,7 +66,7 @@ func newSubscriber(topic string, sub interface{}, opts ...SubscriberOption) Subs
 
 		handlers = append(handlers, h)
 
-		endpoints = append(endpoints, &registry.Endpoint{
+		endpoints = append(endpoints, &regpb.Endpoint{
 			Name:    "Func",
 			Request: extractSubValue(typ),
 			Metadata: map[string]string{
@@ -94,7 +94,7 @@ func newSubscriber(topic string, sub interface{}, opts ...SubscriberOption) Subs
 
 			handlers = append(handlers, h)
 
-			endpoints = append(endpoints, &registry.Endpoint{
+			endpoints = append(endpoints, &regpb.Endpoint{
 				Name:    name + "." + method.Name,
 				Request: extractSubValue(method.Type),
 				Metadata: map[string]string{
@@ -177,7 +177,7 @@ func (s *subscriber) Subscriber() interface{} {
 	return s.subscriber
 }
 
-func (s *subscriber) Endpoints() []*registry.Endpoint {
+func (s *subscriber) Endpoints() []*regpb.Endpoint {
 	return s.endpoints
 }
 

@@ -24,11 +24,11 @@ import (
 	"sync"
 	"time"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/router"
 	"github.com/lack-io/vine/service/api/router/util"
 	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/cache"
 	"github.com/lack-io/vine/util/context/metadata"
 )
@@ -99,7 +99,7 @@ func (r *registryRouter) refresh() {
 }
 
 // process watch event
-func (r *registryRouter) process(res *registry.Result) {
+func (r *registryRouter) process(res *regpb.Result) {
 	// skip these things
 	if res == nil || res.Service == nil {
 		return
@@ -117,7 +117,7 @@ func (r *registryRouter) process(res *registry.Result) {
 }
 
 // store local endpoint cache
-func (r *registryRouter) store(services []*registry.Service) {
+func (r *registryRouter) store(services []*regpb.Service) {
 	// endpoints
 	eps := map[string]*api.Service{}
 

@@ -20,16 +20,17 @@ import (
 	"testing"
 	"time"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry"
 )
 
 var (
-	testData = map[string][]*registry.Service{
+	testData = map[string][]*regpb.Service{
 		"foo": {
 			{
 				Name:    "foo",
 				Version: "1.0.0",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "foo-1.0.0-123",
 						Address: "localhost:9999",
@@ -43,7 +44,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.1",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "foo-1.0.1-321",
 						Address: "localhost:6666",
@@ -53,7 +54,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.3",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "foo-1.0.3-345",
 						Address: "localhost:8888",
@@ -65,7 +66,7 @@ var (
 			{
 				Name:    "bar",
 				Version: "default",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "bar-1.0.0-123",
 						Address: "localhost:9999",
@@ -79,7 +80,7 @@ var (
 			{
 				Name:    "bar",
 				Version: "latest",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{
 						Id:      "bar-1.0.1-321",
 						Address: "localhost:6666",
@@ -93,7 +94,7 @@ var (
 func TestMemoryRegistry(t *testing.T) {
 	m := NewRegistry()
 
-	fn := func(k string, v []*registry.Service) {
+	fn := func(k string, v []*regpb.Service) {
 		services, err := m.GetService(k)
 		if err != nil {
 			t.Errorf("Unexpected error getting service %s: %v", k, err)

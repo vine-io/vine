@@ -20,12 +20,12 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/proto/errors"
-	pb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
+	pb "github.com/lack-io/vine/proto/registry/server"
 	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/service/registry/grpc"
 	"github.com/lack-io/vine/util/namespace"
 )
 
@@ -40,23 +40,23 @@ type Registry struct {
 	Auth auth.Auth
 }
 
-func ActionToEventType(action string) registry.EventType {
+func ActionToEventType(action string) regpb.EventType {
 	switch action {
 	case "create":
-		return registry.Create
+		return regpb.EventType_Create
 	case "delete":
-		return registry.Delete
+		return regpb.EventType_Delete
 	default:
-		return registry.Update
+		return regpb.EventType_Update
 	}
 }
 
-func (r *Registry) publishEvent(action string, service *pb.Service) error {
+func (r *Registry) publishEvent(action string, service *regpb.Service) error {
 	// TODO: timestamp should be read from received event
 	// Right now registry.Result does not contain timestamp
-	event := &pb.Event{
+	event := &regpb.Event{
 		Id:        r.Id,
-		Type:      pb.EventType(ActionToEventType(action)),
+		Type:      ActionToEventType(action),
 		Timestamp: time.Now().UnixNano(),
 		Service:   service,
 	}
@@ -91,20 +91,20 @@ func (r *Registry) GetService(ctx context.Context, req *pb.GetRequest, rsp *pb.G
 	}
 
 	for _, srv := range services {
-		rsp.Services = append(rsp.Services, grpc.ToProto(withoutNamespace(*srv)))
+		rsp.Services = append(rsp.Services, withoutNamespace(*srv))
 	}
 	return nil
 }
 
 // Register a service
-func (r *Registry) Register(ctx context.Context, req *pb.Service, rsp *pb.EmptyResponse) error {
+func (r *Registry) Register(ctx context.Context, req *regpb.Service, rsp *pb.EmptyResponse) error {
 	var regOpts []registry.RegisterOption
 	if req.Options != nil {
 		ttl := time.Duration(req.Options.Ttl) * time.Second
 		regOpts = append(regOpts, registry.RegisterTTL(ttl))
 	}
 
-	service := grpc.ToService(withNamespace(*req, namespace.FromContext(ctx)))
+	service := withNamespace(*req, namespace.FromContext(ctx))
 	if err := r.Registry.Register(service, regOpts...); err != nil {
 		return errors.InternalServerError("go.vine.registry", err.Error())
 	}
@@ -116,8 +116,8 @@ func (r *Registry) Register(ctx context.Context, req *pb.Service, rsp *pb.EmptyR
 }
 
 // Deregister a service
-func (r *Registry) Deregister(ctx context.Context, req *pb.Service, rsp *pb.EmptyResponse) error {
-	service := grpc.ToService(withNamespace(*req, namespace.FromContext(ctx)))
+func (r *Registry) Deregister(ctx context.Context, req *regpb.Service, rsp *pb.EmptyResponse) error {
+	service := withNamespace(*req, namespace.FromContext(ctx))
 	if err := r.Registry.Deregister(service); err != nil {
 		return errors.InternalServerError("go.vine.registry", err.Error())
 	}
@@ -143,9 +143,19 @@ func (r *Registry) ListServices(ctx context.Context, req *pb.ListRequest, rsp *p
 			continue
 		}
 
-		rsp.Services = append(rsp.Services, grpc.ToProto(withoutNamespace(*srv)))
+		rsp.Services = append(rsp.Services, withoutNamespace(*srv))
 	}
 
+	return nil
+}
+
+func (r *Registry) GetOpenAPI(ctx context.Context, req *pb.OpenAPIRequest, rsp *pb.OpenAPIResponse) error {
+	openAPI, err := r.Registry.GetOpenAPI()
+	if err != nil {
+		return errors.InternalServerError("go.vine.registry", err.Error())
+	}
+
+	rsp.OpenAPI = openAPI
 	return nil
 }
 
@@ -165,9 +175,9 @@ func (r *Registry) Watch(ctx context.Context, req *pb.WatchRequest, rsp pb.Regis
 			continue
 		}
 
-		err = rsp.Send(&pb.Result{
+		err = rsp.Send(&regpb.Result{
 			Action:  next.Action,
-			Service: grpc.ToProto(withoutNamespace(*next.Service)),
+			Service: withoutNamespace(*next.Service),
 		})
 		if err != nil {
 			return errors.InternalServerError("go.vine.registry", err.Error())
@@ -177,7 +187,7 @@ func (r *Registry) Watch(ctx context.Context, req *pb.WatchRequest, rsp pb.Regis
 
 // canReadService is a helper function which returns a boolean indicating
 // if a context can read a service.
-func canReadService(ctx context.Context, srv *registry.Service) bool {
+func canReadService(ctx context.Context, srv *regpb.Service) bool {
 	// check if the service has no prefix which means it was written
 	// directly to the store and is therefore assumed to be part of
 	// the default namespace
@@ -199,7 +209,7 @@ const nameSeperator = "/"
 
 // withoutNamespace returns the service with the namespace stripped from
 // the name, e.g. 'bar/go.vine.service.foo' => 'go.vine.service.foo'.
-func withoutNamespace(srv registry.Service) *registry.Service {
+func withoutNamespace(srv regpb.Service) *regpb.Service {
 	comps := strings.Split(srv.Name, nameSeperator)
 	srv.Name = comps[len(comps)-1]
 	return &srv
@@ -207,7 +217,7 @@ func withoutNamespace(srv registry.Service) *registry.Service {
 
 // withNamespace returns the service with the namespace prefixed to the
 // name, e.g. 'go.vine.service.foo' => 'bar/go.vine.service.foo'
-func withNamespace(srv pb.Service, ns string) *pb.Service {
+func withNamespace(srv regpb.Service, ns string) *regpb.Service {
 	// if the namespace is the default, don't append anything since this
 	// means users not leveraging multi-tenancy won't experience any changes
 	if ns == namespace.DefaultNamespace {

@@ -20,7 +20,8 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/proto/errors"
-	pb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
+	"github.com/lack-io/vine/proto/registry/server"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/grpc"
 	"github.com/lack-io/vine/service/registry"
@@ -38,7 +39,7 @@ type gRPCRegistry struct {
 	// address
 	address []string
 	// client to call registry
-	client pb.RegistryService
+	client server.RegistryService
 }
 
 func (s *gRPCRegistry) callOpts() []client.CallOption {
@@ -74,7 +75,7 @@ func (s *gRPCRegistry) Init(opts ...registry.Option) error {
 		cli = grpc.NewClient()
 	}
 
-	s.client = pb.NewRegistryService(DefaultService, cli)
+	s.client = server.NewRegistryService(DefaultService, cli)
 
 	return nil
 }
@@ -83,7 +84,7 @@ func (s *gRPCRegistry) Options() registry.Options {
 	return s.opts
 }
 
-func (s *gRPCRegistry) Register(srv *registry.Service, opts ...registry.RegisterOption) error {
+func (s *gRPCRegistry) Register(srv *regpb.Service, opts ...registry.RegisterOption) error {
 	var options registry.RegisterOptions
 	for _, o := range opts {
 		o(&options)
@@ -93,15 +94,14 @@ func (s *gRPCRegistry) Register(srv *registry.Service, opts ...registry.Register
 	}
 
 	// encode srv into protobuf adn pack Register TTL into it
-	pbSrv := ToProto(srv)
-	pbSrv.Options.Ttl = int64(options.TTL.Seconds())
+	srv.Options.Ttl = int64(options.TTL.Seconds())
 
 	// register the service
-	_, err := s.client.Register(options.Context, pbSrv, s.callOpts()...)
+	_, err := s.client.Register(options.Context, srv, s.callOpts()...)
 	return err
 }
 
-func (s *gRPCRegistry) Deregister(srv *registry.Service, opts ...registry.DeregisterOption) error {
+func (s *gRPCRegistry) Deregister(srv *regpb.Service, opts ...registry.DeregisterOption) error {
 	var options registry.DeregisterOptions
 	for _, o := range opts {
 		o(&options)
@@ -111,11 +111,11 @@ func (s *gRPCRegistry) Deregister(srv *registry.Service, opts ...registry.Deregi
 	}
 
 	// deregister the service
-	_, err := s.client.Deregister(options.Context, ToProto(srv), s.callOpts()...)
+	_, err := s.client.Deregister(options.Context, srv, s.callOpts()...)
 	return err
 }
 
-func (s *gRPCRegistry) GetService(name string, opts ...registry.GetOption) ([]*registry.Service, error) {
+func (s *gRPCRegistry) GetService(name string, opts ...registry.GetOption) ([]*regpb.Service, error) {
 	var options registry.GetOptions
 	for _, o := range opts {
 		o(&options)
@@ -124,7 +124,7 @@ func (s *gRPCRegistry) GetService(name string, opts ...registry.GetOption) ([]*r
 		options.Context = context.TODO()
 	}
 
-	rsp, err := s.client.GetService(options.Context, &pb.GetRequest{Service: name}, s.callOpts()...)
+	rsp, err := s.client.GetService(options.Context, &server.GetRequest{Service: name}, s.callOpts()...)
 
 	if verr, ok := err.(*errors.Error); ok && verr.Code == 404 {
 		return nil, registry.ErrNotFound
@@ -132,15 +132,10 @@ func (s *gRPCRegistry) GetService(name string, opts ...registry.GetOption) ([]*r
 		return nil, err
 	}
 
-	services := make([]*registry.Service, 0, len(rsp.Services))
-	for _, service := range rsp.Services {
-		services = append(services, ToService(service))
-	}
-
-	return services, nil
+	return rsp.Services, nil
 }
 
-func (s *gRPCRegistry) ListServices(opts ...registry.ListOption) ([]*registry.Service, error) {
+func (s *gRPCRegistry) ListServices(opts ...registry.ListOption) ([]*regpb.Service, error) {
 	var options registry.ListOptions
 	for _, o := range opts {
 		o(&options)
@@ -149,17 +144,28 @@ func (s *gRPCRegistry) ListServices(opts ...registry.ListOption) ([]*registry.Se
 		options.Context = context.TODO()
 	}
 
-	rsp, err := s.client.ListServices(options.Context, &pb.ListRequest{}, s.callOpts()...)
+	rsp, err := s.client.ListServices(options.Context, &server.ListRequest{}, s.callOpts()...)
 	if err != nil {
 		return nil, err
 	}
 
-	services := make([]*registry.Service, 0, len(rsp.Services))
-	for _, service := range rsp.Services {
-		services = append(services, ToService(service))
+	return rsp.Services, nil
+}
+
+func (s *gRPCRegistry) GetOpenAPI(opts ...registry.OpenAPIOption) (*regpb.OpenAPI, error) {
+	var options registry.OpenAPIOptions
+	for _, o := range opts {
+		o(&options)
+	}
+	if options.Context == nil {
+		options.Context = context.TODO()
 	}
 
-	return services, nil
+	rsp, err := s.client.GetOpenAPI(options.Context, &server.OpenAPIRequest{}, s.callOpts()...)
+	if err != nil {
+		return nil, err
+	}
+	return rsp.OpenAPI, err
 }
 
 func (s *gRPCRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
@@ -171,7 +177,7 @@ func (s *gRPCRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, er
 		options.Context = context.TODO()
 	}
 
-	stream, err := s.client.Watch(options.Context, &pb.WatchRequest{Service: options.Service}, s.callOpts()...)
+	stream, err := s.client.Watch(options.Context, &server.WatchRequest{Service: options.Service}, s.callOpts()...)
 	if err != nil {
 		return nil, err
 	}
@@ -215,6 +221,6 @@ func NewRegistry(opts ...registry.Option) registry.Registry {
 		opts:    options,
 		name:    name,
 		address: addrs,
-		client:  pb.NewRegistryService(name, cli),
+		client:  server.NewRegistryService(name, cli),
 	}
 }

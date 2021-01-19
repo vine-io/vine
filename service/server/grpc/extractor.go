@@ -19,10 +19,10 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
-func extractValue(v reflect.Type, d int) *registry.Value {
+func extractValue(v reflect.Type, d int) *regpb.Value {
 	if d == 3 {
 		return nil
 	}
@@ -34,7 +34,7 @@ func extractValue(v reflect.Type, d int) *registry.Value {
 		v = v.Elem()
 	}
 
-	arg := &registry.Value{
+	arg := &regpb.Value{
 		Name: v.Name(),
 		Type: v.Name(),
 	}
@@ -75,7 +75,7 @@ func extractValue(v reflect.Type, d int) *registry.Value {
 	return arg
 }
 
-func extractEndpoint(method reflect.Method) *registry.Endpoint {
+func extractEndpoint(method reflect.Method) *regpb.Endpoint {
 	if method.PkgPath != "" {
 		return nil
 	}
@@ -104,7 +104,7 @@ func extractEndpoint(method reflect.Method) *registry.Endpoint {
 	request := extractValue(reqType, 0)
 	response := extractValue(rspType, 0)
 
-	ep := &registry.Endpoint{
+	ep := &regpb.Endpoint{
 		Name:     method.Name,
 		Request:  request,
 		Response: response,
@@ -120,7 +120,7 @@ func extractEndpoint(method reflect.Method) *registry.Endpoint {
 	return ep
 }
 
-func extractSubValue(typ reflect.Type) *registry.Value {
+func extractSubValue(typ reflect.Type) *regpb.Value {
 	var reqType reflect.Type
 	switch typ.NumIn() {
 	case 1:

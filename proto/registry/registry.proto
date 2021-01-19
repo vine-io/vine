@@ -3,14 +3,6 @@ syntax = "proto3";
 package registry;
 option go_package = "github.com/lack-io/vine/proto/registry;registry";
 
-service Registry {
-  rpc GetService(GetRequest) returns (GetResponse) {};
-  rpc Register(Service) returns (EmptyResponse) {};
-  rpc Deregister(Service) returns (EmptyResponse) {};
-  rpc ListServices(ListRequest) returns (ListResponse) {};
-  rpc Watch(WatchRequest) returns (stream Result) {};
-}
-
 // Service represents a vine service
 message Service {
   string name = 1;
@@ -19,6 +11,8 @@ message Service {
   repeated Endpoint endpoints = 4;
   repeated Node nodes = 5;
   Options options = 6;
+  // swagger security
+  SecuritySchemas security = 7;
 }
 
 // Node represents the node the service is on
@@ -35,6 +29,7 @@ message Endpoint {
   Value request = 2;
   Value response = 3;
   map<string, string> metadata = 4;
+  map<string, OpenAPIPath> openAPIPath = 5;
 }
 
 // Value is an opaque value for a request or response
@@ -42,6 +37,9 @@ message Value {
   string name = 1;
   string type = 2;
   repeated Value values = 3;
+  PathParameters parameters = 4;
+  PathRequestBody body = 5;
+  PathResponse response = 6;
 }
 
 // Options are registry options
@@ -56,28 +54,6 @@ message Result {
   int64 timestamp = 3; // unix timestamp
 }
 
-message EmptyResponse {}
-
-message GetRequest {
-  string service = 1;
-}
-
-message GetResponse {
-  repeated Service services = 1;
-}
-
-message ListRequest {
-  // TODO: filtering
-}
-
-message ListResponse {
-  repeated Service services = 1;
-}
-
-message WatchRequest {
-  // service is optional
-  string service = 1;
-}
 
 // EventType defines the type of event
 enum EventType {
@@ -98,3 +74,174 @@ message Event {
   Service service = 4;
 }
 
+message OpenAPI {
+  string openapi = 1;
+  OpenAPIInfo info = 2;
+  OpenAPIExternalDocs externalDocs = 3;
+  repeated string servers = 4;
+  repeated OpenAPITag tags = 5;
+  map<string, OpenAPIPath> paths = 6;
+  OpenAPIComponents components = 7;
+}
+
+message OpenAPIInfo {
+  string title = 1;
+  string description = 2;
+  string termsOfService = 3;
+  OpenAPIContact contact = 4;
+  OpenAPILicense license = 5;
+  string version = 6;
+}
+
+message OpenAPIContact {
+  string name = 1;
+  string email = 2;
+}
+
+message OpenAPILicense {
+  string name = 1;
+  string url = 2;
+}
+
+message OpenAPITag {
+  string name = 1;
+  string description = 2;
+  OpenAPIExternalDocs externalDocs = 3;
+}
+
+message OpenAPIExternalDocs {
+  string description = 1;
+  string url = 2;
+}
+
+message OpenAPIPath {
+  OpenAPIPath get = 1;
+  OpenAPIPath post = 2;
+  OpenAPIPath put = 3;
+  OpenAPIPath patch = 4;
+  OpenAPIPath delete = 5;
+}
+
+message OpenAPIPathDocs {
+  repeated string tags = 1;
+  string summary = 2;
+  repeated PathSecurity security = 3;
+  string description = 4;
+  string operationId = 5;
+  bool deprecated = 6;
+  repeated PathParameters parameters = 7;
+  map<string, PathResponse> responses = 8;
+}
+
+message PathSecurity {
+  repeated string basicAuth = 1;
+  repeated string apiKeys = 2;
+  repeated string bearerAuth = 3;
+}
+
+message PathParameters {
+  // query, cookie, path
+  string in = 1;
+  string name = 2;
+  bool required = 3;
+  string description = 4;
+  bool allowReserved = 5;
+  string style = 6;
+  bool explode = 7;
+  bool allowEmptyValue = 8;
+  Schema schema = 9;
+  string example = 10;
+}
+
+message PathRequestBody {
+  string description = 1;
+  bool required = 2;
+  PathRequestBodyContent content = 3;
+}
+
+message PathRequestBodyContent {
+  ApplicationContent applicationJson = 1;
+  ApplicationContent applicationXml = 2;
+}
+
+message ApplicationContent {
+  Schema schema = 1;
+}
+
+// PathResponse is swagger path response
+message PathResponse {
+  string description = 1;
+  ApplicationContent content = 2;
+}
+
+message OpenAPIComponents {
+  map<string, PathResponse> responses = 1;
+  map<string, Schema> schemas = 2;
+  SecuritySchemas securitySchemas = 3;
+}
+
+message SecuritySchemas {
+  BasicSecurity basic = 1;
+  APIKeysSecurity apiKeys = 2;
+  BearerSecurity bearer = 3;
+}
+
+// BasicSecurity is swagger Basic Authorization security (https://swagger.io/docs/specification/authentication/basic-authentication/)
+message BasicSecurity {
+  // http, apiKey, oauth, openIdConnect
+  string type = 1;
+  string schema = 2;
+}
+
+// APIKeysSecurity is swagger API keys Authorization security (https://swagger.io/docs/specification/authentication/api-keys/)
+message APIKeysSecurity {
+  string type = 1;
+  // header
+  string in = 2;
+  string name = 3;
+}
+
+// BearerSecurity is swagger Bearer Authorization security (https://swagger.io/docs/specification/authentication/bearer-authentication/)
+message BearerSecurity {
+  // http
+  string type = 1;
+  string schema = 2;
+  // JWT
+  string bearerFormat = 3;
+}
+
+// Model is swagger data models (https://swagger.io/docs/specification/data-models/)
+message Model {
+  // string, number, integer, boolean, array, object
+  string type = 1;
+  map<string, Schema> properties = 2;
+  repeated string required = 3;
+}
+
+message Schema {
+  string type = 1;
+  string format = 2;
+  string description = 3;
+  string example = 4;
+  string pattern = 5;
+  bool nullable = 6;
+  bool readOnly = 7;
+  bool writeOnly = 8;
+  bool required = 9;
+  string ref = 10;
+  string default = 11;
+
+  int32 minLength = 20;
+  int32 maxLength = 21;
+
+  int32 multipleOf = 30;
+  int32 minimum = 31;
+  bool exclusiveMinimum = 32;
+  int32 maximum = 33;
+  bool exclusiveMaximum = 34;
+
+  repeated string enum = 41;
+  repeated Schema items = 42;
+
+  repeated PathParameters parameters = 51;
+}

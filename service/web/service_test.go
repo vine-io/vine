@@ -25,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/memory"
 )
@@ -77,7 +78,7 @@ func TestService(t *testing.T) {
 		close(errCh)
 	}()
 
-	var s []*registry.Service
+	var s []*regpb.Service
 
 	eventually(func() bool {
 		var err error
@@ -269,7 +270,7 @@ func TestTLS(t *testing.T) {
 		close(errCh)
 	}()
 
-	var s []*registry.Service
+	var s []*regpb.Service
 
 	eventually(func() bool {
 		var err error

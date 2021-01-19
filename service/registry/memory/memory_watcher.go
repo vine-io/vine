@@ -17,6 +17,7 @@ package memory
 import (
 	"errors"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry"
 )
 
@@ -25,7 +26,7 @@ type memoryWatcher struct {
 	opts registry.WatchOptions
 }
 
-func (m *memoryWatcher) Next() (*registry.Result, error) {
+func (m *memoryWatcher) Next() (*regpb.Result, error) {
 	// not implement so we just block util exit
 	<-m.exit
 	return nil, errors.New("watcher stopped")

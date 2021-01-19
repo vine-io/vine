@@ -23,11 +23,11 @@ import (
 
 	rcli "github.com/lack-io/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/registry/handler"
-	pb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
+	pb "github.com/lack-io/vine/proto/registry/server"
 	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/service/registry/grpc"
 	"github.com/lack-io/vine/util/helper"
 )
 
@@ -49,13 +49,13 @@ type subscriber struct {
 }
 
 // Process processes registry events
-func (s *subscriber) Process(ctx context.Context, event *pb.Event) error {
+func (s *subscriber) Process(ctx context.Context, event *regpb.Event) error {
 	if event.Id == s.Id {
-		log.Tracef("skipping own %s event: %s for: %s", registry.EventType(event.Type), event.Id, event.Service.Name)
+		log.Tracef("skipping own %s event: %s for: %s", event.Type.String(), event.Id, event.Service.Name)
 		return nil
 	}
 
-	log.Debugf("received %s event from: %s for: %s", registry.EventType(event.Type), event.Id, event.Service.Name)
+	log.Debugf("received %s event from: %s for: %s", event.Type.String(), event.Id, event.Service.Name)
 
 	// no service
 	if event.Service == nil {
@@ -63,7 +63,7 @@ func (s *subscriber) Process(ctx context.Context, event *pb.Event) error {
 	}
 
 	// decode protobuf to registry.Service
-	svc := grpc.ToService(event.Service)
+	svc := event.Service
 
 	// default ttl to 1 minute
 	ttl := time.Minute
@@ -75,14 +75,14 @@ func (s *subscriber) Process(ctx context.Context, event *pb.Event) error {
 		}
 	}
 
-	switch registry.EventType(event.Type) {
-	case registry.Create, registry.Update:
+	switch event.Type {
+	case regpb.EventType_Create, regpb.EventType_Update:
 		log.Debugf("registering service: %s", svc.Name)
 		if err := s.Registry.Register(svc, registry.RegisterTTL(ttl)); err != nil {
 			log.Debugf("failed to register service: %s", svc.Name)
 			return err
 		}
-	case registry.Delete:
+	case regpb.EventType_Delete:
 		log.Debugf("deregistering service: %s", svc.Name)
 		if err := s.Registry.Deregister(svc); err != nil {
 			log.Debugf("failed to deregister service: %s", svc.Name)

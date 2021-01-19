@@ -30,11 +30,11 @@ import (
 	gmetadata "google.golang.org/grpc/metadata"
 
 	"github.com/lack-io/vine/proto/errors"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	raw "github.com/lack-io/vine/service/codec/bytes"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/context/metadata"
 	mnet "github.com/lack-io/vine/util/net"
 )
@@ -90,8 +90,8 @@ func (g *grpcClient) next(request client.Request, opts client.CallOptions) (sele
 
 	// return remote address
 	if len(address) > 0 {
-		return func() (*registry.Node, error) {
-			return &registry.Node{
+		return func() (*regpb.Node, error) {
+			return &regpb.Node{
 				Address: address[0],
 			}, nil
 		}, nil
@@ -109,7 +109,7 @@ func (g *grpcClient) next(request client.Request, opts client.CallOptions) (sele
 	return next, nil
 }
 
-func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
+func (g *grpcClient) call(ctx context.Context, node *regpb.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
 	var header map[string]string
 
 	address := node.Address
@@ -188,7 +188,7 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 	return grr
 }
 
-func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
+func (g *grpcClient) stream(ctx context.Context, node *regpb.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
 	var header map[string]string
 
 	address := node.Address

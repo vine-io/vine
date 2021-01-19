@@ -15,11 +15,11 @@
 package cli
 
 import (
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
 type sortedServices struct {
-	services []*registry.Service
+	services []*regpb.Service
 }
 
 func (s sortedServices) Len() int {

@@ -38,6 +38,7 @@ import (
 	"github.com/lack-io/vine/client/api/handler"
 	"github.com/lack-io/vine/client/resolver/web"
 	"github.com/lack-io/vine/plugin"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service"
 	res "github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/server"
@@ -104,7 +105,7 @@ type reg struct {
 
 	sync.RWMutex
 	lastPull time.Time
-	services []*registry.Service
+	services []*regpb.Service
 }
 
 // ServeHTTP serves the web dashboard and proxies where appropriate
@@ -221,7 +222,7 @@ func (s *srv) proxy() *proxy {
 	}
 }
 
-func format(v *registry.Value) string {
+func format(v *regpb.Value) string {
 	if v == nil || len(v.Values) == 0 {
 		return "{}"
 	}
@@ -232,7 +233,7 @@ func format(v *registry.Value) string {
 	return fmt.Sprintf("{\n%s}", strings.Join(f, ""))
 }
 
-func formatEndpoint(v *registry.Value, r int) string {
+func formatEndpoint(v *regpb.Value, r int) string {
 	// default format is tabbed plus the value plus new line
 	fparts := []string{"", "%s %s", "\n"}
 	for i := 0; i < r+1; i++ {
@@ -385,7 +386,7 @@ func (s *srv) callHandler(w http.ResponseWriter, r *http.Request) {
 
 	sort.Sort(sortedServices{services})
 
-	serviceMap := make(map[string][]*registry.Endpoint)
+	serviceMap := make(map[string][]*regpb.Endpoint)
 	for _, service := range services {
 		if len(service.Endpoints) > 0 {
 			serviceMap[service.Name] = service.Endpoints

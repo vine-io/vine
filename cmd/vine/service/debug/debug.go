@@ -18,19 +18,16 @@ package debug
 import (
 	"github.com/lack-io/cli"
 
+	logHandler "github.com/lack-io/vine/cmd/vine/service/debug/log"
+	statshandler "github.com/lack-io/vine/cmd/vine/service/debug/stats"
+	tracehandler "github.com/lack-io/vine/cmd/vine/service/debug/trace"
 	pblog "github.com/lack-io/vine/proto/debug/log"
 	pbstats "github.com/lack-io/vine/proto/debug/stats"
 	pbtrace "github.com/lack-io/vine/proto/debug/trace"
 	"github.com/lack-io/vine/service"
-	"github.com/lack-io/vine/service/debug/log"
-
-	// "github.com/lack-io/vine/debug/log/kubernetes"
 	dservice "github.com/lack-io/vine/service/debug"
+	"github.com/lack-io/vine/service/debug/log"
 	ulog "github.com/lack-io/vine/service/logger"
-
-	logHandler "github.com/lack-io/vine/cmd/vine/service/debug/log"
-	statshandler "github.com/lack-io/vine/cmd/vine/service/debug/stats"
-	tracehandler "github.com/lack-io/vine/cmd/vine/service/debug/trace"
 )
 
 var (

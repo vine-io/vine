@@ -24,6 +24,7 @@ import (
 
 	"github.com/google/uuid"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 )
@@ -118,7 +119,7 @@ func (r *router) manageRoute(route Route, action string) error {
 
 // manageServiceRoutes applies action to all routes of the service.
 // It returns error of the action fails with error.
-func (r *router) manageRoutes(service *registry.Service, action string) error {
+func (r *router) manageRoutes(service *regpb.Service, action string) error {
 	// action is the routing table action
 	action = strings.ToLower(action)
 

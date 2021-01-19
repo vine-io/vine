@@ -22,11 +22,11 @@ import (
 	"strings"
 	"sync"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/router"
 	"github.com/lack-io/vine/service/api/router/util"
 	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/context/metadata"
 	rutil "github.com/lack-io/vine/util/registry"
 )
@@ -201,7 +201,7 @@ func (r *staticRouter) Endpoint(req *http.Request) (*api.Service, error) {
 		svcs := rutil.Copy(services)
 		for _, svc := range svcs {
 			if len(svc.Endpoints) == 0 {
-				e := &registry.Endpoint{}
+				e := &regpb.Endpoint{}
 				e.Name = strings.Join(epf[1:], ".")
 				e.Metadata = make(map[string]string)
 				e.Metadata["stream"] = "true"

@@ -18,6 +18,7 @@ import (
 	"sync"
 	"time"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
@@ -29,7 +30,7 @@ type cached struct {
 	registry registry.Registry
 
 	sync.RWMutex
-	serviceCache []*registry.Service
+	serviceCache []*regpb.Service
 }
 
 func newCache(done <-chan bool) *cached {
@@ -47,7 +48,7 @@ func newCache(done <-chan bool) *cached {
 	return c
 }
 
-func (c *cached) services() []*registry.Service {
+func (c *cached) services() []*regpb.Service {
 	c.RLock()
 	defer c.RUnlock()
 	return c.serviceCache
@@ -79,7 +80,7 @@ func (c *cached) scan() error {
 		return err
 	}
 
-	serviceMap := make(map[string]*registry.Service)
+	serviceMap := make(map[string]*regpb.Service)
 
 	// check each service has nodes
 	for _, service := range services {
@@ -101,7 +102,7 @@ func (c *cached) scan() error {
 	}
 
 	// flatten the map
-	var serviceList []*registry.Service
+	var serviceList []*regpb.Service
 
 	for _, service := range serviceMap {
 		serviceList = append(serviceList, service)

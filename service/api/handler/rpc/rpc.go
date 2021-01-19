@@ -26,6 +26,7 @@ import (
 	"github.com/oxtoacart/bpool"
 
 	"github.com/lack-io/vine/proto/errors"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client"
@@ -34,7 +35,6 @@ import (
 	"github.com/lack-io/vine/service/codec/jsonrpc"
 	"github.com/lack-io/vine/service/codec/protorpc"
 	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/registry"
 	ctx "github.com/lack-io/vine/util/context"
 	"github.com/lack-io/vine/util/context/metadata"
 	"github.com/lack-io/vine/util/qson"
@@ -79,8 +79,8 @@ func (b *buffer) Write(_ []byte) (int, error) {
 }
 
 // strategy is a hack for selection
-func strategy(services []*registry.Service) selector.Strategy {
-	return func(_ []*registry.Service) selector.Next {
+func strategy(services []*regpb.Service) selector.Strategy {
+	return func(_ []*regpb.Service) selector.Next {
 		// ignore input to this function, use services above
 		return selector.Random(services)
 	}

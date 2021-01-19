@@ -23,14 +23,14 @@ import (
 	"github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/proto/debug/stats"
 	"github.com/lack-io/vine/proto/errors"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/config/cmd"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/ring"
 )
 
 // New initialises and returns a new Stats service handler
-func New(done <-chan bool, windowSize int, services func() []*registry.Service) (*Stats, error) {
+func New(done <-chan bool, windowSize int, services func() []*regpb.Service) (*Stats, error) {
 	s := &Stats{
 		client:    *cmd.DefaultOptions().Client,
 		snapshots: ring.New(windowSize),
@@ -49,7 +49,7 @@ type Stats struct {
 	// historical snapshots from the start
 	snapshots *ring.Buffer
 	// returns list of services
-	services func() []*registry.Service
+	services func() []*regpb.Service
 }
 
 // Read returns gets a snapshot of all current stats
@@ -127,7 +127,7 @@ func (s *Stats) scrape() {
 
 	s.RLock()
 	// Create a local copy of cached services
-	services := make([]*registry.Service, len(cached))
+	services := make([]*regpb.Service, len(cached))
 	copy(services, cached)
 	s.RUnlock()
 
@@ -153,7 +153,7 @@ func (s *Stats) scrape() {
 
 			wg.Add(1)
 
-			go func(st *Stats, service *registry.Service, node *registry.Node) {
+			go func(st *Stats, service *regpb.Service, node *regpb.Node) {
 				defer wg.Done()
 
 				// create new context to cancel within a few seconds

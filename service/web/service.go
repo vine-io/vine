@@ -28,6 +28,7 @@ import (
 
 	"github.com/lack-io/cli"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	srv "github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
@@ -44,7 +45,7 @@ type service struct {
 	opts Options
 
 	mux *http.ServeMux
-	srv *registry.Service
+	srv *regpb.Service
 
 	sync.RWMutex
 	running bool
@@ -63,7 +64,7 @@ func newService(opts ...Option) Service {
 	return s
 }
 
-func (s *service) genSrv() *registry.Service {
+func (s *service) genSrv() *regpb.Service {
 	var host string
 	var port string
 	var err error
@@ -95,10 +96,10 @@ func (s *service) genSrv() *registry.Service {
 		addr = "[" + addr + "]"
 	}
 
-	return &registry.Service{
+	return &regpb.Service{
 		Name:    s.opts.Name,
 		Version: s.opts.Version,
-		Nodes: []*registry.Node{{
+		Nodes: []*regpb.Node{{
 			Id:       s.opts.Id,
 			Address:  fmt.Sprintf("%s:%s", addr, port),
 			Metadata: s.opts.Metadata,
@@ -324,7 +325,7 @@ func (s *service) Handle(pattern string, handler http.Handler) {
 	// if its unseen then add an endpoint
 	if !seen {
 		s.Lock()
-		s.srv.Endpoints = append(s.srv.Endpoints, &registry.Endpoint{
+		s.srv.Endpoints = append(s.srv.Endpoints, &regpb.Endpoint{
 			Name: pattern,
 		})
 		s.Unlock()
@@ -355,7 +356,7 @@ func (s *service) HandleFunc(pattern string, handler func(http.ResponseWriter, *
 
 	if !seen {
 		s.Lock()
-		s.srv.Endpoints = append(s.srv.Endpoints, &registry.Endpoint{
+		s.srv.Endpoints = append(s.srv.Endpoints, &regpb.Endpoint{
 			Name: pattern,
 		})
 		s.Unlock()

@@ -58,6 +58,10 @@ type ListOptions struct {
 	Context context.Context
 }
 
+type OpenAPIOptions struct {
+	Context context.Context
+}
+
 // Addrs is the registry addresses to use
 func Addrs(addrs ...string) Option {
 	return func(o *Options) {

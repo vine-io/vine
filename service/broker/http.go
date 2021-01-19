@@ -35,6 +35,7 @@ import (
 	"golang.org/x/net/http2"
 
 	"github.com/lack-io/vine/proto/errors"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/codec/json"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/cache"
@@ -69,7 +70,7 @@ type httpSubscriber struct {
 	id    string
 	topic string
 	fn    Handler
-	svc   *registry.Service
+	svc   *regpb.Service
 	hb    *httpBroker
 }
 
@@ -556,7 +557,7 @@ func (h *httpBroker) Publish(topic string, msg *Message, opts ...PublishOption) 
 	}
 	h.RUnlock()
 
-	pub := func(node *registry.Node, t string, b []byte) error {
+	pub := func(node *regpb.Node, t string, b []byte) error {
 		scheme := "http"
 
 		// check if secure is added in metadata
@@ -579,9 +580,9 @@ func (h *httpBroker) Publish(topic string, msg *Message, opts ...PublishOption) 
 		return nil
 	}
 
-	srv := func(s []*registry.Service, b []byte) {
+	srv := func(s []*regpb.Service, b []byte) {
 		for _, service := range s {
-			var nodes []*registry.Node
+			var nodes []*regpb.Node
 
 			for _, node := range service.Nodes {
 				// only use nodes tagged with broker http
@@ -677,7 +678,7 @@ func (h *httpBroker) Subscribe(topic string, handler Handler, opts ...SubscribeO
 	}
 
 	// register service
-	node := &registry.Node{
+	node := &regpb.Node{
 		Id:      topic + "-" + h.id,
 		Address: mnet.HostPort(addr, port),
 		Metadata: map[string]string{
@@ -693,10 +694,10 @@ func (h *httpBroker) Subscribe(topic string, handler Handler, opts ...SubscribeO
 		version = broadcastVersion
 	}
 
-	service := &registry.Service{
+	service := &regpb.Service{
 		Name:    serviceName,
 		Version: version,
-		Nodes:   []*registry.Node{node},
+		Nodes:   []*regpb.Node{node},
 	}
 
 	// generate subscriber

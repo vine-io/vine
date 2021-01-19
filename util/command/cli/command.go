@@ -33,16 +33,16 @@ import (
 
 	proto "github.com/lack-io/vine/proto/debug"
 	dns "github.com/lack-io/vine/proto/network/dns"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client"
 	cbytes "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/config/cmd"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/grpc"
 	inclient "github.com/lack-io/vine/util/client"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 
-func formatEndpoint(v *registry.Value, r int) string {
+func formatEndpoint(v *regpb.Value, r int) string {
 	// default format is tabbed plus the value plus new line
 	fparts := []string{"", "%s %s", "\n"}
 	for i := 0; i < r+1; i++ {
@@ -192,7 +192,7 @@ func RegisterService(c *cli.Context, args []string) ([]byte, error) {
 
 	req := strings.Join(args, " ")
 
-	var srv *registry.Service
+	var srv *regpb.Service
 
 	d := json.NewDecoder(strings.NewReader(req))
 	d.UseNumber()
@@ -217,7 +217,7 @@ func DeregisterService(c *cli.Context, args []string) ([]byte, error) {
 
 	req := strings.Join(args, " ")
 
-	var srv *registry.Service
+	var srv *regpb.Service
 
 	d := json.NewDecoder(strings.NewReader(req))
 	d.UseNumber()
@@ -241,7 +241,7 @@ func GetService(c *cli.Context, args []string) ([]byte, error) {
 	}
 
 	var output []string
-	var srv []*registry.Service
+	var srv []*regpb.Service
 	var err error
 
 	reg := *cmd.DefaultOptions().Registry
@@ -644,7 +644,7 @@ func networkDNSHelper(action, address, domain, token string) error {
 }
 
 func ListServices(c *cli.Context) ([]byte, error) {
-	var rsp []*registry.Service
+	var rsp []*regpb.Service
 	var err error
 
 	reg := *cmd.DefaultOptions().Registry

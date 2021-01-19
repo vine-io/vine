@@ -17,6 +17,7 @@ package selector
 import (
 	"time"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/cache"
 )
@@ -84,7 +85,7 @@ func (c *registrySelector) Select(service string, opts ...SelectOption) (Next, e
 	return sopts.Strategy(services), nil
 }
 
-func (c *registrySelector) Mark(service string, node *registry.Node, err error) {}
+func (c *registrySelector) Mark(service string, node *regpb.Node, err error) {}
 
 func (c *registrySelector) Reset(service string) {}
 

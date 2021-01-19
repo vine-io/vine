@@ -17,13 +17,13 @@ package server
 import (
 	"reflect"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
 type rpcHandler struct {
 	name      string
 	handler   interface{}
-	endpoints []*registry.Endpoint
+	endpoints []*regpb.Endpoint
 	opts      HandlerOptions
 }
 
@@ -38,7 +38,7 @@ func newRpcHandler(handler interface{}, opts ...HandlerOption) Handler {
 	hdlr := reflect.ValueOf(handler)
 	name := reflect.Indirect(hdlr).Type().Name()
 
-	var endpoints []*registry.Endpoint
+	var endpoints []*regpb.Endpoint
 
 	for m := 0; m < typ.NumMethod(); m++ {
 		if e := extractEndpoint(typ.Method(m)); e != nil {
@@ -68,7 +68,7 @@ func (r *rpcHandler) Handler() interface{} {
 	return r.handler
 }
 
-func (r *rpcHandler) Endpoints() []*registry.Endpoint {
+func (r *rpcHandler) Endpoints() []*regpb.Endpoint {
 	return r.endpoints
 }
 

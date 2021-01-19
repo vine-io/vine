@@ -22,9 +22,9 @@ import (
 
 	"github.com/google/uuid"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/codec"
 	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/registry"
 	signalutil "github.com/lack-io/vine/util/signal"
 )
 
@@ -134,7 +134,7 @@ type Stream interface {
 type Handler interface {
 	Name() string
 	Handler() interface{}
-	Endpoints() []*registry.Endpoint
+	Endpoints() []*regpb.Endpoint
 	Options() HandlerOptions
 }
 
@@ -144,7 +144,7 @@ type Handler interface {
 type Subscriber interface {
 	Topic() string
 	Subscriber() interface{}
-	Endpoints() []*registry.Endpoint
+	Endpoints() []*regpb.Endpoint
 	Options() SubscriberOptions
 }
 

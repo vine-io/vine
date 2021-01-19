@@ -24,8 +24,8 @@ import (
 	"github.com/oxtoacart/bpool"
 
 	"github.com/lack-io/vine/proto/api"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client/selector"
-	"github.com/lack-io/vine/service/registry"
 )
 
 var (
@@ -126,8 +126,8 @@ func requestToProto(r *http.Request) (*api.Request, error) {
 }
 
 // strategy is a hack for selection
-func strategy(services []*registry.Service) selector.Strategy {
-	return func(_ []*registry.Service) selector.Next {
+func strategy(services []*regpb.Service) selector.Strategy {
+	return func(_ []*regpb.Service) selector.Next {
 		// ignore input to this function, use services above
 		return selector.Random(services)
 	}

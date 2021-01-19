@@ -20,7 +20,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry/memory"
 )
 
@@ -43,9 +43,9 @@ func TestRoundTripper(t *testing.T) {
 
 	go http.Serve(l, nil)
 
-	m.Register(&registry.Service{
+	m.Register(&regpb.Service{
 		Name: "example.com",
-		Nodes: []*registry.Node{
+		Nodes: []*regpb.Node{
 			{
 				Id:      "1",
 				Address: l.Addr().String(),

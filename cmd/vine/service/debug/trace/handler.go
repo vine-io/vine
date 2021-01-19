@@ -24,15 +24,15 @@ import (
 	"github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/proto/debug/trace"
 	"github.com/lack-io/vine/proto/errors"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/ring"
 )
 
 // New initialises and returns a new trace service handler
-func New(done <-chan bool, windowSize int, services func() []*registry.Service) (*Trace, error) {
+func New(done <-chan bool, windowSize int, services func() []*regpb.Service) (*Trace, error) {
 	s := &Trace{
 		client:    *cmd.DefaultOptions().Client,
 		snapshots: ring.New(windowSize),
@@ -51,7 +51,7 @@ type Trace struct {
 	// snapshots
 	snapshots *ring.Buffer
 	// returns a list of services
-	services func() []*registry.Service
+	services func() []*regpb.Service
 }
 
 // Filters out all spans that are part of a trace that hits a given service.
@@ -188,7 +188,7 @@ func (s *Trace) scrape() {
 
 	s.RLock()
 	// Create a local copy of cached services
-	services := make([]*registry.Service, len(cached))
+	services := make([]*regpb.Service, len(cached))
 	copy(services, cached)
 	s.RUnlock()
 
@@ -229,7 +229,7 @@ func (s *Trace) scrape() {
 
 			wg.Add(1)
 
-			go func(st *Trace, service *registry.Service, node *registry.Node) {
+			go func(st *Trace, service *regpb.Service, node *regpb.Node) {
 				defer wg.Done()
 
 				// create new context to cancel within a few seconds

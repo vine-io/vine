@@ -19,7 +19,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/server"
 )
 
@@ -69,7 +69,7 @@ type Service struct {
 	// The endpoint for this service
 	Endpoint *Endpoint
 	// Versions of this service
-	Services []*registry.Service
+	Services []*regpb.Service
 }
 
 func strip(s string) string {
@@ -81,7 +81,7 @@ func slice(s string) []string {
 
 	for _, p := range strings.Split(s, ",") {
 		if str := strip(p); len(str) > 0 {
-			sl = append(sl, strip(p))
+			sl = append(sl, str)
 		}
 	}
 
@@ -145,15 +145,13 @@ func Validate(e *Endpoint) error {
 		ps := p[0]
 		pe := p[len(p)-1]
 
-		if ps == '^' && pe == '$' {
-			_, err := regexp.CompilePOSIX(p)
-			if err != nil {
-				return err
-			}
-		} else if ps == '^' && pe != '$' {
+		if ps != '^' || pe != '$' {
 			return errors.New("invalid path")
-		} else if ps != '^' && pe == '$' {
-			return errors.New("invalid path")
+		}
+
+		_, err := regexp.CompilePOSIX(p)
+		if err != nil {
+			return err
 		}
 	}
 

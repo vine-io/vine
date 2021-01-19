@@ -19,10 +19,10 @@ import (
 	"net/url"
 	"testing"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/client/selector"
 	dnsSelector "github.com/lack-io/vine/service/client/selector/dns"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/memory"
 )
 
@@ -58,10 +58,10 @@ func TestWebResolver(t *testing.T) {
 			// set resolver type
 			res.Type = service.Type
 
-			v := &registry.Service{
+			v := &regpb.Service{
 				Name:    service.Service,
 				Version: "latest",
-				Nodes: []*registry.Node{
+				Nodes: []*regpb.Node{
 					{Id: "1", Address: "127.0.0.1:8080"},
 				},
 			}

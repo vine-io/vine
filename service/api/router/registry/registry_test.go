@@ -19,16 +19,16 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
 func TestStoreRegex(t *testing.T) {
 	router := newRouter()
-	router.store([]*registry.Service{
+	router.store([]*regpb.Service{
 		{
 			Name:    "Foobar",
 			Version: "latest",
-			Endpoints: []*registry.Endpoint{
+			Endpoints: []*regpb.Endpoint{
 				{
 					Name: "foo",
 					Metadata: map[string]string{

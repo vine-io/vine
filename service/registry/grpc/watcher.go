@@ -15,7 +15,8 @@
 package grpc
 
 import (
-	pb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
+	pb "github.com/lack-io/vine/proto/registry/server"
 	"github.com/lack-io/vine/service/registry"
 )
 
@@ -24,7 +25,7 @@ type serviceWatcher struct {
 	closed chan bool
 }
 
-func (s *serviceWatcher) Next() (*registry.Result, error) {
+func (s *serviceWatcher) Next() (*regpb.Result, error) {
 	// check if closed
 	select {
 	case <-s.closed:
@@ -37,9 +38,9 @@ func (s *serviceWatcher) Next() (*registry.Result, error) {
 		return nil, err
 	}
 
-	return &registry.Result{
+	return &regpb.Result{
 		Action:  r.Action,
-		Service: ToService(r.Service),
+		Service: r.Service,
 	}, nil
 }
 

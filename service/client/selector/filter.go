@@ -15,14 +15,14 @@
 package selector
 
 import (
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
 // FilterEndpoint is an endpoint based Select Filter which will
 // only return services with the endpoint specified.
 func FilterEndpoint(name string) Filter {
-	return func(old []*registry.Service) []*registry.Service {
-		var services []*registry.Service
+	return func(old []*regpb.Service) []*regpb.Service {
+		var services []*regpb.Service
 
 		for _, service := range old {
 			for _, ep := range service.Endpoints {
@@ -40,12 +40,12 @@ func FilterEndpoint(name string) Filter {
 // FilterLabel is a label based Select Filter which will
 // only return services with the label specified.
 func FilterLabel(key, val string) Filter {
-	return func(old []*registry.Service) []*registry.Service {
-		var services []*registry.Service
+	return func(old []*regpb.Service) []*regpb.Service {
+		var services []*regpb.Service
 
 		for _, service := range old {
-			serv := new(registry.Service)
-			var nodes []*registry.Node
+			serv := new(regpb.Service)
+			var nodes []*regpb.Node
 
 			for _, node := range service.Nodes {
 				if node.Metadata == nil {
@@ -73,8 +73,8 @@ func FilterLabel(key, val string) Filter {
 // FilterVersion is a version based Select Filter which will
 // only return services with the version specified.
 func FilterVersion(version string) Filter {
-	return func(old []*registry.Service) []*registry.Service {
-		var services []*registry.Service
+	return func(old []*regpb.Service) []*regpb.Service {
+		var services []*regpb.Service
 
 		for _, service := range old {
 			if service.Version == version {

@@ -26,6 +26,7 @@ import (
 	"sync"
 	"time"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/codec"
 	raw "github.com/lack-io/vine/service/codec/bytes"
@@ -56,7 +57,7 @@ type rpcServer struct {
 	// graceful exit
 	wg *sync.WaitGroup
 
-	rsvc *registry.Service
+	rsvc *regpb.Service
 }
 
 func newRpcServer(opts ...Option) Server {
@@ -528,7 +529,7 @@ func (s *rpcServer) Register() error {
 	config := s.Options()
 	s.RUnlock()
 
-	regFunc := func(service *registry.Service) error {
+	regFunc := func(service *regpb.Service) error {
 		// create registry options
 		rOpts := []registry.RegisterOption{registry.RegisterTTL(config.RegisterTTL)}
 
@@ -600,7 +601,7 @@ func (s *rpcServer) Register() error {
 	}
 
 	// register service
-	node := &registry.Node{
+	node := &regpb.Node{
 		Id:       config.Name + "-" + config.Id,
 		Address:  address,
 		Metadata: md,
@@ -637,7 +638,7 @@ func (s *rpcServer) Register() error {
 		return subscriberList[i].Topic() > subscriberList[j].Topic()
 	})
 
-	endpoints := make([]*registry.Endpoint, 0, len(handlerList)+len(subscriberList))
+	endpoints := make([]*regpb.Endpoint, 0, len(handlerList)+len(subscriberList))
 
 	for _, n := range handlerList {
 		endpoints = append(endpoints, s.handlers[n].Endpoints()...)
@@ -647,10 +648,10 @@ func (s *rpcServer) Register() error {
 		endpoints = append(endpoints, e.Endpoints()...)
 	}
 
-	service := &registry.Service{
+	service := &regpb.Service{
 		Name:      config.Name,
 		Version:   config.Version,
-		Nodes:     []*registry.Node{node},
+		Nodes:     []*regpb.Node{node},
 		Endpoints: endpoints,
 	}
 
@@ -758,15 +759,15 @@ func (s *rpcServer) Deregister() error {
 		address = mnet.HostPort(address, port)
 	}
 
-	node := &registry.Node{
+	node := &regpb.Node{
 		Id:      config.Name + "-" + config.Id,
 		Address: address,
 	}
 
-	service := &registry.Service{
+	service := &regpb.Service{
 		Name:    config.Name,
 		Version: config.Version,
-		Nodes:   []*registry.Node{node},
+		Nodes:   []*regpb.Node{node},
 	}
 
 	log.Infof("Registry [%s] Deregistering node: %s", config.Registry.String(), node.Id)

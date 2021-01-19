@@ -18,7 +18,7 @@ package selector
 import (
 	"errors"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
 // Selector builds on the registry as a mechanism to pick nodes
@@ -30,7 +30,7 @@ type Selector interface {
 	// Select returns a function which should return the next node
 	Select(service string, opts ...SelectOption) (Next, error)
 	// Mark sets the success/error against a node
-	Mark(service string, node *registry.Node, err error)
+	Mark(service string, node *regpb.Node, err error)
 	// Reset returns state back to zero for a service
 	Reset(service string)
 	// Close renders the selector unusable
@@ -41,13 +41,13 @@ type Selector interface {
 
 // Next is a function that returns the next node
 // based on the selector's strategy
-type Next func() (*registry.Node, error)
+type Next func() (*regpb.Node, error)
 
 // Filter is used to filter a service during the selection process
-type Filter func([]*registry.Service) []*registry.Service
+type Filter func([]*regpb.Service) []*regpb.Service
 
 // Strategy is a selection strategy e.g random, round robin
-type Strategy func([]*registry.Service) Next
+type Strategy func([]*regpb.Service) Next
 
 var (
 	DefaultSelector = NewSelector()

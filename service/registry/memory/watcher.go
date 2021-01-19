@@ -17,17 +17,18 @@ package memory
 import (
 	"errors"
 
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/registry"
 )
 
 type Watcher struct {
 	id   string
 	wo   registry.WatchOptions
-	res  chan *registry.Result
+	res  chan *regpb.Result
 	exit chan bool
 }
 
-func (m *Watcher) Next() (*registry.Result, error) {
+func (m *Watcher) Next() (*regpb.Result, error) {
 	for {
 		select {
 		case r := <-m.res:
