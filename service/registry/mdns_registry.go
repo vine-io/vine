@@ -459,11 +459,6 @@ func (m *mdnsRegistry) ListServices(opts ...ListOption) ([]*regpb.Service, error
 	return services, nil
 }
 
-func (m *mdnsRegistry) GetOpenAPI(opts ...OpenAPIOption) (*regpb.OpenAPI, error) {
-	// TODO: mdns GetOpenAPI implement
-	return nil, nil
-}
-
 func (m *mdnsRegistry) Watch(opts ...WatchOption) (Watcher, error) {
 	var wo WatchOptions
 	for _, o := range opts {

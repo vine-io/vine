@@ -496,8 +496,13 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 			if i := strings.Index(c.Text, "="); i == -1 {
 				panic("invalid pattern format")
 			} else {
-				key := strings.TrimSpace(c.Text[:i])
-				value := strings.TrimSpace(c.Text[i+1:])
+				pa := c.Text[:i]
+				pe := c.Text[i+1:]
+				if pa != "`" || pe != "`" {
+					panic("invalid pattern value")
+				}
+				key := strings.TrimSpace(pa)
+				value := strings.TrimSpace(pe)
 				if len(value) == 0 {
 					panic(fmt.Sprintf("tag '%s' missing value", key))
 				}

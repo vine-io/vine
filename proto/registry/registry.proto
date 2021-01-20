@@ -11,8 +11,8 @@ message Service {
   repeated Endpoint endpoints = 4;
   repeated Node nodes = 5;
   Options options = 6;
-  // swagger security
-  SecuritySchemas security = 7;
+
+  repeated OpenAPI apis = 7;
 }
 
 // Node represents the node the service is on
@@ -29,7 +29,6 @@ message Endpoint {
   Value request = 2;
   Value response = 3;
   map<string, string> metadata = 4;
-  map<string, OpenAPIPath> openAPIPath = 5;
 }
 
 // Value is an opaque value for a request or response
@@ -37,9 +36,6 @@ message Value {
   string name = 1;
   string type = 2;
   repeated Value values = 3;
-  PathParameters parameters = 4;
-  PathRequestBody body = 5;
-  PathResponse response = 6;
 }
 
 // Options are registry options
@@ -53,7 +49,6 @@ message Result {
   Service service = 2;
   int64 timestamp = 3; // unix timestamp
 }
-
 
 // EventType defines the type of event
 enum EventType {

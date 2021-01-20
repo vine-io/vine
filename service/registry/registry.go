@@ -40,7 +40,6 @@ type Registry interface {
 	GetService(string, ...GetOption) ([]*regpb.Service, error)
 	ListServices(...ListOption) ([]*regpb.Service, error)
 	Watch(...WatchOption) (Watcher, error)
-	GetOpenAPI(...OpenAPIOption) (*regpb.OpenAPI, error)
 	String() string
 }
 

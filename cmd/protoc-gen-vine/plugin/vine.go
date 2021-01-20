@@ -19,10 +19,6 @@ import (
 	"strconv"
 	"strings"
 
-	options "github.com/gogo/googleapis/google/api"
-	"github.com/gogo/protobuf/proto"
-	pb "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-
 	"github.com/lack-io/vine/cmd/generator"
 )
 
@@ -97,7 +93,7 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	g.P("var _ ", serverPkg, ".Option")
 	g.P()
 
-	for i, service := range file.FileDescriptorProto.Service {
+	for i, service := range file.TagServices() {
 		g.generateService(file, service, i)
 	}
 }
@@ -140,11 +136,11 @@ func unexport(s string) string {
 }
 
 // generateService generates all the code for the named service.
-func (g *vine) generateService(file *generator.FileDescriptor, service *pb.ServiceDescriptorProto, index int) {
+func (g *vine) generateService(file *generator.FileDescriptor, service *generator.ServiceDescriptor, index int) {
 	path := fmt.Sprintf("6,%d", index) // 6 means service.
 
-	origServName := service.GetName()
-	serviceName := strings.ToLower(service.GetName())
+	origServName := service.Proto.GetName()
+	serviceName := strings.ToLower(service.Proto.GetName())
 	if pkg := file.GetPackage(); pkg != "" {
 		serviceName = pkg
 	}
@@ -160,12 +156,8 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *pb.Servi
 	g.P("// Api Endpoints for ", servName, " service")
 	g.P("func New", servName, "Endpoints () []*", apiPkg, ".Endpoint {")
 	g.P("return []*", apiPkg, ".Endpoint{")
-	for _, method := range service.Method {
-		if method.Options != nil && proto.HasExtension(method.Options, options.E_Http) {
-			g.P("&", apiPkg, ".Endpoint{")
-			g.generateEndpoint(servName, method)
-			g.P("},")
-		}
+	for _, method := range service.Methods {
+		g.generateEndpoint(servName, method, false)
 	}
 	g.P("}")
 	g.P("}")
@@ -175,7 +167,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *pb.Servi
 	g.P("// Client API for ", servName, " service")
 	// Client interface.
 	g.P("type ", servAlias, " interface {")
-	for i, method := range service.Method {
+	for i, method := range service.Methods {
 		g.gen.PrintComments(fmt.Sprintf("%s,2,%d", path, i)) // 2 means method in a service.
 		g.P(g.generateClientSignature(servName, method))
 	}
@@ -208,9 +200,9 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *pb.Servi
 	var methodIndex, streamIndex int
 	serviceDescVar := "_" + servName + "_serviceDesc"
 	// Client method implementations.
-	for _, method := range service.Method {
+	for _, method := range service.Methods {
 		var descExpr string
-		if !method.GetServerStreaming() {
+		if !method.Proto.GetServerStreaming() {
 			// Unary RPC method
 			descExpr = fmt.Sprintf("&%s.Methods[%d]", serviceDescVar, methodIndex)
 			methodIndex++
@@ -226,7 +218,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *pb.Servi
 	// Server interface.
 	serverType := servName + "Handler"
 	g.P("type ", serverType, " interface {")
-	for i, method := range service.Method {
+	for i, method := range service.Methods {
 		g.gen.PrintComments(fmt.Sprintf("%s,2,%d", path, i)) // 2 means method in a service.
 		g.P(g.generateServerSignature(servName, method))
 	}
@@ -238,12 +230,12 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *pb.Servi
 	g.P("type ", unexport(servName)+"Impl", " interface {")
 
 	// generate interface methods
-	for _, method := range service.Method {
-		methName := generator.CamelCase(method.GetName())
-		inType := g.typeName(method.GetInputType())
-		outType := g.typeName(method.GetOutputType())
+	for _, method := range service.Methods {
+		methName := generator.CamelCase(method.Proto.GetName())
+		inType := g.typeName(method.Proto.GetInputType())
+		outType := g.typeName(method.Proto.GetOutputType())
 
-		if !method.GetServerStreaming() && !method.GetClientStreaming() {
+		if !method.Proto.GetServerStreaming() && !method.Proto.GetClientStreaming() {
 			g.P(methName, "(ctx ", contextPkg, ".Context, in *", inType, ", out *", outType, ") error")
 			continue
 		}
@@ -254,12 +246,8 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *pb.Servi
 	g.P(unexport(servName) + "Impl")
 	g.P("}")
 	g.P("h := &", unexport(servName), "Handler{hdlr}")
-	for _, method := range service.Method {
-		if method.Options != nil && proto.HasExtension(method.Options, options.E_Http) {
-			g.P("opts = append(opts, ", apiPkg, ".WithEndpoint(&", apiPkg, ".Endpoint{")
-			g.generateEndpoint(servName, method)
-			g.P("}))")
-		}
+	for _, method := range service.Methods {
+		g.generateEndpoint(servName, method, true)
 	}
 	g.P("return s.Handle(s.NewHandler(&", servName, "{h}, opts...))")
 	g.P("}")
@@ -271,82 +259,82 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *pb.Servi
 
 	// Server handler implementations.
 	var handlerNames []string
-	for _, method := range service.Method {
+	for _, method := range service.Methods {
 		hname := g.generateServerMethod(servName, method)
 		handlerNames = append(handlerNames, hname)
 	}
 }
 
 // generateEndpoint creates the api endpoint
-func (g *vine) generateEndpoint(servName string, method *pb.MethodDescriptorProto) {
-	if method.Options == nil || !proto.HasExtension(method.Options, options.E_Http) {
+func (g *vine) generateEndpoint(servName string, method *generator.MethodDescriptor, with bool) {
+	tags := extractTags(method.Comments)
+	if len(tags) == 0 {
 		return
 	}
-	// http rules
-	r, err := proto.GetExtension(method.Options, options.E_Http)
-	if err != nil {
-		return
-	}
-	rule := r.(*options.HttpRule)
 	var meth string
 	var path string
-	switch {
-	case len(rule.GetDelete()) > 0:
-		meth = "DELETE"
-		path = rule.GetDelete()
-	case len(rule.GetGet()) > 0:
+
+	if v, ok := tags[_get]; ok {
 		meth = "GET"
-		path = rule.GetGet()
-	case len(rule.GetPatch()) > 0:
+		path = v.Value
+	} else if v, ok = tags[_patch]; ok {
 		meth = "PATCH"
-		path = rule.GetPatch()
-	case len(rule.GetPost()) > 0:
-		meth = "POST"
-		path = rule.GetPost()
-	case len(rule.GetPut()) > 0:
+		path = v.Value
+	} else if v, ok = tags[_put]; ok {
 		meth = "PUT"
-		path = rule.GetPut()
-	}
-	if len(meth) == 0 || len(path) == 0 {
+		path = v.Value
+	} else if v, ok = tags[_post]; ok {
+		meth = "POST"
+		path = v.Value
+	} else if v, ok = tags[_delete]; ok {
+		meth = "DELETE"
+		path = v.Value
+	} else {
 		return
 	}
-	// TODO: process additional bindings
-	g.P("Name:", fmt.Sprintf(`"%s.%s",`, servName, method.GetName()))
+	if with {
+		g.P("opts = append(opts, ", apiPkg, ".WithEndpoint(&", apiPkg, ".Endpoint{")
+		defer g.P("}))")
+	} else {
+		g.P("&", apiPkg, ".Endpoint{")
+		defer g.P("},")
+	}
+	g.P("Name:", fmt.Sprintf(`"%s.%s",`, servName, method.Proto.GetName()))
 	g.P("Path:", fmt.Sprintf(`[]string{"%s"},`, path))
 	g.P("Method:", fmt.Sprintf(`[]string{"%s"},`, meth))
-	if len(rule.GetGet()) == 0 {
-		g.P("Body:", fmt.Sprintf(`"%s",`, rule.GetBody()))
+	if v, ok := tags[_body]; ok {
+		g.P("Body:", fmt.Sprintf(`"%s",`, v.Value))
 	}
-	if method.GetServerStreaming() || method.GetClientStreaming() {
+	if method.Proto.GetServerStreaming() || method.Proto.GetClientStreaming() {
 		g.P("Stream: true,")
 	}
 	g.P(`Handler: "rpc",`)
 }
 
 // generateClientSignature returns the client-side signature for a method.
-func (g *vine) generateClientSignature(servName string, method *pb.MethodDescriptorProto) string {
-	origMethName := method.GetName()
+func (g *vine) generateClientSignature(servName string, method *generator.MethodDescriptor) string {
+	origMethName := method.Proto.GetName()
 	methName := generator.CamelCase(origMethName)
 	if reservedClientName[methName] {
 		methName += "_"
 	}
-	reqArg := ", in *" + g.typeName(method.GetInputType())
-	if method.GetClientStreaming() {
+	reqArg := ", in *" + g.typeName(method.Proto.GetInputType())
+	if method.Proto.GetClientStreaming() {
 		reqArg = ""
 	}
-	respName := "*" + g.typeName(method.GetOutputType())
-	if method.GetServerStreaming() || method.GetClientStreaming() {
+	respName := "*" + g.typeName(method.Proto.GetOutputType())
+	if method.Proto.GetServerStreaming() || method.Proto.GetClientStreaming() {
 		respName = servName + "_" + generator.CamelCase(origMethName) + "Service"
 	}
 
 	return fmt.Sprintf("%s(ctx %s.Context%s, opts ...%s.CallOption) (%s, error)", methName, contextPkg, reqArg, clientPkg, respName)
 }
 
-func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, method *pb.MethodDescriptorProto, descExpr string) {
-	reqMethod := fmt.Sprintf("%s.%s", servName, method.GetName())
-	methName := generator.CamelCase(method.GetName())
-	inType := g.typeName(method.GetInputType())
-	outType := g.typeName(method.GetOutputType())
+func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, method *generator.MethodDescriptor, descExpr string) {
+	reqMethod := fmt.Sprintf("%s.%s", servName, method.Proto.GetName())
+	methName := generator.CamelCase(method.Proto.GetName())
+	inType := g.typeName(method.Proto.GetInputType())
+	outType := g.typeName(method.Proto.GetOutputType())
 
 	servAlias := servName + "Service"
 
@@ -356,7 +344,7 @@ func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, me
 	}
 
 	g.P("func (c *", unexport(servAlias), ") ", g.generateClientSignature(servName, method), "{")
-	if !method.GetServerStreaming() && !method.GetClientStreaming() {
+	if !method.Proto.GetServerStreaming() && !method.Proto.GetClientStreaming() {
 		g.P(`req := c.c.NewRequest(c.name, "`, reqMethod, `", in)`)
 		g.P("out := new(", outType, ")")
 		// TODO: Pass descExpr to Invoke.
@@ -372,7 +360,7 @@ func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, me
 	g.P("stream, err := c.c.Stream(ctx, req, opts...)")
 	g.P("if err != nil { return nil, err }")
 
-	if !method.GetClientStreaming() {
+	if !method.Proto.GetClientStreaming() {
 		g.P("if err := stream.Send(in); err != nil { return nil, err }")
 	}
 
@@ -380,8 +368,8 @@ func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, me
 	g.P("}")
 	g.P()
 
-	genSend := method.GetClientStreaming()
-	genRecv := method.GetServerStreaming()
+	genSend := method.Proto.GetClientStreaming()
+	genRecv := method.Proto.GetServerStreaming()
 
 	// Stream auxiliary types and methods.
 	g.P("type ", servName, "_", methName, "Service interface {")
@@ -465,8 +453,8 @@ func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, me
 }
 
 // generateServerSignature returns the server-side signature for a method.
-func (g *vine) generateServerSignature(servName string, method *pb.MethodDescriptorProto) string {
-	origMethName := method.GetName()
+func (g *vine) generateServerSignature(servName string, method *generator.MethodDescriptor) string {
+	origMethName := method.Proto.GetName()
 	methName := generator.CamelCase(origMethName)
 	if reservedClientName[methName] {
 		methName += "_"
@@ -476,26 +464,26 @@ func (g *vine) generateServerSignature(servName string, method *pb.MethodDescrip
 	ret := "error"
 	reqArgs = append(reqArgs, contextPkg+".Context")
 
-	if !method.GetClientStreaming() {
-		reqArgs = append(reqArgs, "*"+g.typeName(method.GetInputType()))
+	if !method.Proto.GetClientStreaming() {
+		reqArgs = append(reqArgs, "*"+g.typeName(method.Proto.GetInputType()))
 	}
-	if method.GetServerStreaming() || method.GetClientStreaming() {
+	if method.Proto.GetServerStreaming() || method.Proto.GetClientStreaming() {
 		reqArgs = append(reqArgs, servName+"_"+generator.CamelCase(origMethName)+"Stream")
 	}
-	if !method.GetClientStreaming() && !method.GetServerStreaming() {
-		reqArgs = append(reqArgs, "*"+g.typeName(method.GetOutputType()))
+	if !method.Proto.GetClientStreaming() && !method.Proto.GetServerStreaming() {
+		reqArgs = append(reqArgs, "*"+g.typeName(method.Proto.GetOutputType()))
 	}
 	return methName + "(" + strings.Join(reqArgs, ", ") + ") " + ret
 }
 
-func (g *vine) generateServerMethod(servName string, method *pb.MethodDescriptorProto) string {
-	methName := generator.CamelCase(method.GetName())
+func (g *vine) generateServerMethod(servName string, method *generator.MethodDescriptor) string {
+	methName := generator.CamelCase(method.Proto.GetName())
 	hname := fmt.Sprintf("_%s_%s_Handler", servName, methName)
 	serveType := servName + "Handler"
-	inType := g.typeName(method.GetInputType())
-	outType := g.typeName(method.GetOutputType())
+	inType := g.typeName(method.Proto.GetInputType())
+	outType := g.typeName(method.Proto.GetOutputType())
 
-	if !method.GetServerStreaming() && !method.GetClientStreaming() {
+	if !method.Proto.GetServerStreaming() && !method.Proto.GetClientStreaming() {
 		g.P("func (h *", unexport(servName), "Handler) ", methName, "(ctx ", contextPkg, ".Context, in *", inType, ", out *", outType, ") error {")
 		g.P("return h.", serveType, ".", methName, "(ctx, in, out)")
 		g.P("}")
@@ -504,7 +492,7 @@ func (g *vine) generateServerMethod(servName string, method *pb.MethodDescriptor
 	}
 	streamType := unexport(servName) + methName + "Stream"
 	g.P("func (h *", unexport(servName), "Handler) ", methName, "(ctx ", contextPkg, ".Context, stream server.Stream) error {")
-	if !method.GetClientStreaming() {
+	if !method.Proto.GetClientStreaming() {
 		g.P("m := new(", inType, ")")
 		g.P("if err := stream.Recv(m); err != nil { return err }")
 		g.P("return h.", serveType, ".", methName, "(ctx, m, &", streamType, "{stream})")
@@ -514,8 +502,8 @@ func (g *vine) generateServerMethod(servName string, method *pb.MethodDescriptor
 	g.P("}")
 	g.P()
 
-	genSend := method.GetServerStreaming()
-	genRecv := method.GetClientStreaming()
+	genSend := method.Proto.GetServerStreaming()
+	genRecv := method.Proto.GetClientStreaming()
 
 	// Stream auxiliary types and methods.
 	g.P("type ", servName, "_", methName, "Stream interface {")

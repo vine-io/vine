@@ -395,11 +395,6 @@ func (e *etcdRegistry) ListServices(opts ...registry.ListOption) ([]*regpb.Servi
 	return services, nil
 }
 
-func (e *etcdRegistry) GetOpenAPI(opts ...registry.OpenAPIOption) (*regpb.OpenAPI, error) {
-	// TODO: registry openapi implement
-	return nil, nil
-}
-
 func (e *etcdRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
 	return newEtcdWatcher(e, e.options.Timeout, opts...)
 }

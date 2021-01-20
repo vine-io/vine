@@ -41,7 +41,7 @@ var (
 	  <nav class="navbar">
 	    <div class="container">
 	      <div class="navbar-header">
-                <a class="navbar-brand logo" href="/"><img src="https://vine.mu/logo.png" height=50px width=auto /> Stats</a>
+                <a class="navbar-brand" href="/">Stats</a>
 	      </div>
 	    </div>
 	  </nav>

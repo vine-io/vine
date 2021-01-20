@@ -46,7 +46,6 @@ type RegistryService interface {
 	Deregister(ctx context.Context, in *registry.Service, opts ...client.CallOption) (*EmptyResponse, error)
 	ListServices(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Registry_WatchService, error)
-	GetOpenAPI(ctx context.Context, in *OpenAPIRequest, opts ...client.CallOption) (*OpenAPIResponse, error)
 }
 
 type registryService struct {
@@ -150,16 +149,6 @@ func (x *registryServiceWatch) Recv() (*registry.Result, error) {
 	return m, nil
 }
 
-func (c *registryService) GetOpenAPI(ctx context.Context, in *OpenAPIRequest, opts ...client.CallOption) (*OpenAPIResponse, error) {
-	req := c.c.NewRequest(c.name, "Registry.GetOpenAPI", in)
-	out := new(OpenAPIResponse)
-	err := c.c.Call(ctx, req, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // Server API for Registry service
 type RegistryHandler interface {
 	GetService(context.Context, *GetRequest, *GetResponse) error
@@ -167,7 +156,6 @@ type RegistryHandler interface {
 	Deregister(context.Context, *registry.Service, *EmptyResponse) error
 	ListServices(context.Context, *ListRequest, *ListResponse) error
 	Watch(context.Context, *WatchRequest, Registry_WatchStream) error
-	GetOpenAPI(context.Context, *OpenAPIRequest, *OpenAPIResponse) error
 }
 
 func RegisterRegistryHandler(s server.Server, hdlr RegistryHandler, opts ...server.HandlerOption) error {
@@ -177,7 +165,6 @@ func RegisterRegistryHandler(s server.Server, hdlr RegistryHandler, opts ...serv
 		Deregister(ctx context.Context, in *registry.Service, out *EmptyResponse) error
 		ListServices(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Watch(ctx context.Context, stream server.Stream) error
-		GetOpenAPI(ctx context.Context, in *OpenAPIRequest, out *OpenAPIResponse) error
 	}
 	type Registry struct {
 		registryImpl
@@ -244,8 +231,4 @@ func (x *registryWatchStream) RecvMsg(m interface{}) error {
 
 func (x *registryWatchStream) Send(m *registry.Result) error {
 	return x.stream.Send(m)
-}
-
-func (h *registryHandler) GetOpenAPI(ctx context.Context, in *OpenAPIRequest, out *OpenAPIResponse) error {
-	return h.RegistryHandler.GetOpenAPI(ctx, in, out)
 }

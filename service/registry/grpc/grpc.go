@@ -152,22 +152,6 @@ func (s *gRPCRegistry) ListServices(opts ...registry.ListOption) ([]*regpb.Servi
 	return rsp.Services, nil
 }
 
-func (s *gRPCRegistry) GetOpenAPI(opts ...registry.OpenAPIOption) (*regpb.OpenAPI, error) {
-	var options registry.OpenAPIOptions
-	for _, o := range opts {
-		o(&options)
-	}
-	if options.Context == nil {
-		options.Context = context.TODO()
-	}
-
-	rsp, err := s.client.GetOpenAPI(options.Context, &server.OpenAPIRequest{}, s.callOpts()...)
-	if err != nil {
-		return nil, err
-	}
-	return rsp.OpenAPI, err
-}
-
 func (s *gRPCRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
 	var options registry.WatchOptions
 	for _, o := range opts {

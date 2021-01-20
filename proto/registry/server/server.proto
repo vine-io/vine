@@ -11,7 +11,6 @@ service Registry {
   rpc Deregister(registry.Service) returns (EmptyResponse) {};
   rpc ListServices(ListRequest) returns (ListResponse) {};
   rpc Watch(WatchRequest) returns (stream registry.Result) {};
-  rpc GetOpenAPI(OpenAPIRequest) returns (OpenAPIResponse) {};
 }
 
 
@@ -36,12 +35,4 @@ message ListResponse {
 message WatchRequest {
   // service is optional
   string service = 1;
-}
-
-message OpenAPIRequest {
-
-}
-
-message OpenAPIResponse {
-  registry.OpenAPI openAPI = 1;
 }

@@ -275,11 +275,6 @@ func (m *Registry) ListServices(opts ...registry.ListOption) ([]*regpb.Service, 
 	return services, nil
 }
 
-func (m *Registry) GetOpenAPI(opts ...registry.OpenAPIOption) (*regpb.OpenAPI, error) {
-	// TODO: memory registry implement
-	return nil, nil
-}
-
 func (m *Registry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
 	var wo registry.WatchOptions
 	for _, o := range opts {

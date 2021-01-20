@@ -639,9 +639,11 @@ func (s *rpcServer) Register() error {
 	})
 
 	endpoints := make([]*regpb.Endpoint, 0, len(handlerList)+len(subscriberList))
+	apis := make([]*regpb.OpenAPI, 0, len(handlerList))
 
-	for _, n := range handlerList {
-		endpoints = append(endpoints, s.handlers[n].Endpoints()...)
+	for _, h := range handlerList {
+		endpoints = append(endpoints, s.handlers[h].Endpoints()...)
+		apis = append(apis, s.handlers[h].Options().OpenAPI)
 	}
 
 	for _, e := range subscriberList {
@@ -653,6 +655,7 @@ func (s *rpcServer) Register() error {
 		Version:   config.Version,
 		Nodes:     []*regpb.Node{node},
 		Endpoints: endpoints,
+		Apis:      apis,
 	}
 
 	// get registered value

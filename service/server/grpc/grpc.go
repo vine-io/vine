@@ -217,7 +217,7 @@ func (g *grpcServer) handler(srv interface{}, stream grpc.ServerStream) error {
 		gmd = metadata.MD{}
 	}
 
-	// copy the metadata to go-vine.metadata
+	// copy the metadata to vine.metadata
 	md := meta.Metadata{}
 	for k, v := range gmd {
 		md[k] = strings.Join(v, ", ")
@@ -684,8 +684,10 @@ func (g *grpcServer) Register() error {
 	})
 
 	endpoints := make([]*regpb.Endpoint, 0, len(handlerList)+len(subscriberList))
-	for _, n := range handlerList {
-		endpoints = append(endpoints, g.handlers[n].Endpoints()...)
+	apis := make([]*regpb.OpenAPI, 0, len(handlerList))
+	for _, h := range handlerList {
+		endpoints = append(endpoints, g.handlers[h].Endpoints()...)
+		apis = append(apis, g.handlers[h].Options().OpenAPI)
 	}
 	for _, e := range subscriberList {
 		endpoints = append(endpoints, e.Endpoints()...)
@@ -697,6 +699,7 @@ func (g *grpcServer) Register() error {
 		Version:   config.Version,
 		Nodes:     []*regpb.Node{node},
 		Endpoints: endpoints,
+		Apis:      apis,
 	}
 
 	g.RLock()

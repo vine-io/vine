@@ -149,16 +149,6 @@ func (r *Registry) ListServices(ctx context.Context, req *pb.ListRequest, rsp *p
 	return nil
 }
 
-func (r *Registry) GetOpenAPI(ctx context.Context, req *pb.OpenAPIRequest, rsp *pb.OpenAPIResponse) error {
-	openAPI, err := r.Registry.GetOpenAPI()
-	if err != nil {
-		return errors.InternalServerError("go.vine.registry", err.Error())
-	}
-
-	rsp.OpenAPI = openAPI
-	return nil
-}
-
 // Watch a service for changes
 func (r *Registry) Watch(ctx context.Context, req *pb.WatchRequest, rsp pb.Registry_WatchStream) error {
 	watcher, err := r.Registry.Watch(registry.WatchService(req.Service))
