@@ -145,13 +145,15 @@ func Validate(e *Endpoint) error {
 		ps := p[0]
 		pe := p[len(p)-1]
 
-		if ps != '^' || pe != '$' {
+		if ps == '^' && pe == '$' {
+			_, err := regexp.CompilePOSIX(p)
+			if err != nil {
+				return err
+			}
+		} else if ps == '^' && pe != '$' {
 			return errors.New("invalid path")
-		}
-
-		_, err := regexp.CompilePOSIX(p)
-		if err != nil {
-			return err
+		} else if ps != '^' && pe == '$' {
+			return errors.New("invalid path")
 		}
 	}
 
