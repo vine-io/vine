@@ -1207,6 +1207,14 @@ func (g *Generator) PrintComments(path string) bool {
 	return false
 }
 
+func (g *Generator) File() *FileDescriptor {
+	return g.file
+}
+
+func (g *Generator) AllFiles() []*FileDescriptor {
+	return g.allFiles
+}
+
 // makeComments generates the comment string for the field, no "\n" at the end
 func (g *Generator) makeComments(path string) (string, bool) {
 	loc, ok := g.file.comments[path]

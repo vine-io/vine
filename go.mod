@@ -5,8 +5,7 @@ go 1.15
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/bitly/go-simplejson v0.5.0
-	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
-	github.com/bwmarrin/discordgo v0.22.0
+	github.com/bwmarrin/discordgo v0.22.1
 	github.com/caddyserver/certmagic v0.10.6
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/cloudflare/cloudflare-go v0.10.2
@@ -16,20 +15,18 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
-	github.com/evanphx/json-patch/v5 v5.1.0
+	github.com/evanphx/json-patch/v5 v5.2.0
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/forestgiant/sliceutil v0.0.0-20160425183142-94783f95db6c
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/fsouza/go-dockerclient v1.6.6
+	github.com/fsouza/go-dockerclient v1.7.0
 	github.com/go-acme/lego/v3 v3.9.0
 	github.com/go-git/go-git/v5 v5.2.0
 	github.com/gobwas/httphead v0.1.0
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.0.4
-	github.com/gogo/googleapis v1.4.0
-	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.3 // indirect
-	github.com/google/uuid v1.1.2
+	github.com/gogo/protobuf v1.3.2
+	github.com/google/uuid v1.1.5
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/hcl v1.0.0
 	github.com/hpcloud/tail v1.0.0
@@ -42,22 +39,22 @@ require (
 	github.com/miekg/dns v1.1.35
 	github.com/mitchellh/hashstructure v1.1.0
 	github.com/nlopes/slack v0.6.0
-	github.com/olekukonko/tablewriter v0.0.1
+	github.com/olekukonko/tablewriter v0.0.4
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/xlab/treeprint v1.0.0
 	go.etcd.io/bbolt v1.3.5
 	go.uber.org/zap v1.16.0 // indirect
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
-	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb
-	golang.org/x/tools v0.0.0-20201206230334-368bee879bfd
-	google.golang.org/grpc v1.34.0
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+	golang.org/x/tools v0.1.0
+	google.golang.org/grpc v1.35.0
 	gopkg.in/telegram-bot-api.v4 v4.6.4
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0

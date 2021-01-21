@@ -150,6 +150,7 @@ type MessageSend struct {
 	TTS             bool                    `json:"tts"`
 	Files           []*File                 `json:"-"`
 	AllowedMentions *MessageAllowedMentions `json:"allowed_mentions,omitempty"`
+	Reference       *MessageReference       `json:"message_reference,omitempty"`
 
 	// TODO: Remove this when compatibility is not required.
 	File *File `json:"-"`
@@ -368,7 +369,16 @@ type MessageApplication struct {
 type MessageReference struct {
 	MessageID string `json:"message_id"`
 	ChannelID string `json:"channel_id"`
-	GuildID   string `json:"guild_id"`
+	GuildID   string `json:"guild_id,omitempty"`
+}
+
+// Reference returns MessageReference of given message
+func (m *Message) Reference() *MessageReference {
+	return &MessageReference{
+		GuildID:   m.GuildID,
+		ChannelID: m.ChannelID,
+		MessageID: m.ID,
+	}
 }
 
 // ContentWithMentionsReplaced will replace all @<id> mentions with the

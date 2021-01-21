@@ -110,28 +110,29 @@ message OpenAPIExternalDocs {
 }
 
 message OpenAPIPath {
-  OpenAPIPath get = 1;
-  OpenAPIPath post = 2;
-  OpenAPIPath put = 3;
-  OpenAPIPath patch = 4;
-  OpenAPIPath delete = 5;
+  OpenAPIPathDocs get = 1;
+  OpenAPIPathDocs post = 2;
+  OpenAPIPathDocs put = 3;
+  OpenAPIPathDocs patch = 4;
+  OpenAPIPathDocs delete = 5;
 }
 
 message OpenAPIPathDocs {
   repeated string tags = 1;
   string summary = 2;
-  repeated PathSecurity security = 3;
-  string description = 4;
-  string operationId = 5;
-  bool deprecated = 6;
+  string description = 3;
+  string operationId = 4;
+  bool deprecated = 5;
+  PathRequestBody requestBody = 6;
   repeated PathParameters parameters = 7;
   map<string, PathResponse> responses = 8;
+  repeated PathSecurity security = 9;
 }
 
 message PathSecurity {
-  repeated string basicAuth = 1;
+  repeated string basic = 1;
   repeated string apiKeys = 2;
-  repeated string bearerAuth = 3;
+  repeated string bearer = 3;
 }
 
 message PathParameters {
@@ -166,13 +167,13 @@ message ApplicationContent {
 // PathResponse is swagger path response
 message PathResponse {
   string description = 1;
-  ApplicationContent content = 2;
+  PathRequestBodyContent content = 2;
 }
 
 message OpenAPIComponents {
-  map<string, PathResponse> responses = 1;
-  map<string, Schema> schemas = 2;
-  SecuritySchemas securitySchemas = 3;
+  SecuritySchemas securitySchemas = 1;
+  map<string, Model> schemas = 2;
+  map<string, Model> errors = 3;
 }
 
 message SecuritySchemas {
@@ -239,4 +240,6 @@ message Schema {
   repeated Schema items = 42;
 
   repeated PathParameters parameters = 51;
+
+  Schema additionalProperties = 60;
 }

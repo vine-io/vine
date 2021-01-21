@@ -171,7 +171,7 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 		return
 	}
 	g.P("func (m *", msg.Proto.Name, ") Validate() error {")
-	if ignoredMessage(msg) {
+	if g.ignoredMessage(msg) {
 		g.P("return nil")
 	} else {
 		g.P("errs := make([]error, 0)")
@@ -206,7 +206,7 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 
 func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := extractTags(field.Comments)
+	tags := g.extractTags(field.Comments)
 	if len(tags) == 0 {
 		return
 	}
@@ -269,7 +269,7 @@ func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 
 func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := extractTags(field.Comments)
+	tags := g.extractTags(field.Comments)
 	if len(tags) == 0 {
 		return
 	}
@@ -371,7 +371,7 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 
 func (g *validator) generateBytesField(field *generator.FieldDescriptor) {
 	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := extractTags(field.Comments)
+	tags := g.extractTags(field.Comments)
 	if len(tags) == 0 {
 		return
 	}
@@ -402,7 +402,7 @@ func (g *validator) generateBytesField(field *generator.FieldDescriptor) {
 
 func (g *validator) generateRepeatedField(field *generator.FieldDescriptor) {
 	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := extractTags(field.Comments)
+	tags := g.extractTags(field.Comments)
 	if len(tags) == 0 {
 		return
 	}
@@ -433,7 +433,7 @@ func (g *validator) generateRepeatedField(field *generator.FieldDescriptor) {
 
 func (g *validator) generateMessageField(field *generator.FieldDescriptor) {
 	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := extractTags(field.Comments)
+	tags := g.extractTags(field.Comments)
 	if len(tags) == 0 {
 		return
 	}
@@ -446,8 +446,8 @@ func (g *validator) generateMessageField(field *generator.FieldDescriptor) {
 	}
 }
 
-func ignoredMessage(msg *generator.MessageDescriptor) bool {
-	tags := extractTags(msg.Comments)
+func (g *validator) ignoredMessage(msg *generator.MessageDescriptor) bool {
+	tags := g.extractTags(msg.Comments)
 	for _, c := range tags {
 		if c.Key == _ignore {
 			return true
@@ -483,7 +483,7 @@ func fullStringSlice(s string) string {
 	return strings.Join(out, ",")
 }
 
-func extractTags(comments []*generator.Comment) map[string]*Tag {
+func (g *validator) extractTags(comments []*generator.Comment) map[string]*Tag {
 	if comments == nil || len(comments) == 0 {
 		return nil
 	}
@@ -494,17 +494,17 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 		}
 		if strings.HasPrefix(c.Text, _pattern) {
 			if i := strings.Index(c.Text, "="); i == -1 {
-				panic("invalid pattern format")
+				g.gen.Fail("invalid pattern format")
 			} else {
 				pa := c.Text[:i]
 				pe := c.Text[i+1:]
 				if pa != "`" || pe != "`" {
-					panic("invalid pattern value")
+					g.gen.Fail("invalid pattern value")
 				}
 				key := strings.TrimSpace(pa)
 				value := strings.TrimSpace(pe)
 				if len(value) == 0 {
-					panic(fmt.Sprintf("tag '%s' missing value", key))
+					g.gen.Fail("tag '%s' missing value", key)
 				}
 				tags[key] = &Tag{
 					Key:   key,
@@ -521,7 +521,7 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 				tag.Key = strings.TrimSpace(p[:i])
 				v := strings.TrimSpace(p[i+1:])
 				if v == "" {
-					panic(fmt.Sprintf("tag '%s' missing value", tag.Key))
+					g.gen.Fail(fmt.Sprintf("tag '%s' missing value", tag.Key))
 				}
 				tag.Value = v
 			} else {

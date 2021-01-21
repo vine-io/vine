@@ -2,19 +2,20 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
 	"github.com/gorilla/mux"
+	json "github.com/json-iterator/go"
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine/client/api/auth"
 	"github.com/lack-io/vine/client/api/handler"
 	rrvine "github.com/lack-io/vine/client/resolver/api"
 	"github.com/lack-io/vine/plugin"
+	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service"
 	ahandler "github.com/lack-io/vine/service/api/handler"
 	aapi "github.com/lack-io/vine/service/api/handler/api"
@@ -181,8 +182,18 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 			return
 		}
 
-		response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
-		w.Write([]byte(response))
+		//response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
+		services, err := srv.Options().Registry.ListServices()
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			return
+		}
+		apis := make([]*regpb.OpenAPI, 0)
+		for _, s := range services {
+			apis = append(apis, s.Apis...)
+		}
+		v, _ := json.Marshal(apis)
+		w.Write([]byte(v))
 	})
 
 	// strip favicon.ico

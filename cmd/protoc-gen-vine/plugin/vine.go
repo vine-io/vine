@@ -18,6 +18,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/lack-io/vine/cmd/generator"
 )
@@ -25,16 +26,22 @@ import (
 // Paths for packages used by code generated in this file,
 // relative to the import_prefix of the generator.Generator.
 const (
-	contextPkgPath = "context"
-	apiPkgPath     = "github.com/lack-io/vine/service/api"
-	clientPkgPath  = "github.com/lack-io/vine/service/client"
-	serverPkgPath  = "github.com/lack-io/vine/service/server"
+	contextPkgPath  = "context"
+	apiPkgPath      = "github.com/lack-io/vine/service/api"
+	clientPkgPath   = "github.com/lack-io/vine/service/client"
+	serverPkgPath   = "github.com/lack-io/vine/service/server"
+	registryPkgPath = "github.com/lack-io/vine/proto/registry"
 )
 
 // vine is an implementation of the Go protocol buffer compiler's
 // plugin architecture.  It generates bindings for vine support.
 type vine struct {
-	gen *generator.Generator
+	gen        *generator.Generator
+	security   map[string]*Component
+	schemas    map[string]*Component
+	extSchemas map[string]*Component
+	errors     map[string]*Component
+	m          sync.Map
 }
 
 func New() *vine {
@@ -50,20 +57,26 @@ func (g *vine) Name() string {
 // They may vary from the final path component of the import path
 // if the name is used by other packages.
 var (
-	apiPkg     string
-	contextPkg string
-	clientPkg  string
-	serverPkg  string
-	pkgImports map[generator.GoPackageName]bool
+	apiPkg      string
+	contextPkg  string
+	clientPkg   string
+	serverPkg   string
+	registryPkg string
+	pkgImports  map[generator.GoPackageName]bool
 )
 
 // Init initializes the plugin.
 func (g *vine) Init(gen *generator.Generator) {
 	g.gen = gen
+	g.security = map[string]*Component{}
+	g.schemas = map[string]*Component{}
+	g.extSchemas = map[string]*Component{}
+	g.errors = map[string]*Component{}
 	contextPkg = generator.RegisterUniquePackageName("context", nil)
 	apiPkg = generator.RegisterUniquePackageName("api", nil)
 	clientPkg = generator.RegisterUniquePackageName("client", nil)
 	serverPkg = generator.RegisterUniquePackageName("server", nil)
+	registryPkg = generator.RegisterUniquePackageName("registry", nil)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -91,6 +104,7 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	g.P("var _ ", contextPkg, ".Context")
 	g.P("var _ ", clientPkg, ".Option")
 	g.P("var _ ", serverPkg, ".Option")
+	g.P("var _ ", registryPkg, ".OpenAPI")
 	g.P()
 
 	for i, service := range file.TagServices() {
@@ -108,6 +122,7 @@ func (g *vine) GenerateImports(file *generator.FileDescriptor, imports map[gener
 	g.P(apiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPkgPath)))
 	g.P(clientPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, clientPkgPath)))
 	g.P(serverPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, serverPkgPath)))
+	g.P(registryPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, registryPkgPath)))
 	g.P(")")
 	g.P()
 
@@ -153,7 +168,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	}
 
 	g.P()
-	g.P("// Api Endpoints for ", servName, " service")
+	g.P("// API Endpoints for ", servName, " service")
 	g.P("func New", servName, "Endpoints () []*", apiPkg, ".Endpoint {")
 	g.P("return []*", apiPkg, ".Endpoint{")
 	for _, method := range service.Methods {
@@ -164,8 +179,18 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	g.P()
 
 	g.P()
+	g.P("// Swagger OpenAPI 3.0 for ", servName, " service")
+	g.P("func New", servName, "OpenAPI () *", registryPkg, ".OpenAPI {")
+	g.P("return &", registryPkg, ".OpenAPI{")
+	g.generateOpenAPI(service)
+	g.P("}")
+	g.P("}")
+	g.P()
+
+	g.P()
 	g.P("// Client API for ", servName, " service")
 	// Client interface.
+	g.gen.PrintComments(fmt.Sprintf("6,%d", index))
 	g.P("type ", servAlias, " interface {")
 	for i, method := range service.Methods {
 		g.gen.PrintComments(fmt.Sprintf("%s,2,%d", path, i)) // 2 means method in a service.
@@ -217,6 +242,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	g.P("// Server API for ", servName, " service")
 	// Server interface.
 	serverType := servName + "Handler"
+	g.gen.PrintComments(fmt.Sprintf("6,%d", index))
 	g.P("type ", serverType, " interface {")
 	for i, method := range service.Methods {
 		g.gen.PrintComments(fmt.Sprintf("%s,2,%d", path, i)) // 2 means method in a service.
@@ -249,6 +275,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	for _, method := range service.Methods {
 		g.generateEndpoint(servName, method, true)
 	}
+	g.P("opts = append(opts, server.OpenAPIHandler(New", servName, "OpenAPI()))")
 	g.P("return s.Handle(s.NewHandler(&", servName, "{h}, opts...))")
 	g.P("}")
 	g.P()
@@ -267,7 +294,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 
 // generateEndpoint creates the api endpoint
 func (g *vine) generateEndpoint(servName string, method *generator.MethodDescriptor, with bool) {
-	tags := extractTags(method.Comments)
+	tags := g.extractTags(method.Comments)
 	if len(tags) == 0 {
 		return
 	}

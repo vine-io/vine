@@ -23,44 +23,58 @@ import (
 var TagString = "gen"
 
 const (
-	// service tag
-	_get    = "get"
-	_post   = "post"
-	_put    = "put"
-	_patch  = "patch"
-	_delete = "delete"
-	_body   = "body"
+	// service
+	_openapi         = "openapi"
+	_termURL         = "term_url"
+	_contactName     = "contact_name"
+	_contactEmail    = "contact_email"
+	_licenseName     = "license_name"
+	_licenseUrl      = "license_url"
+	_externalDocDesc = "external_doc_desc"
+	_externalDocUrl  = "external_doc_url"
 
-	// message tag
-	_ignore = "ignore"
+	// method tag
+	_get      = "get"
+	_post     = "post"
+	_put      = "put"
+	_patch    = "patch"
+	_delete   = "delete"
+	_body     = "body"
+	_summary  = "summary"
+	_security = "security"
+	_result   = "result"
 
 	// field common tag
-	_required = "required"
-	_default  = "default"
-	_in       = "in"
-	_enum     = "enum"
-	_notIn    = "not_in"
+	_required  = "required"
+	_default   = "default"
+	_example   = "example"
+	_in        = "in"
+	_enum      = "enum"
+	_readOnly  = "ro"
+	_writeOnly = "wo"
+	//_notIn    = "not_in"
 
 	// string tag
 	_minLen   = "min_len"
 	_maxLen   = "max_len"
-	_prefix   = "prefix"
-	_suffix   = "suffix"
-	_contains = "contains"
-	_number   = "number"
 	_email    = "email"
+	_date     = "date"
+	_dateTime = "date-time"
+	_password = "password"
+	_byte     = "byte"
+	_binary   = "binary"
 	_ip       = "ip"
 	_ipv4     = "ipv4"
 	_ipv6     = "ipv6"
-	_crontab  = "crontab"
+	//_crontab  = "crontab"
 	_uuid     = "uuid"
 	_uri      = "uri"
-	_domain   = "domain"
+	_hostname = "hostname"
 	_pattern  = "pattern"
 
 	// int32, int64, uint32, uint64, float32, float64 tag
-	_ne  = "ne"
-	_eq  = "eq"
+	//_ne  = "ne"
+	//_eq  = "eq"
 	_lt  = "lt"
 	_lte = "lte"
 	_gt  = "gt"
@@ -69,9 +83,6 @@ const (
 	// bytes tag
 	_maxBytes = "max_bytes"
 	_minBytes = "min_bytes"
-
-	// repeated tag: required, min_len, max_len
-	// message tag: required
 )
 
 type Tag struct {
@@ -79,7 +90,7 @@ type Tag struct {
 	Value string
 }
 
-func extractTags(comments []*generator.Comment) map[string]*Tag {
+func (g *vine) extractTags(comments []*generator.Comment) map[string]*Tag {
 	if comments == nil || len(comments) == 0 {
 		return nil
 	}
@@ -90,17 +101,17 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 		}
 		if strings.HasPrefix(c.Text, _pattern) {
 			if i := strings.Index(c.Text, "="); i == -1 {
-				panic("invalid pattern format")
+				g.gen.Fail("invalid pattern format")
 			} else {
 				pa := c.Text[:i]
 				pe := c.Text[i+1:]
 				if pa != "`" || pe != "`" {
-					panic("invalid pattern value")
+					g.gen.Fail("invalid pattern value")
 				}
 				key := strings.TrimSpace(pa)
 				value := strings.TrimSpace(pe)
 				if len(value) == 0 {
-					panic(fmt.Sprintf("tag '%s' missing value", key))
+					g.gen.Fail("tag '%s' missing value", key)
 				}
 				tags[key] = &Tag{
 					Key:   key,
@@ -117,7 +128,7 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 				tag.Key = strings.TrimSpace(p[:i])
 				v := strings.TrimSpace(p[i+1:])
 				if v == "" {
-					panic(fmt.Sprintf("tag '%s' missing value", tag.Key))
+					g.gen.Fail(fmt.Sprintf("tag '%s' missing value", tag.Key))
 				}
 				tag.Value = v
 			} else {
@@ -128,4 +139,48 @@ func extractTags(comments []*generator.Comment) map[string]*Tag {
 	}
 
 	return tags
+}
+
+func extractDesc(comments []*generator.Comment) []string {
+	if comments == nil || len(comments) == 0 {
+		return nil
+	}
+	desc := make([]string, 0)
+	for _, c := range comments {
+		if c.Tag == "" {
+			text := strings.TrimSpace(c.Text)
+			if len(text) == 0 {
+				continue
+			}
+			desc = append(desc, text)
+		}
+	}
+	return desc
+}
+
+func TrimString(s string, c string) string {
+	s = strings.TrimPrefix(s, c)
+	s = strings.TrimSuffix(s, c)
+	return s
+}
+
+func fullStringSlice(s string) string {
+	s = strings.TrimPrefix(s, "[")
+	s = strings.TrimSuffix(s, "]")
+	parts := strings.Split(s, ",")
+	out := make([]string, 0)
+	for _, a := range parts {
+		a = strings.TrimSpace(a)
+		if len(a) == 0 {
+			continue
+		}
+		if !strings.HasPrefix(a, "\"") {
+			a = "\"" + a
+		}
+		if !strings.HasSuffix(a, "\"") {
+			a = a + "\""
+		}
+		out = append(out, a)
+	}
+	return strings.Join(out, ",")
 }
