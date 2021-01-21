@@ -227,6 +227,7 @@ func (e *etcdRegistry) registerNode(s *regpb.Service, node *regpb.Node, opts ...
 		Metadata:  s.Metadata,
 		Endpoints: s.Endpoints,
 		Nodes:     []*regpb.Node{node},
+		Apis:      s.Apis,
 	}
 
 	var options registry.RegisterOptions

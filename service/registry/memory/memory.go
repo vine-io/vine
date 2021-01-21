@@ -44,6 +44,7 @@ type record struct {
 	Metadata  map[string]string
 	Nodes     map[string]*node
 	Endpoints []*regpb.Endpoint
+	Apis      []*regpb.OpenAPI
 }
 
 type Registry struct {

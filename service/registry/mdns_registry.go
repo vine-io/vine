@@ -43,8 +43,10 @@ var (
 type mdnsTxt struct {
 	Service   string
 	Version   string
+	node      []*regpb.Node
 	Endpoints []*regpb.Endpoint
 	Metadata  map[string]string
+	Apis      []*regpb.OpenAPI
 }
 
 type mdnsEntry struct {
@@ -235,7 +237,9 @@ func (m *mdnsRegistry) Register(service *regpb.Service, opts ...RegisterOption) 
 			Service:   service.Name,
 			Version:   service.Version,
 			Endpoints: service.Endpoints,
+			node:      service.Nodes,
 			Metadata:  node.Metadata,
+			Apis:      service.Apis,
 		})
 
 		if err != nil {
@@ -363,7 +367,10 @@ func (m *mdnsRegistry) GetService(service string, opts ...GetOption) ([]*regpb.S
 					s = &regpb.Service{
 						Name:      txt.Service,
 						Version:   txt.Version,
+						Metadata:  txt.Metadata,
+						Nodes:     txt.node,
 						Endpoints: txt.Endpoints,
+						Apis:      txt.Apis,
 					}
 				}
 				addr := ""
@@ -433,13 +440,27 @@ func (m *mdnsRegistry) ListServices(opts ...ListOption) ([]*regpb.Service, error
 				if e.TTL == 0 {
 					continue
 				}
+
 				if !strings.HasSuffix(e.Name, p.Domain+".") {
 					continue
 				}
+
+				txt, err := decode(e.InfoFields)
+				if err != nil {
+					continue
+				}
+
 				name := strings.TrimSuffix(e.Name, "."+p.Service+"."+p.Domain+".")
 				if !serviceMap[name] {
 					serviceMap[name] = true
-					services = append(services, &regpb.Service{Name: name})
+					services = append(services, &regpb.Service{
+						Name:      name,
+						Version:   txt.Version,
+						Metadata:  txt.Metadata,
+						Nodes:     txt.node,
+						Endpoints: txt.Endpoints,
+						Apis:      txt.Apis,
+					})
 				}
 			case <-p.Context.Done():
 				close(done)

@@ -193,7 +193,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 			apis = append(apis, s.Apis...)
 		}
 		v, _ := json.Marshal(apis)
-		w.Write([]byte(v))
+		w.Write(v)
 	})
 
 	// strip favicon.ico
