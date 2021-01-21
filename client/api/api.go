@@ -183,7 +183,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		}
 
 		//response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
-		services, err := srv.Options().Registry.ListServices()
+		services, err := srv.Options().Registry.GetService("go.vine.helloworld")
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			return
@@ -192,7 +192,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		for _, s := range services {
 			apis = append(apis, s.Apis...)
 		}
-		v, _ := json.Marshal(apis)
+		v, _ := json.MarshalIndent(apis, "", " ")
 		w.Write(v)
 	})
 

@@ -459,7 +459,6 @@ func (m *mdnsRegistry) ListServices(opts ...ListOption) ([]*regpb.Service, error
 						Metadata:  txt.Metadata,
 						Nodes:     txt.node,
 						Endpoints: txt.Endpoints,
-						Apis:      txt.Apis,
 					})
 				}
 			case <-p.Context.Done():

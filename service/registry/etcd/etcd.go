@@ -340,6 +340,7 @@ func (e *etcdRegistry) GetService(name string, opts ...registry.GetOption) ([]*r
 					Version:   sn.Version,
 					Metadata:  sn.Metadata,
 					Endpoints: sn.Endpoints,
+					Apis:      sn.Apis,
 				}
 				serviceMap[s.Version] = s
 			}
@@ -387,7 +388,13 @@ func (e *etcdRegistry) ListServices(opts ...registry.ListOption) ([]*regpb.Servi
 
 	services := make([]*regpb.Service, 0, len(versions))
 	for _, service := range versions {
-		services = append(services, service)
+		services = append(services, &regpb.Service{
+			Name:      service.Name,
+			Version:   service.Version,
+			Metadata:  service.Metadata,
+			Nodes:     service.Nodes,
+			Endpoints: service.Endpoints,
+		})
 	}
 
 	// sort the services
