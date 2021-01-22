@@ -15,6 +15,7 @@
 package api
 
 import (
+	"mime"
 	"net/http"
 	"os"
 	"strings"
@@ -23,6 +24,7 @@ import (
 	"github.com/gorilla/mux"
 	json "github.com/json-iterator/go"
 	"github.com/lack-io/cli"
+	"github.com/rakyll/statik/fs"
 
 	"github.com/lack-io/vine/client/api/auth"
 	"github.com/lack-io/vine/client/api/handler"
@@ -51,8 +53,9 @@ import (
 	"github.com/lack-io/vine/service/sync/memory"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/namespace"
-	"github.com/lack-io/vine/util/openapi"
 	"github.com/lack-io/vine/util/stats"
+
+	_ "github.com/lack-io/vine/util/openapi/statik"
 )
 
 var (
@@ -191,10 +194,20 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	if ctx.Bool("enable-openapi") {
-		api := openapi.New()
-		r.HandleFunc("/openapi", api.OpenAPIHandler)
-		//r.Handle("/")
-		h = api.ServeHTTP(r)
+		//api := openapi.New()
+		mime.AddExtensionType(".svg", "image/svg+xml")
+
+		statikFs, err := fs.New()
+		if err != nil {
+			log.Errorf("openapi filesystem: %v", err)
+			return
+		}
+		log.Infof("OpenAPI Handler at /openapi/")
+		fileServer := http.FileServer(statikFs)
+		//r.HandleFunc("/openapi", api.OpenAPIHandler)
+		prefix := "/openapi/"
+		r.Handle(prefix, http.StripPrefix(prefix, fileServer))
+		//h = api.ServeHTTP(r)
 	}
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

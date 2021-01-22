@@ -16,6 +16,8 @@ package openapi
 import (
 	"html/template"
 	"net/http"
+
+	_ "github.com/lack-io/vine/util/openapi/statik"
 )
 
 type openAPI struct {

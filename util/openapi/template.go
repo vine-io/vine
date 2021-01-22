@@ -93,7 +93,7 @@ var (
 	redocTmpl = `
 {{ define "title" }}Redoc{{end}}
 {{ define "style"}}
-    <link href="./redoc.css" rel="stylesheet">
+    <link href="/openapi/static/OpenAPI/redoc/redoc.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -103,7 +103,7 @@ var (
 {{end}}
 {{ define "scripts" }}
 	<redoc spec-url='{{ .Url }}'></redoc>
-	<script src="./redoc.standalone.js"></script>
+	<script src="/openapi/static/OpenAPI/redoc/redoc.standalone.js"></script>
 {{end}}
 `
 )
