@@ -21,7 +21,7 @@ install:
 	go get github.com/gogo/protobuf
 	go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 	go get github.com/lack-io/vine/cmd/protoc-gen-vine
-	go get github.com/lack-io/vine/cmd/protoc-gen-validatorse
+	go get github.com/lack-io/vine/cmd/protoc-gen-validator
 
 protoc:
 	cd $(GOPATH)/src && \
