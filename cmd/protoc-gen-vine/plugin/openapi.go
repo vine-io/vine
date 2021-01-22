@@ -52,46 +52,63 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
 	if len(desc) == 0 {
 		desc = []string{"OpenAPI3.0 for " + srvName}
 	}
-	g.P(`Description: "'`, strings.Join(desc, " "), `'",`)
+	g.P(`Description: "`, strings.Join(desc, " "), `",`)
 	term, ok := srvTags[_termURL]
 	if ok {
 		g.P(fmt.Sprintf(`TermsOfService: "%s",`, term.Value))
 	}
-	contactName, ok1 := srvTags[_contactName]
-	contactEmail, ok2 := srvTags[_contactEmail]
-	if ok1 && ok2 {
+	contactName, ok := srvTags[_contactName]
+	if ok {
 		g.P("Contact: &registry.OpenAPIContact{")
 		g.P(fmt.Sprintf(`Name: "%s",`, contactName.Value))
-		g.P(fmt.Sprintf(`Email: "%s",`, contactEmail.Value))
+		if contactEmail, ok := srvTags[_contactEmail]; ok {
+			g.P(fmt.Sprintf(`Email: "%s",`, contactEmail.Value))
+		} else {
+			g.P(`Email: "''",`)
+		}
 		g.P("},")
 	}
-	licenseName, ok1 := srvTags[_licenseName]
-	licenseUrl, ok2 := srvTags[_licenseUrl]
-	if ok1 && ok2 {
+	licenseName, ok := srvTags[_licenseName]
+	if ok {
 		g.P("License: &registry.OpenAPILicense{")
 		g.P(fmt.Sprintf(`Name: "%s",`, licenseName.Value))
-		g.P(fmt.Sprintf(`Url: "%s",`, licenseUrl.Value))
+		if licenseUrl, ok := srvTags[_licenseUrl]; ok {
+			g.P(fmt.Sprintf(`Url: "%s",`, licenseUrl.Value))
+		} else {
+			g.P(`Url: "''"`)
+		}
 		g.P("},")
 	}
-	g.P(`Version: "v1.0.0",`)
+	if version, ok := srvTags[_version]; ok {
+		g.P(fmt.Sprintf(`Version: "%s",`, version.Value))
+	} else {
+		g.P(fmt.Sprintf(`Version: "%s",`, "v1.0.0"))
+	}
 	g.P("},")
-	externalDocDesc, ok1 := srvTags[_externalDocDesc]
-	externalDocUrl, ok2 := srvTags[_externalDocUrl]
-	if ok1 && ok2 {
+	externalDocDesc, extOk := srvTags[_externalDocDesc]
+	if extOk {
 		g.P("ExternalDocs: &registry.OpenAPIExternalDocs{")
 		g.P(fmt.Sprintf(`Description: "%s",`, externalDocDesc.Value))
-		g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
+		if externalDocUrl, ok := srvTags[_externalDocUrl]; ok {
+			g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
+		} else {
+			g.P(`Url: "''"`)
+		}
 		g.P("},")
 	}
-	g.P("Servers: []string{},")
+	g.P("Servers: []*registry.OpenAPIServer{},")
 	g.P("Tags: []*registry.OpenAPITag{")
 	g.P("&registry.OpenAPITag{")
 	g.P(fmt.Sprintf(`Name: "%s",`, srvName))
 	g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
-	if externalDocDesc != nil && externalDocUrl != nil {
+	if extOk {
 		g.P("ExternalDocs: &registry.OpenAPIExternalDocs{")
 		g.P(fmt.Sprintf(`Description: "%s",`, externalDocDesc.Value))
-		g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
+		if externalDocUrl, ok := srvTags[_externalDocUrl]; ok {
+			g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
+		} else {
+			g.P(`Url: "''"`)
+		}
 		g.P("},")
 	}
 	g.P("},")
@@ -527,7 +544,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 			case _writeOnly:
 				g.P(`WriteOnly: true,`)
 			case _pattern:
-				g.P(fmt.Sprintf(`Pattern: "'%s'",`, TrimString(tag.Value, "`")))
+				g.P(fmt.Sprintf("Pattern: `'%s'`,", TrimString(tag.Value, "`")))
 			case _default:
 				g.P(fmt.Sprintf(`Default: "%s",`, TrimString(tag.Value, `"`)))
 			case _example:

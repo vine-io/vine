@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,13 +33,20 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Trace service
+// API Endpoints for Trace service
 func NewTraceEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
+// Swagger OpenAPI 3.0 for Trace service
+func NewTraceOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
+}
+
 // Client API for Trace service
+// Stats retrieves a snapshot of the Debug.Stats data for services
 type TraceService interface {
 	Read(ctx context.Context, in *ReadRequest, opts ...client.CallOption) (*ReadResponse, error)
 	Write(ctx context.Context, in *WriteRequest, opts ...client.CallOption) (*WriteResponse, error)
@@ -127,6 +135,7 @@ func (x *traceServiceStream) Recv() (*StreamResponse, error) {
 }
 
 // Server API for Trace service
+// Stats retrieves a snapshot of the Debug.Stats data for services
 type TraceHandler interface {
 	Read(context.Context, *ReadRequest, *ReadResponse) error
 	Write(context.Context, *WriteRequest, *WriteResponse) error
@@ -143,6 +152,7 @@ func RegisterTraceHandler(s server.Server, hdlr TraceHandler, opts ...server.Han
 		traceImpl
 	}
 	h := &traceHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewTraceOpenAPI()))
 	return s.Handle(s.NewHandler(&Trace{h}, opts...))
 }
 

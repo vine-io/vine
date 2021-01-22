@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,10 +33,16 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Store service
+// API Endpoints for Store service
 func NewStoreEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Store service
+func NewStoreOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Store service
@@ -182,6 +189,7 @@ func RegisterStoreHandler(s server.Server, hdlr StoreHandler, opts ...server.Han
 		storeImpl
 	}
 	h := &storeHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewStoreOpenAPI()))
 	return s.Handle(s.NewHandler(&Store{h}, opts...))
 }
 

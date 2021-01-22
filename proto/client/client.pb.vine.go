@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,13 +33,20 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Client service
+// API Endpoints for Client service
 func NewClientEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
+// Swagger OpenAPI 3.0 for Client service
+func NewClientOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
+}
+
 // Client API for Client service
+// Client is the vine client interface
 type ClientService interface {
 	// Call allows a single request to be made
 	Call(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
@@ -132,6 +140,7 @@ func (c *clientService) Publish(ctx context.Context, in *Message, opts ...client
 }
 
 // Server API for Client service
+// Client is the vine client interface
 type ClientHandler interface {
 	// Call allows a single request to be made
 	Call(context.Context, *Request, *Response) error
@@ -151,6 +160,7 @@ func RegisterClientHandler(s server.Server, hdlr ClientHandler, opts ...server.H
 		clientImpl
 	}
 	h := &clientHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewClientOpenAPI()))
 	return s.Handle(s.NewHandler(&Client{h}, opts...))
 }
 

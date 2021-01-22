@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,10 +33,16 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Command service
+// API Endpoints for Command service
 func NewCommandEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Command service
+func NewCommandOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Command service
@@ -91,6 +98,7 @@ func RegisterCommandHandler(s server.Server, hdlr CommandHandler, opts ...server
 		commandImpl
 	}
 	h := &commandHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewCommandOpenAPI()))
 	return s.Handle(s.NewHandler(&Command{h}, opts...))
 }
 

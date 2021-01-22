@@ -12,6 +12,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -33,13 +34,20 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Network service
+// API Endpoints for Network service
 func NewNetworkEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
+// Swagger OpenAPI 3.0 for Network service
+func NewNetworkOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
+}
+
 // Client API for Network service
+// Network service is usesd to gain visibility into networks
 type NetworkService interface {
 	// Connect to the network
 	Connect(ctx context.Context, in *ConnectRequest, opts ...client.CallOption) (*ConnectResponse, error)
@@ -128,6 +136,7 @@ func (c *networkService) Status(ctx context.Context, in *StatusRequest, opts ...
 }
 
 // Server API for Network service
+// Network service is usesd to gain visibility into networks
 type NetworkHandler interface {
 	// Connect to the network
 	Connect(context.Context, *ConnectRequest, *ConnectResponse) error
@@ -156,6 +165,7 @@ func RegisterNetworkHandler(s server.Server, hdlr NetworkHandler, opts ...server
 		networkImpl
 	}
 	h := &networkHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewNetworkOpenAPI()))
 	return s.Handle(s.NewHandler(&Network{h}, opts...))
 }
 

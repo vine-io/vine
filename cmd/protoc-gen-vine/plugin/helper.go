@@ -32,6 +32,7 @@ const (
 	_licenseUrl      = "license_url"
 	_externalDocDesc = "external_doc_desc"
 	_externalDocUrl  = "external_doc_url"
+	_version         = "version"
 
 	// method tag
 	_get      = "get"
@@ -103,13 +104,13 @@ func (g *vine) extractTags(comments []*generator.Comment) map[string]*Tag {
 			if i := strings.Index(c.Text, "="); i == -1 {
 				g.gen.Fail("invalid pattern format")
 			} else {
-				pa := c.Text[:i]
-				pe := c.Text[i+1:]
+				pa := string(c.Text[i+1])
+				pe := string(c.Text[len(c.Text)-1])
 				if pa != "`" || pe != "`" {
-					g.gen.Fail("invalid pattern value")
+					g.gen.Fail(fmt.Sprintf("invalid pattern value, pa=%s, pe=%s", pa, pe))
 				}
-				key := strings.TrimSpace(pa)
-				value := strings.TrimSpace(pe)
+				key := strings.TrimSpace(c.Text[:i])
+				value := strings.TrimSpace(c.Text[i+1:])
 				if len(value) == 0 {
 					g.gen.Fail("tag '%s' missing value", key)
 				}

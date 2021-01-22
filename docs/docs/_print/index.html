@@ -1123,8 +1123,10 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 <li>default: 字段为空时指定的默认值，(不可用 required 同时使用)</li>
 <li>in, enum: 判断字段的值是否存在于指定的列表中</li>
 <li>not_in: 判断字段的值是否在指定的列表之外</li>
-<li>min: 指定字段的最小值</li>
-<li>max: 指定字段的最大值</li>
+<li>lt: 指定字段小于指定值</li>
+<li>lte: 指定字段的小于等于指定值</li>
+<li>gt: 指定字段大于指定值</li>
+<li>gte: 指定字段大于等于指定值</li>
 </ul>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
     <span style="color:#6272a4">// +gen:required
@@ -1138,8 +1140,10 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 </span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
 </span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
 
-    <span style="color:#6272a4">// +gen:min=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:max=10
+    <span style="color:#6272a4">// +gen:ge=3
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
 </span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
 }
 </code></pre></div><p><code>bytes</code> 类型的支持:</p>

@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,13 +33,20 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Router service
+// API Endpoints for Router service
 func NewRouterEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
+// Swagger OpenAPI 3.0 for Router service
+func NewRouterOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
+}
+
 // Client API for Router service
+// Router service is used by the proxy to lookup routes
 type RouterService interface {
 	Lookup(ctx context.Context, in *LookupRequest, opts ...client.CallOption) (*LookupResponse, error)
 	Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Router_WatchService, error)
@@ -177,6 +185,7 @@ func (c *routerService) Process(ctx context.Context, in *Advert, opts ...client.
 }
 
 // Server API for Router service
+// Router service is used by the proxy to lookup routes
 type RouterHandler interface {
 	Lookup(context.Context, *LookupRequest, *LookupResponse) error
 	Watch(context.Context, *WatchRequest, Router_WatchStream) error
@@ -195,6 +204,7 @@ func RegisterRouterHandler(s server.Server, hdlr RouterHandler, opts ...server.H
 		routerImpl
 	}
 	h := &routerHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewRouterOpenAPI()))
 	return s.Handle(s.NewHandler(&Router{h}, opts...))
 }
 
@@ -290,9 +300,14 @@ func (h *routerHandler) Process(ctx context.Context, in *Advert, out *ProcessRes
 	return h.RouterHandler.Process(ctx, in, out)
 }
 
-// Api Endpoints for Table service
+// API Endpoints for Table service
 func NewTableEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Table service
+func NewTableOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Table service
@@ -387,6 +402,7 @@ func RegisterTableHandler(s server.Server, hdlr TableHandler, opts ...server.Han
 		tableImpl
 	}
 	h := &tableHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewTableOpenAPI()))
 	return s.Handle(s.NewHandler(&Table{h}, opts...))
 }
 

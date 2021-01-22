@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,10 +33,16 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Dns service
+// API Endpoints for Dns service
 func NewDnsEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Dns service
+func NewDnsOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Dns service
@@ -104,6 +111,7 @@ func RegisterDnsHandler(s server.Server, hdlr DnsHandler, opts ...server.Handler
 		dnsImpl
 	}
 	h := &dnsHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewDnsOpenAPI()))
 	return s.Handle(s.NewHandler(&Dns{h}, opts...))
 }
 

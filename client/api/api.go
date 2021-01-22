@@ -192,6 +192,10 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		for _, s := range services {
 			apis = append(apis, s.Apis...)
 		}
+		a := apis[0]
+		a.Servers = []*regpb.OpenAPIServer{
+			{Url: "http://127.0.0.1:8080"},
+		}
 		v, _ := json.MarshalIndent(apis[0], "", " ")
 		w.Write(v)
 	})

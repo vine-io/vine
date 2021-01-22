@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,10 +33,16 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for File service
+// API Endpoints for File service
 func NewFileEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for File service
+func NewFileOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for File service
@@ -130,6 +137,7 @@ func RegisterFileHandler(s server.Server, hdlr FileHandler, opts ...server.Handl
 		fileImpl
 	}
 	h := &fileHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewFileOpenAPI()))
 	return s.Handle(s.NewHandler(&File{h}, opts...))
 }
 

@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,10 +33,16 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Transport service
+// API Endpoints for Transport service
 func NewTransportEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Transport service
+func NewTransportOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Transport service
@@ -119,6 +126,7 @@ func RegisterTransportHandler(s server.Server, hdlr TransportHandler, opts ...se
 		transportImpl
 	}
 	h := &transportHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewTransportOpenAPI()))
 	return s.Handle(s.NewHandler(&Transport{h}, opts...))
 }
 

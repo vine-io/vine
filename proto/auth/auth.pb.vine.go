@@ -11,6 +11,7 @@ import (
 
 import (
 	context "context"
+	registry "github.com/lack-io/vine/proto/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -32,10 +33,16 @@ var _ api.Endpoint
 var _ context.Context
 var _ client.Option
 var _ server.Option
+var _ registry.OpenAPI
 
-// Api Endpoints for Auth service
+// API Endpoints for Auth service
 func NewAuthEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Auth service
+func NewAuthOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Auth service
@@ -104,6 +111,7 @@ func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.Handl
 		authImpl
 	}
 	h := &authHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewAuthOpenAPI()))
 	return s.Handle(s.NewHandler(&Auth{h}, opts...))
 }
 
@@ -123,9 +131,14 @@ func (h *authHandler) Token(ctx context.Context, in *TokenRequest, out *TokenRes
 	return h.AuthHandler.Token(ctx, in, out)
 }
 
-// Api Endpoints for Accounts service
+// API Endpoints for Accounts service
 func NewAccountsEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Accounts service
+func NewAccountsOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Accounts service
@@ -168,6 +181,7 @@ func RegisterAccountsHandler(s server.Server, hdlr AccountsHandler, opts ...serv
 		accountsImpl
 	}
 	h := &accountsHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewAccountsOpenAPI()))
 	return s.Handle(s.NewHandler(&Accounts{h}, opts...))
 }
 
@@ -179,9 +193,14 @@ func (h *accountsHandler) List(ctx context.Context, in *ListAccountsRequest, out
 	return h.AccountsHandler.List(ctx, in, out)
 }
 
-// Api Endpoints for Rules service
+// API Endpoints for Rules service
 func NewRulesEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
+}
+
+// Swagger OpenAPI 3.0 for Rules service
+func NewRulesOpenAPI() *registry.OpenAPI {
+	return &registry.OpenAPI{}
 }
 
 // Client API for Rules service
@@ -250,6 +269,7 @@ func RegisterRulesHandler(s server.Server, hdlr RulesHandler, opts ...server.Han
 		rulesImpl
 	}
 	h := &rulesHandler{hdlr}
+	opts = append(opts, server.OpenAPIHandler(NewRulesOpenAPI()))
 	return s.Handle(s.NewHandler(&Rules{h}, opts...))
 }
 

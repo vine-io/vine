@@ -309,8 +309,10 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;li&gt;default: 字段为空时指定的默认值，(不可用 required 同时使用)&lt;/li&gt;
 &lt;li&gt;in, enum: 判断字段的值是否存在于指定的列表中&lt;/li&gt;
 &lt;li&gt;not_in: 判断字段的值是否在指定的列表之外&lt;/li&gt;
-&lt;li&gt;min: 指定字段的最小值&lt;/li&gt;
-&lt;li&gt;max: 指定字段的最大值&lt;/li&gt;
+&lt;li&gt;lt: 指定字段小于指定值&lt;/li&gt;
+&lt;li&gt;lte: 指定字段的小于等于指定值&lt;/li&gt;
+&lt;li&gt;gt: 指定字段大于指定值&lt;/li&gt;
+&lt;li&gt;gte: 指定字段大于等于指定值&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
     &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
@@ -324,8 +326,10 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:not_in=[4,5]
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt; b &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;;
 
-    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min=3
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:max=10
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ge=3
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +ggen:gte=4
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:lte=9
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:lt=10
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt; c &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;bytes&lt;/code&gt; 类型的支持:&lt;/p&gt;
