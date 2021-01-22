@@ -51,6 +51,7 @@ import (
 	"github.com/lack-io/vine/service/sync/memory"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/namespace"
+	"github.com/lack-io/vine/util/openapi"
 	"github.com/lack-io/vine/util/stats"
 )
 
@@ -187,6 +188,13 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		h = st.ServeHTTP(r)
 		st.Start()
 		defer st.Stop()
+	}
+
+	if ctx.Bool("enable-openapi") {
+		api := openapi.New()
+		r.HandleFunc("/openapi", api.OpenAPIHandler)
+		//r.Handle("/")
+		h = api.ServeHTTP(r)
 	}
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -410,6 +418,11 @@ func Commands(options ...service.Option) []*cli.Command {
 				Name:    "resolver",
 				Usage:   "Set the hostname resolver used by the API {host, path, grpc}",
 				EnvVars: []string{"VINE_API_RESOLVER"},
+			},
+			&cli.BoolFlag{
+				Name:    "enable-openapi",
+				Usage:   "Enable OpenAPI3",
+				EnvVars: []string{"VINE_ENABLE_OPENAPI"},
 			},
 			&cli.BoolFlag{
 				Name:    "enable-rpc",

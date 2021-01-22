@@ -69,4 +69,4 @@ test: vet
 clean:
 	rm -rf ./vine
 
-.PHONY: build clean vet test docker
+.PHONY: build clean vet test docker install protoc
