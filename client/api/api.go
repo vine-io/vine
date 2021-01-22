@@ -192,7 +192,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		for _, s := range services {
 			apis = append(apis, s.Apis...)
 		}
-		v, _ := json.MarshalIndent(apis, "", " ")
+		v, _ := json.MarshalIndent(apis[0], "", " ")
 		w.Write(v)
 	})
 

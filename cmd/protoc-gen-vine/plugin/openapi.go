@@ -73,6 +73,7 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
 		g.P(fmt.Sprintf(`Url: "%s",`, licenseUrl.Value))
 		g.P("},")
 	}
+	g.P(`Version: "v1.0.0",`)
 	g.P("},")
 	externalDocDesc, ok1 := srvTags[_externalDocDesc]
 	externalDocUrl, ok2 := srvTags[_externalDocUrl]
@@ -231,7 +232,7 @@ func (g *vine) generateParameters(srvName string, msg *generator.MessageDescript
 		g.P("Explode: true,")
 		g.P("Schema: &registry.Schema{")
 		fieldTags := g.extractTags(field.Comments)
-		g.generateSchema(srvName, field, fieldTags, true)
+		g.generateSchema(srvName, field, fieldTags, false)
 		g.P("},")
 		g.P("},")
 	}
@@ -249,6 +250,10 @@ func (g *vine) generateParameters(srvName string, msg *generator.MessageDescript
 				continue
 			}
 		}
+		if field.Proto.IsMessage() || field.Proto.IsEnum() || field.Proto.IsBytes() {
+			g.gen.Fail("invalid field type: ", field.Proto.GetName())
+			return
+		}
 		generateField(g, field, "query")
 	}
 }
@@ -259,14 +264,19 @@ func (g *vine) generateResponse(msg *generator.MessageDescriptor, tags map[strin
 		g.P(fmt.Sprintf(`Description: "%s",`, desc))
 		g.P(`Content: &registry.PathRequestBodyContent{`)
 		g.P(`ApplicationJson: &registry.ApplicationContent{`)
-		g.P(fmt.Sprintf(`Schema: &registry.Schema{Ref: "#/components/errors/%s"},`, schema))
+		if code == 200 {
+			g.P(fmt.Sprintf(`Schema: &registry.Schema{Ref: "#/components/schemas/%s"},`, schema))
+		} else {
+			g.P(fmt.Sprintf(`Schema: &registry.Schema{Ref: "#/components/schemas/%s"},`, schema))
+		}
 		g.P("},")
 		g.P("},")
 		g.P("},")
 	}
 
 	// 200 result
-	printer(200, "successful response (stream response)", msg.Proto.GetName())
+	mname := g.extractImportMessageName(msg)
+	printer(200, "successful response (stream response)", mname)
 
 	t, ok := tags[_result]
 	if !ok {
@@ -274,16 +284,16 @@ func (g *vine) generateResponse(msg *generator.MessageDescriptor, tags map[strin
 	}
 
 	if _, ok := tags[_security]; ok {
-		printer(401, "Unauthorized", "VineError")
-		printer(403, "Forbidden", "VineError")
+		printer(401, "Unauthorized", "errors.VineError")
+		printer(403, "Forbidden", "errors.VineError")
 	}
 
 	s := strings.TrimPrefix(t.Value, "[")
 	s = strings.TrimSuffix(s, "]")
 	parts := strings.Split(s, ",")
 	if len(parts) > 0 {
-		g.errors["VineError"] = &Component{
-			Name: "VineError",
+		g.extSchemas["errors.VineError"] = &Component{
+			Name: "errors.VineError",
 			Kind: Error,
 		}
 	}
@@ -296,25 +306,25 @@ func (g *vine) generateResponse(msg *generator.MessageDescriptor, tags map[strin
 		}
 		switch code {
 		case 400:
-			printer(400, "BadRequest", "VineError")
+			printer(400, "BadRequest", "errors.VineError")
 		case 404:
-			printer(404, "NotFound", "VineError")
+			printer(404, "NotFound", "errors.VineError")
 		case 405:
-			printer(405, "MethodNotAllowed", "VineError")
+			printer(405, "MethodNotAllowed", "errors.VineError")
 		case 408:
-			printer(408, "Timeout", "VineError")
+			printer(408, "Timeout", "errors.VineError")
 		case 409:
-			printer(409, "Conflict", "VineError")
+			printer(409, "Conflict", "errors.VineError")
 		case 500:
-			printer(500, "InternalServerError", "VineError")
+			printer(500, "InternalServerError", "errors.VineError")
 		case 501:
-			printer(501, "NotImplemented", "VineError")
+			printer(501, "NotImplemented", "errors.VineError")
 		case 502:
-			printer(502, "BadGateway", "VineError")
+			printer(502, "BadGateway", "errors.VineError")
 		case 503:
-			printer(503, "ServiceUnavailable", "VineError")
+			printer(503, "ServiceUnavailable", "errors.VineError")
 		case 504:
-			printer(504, "GatewayTimeout", "VineError")
+			printer(504, "GatewayTimeout", "errors.VineError")
 		}
 	}
 }
@@ -329,46 +339,76 @@ func (g *vine) generateSecurity(tags map[string]*Tag) {
 		return
 	}
 
-	cp := &Component{Kind: Auth}
 	g.P(`&registry.PathSecurity{`)
 	parts := strings.Split(t.Value, ",")
 	for _, p := range parts {
+		cp := &Component{Kind: Auth}
 		p = strings.TrimSpace(p)
 		switch p {
 		case "bearer":
-			g.P("Bearer: []string{},")
+			g.P(`Bearer: []string{""},`)
 			cp.Name = "Bearer"
 		case "apiKeys":
-			g.P("ApiKeys: []string{},")
-			cp.Name = "apiKeys"
+			g.P(`ApiKeys: []string{""},`)
+			cp.Name = "ApiKeys"
 		case "basic":
-			g.P("Basic: []string{},")
-			cp.Name = "basic"
+			g.P(`Basic: []string{""},`)
+			cp.Name = "Basic"
 		default:
 			g.gen.Fail("invalid security type: ", p)
 			return
 		}
+		g.security[cp.Name] = cp
 	}
-	g.security[cp.Name] = cp
 	g.P("},")
 }
 
 func (g *vine) generateComponents(srvName string) {
-	g.P(`SecuritySchemas: &registry.SecuritySchemas{`)
+	g.P(`SecuritySchemes: &registry.SecuritySchemes{`)
 	for _, c := range g.security {
 		switch c.Name {
 		case "Bearer":
-			g.P(`Basic: &registry.BearerSecurity{Type: "http", Schema: "bearer"}`)
+			g.P(`Bearer: &registry.BearerSecurity{Type: "http", Scheme: "bearer"},`)
 		case "ApiKeys":
 			g.P(`ApiKeys: &registry.APIKeysSecurity{Type: "apiKey", In: "header", Name: "X-API-Key"},`)
 		case "Basic":
-			g.P(`Basic: &registry.BasicSecurity{Type: "http", Schema: "basic"}`)
+			g.P(`Basic: &registry.BasicSecurity{Type: "http", Scheme: "basic"},`)
 		}
 	}
 	g.P("},")
 
 	fn := func(schemas map[string]*Component) {
 		for name, c := range schemas {
+			if name == "errors.VineError" {
+				g.P(`"errors.VineError": &registry.Model{
+					Type: "object",
+					Properties: map[string]*registry.Schema{
+						"id":       &registry.Schema{Type: "string", Description: "the name from component"},
+						"code":     &registry.Schema{Type: "integer", Format: "int32", Description: "the code from http"},
+						"detail":   &registry.Schema{Type: "string", Description: "the detail message for error"},
+						"status":   &registry.Schema{Type: "string", Description: "a text for the HTTP status code"},
+						"position": &registry.Schema{Type: "string", Description: "the code position for error"},
+						"child":    &registry.Schema{Ref: "#/components/schemas/errors.Child"},
+						"stacks":   &registry.Schema{Type: "array", Description: "external message", Items: &registry.Schema{Ref: "#/components/schemas/errors.Stack"}},
+					},
+				},
+				"errors.Child": &registry.Model{
+					Type: "object",
+					Properties: map[string]*registry.Schema{
+						"code":   &registry.Schema{Type: "integer", Description: "context status code", Format: "int32"},
+						"detail": &registry.Schema{Type: "string", Description: "context error message"},
+					},
+				},
+				"errors.Stack": &registry.Model{
+					Type: "object",
+					Properties: map[string]*registry.Schema{
+						"code":     &registry.Schema{Type: "integer", Format: "int32", Description: "more status code"},
+						"detail":   &registry.Schema{Type: "string", Description: "more message"},
+						"position": &registry.Schema{Type: "string", Description: "the position for more message"},
+					},
+				},`)
+				continue
+			}
 			switch c.Kind {
 			case Request:
 				g.P(fmt.Sprintf(`"%s": &registry.Model{`, name))
@@ -410,39 +450,6 @@ func (g *vine) generateComponents(srvName string) {
 	g.P(`Schemas: map[string]*registry.Model{`)
 	fn(g.schemas)
 	fn(g.extSchemas)
-	g.P("},")
-	g.P(`Errors: map[string]*registry.Model{`)
-	for name, _ := range g.errors {
-		if name == "VineError" {
-			g.P(`"VineError": &registry.Model{
-					Type: "object",
-					Properties: map[string]*registry.Schema{
-						"id":       &registry.Schema{Type: "string", Description: "the name from component"},
-						"code":     &registry.Schema{Type: "integer", Format: "int32", Description: "the code from http"},
-						"detail":   &registry.Schema{Type: "string", Description: "the detail message for error"},
-						"status":   &registry.Schema{Type: "string", Description: "a text for the HTTP status code"},
-						"position": &registry.Schema{Type: "string", Description: "the code position for error"},
-						"child":    &registry.Schema{Type: "object", Description: "more message", Ref: "#/components/errors/Child"},
-						"stacks":   &registry.Schema{Type: "array", Description: "external message", Items: []*registry.Schema{&registry.Schema{Type: "object", Ref: "#/components/errors/Stack"}}},
-					},
-				},
-				"Child": &registry.Model{
-					Type: "object",
-					Properties: map[string]*registry.Schema{
-						"code":   &registry.Schema{Type: "integer", Description: "context status code", Format: "int32"},
-						"detail": &registry.Schema{Type: "string", Description: "context error message"},
-					},
-				},
-				"Stack": &registry.Model{
-					Type: "object",
-					Properties: map[string]*registry.Schema{
-						"code":     &registry.Schema{Type: "integer", Format: "int32", Description: "more status code"},
-						"detail":   &registry.Schema{Type: "string", Description: "more message"},
-						"position": &registry.Schema{Type: "string", Description: "the position for more message"},
-					},
-				},`)
-		}
-	}
 	g.P("},")
 }
 
@@ -536,7 +543,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 				g.P(`Required: true,`)
 			}
 		}
-		g.P(`Type: "object",`)
+		// g.P(`Type: "object",`)
 		g.P(`AdditionalProperties: &registry.Schema{`)
 		msg := g.extractMessage(field.Proto.GetTypeName())
 		if msg == nil {
@@ -593,11 +600,8 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 			descriptor.FieldDescriptorProto_TYPE_FIXED64,
 			descriptor.FieldDescriptorProto_TYPE_FIXED32,
 			descriptor.FieldDescriptorProto_TYPE_STRING:
-			g.P(`Items: []*registry.Schema{`)
-			g.P(`&registry.Schema{Type: "integer"},`)
-			g.P("},")
+			g.P(`Items: &registry.Schema{Type: "integer"},`)
 		case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
-			g.P(`Items: []*registry.Schema{`)
 			msg := g.extractMessage(field.Proto.GetTypeName())
 			if msg == nil {
 				g.gen.Fail("message<%s> not found", field.Proto.GetTypeName())
@@ -610,12 +614,9 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 				Service: srvName,
 				Proto:   msg,
 			}
-			g.P(fmt.Sprintf(`&registry.Schema{Type: "object", Ref: "#/components/schemas/%s"},`, mname))
-			g.P("},")
+			g.P(fmt.Sprintf(`Items: &registry.Schema{Ref: "#/components/schemas/%s"},`, mname))
 		case descriptor.FieldDescriptorProto_TYPE_BOOL:
-			g.P(`Items: []*registry.Schema{`)
-			g.P(`&registry.Schema{Type: "boolean"},`)
-			g.P("},")
+			g.P(`Items: &registry.Schema{Type: "boolean"},`)
 		}
 		return
 	}

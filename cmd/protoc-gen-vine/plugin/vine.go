@@ -40,7 +40,6 @@ type vine struct {
 	security   map[string]*Component
 	schemas    map[string]*Component
 	extSchemas map[string]*Component
-	errors     map[string]*Component
 	m          sync.Map
 }
 
@@ -71,7 +70,6 @@ func (g *vine) Init(gen *generator.Generator) {
 	g.security = map[string]*Component{}
 	g.schemas = map[string]*Component{}
 	g.extSchemas = map[string]*Component{}
-	g.errors = map[string]*Component{}
 	contextPkg = generator.RegisterUniquePackageName("context", nil)
 	apiPkg = generator.RegisterUniquePackageName("api", nil)
 	clientPkg = generator.RegisterUniquePackageName("client", nil)
