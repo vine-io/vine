@@ -23,7 +23,6 @@ import (
 	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service"
 	maddr "github.com/lack-io/vine/util/addr"
-	_ "github.com/lack-io/vine/util/openapi/statik"
 )
 
 type openAPI struct {
