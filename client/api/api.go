@@ -203,13 +203,14 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		mime.AddExtensionType(".svg", "image/svg+xml")
 		statikFs, err := fs.New()
 		if err != nil {
-			log.Fatalf("Starting OpenAPI: %v", err)
+			panic(fmt.Sprintf("Starting OpenAPI: %v", err))
 		}
 		prefix := "/openapi-ui/"
 		fileServer := http.FileServer(statikFs)
 		r.HandleFunc(prefix, api.OpenAPIHandler)
 		r.PathPrefix(prefix).Handler(http.StripPrefix(prefix, fileServer))
 		r.HandleFunc("/openapi.json", api.OpenAPIJOSNHandler)
+		log.Infof("Starting OpenAPI at %v", prefix)
 		h = api.ServeHTTP(r)
 	}
 
