@@ -37,8 +37,8 @@ func (o *openAPI) OpenAPIHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var tmpl string
-	kind := r.URL.Query().Get("kind")
-	switch kind {
+	style := r.URL.Query().Get("style")
+	switch style {
 	case "redoc":
 		tmpl = redocTmpl
 	default:
