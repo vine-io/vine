@@ -103,7 +103,6 @@ greeter.proto&lt;/p&gt;
 &lt;/ul&gt;
 &lt;p&gt;使用 protoc、protoc-gen-gogofaster、protoc-gen-vine 来生成 protobuf code&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/gogo/protobuf
-go get github.com/gogo/googleapis
 go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src/github.com/gogo/protobuf/protobuf --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:. --vine_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;. greeter.proto
@@ -309,7 +308,6 @@ greeter.proto&lt;/p&gt;
 &lt;h2 id=&#34;3生成-api-接口&#34;&gt;3.生成 API 接口&lt;/h2&gt;
 &lt;p&gt;使用 protoc、protoc-gen-gogofaster、protoc-gen-vine 来生成 protobuf code&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/gogo/protobuf
-go get github.com/gogo/googleapis
 go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src/github.com/gogo/protobuf/protobuf --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:. --vine_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;. greeter.proto

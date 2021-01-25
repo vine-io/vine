@@ -401,7 +401,6 @@ greeter.proto</p>
 </ul>
 <p>使用 protoc、protoc-gen-gogofaster、protoc-gen-vine 来生成 protobuf code</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/gogo/googleapis
 go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
 </code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>. greeter.proto
@@ -623,7 +622,6 @@ greeter.proto</p>
 <h2 id="3生成-api-接口">3.生成 API 接口</h2>
 <p>使用 protoc、protoc-gen-gogofaster、protoc-gen-vine 来生成 protobuf code</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/gogo/googleapis
 go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
 </code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>. greeter.proto
