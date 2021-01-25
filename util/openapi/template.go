@@ -91,7 +91,7 @@ var (
 `
 
 	redocTmpl = `
-{{ define "title" }}Redoc{{end}}
+{{ define "title" }}<title>Redoc</title>{{end}}
 {{ define "style" }}
     <link href="./redoc/redoc.css" rel="stylesheet">
     <style>
