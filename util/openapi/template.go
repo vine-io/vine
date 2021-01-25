@@ -38,9 +38,9 @@ var (
 	swaggerTmpl = `
 {{ define "title"}}<title>Swagger UI</title>{{end}}
 {{ define "style" }}
-<link rel="stylesheet" type="text/css" href="./swagger-ui.css" >
-    <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+<link rel="stylesheet" type="text/css" href="./swagger/swagger-ui.css" >
+    <link rel="icon" type="image/png" href="./swagger/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="./swagger/favicon-16x16.png" sizes="16x16" />
     <style>
       html
       {
@@ -65,13 +65,13 @@ var (
 {{end}}
 {{ define "scripts" }}
 <div id="swagger-ui"></div>
-    <script src="./swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+    <script src="./swagger/swagger-ui-bundle.js" charset="UTF-8"> </script>
+    <script src="./swagger/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
     <script>
     window.onload = function() {
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
-        url: "{{ .Url }}",
+        url: "/openapi.json",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [
@@ -92,8 +92,8 @@ var (
 
 	redocTmpl = `
 {{ define "title" }}Redoc{{end}}
-{{ define "style"}}
-    <link href="/openapi/static/OpenAPI/redoc/redoc.css" rel="stylesheet">
+{{ define "style" }}
+    <link href="./redoc/redoc.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -102,8 +102,8 @@ var (
     </style>
 {{end}}
 {{ define "scripts" }}
-	<redoc spec-url='{{ .Url }}'></redoc>
-	<script src="/openapi/static/OpenAPI/redoc/redoc.standalone.js"></script>
+	<redoc spec-url='/openapi.json'></redoc>
+	<script src="./redoc/redoc.standalone.js"></script>
 {{end}}
 `
 )

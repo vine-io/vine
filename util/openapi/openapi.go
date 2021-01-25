@@ -16,11 +16,19 @@ package openapi
 import (
 	"html/template"
 	"net/http"
+	"strings"
 
+	json "github.com/json-iterator/go"
+
+	regpb "github.com/lack-io/vine/proto/registry"
+	"github.com/lack-io/vine/service"
+	maddr "github.com/lack-io/vine/util/addr"
 	_ "github.com/lack-io/vine/util/openapi/statik"
 )
 
 type openAPI struct {
+	svc    service.Service
+	prefix string
 }
 
 func (o *openAPI) OpenAPIHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,10 +37,103 @@ func (o *openAPI) OpenAPIHandler(w http.ResponseWriter, r *http.Request) {
 		//w.Write(b)
 		return
 	}
+	var tmpl string
+	kind := r.URL.Query().Get("kind")
+	switch kind {
+	case "redoc":
+		tmpl = redocTmpl
+	default:
+		tmpl = swaggerTmpl
+	}
 
-	//vars := r.URL.Query()
+	render(w, r, tmpl, nil)
+}
 
-	render(w, r, redocTmpl, nil)
+func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
+	services, err := o.svc.Options().Registry.ListServices()
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	var info *regpb.OpenAPIInfo
+	tags := make(map[string]*regpb.OpenAPITag, 0)
+	paths := make(map[string]*regpb.OpenAPIPath, 0)
+	schemas := make(map[string]*regpb.Model, 0)
+	security := &regpb.SecuritySchemes{}
+	servers := make([]*regpb.OpenAPIServer, 0)
+	for _, item := range services {
+		list, err := o.svc.Options().Registry.GetService(item.Name)
+		if err != nil {
+			continue
+		}
+		if item.Name == "go.vine.api" {
+			for _, node := range item.Nodes {
+				if v, ok := node.Metadata["api-address"]; ok {
+					if strings.HasPrefix(v, ":") {
+						for _, ip := range maddr.IPv4s() {
+							if ip == "localhost" || ip == "127.0.0.1" {
+								continue
+							}
+							v = ip + v
+						}
+					}
+					if !strings.HasPrefix(v, "http://") || !strings.HasPrefix(v, "https://") {
+						v = "http://" + v
+					}
+					servers = append(servers, &regpb.OpenAPIServer{
+						Url:         v,
+						Description: item.Name,
+					})
+				}
+			}
+		}
+		for _, i := range list {
+			if len(i.Apis) == 0 {
+				continue
+			}
+			for _, api := range i.Apis {
+				if info == nil {
+					info = api.Info
+				}
+				for _, tag := range tags {
+					tags[tag.Name] = tag
+				}
+				for name, path := range api.Paths {
+					paths[name] = path
+				}
+				for name, schema := range api.Components.Schemas {
+					schemas[name] = schema
+				}
+				if api.Components.SecuritySchemes.Basic != nil {
+					security.Basic = api.Components.SecuritySchemes.Basic
+				}
+				if api.Components.SecuritySchemes.Bearer != nil {
+					security.Bearer = api.Components.SecuritySchemes.Bearer
+				}
+				if api.Components.SecuritySchemes.ApiKeys != nil {
+					security.ApiKeys = api.Components.SecuritySchemes.ApiKeys
+				}
+			}
+		}
+	}
+	openapi := &regpb.OpenAPI{
+		Openapi: "3.0.1",
+		Info:    info,
+		Tags:    []*regpb.OpenAPITag{},
+		Paths:   paths,
+		Servers: servers,
+		Components: &regpb.OpenAPIComponents{
+			SecuritySchemes: security,
+			Schemas:         schemas,
+		},
+	}
+	for _, tag := range tags {
+		openapi.Tags = append(openapi.Tags, tag)
+	}
+	v, _ := json.Marshal(openapi)
+	w.Write(v)
+	w.WriteHeader(200)
 }
 
 func (o *openAPI) ServeHTTP(h http.Handler) http.Handler {
@@ -41,8 +142,8 @@ func (o *openAPI) ServeHTTP(h http.Handler) http.Handler {
 	})
 }
 
-func New() *openAPI {
-	return &openAPI{}
+func New(svc service.Service) *openAPI {
+	return &openAPI{svc: svc}
 }
 
 func render(w http.ResponseWriter, r *http.Request, tmpl string, data interface{}) {

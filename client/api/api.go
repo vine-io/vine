@@ -15,6 +15,7 @@
 package api
 
 import (
+	"fmt"
 	"mime"
 	"net/http"
 	"os"
@@ -22,7 +23,6 @@ import (
 
 	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
 	"github.com/gorilla/mux"
-	json "github.com/json-iterator/go"
 	"github.com/lack-io/cli"
 	"github.com/rakyll/statik/fs"
 
@@ -30,7 +30,6 @@ import (
 	"github.com/lack-io/vine/client/api/handler"
 	rrvine "github.com/lack-io/vine/client/resolver/api"
 	"github.com/lack-io/vine/plugin"
-	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service"
 	ahandler "github.com/lack-io/vine/service/api/handler"
 	aapi "github.com/lack-io/vine/service/api/handler/api"
@@ -53,6 +52,7 @@ import (
 	"github.com/lack-io/vine/service/sync/memory"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/namespace"
+	"github.com/lack-io/vine/util/openapi"
 	"github.com/lack-io/vine/util/stats"
 
 	_ "github.com/lack-io/vine/util/openapi/statik"
@@ -108,7 +108,11 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	apiNamespace := Namespace + "." + Type
 
 	// append name to opts
-	srvOpts = append(srvOpts, service.Name(Name))
+	srvOpts = append(
+		srvOpts,
+		service.Name(Name),
+		service.Metadata(map[string]string{"api-address": Address}),
+	)
 
 	// initialise service
 	srv := service.NewService(srvOpts...)
@@ -194,74 +198,24 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	if ctx.Bool("enable-openapi") {
-		//api := openapi.New()
-		mime.AddExtensionType(".svg", "image/svg+xml")
+		api := openapi.New(srv)
 
+		mime.AddExtensionType(".svg", "image/svg+xml")
 		statikFs, err := fs.New()
 		if err != nil {
-			log.Errorf("openapi filesystem: %v", err)
-			return
+			log.Fatalf("Starting OpenAPI: %v", err)
 		}
-		log.Infof("OpenAPI Handler at /openapi/")
+		prefix := "/openapi-ui/"
 		fileServer := http.FileServer(statikFs)
-		//r.HandleFunc("/openapi", api.OpenAPIHandler)
-		prefix := "/openapi/"
-		r.Handle(prefix, http.StripPrefix(prefix, fileServer))
-		//h = api.ServeHTTP(r)
+		r.HandleFunc(prefix, api.OpenAPIHandler)
+		r.PathPrefix(prefix).Handler(http.StripPrefix(prefix, fileServer))
+		r.HandleFunc("/openapi.json", api.OpenAPIJOSNHandler)
+		h = api.ServeHTTP(r)
 	}
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`
-<!DOCTYPE html>
-<html>
-<head>
-  <title>ReDoc</title>
-  <!-- needed for adaptive design -->
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
-
-  <!--
-  ReDoc doesn't change outer page styles
-  -->
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-  </style>
-</head>
-<body>
-<!-- 这里填写 swagger 文件访问地址或接口访问地址 -->
-<redoc spec-url='openapi.json' untrustedSpec=true></redoc>
-<script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"> </script>
-</body>
-</html>
-`))
-	})
-
-	// return version and list of services
-	r.HandleFunc("/openapi.json", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "OPTIONS" {
-			return
-		}
-
-		//response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
-		services, err := srv.Options().Registry.GetService("go.vine.helloworld")
-		if err != nil {
-			w.Write([]byte(err.Error()))
-			return
-		}
-		apis := make([]*regpb.OpenAPI, 0)
-		for _, s := range services {
-			apis = append(apis, s.Apis...)
-		}
-		a := apis[0]
-		a.Servers = []*regpb.OpenAPIServer{
-			{Url: "http://127.0.0.1:8080"},
-		}
-		v, _ := json.MarshalIndent(apis[0], "", " ")
-		w.Write(v)
+		response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
+		w.Write([]byte(response))
 	})
 
 	// strip favicon.ico

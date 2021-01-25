@@ -18,18 +18,18 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/lack-io/vine/service/registry"
+	regpb "github.com/lack-io/vine/proto/registry"
 )
 
 func TestWatcher(t *testing.T) {
 	w := &Watcher{
 		id:   "test",
-		res:  make(chan *registry.Result),
+		res:  make(chan *regpb.Result),
 		exit: make(chan bool),
 	}
 
 	go func() {
-		w.res <- &registry.Result{}
+		w.res <- &regpb.Result{}
 	}()
 
 	_, err := w.Next()
