@@ -267,7 +267,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;li&gt;prefix: 判断字段是否以给定的值为开头&lt;/li&gt;
 &lt;li&gt;suffix: 判断字段是否以给定的值为结尾&lt;/li&gt;
 &lt;li&gt;contains: 判断字段是否包含给定的值&lt;/li&gt;
-&lt;li&gt;pattern: 判断该子弹是否为有效的正则表达式&lt;/li&gt;
+&lt;li&gt;pattern: 判断该字段是否为有效的正则表达式&lt;/li&gt;
 &lt;li&gt;number: 判断该字段是否为有效数字&lt;/li&gt;
 &lt;li&gt;email: 判断该字段是否为有效的邮箱地址&lt;/li&gt;
 &lt;li&gt;ip: 判断该字段是否为有效的 ip 地址&lt;/li&gt;
@@ -275,7 +275,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;li&gt;ipv6: 判断该字段是否为有效的 ipv6&lt;/li&gt;
 &lt;li&gt;crontab: 判断该字段是否为有效的 crontab 表达式&lt;/li&gt;
 &lt;li&gt;uuid: 判断该字段是否为有效的 uuid v4&lt;/li&gt;
-&lt;li&gt;uri: 判断该字段是否为有效的 uri&amp;quot;&lt;/li&gt;
+&lt;li&gt;uri: 判断该字段是否为有效的 uri&lt;/li&gt;
 &lt;li&gt;domain: 判断该字段是否为有效的域名&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
@@ -355,6 +355,257 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_len=3
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:max_len=5
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#ff79c6&#34;&gt;repeated&lt;/span&gt; &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: OpenAPI</title>
+      <link>https://lack-io.github.io/vine/docs/framework/openapi/</link>
+      <pubDate>Mon, 25 Jan 2021 18:42:52 +0800</pubDate>
+      
+      <guid>https://lack-io.github.io/vine/docs/framework/openapi/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Vine&lt;/em&gt; 内部集成 openapi3.0，&lt;code&gt;protoc-gen-vine&lt;/code&gt; 通过识别 protobuf 文件的注释生成 Openapi3.0 文档。类似 &lt;a href=&#34;https://lack-io.github.io/vine/docs/framework/validate/&#34;&gt;Validator&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;h3 id=&#34;1先编写-helloworldproto-文件&#34;&gt;1.先编写 helloworld.proto 文件&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;proto3&amp;#34;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; testdata;
+&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; go_package &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/testdata/proto;testdata&amp;#34;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/proto/api/api.proto&amp;#34;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:openapi
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:term_name=vine
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:term_email=598223084@qq.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:contact_name=vine
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:contact_email=598223084@qq.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:license_name=Apache2.0
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:external_doc_desc=123
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:external_doc_url=http://www.baidu.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;service&lt;/span&gt; Helloworld {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:get=/api/v1/call
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:body=*
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:summary=callllllllll
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:security=bearer, apiKeys, basic
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:result=[200]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; Call(HelloWorldRequest) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (HelloWorldResponse) {};
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:post=/api/v1/event
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:body=*
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; Mul(api.Event) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (HelloWorldResponse) {};
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;HelloWorldRequest&lt;/span&gt; {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+  &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt; age &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;HelloWorldResponse&lt;/span&gt; {
+  &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt; code &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; reply &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2安装-protoc-gen-vine&#34;&gt;2.安装 protoc-gen-vine&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/lack-io/vine/cmd/protoc-gen-vine
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3生成-swagger-文档&#34;&gt;3.生成 swagger 文档&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src/github.com/gogo/googleapis --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:. --vine_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/helloworld.proto
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下代码:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Swagger OpenAPI 3.0 for Helloworld service
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NewHelloworldOpenAPI&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.OpenAPI {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// ...
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;4验证&#34;&gt;4.验证&lt;/h3&gt;
+&lt;p&gt;生成的 Openapi3.0 文档会自动注册到 &lt;code&gt;Registry&lt;/code&gt; 组件，当启动 &lt;code&gt;vine api&lt;/code&gt; 时添加 &lt;code&gt;--enable-openapi&lt;/code&gt; 参数可以启动 OpenAPI3.0 功能:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine api &lt;span style=&#34;color:#ff79c6&#34;&gt;--&lt;/span&gt;handler=rpc &lt;span style=&#34;color:#ff79c6&#34;&gt;--&lt;/span&gt;enable&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;openapi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动用访问 url &lt;code&gt;http://127.0.0.1:8080/openapi-ui/&lt;/code&gt; 效果如下:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2021-01-25-18-58-50.png&#34; alt=&#34;swagger-openapi&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Vine&lt;/em&gt; 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 &lt;code&gt;http://127.0.0.1:8080/openapi-ui/?style=redoc&lt;/code&gt;，效果如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2021-01-25-19-04-57.png&#34; alt=&#34;redoc-openapi&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;语法解析&#34;&gt;语法解析&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;protoc-gen-vine&lt;/code&gt; 通过解析 &lt;code&gt;protobuf&lt;/code&gt; 中的注释来生成 OpenAPI3.0 文档。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:openapi
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:term_name=vine
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:term_email=598223084@qq.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:contact_name=vine
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:contact_email=598223084@qq.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:license_name=Apache2.0
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:external_doc_desc=123
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:external_doc_url=http://www.baidu.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;service&lt;/span&gt; Helloworld {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:get=/api/v1/call
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:body=*
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:summary=callllllllll
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:security=bearer, apiKeys, basic
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:result=[200]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; Call(HelloWorldRequest) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (HelloWorldResponse) {};
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:post=/api/v1/event
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:body=*
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; Mul(api.Event) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (HelloWorldResponse) {};
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注: &lt;code&gt;protoc-gen-vine&lt;/code&gt; 和 &lt;code&gt;protoc-gen-validator&lt;/code&gt; 中存在大量重复注释，这样设计的原因是通过一套的注释规则直接生成更多的代码，较少非业务代码的编写。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;语法规则&#34;&gt;语法规则&lt;/h3&gt;
+&lt;p&gt;有效的注释有以下的规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;注释必须以 &lt;code&gt;+gen&lt;/code&gt; 作为开头&lt;/li&gt;
+&lt;li&gt;注释的内容必须紧贴对应的字段，中间不能有空行&lt;/li&gt;
+&lt;li&gt;支持多行注释，也可以将多行合并成一行，并用 &lt;code&gt;;&lt;/code&gt; 作为分隔符&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注：// 风格的注释会被识别为 openapi3.0 中的 Description 信息。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;类型支持&#34;&gt;类型支持&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;service&lt;/code&gt; 类型规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;openapi（必填）: 生成 openapi 的标识，具有此标识的 Service 才会生成文档&lt;/li&gt;
+&lt;li&gt;term_url: 项目团队的 url&lt;/li&gt;
+&lt;li&gt;contact_name: 项目作者名称，和 contact_email 配合使用&lt;/li&gt;
+&lt;li&gt;contact_email: 项目作者邮箱，和 contact_name 配合使用&lt;/li&gt;
+&lt;li&gt;license_name: 项目遵循的许可类型，和 license_url 配合使用&lt;/li&gt;
+&lt;li&gt;license_url: 项目遵循的许可 url，和 license_name配合使用&lt;/li&gt;
+&lt;li&gt;external_doc_desc: 扩展文档描述，和 external_doc_url 配合使用&lt;/li&gt;
+&lt;li&gt;external_doc_url: 扩展文档 url，和 external_doc_url 配合使用&lt;/li&gt;
+&lt;li&gt;version: 文档版本，如 1.0.0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ignore
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;P&lt;/span&gt; {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:openapi
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:term_name=vine
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:term_email=598223084@qq.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:contact_name=vine
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:contact_email=598223084@qq.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:license_name=Apache2.0
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:external_doc_desc=123
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:external_doc_url=http://www.example.com
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;service&lt;/span&gt; HelloWorld {
+
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;rpc&lt;/code&gt; 支持的规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;get | post | put | patch | delete（必填）: 生成对应的 http method，后面紧接路由信息，如 // +gen:get=/api/v1/call&lt;/li&gt;
+&lt;li&gt;body: 指定 Request message 的名称，可以直接使用 &lt;code&gt;*&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;summary: 接口的摘要信息&lt;/li&gt;
+&lt;li&gt;security: 路由支持的 Authorization。支持 beaer, apiKeys 和 basic&lt;/li&gt;
+&lt;li&gt;result: http response code。支持 200，400，401，403，404，405，408，409，500，502，503，504&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注: 使用 +gen:security 时，result 会直接添加 401，403 的内容&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;message&lt;/code&gt; 作为内嵌字段时支持的规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;required: 判断该字段是否为 nil。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;service&lt;/span&gt; Helloworld {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:get=/api/v1/call
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:body=*
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:summary=callllllllll
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:security=bearer, apiKeys, basic
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:result=[200]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; Call(HelloWorldRequest) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (HelloWorldResponse) {};
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:post=/api/v1/{name}/{id}
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:body=*
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; Mul(api.Event) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (HelloWorldResponse) {};
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;message&lt;/code&gt; 字段通用的规则：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;required: 指定字段为必填&lt;/li&gt;
+&lt;li&gt;default: 指定字段的默认值&lt;/li&gt;
+&lt;li&gt;example: 给定字段的实例&lt;/li&gt;
+&lt;li&gt;in: 字段只能在几个值中选择&lt;/li&gt;
+&lt;li&gt;enum: 同 in&lt;/li&gt;
+&lt;li&gt;ro: 字段为只读&lt;/li&gt;
+&lt;li&gt;wo: 字段为只写，和 password 配合使用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;HelloWorldRequest&lt;/span&gt; {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:default=&amp;#34;hello&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:example=&amp;#34;hello&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ro
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:rw
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:enum=[1,2,3]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt; age &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;string&lt;/code&gt; 类型支持的规则&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;min_len: 指定字段的最小长度&lt;/li&gt;
+&lt;li&gt;max_len: 指定字段的最大长度&lt;/li&gt;
+&lt;li&gt;email: 邮箱地址格式&lt;/li&gt;
+&lt;li&gt;date: 日期格式&lt;a href=&#34;https://tools.ietf.org/html/rfc3339#section-5.6&#34;&gt;RFC 3339, section 5.6&lt;/a&gt;，如 2017-07-21&lt;/li&gt;
+&lt;li&gt;date-time: 日期加时间格式&lt;a href=&#34;https://tools.ietf.org/html/rfc3339#section-5.6&#34;&gt;RFC 3339, section 5.6&lt;/a&gt;，如 2017-07-21T17:32:28Z&lt;/li&gt;
+&lt;li&gt;password: 密码格式&lt;/li&gt;
+&lt;li&gt;byte: 字节格式&lt;/li&gt;
+&lt;li&gt;binary: 二进制格式，上传文件使用&lt;/li&gt;
+&lt;li&gt;ip: ip 地址格式&lt;/li&gt;
+&lt;li&gt;ipv4: ipv4 格式&lt;/li&gt;
+&lt;li&gt;ipv6: ipv6 格式&lt;/li&gt;
+&lt;li&gt;uuid: uuid v4 格式&lt;/li&gt;
+&lt;li&gt;uri: uri 格式&lt;/li&gt;
+&lt;li&gt;hostname: 主机名&lt;/li&gt;
+&lt;li&gt;pattern: 正则表达式&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:default=&amp;#34;hello&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:in=[&amp;#34;1&amp;#34;, &amp;#34;2&amp;#34;, &amp;#34;3&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:enum=[&amp;#34;a&amp;#34;, &amp;#34;b&amp;#34;, &amp;#34;c&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_len=3
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_max=4
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:pattern=`\d+(\w+){3,5}`
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:password
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:email
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ip
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ipv4
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ipv6
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:date
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:date-time
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:bytes
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:binary
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:hostname
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:uuid
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:uri
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; m &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注: string pattern 最好单独一行，以免和其他规则冲突&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;数字类型的支持，包含 int32, int64, fixed32, fix64, float, double&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;lt: 指定字段小于指定值&lt;/li&gt;
+&lt;li&gt;lte: 指定字段的小于等于指定值&lt;/li&gt;
+&lt;li&gt;gt: 指定字段大于指定值&lt;/li&gt;
+&lt;li&gt;gte: 指定字段大于等于指定值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;S&lt;/span&gt; {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;float&lt;/span&gt; a &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:default=3.14
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;double&lt;/span&gt; pi &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:in=[1,2,3]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:enum=[2,3]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:not_in=[4,5]
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt; b &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;;
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:ge=3
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +ggen:gte=4
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:lte=9
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:lt=10
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt; c &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
