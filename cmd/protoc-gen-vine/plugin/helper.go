@@ -67,23 +67,23 @@ const (
 	_ip       = "ip"
 	_ipv4     = "ipv4"
 	_ipv6     = "ipv6"
-	//_crontab  = "crontab"
+	// _crontab  = "crontab"
 	_uuid     = "uuid"
 	_uri      = "uri"
 	_hostname = "hostname"
 	_pattern  = "pattern"
 
 	// int32, int64, uint32, uint64, float32, float64 tag
-	//_ne  = "ne"
-	//_eq  = "eq"
+	// _ne  = "ne"
+	// _eq  = "eq"
 	_lt  = "lt"
 	_lte = "lte"
 	_gt  = "gt"
 	_gte = "gte"
 
 	// bytes tag
-	_maxBytes = "max_bytes"
-	_minBytes = "min_bytes"
+	// _maxBytes = "max_bytes"
+	// _minBytes = "min_bytes"
 )
 
 type Tag struct {
