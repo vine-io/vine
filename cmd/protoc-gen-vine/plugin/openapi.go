@@ -690,7 +690,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 		}
 		g.P(fmt.Sprintf(`Ref: "#/components/schemas/%s",`, mname))
 	case descriptor.FieldDescriptorProto_TYPE_BOOL:
-		g.P(`Type: "boolean"`)
+		g.P(`Type: "boolean",`)
 		if _, ok := tags[_required]; ok {
 			if allowRequired {
 				g.P(`Required: true,`)
