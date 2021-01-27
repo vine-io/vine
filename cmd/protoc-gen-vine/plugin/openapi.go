@@ -482,12 +482,12 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 			case _enum, _in:
 				g.P(fmt.Sprintf(`Enum: []string{%s},`, fullStringSlice(tag.Value)))
 			case _gt:
-				g.P("ExclusiveMinimum: true")
+				g.P("ExclusiveMinimum: true,")
 				g.P(fmt.Sprintf(`Minimum: %s,`, tag.Value))
 			case _gte:
 				g.P(fmt.Sprintf(`Minimum: %s,`, tag.Value))
 			case _lt:
-				g.P("ExclusiveMaximum: true")
+				g.P("ExclusiveMaximum: true,")
 				g.P(fmt.Sprintf(`Maximum: %s,`, tag.Value))
 			case _lte:
 				g.P(fmt.Sprintf(`Maximum: %s,`, tag.Value))
