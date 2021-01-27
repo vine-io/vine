@@ -19,7 +19,7 @@
 // That word 'validator' at the end becomes part of the option string set for the
 // protocol compiler, so once the protocol compiler (protoc) is installed
 // you can run
-//		protoc --validator_out=out_directory --go_out=output_directory input_directory/file.proto
+//		protoc --validator_out=plugins=validator:out_directory --go_out=output_directory input_directory/file.proto
 // to generate vine code for the protocol defined by file.proto.
 // With input that, the output will be written to
 //		output_directory/file.validator.pb.go

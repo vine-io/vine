@@ -91,6 +91,7 @@ type Tag struct {
 	Value string
 }
 
+// extractTags extracts the maps of *Tag from []*generator.Comment
 func (g *vine) extractTags(comments []*generator.Comment) map[string]*Tag {
 	if comments == nil || len(comments) == 0 {
 		return nil
@@ -142,6 +143,7 @@ func (g *vine) extractTags(comments []*generator.Comment) map[string]*Tag {
 	return tags
 }
 
+// extractDesc extracts descriptions from []*generator.Comment
 func extractDesc(comments []*generator.Comment) []string {
 	if comments == nil || len(comments) == 0 {
 		return nil
@@ -165,6 +167,7 @@ func TrimString(s string, c string) string {
 	return s
 }
 
+// fullStringSlice [1,2,3] => `"1", "2", "3"`
 func fullStringSlice(s string) string {
 	s = strings.TrimPrefix(s, "[")
 	s = strings.TrimSuffix(s, "]")

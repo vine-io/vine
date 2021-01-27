@@ -32,6 +32,8 @@ const (
 	Error
 )
 
+// Component is description of generator.MessageDescriptor and
+// converted OpenAPI3.0 data models (https://swagger.io/docs/specification/data-models/)
 type Component struct {
 	Name    string
 	Kind    ComponentKind
