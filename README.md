@@ -157,3 +157,4 @@ curl -H 'Content-Type: application/json' -d '{}' http://localhost:8080/api/vine
 - [ ] 添加数据库支持
 - [ ] 修改 vine new 功能，添加 gateway 模板
 - [ ] 组件下的 struct 整合进 proto 中，同 registry 的实现
+- [ ] 完善文档
