@@ -173,12 +173,12 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *g
 		return
 	}
 	mname := g.extractImportMessageName(msg)
-	g.schemas[mname] = &Component{
+	g.schemas.Push(&Component{
 		Name:    mname,
 		Kind:    Request,
 		Service: srvName,
 		Proto:   msg,
-	}
+	})
 
 	if len(pathParams) > 0 || meth == _get {
 		g.P("Parameters: []*registry.PathParameters{")
@@ -207,12 +207,12 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *g
 		return
 	}
 	mname = g.extractImportMessageName(msg)
-	g.schemas[mname] = &Component{
+	g.schemas.Push(&Component{
 		Name:    mname,
 		Kind:    Response,
 		Service: srvName,
 		Proto:   msg,
-	}
+	})
 	g.P("Responses: map[string]*registry.PathResponse{")
 	g.generateResponse(msg, tags)
 	g.P("},")
@@ -309,10 +309,10 @@ func (g *vine) generateResponse(msg *generator.MessageDescriptor, tags map[strin
 	s = strings.TrimSuffix(s, "]")
 	parts := strings.Split(s, ",")
 	if len(parts) > 0 {
-		g.extSchemas["errors.VineError"] = &Component{
+		g.schemas.Push(&Component{
 			Name: "errors.VineError",
 			Kind: Error,
-		}
+		})
 	}
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
@@ -375,14 +375,14 @@ func (g *vine) generateSecurity(tags map[string]*Tag) {
 			g.gen.Fail("invalid security type: ", p)
 			return
 		}
-		g.security[cp.Name] = cp
+		g.security.Push(cp)
 	}
 	g.P("},")
 }
 
 func (g *vine) generateComponents(srvName string) {
 	g.P(`SecuritySchemes: &registry.SecuritySchemes{`)
-	for _, c := range g.security {
+	g.security.Range(func(c *Component) {
 		switch c.Name {
 		case "Bearer":
 			g.P(`Bearer: &registry.BearerSecurity{Type: "http", Scheme: "bearer"},`)
@@ -391,12 +391,12 @@ func (g *vine) generateComponents(srvName string) {
 		case "Basic":
 			g.P(`Basic: &registry.BasicSecurity{Type: "http", Scheme: "basic"},`)
 		}
-	}
+	})
 	g.P("},")
 
-	fn := func(schemas map[string]*Component) {
-		for name, c := range schemas {
-			if name == "errors.VineError" {
+	fn := func(schemas *LinkComponents) {
+		schemas.Range(func(c *Component) {
+			if c.Name == "errors.VineError" {
 				g.P(`"errors.VineError": &registry.Model{
 					Type: "object",
 					Properties: map[string]*registry.Schema{
@@ -424,11 +424,11 @@ func (g *vine) generateComponents(srvName string) {
 						"position": &registry.Schema{Type: "string", Description: "the position for more message"},
 					},
 				},`)
-				continue
+				return
 			}
 			switch c.Kind {
 			case Request:
-				g.P(fmt.Sprintf(`"%s": &registry.Model{`, name))
+				g.P(fmt.Sprintf(`"%s": &registry.Model{`, c.Name))
 				g.P(`Type: "object",`)
 				g.P(`Properties: map[string]*registry.Schema{`)
 				requirements := []string{}
@@ -447,7 +447,7 @@ func (g *vine) generateComponents(srvName string) {
 				}
 				g.P("},")
 			case Response:
-				g.P(fmt.Sprintf(`"%s": &registry.Model{`, name))
+				g.P(fmt.Sprintf(`"%s": &registry.Model{`, c.Name))
 				g.P(`Type: "object",`)
 				g.P(`Properties: map[string]*registry.Schema{`)
 				for _, field := range c.Proto.Fields {
@@ -461,12 +461,11 @@ func (g *vine) generateComponents(srvName string) {
 			case Error:
 
 			}
-		}
+		})
 	}
 
 	g.P(`Schemas: map[string]*registry.Model{`)
 	fn(g.schemas)
-	fn(g.extSchemas)
 	g.P("},")
 }
 
@@ -575,12 +574,12 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 		}
 		if valueField != nil {
 			mname := g.extractImportMessageName(msg)
-			g.extSchemas[mname] = &Component{
+			g.schemas.Push(&Component{
 				Name:    mname,
 				Kind:    Request,
 				Service: srvName,
 				Proto:   msg,
-			}
+			})
 			g.generateSchema(srvName, valueField, g.extractTags(valueField.Comments), allowRequired)
 		} else {
 			// inner MapEntry
@@ -625,12 +624,12 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 				return
 			}
 			mname := g.extractImportMessageName(msg)
-			g.extSchemas[mname] = &Component{
+			g.schemas.Push(&Component{
 				Name:    mname,
 				Kind:    Request,
 				Service: srvName,
 				Proto:   msg,
-			}
+			})
 			g.P(fmt.Sprintf(`Items: &registry.Schema{Ref: "#/components/schemas/%s"},`, mname))
 		case descriptor.FieldDescriptorProto_TYPE_BOOL:
 			g.P(`Items: &registry.Schema{Type: "boolean"},`)
@@ -682,12 +681,12 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 			return
 		}
 		mname := g.extractImportMessageName(msg)
-		g.extSchemas[mname] = &Component{
+		g.schemas.Push(&Component{
 			Name:    mname,
 			Kind:    Request,
 			Service: srvName,
 			Proto:   msg,
-		}
+		})
 		g.P(fmt.Sprintf(`Ref: "#/components/schemas/%s",`, mname))
 	case descriptor.FieldDescriptorProto_TYPE_BOOL:
 		g.P(`Type: "boolean",`)
@@ -716,12 +715,12 @@ func (g *vine) extractMessageField(srvName, fname string, msg *generator.Message
 				return nil
 			}
 			mname := g.extractImportMessageName(submsg)
-			g.schemas[mname] = &Component{
+			g.schemas.Push(&Component{
 				Name:    mname,
 				Kind:    Request,
 				Service: srvName,
 				Proto:   submsg,
-			}
+			})
 			return g.extractMessageField(srvName, fname[index+1:], submsg)
 		}
 	}

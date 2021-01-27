@@ -198,20 +198,19 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	if ctx.Bool("enable-openapi") {
-		api := openapi.New(srv)
-
+		openAPI := openapi.New(srv)
 		mime.AddExtensionType(".svg", "image/svg+xml")
 		statikFs, err := fs.New()
 		if err != nil {
-			panic(fmt.Sprintf("Starting OpenAPI: %v", err))
+			log.Fatalf("Starting OpenAPI: %v", err)
 		}
 		prefix := "/openapi-ui/"
 		fileServer := http.FileServer(statikFs)
-		r.HandleFunc(prefix, api.OpenAPIHandler)
+		r.HandleFunc(prefix, openAPI.OpenAPIHandler)
 		r.PathPrefix(prefix).Handler(http.StripPrefix(prefix, fileServer))
-		r.HandleFunc("/openapi.json", api.OpenAPIJOSNHandler)
+		r.HandleFunc("/openapi.json", openAPI.OpenAPIJOSNHandler)
 		log.Infof("Starting OpenAPI at %v", prefix)
-		h = api.ServeHTTP(r)
+		h = openAPI.ServeHTTP(r)
 	}
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

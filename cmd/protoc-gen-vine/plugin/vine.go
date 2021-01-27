@@ -37,9 +37,8 @@ const (
 // plugin architecture.  It generates bindings for vine support.
 type vine struct {
 	gen        *generator.Generator
-	security   map[string]*Component
-	schemas    map[string]*Component
-	extSchemas map[string]*Component
+	security   *LinkComponents
+	schemas    *LinkComponents
 	m          sync.Map
 }
 
@@ -67,9 +66,8 @@ var (
 // Init initializes the plugin.
 func (g *vine) Init(gen *generator.Generator) {
 	g.gen = gen
-	g.security = map[string]*Component{}
-	g.schemas = map[string]*Component{}
-	g.extSchemas = map[string]*Component{}
+	g.security = NewLinkComponents()
+	g.schemas = NewLinkComponents()
 	contextPkg = generator.RegisterUniquePackageName("context", nil)
 	apiPkg = generator.RegisterUniquePackageName("api", nil)
 	clientPkg = generator.RegisterUniquePackageName("client", nil)
