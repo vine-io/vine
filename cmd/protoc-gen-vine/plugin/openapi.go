@@ -516,7 +516,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 			case _minLen:
 				g.P(fmt.Sprintf(`MinLength: %s,`, tag.Value))
 			case _maxLen:
-				g.P(fmt.Sprintf(`MinLength: %s,`, tag.Value))
+				g.P(fmt.Sprintf(`MaxLength: %s,`, tag.Value))
 			case _date:
 				g.P(`Format: "date",`)
 			case _dateTime:
