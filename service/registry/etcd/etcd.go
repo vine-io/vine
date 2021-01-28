@@ -191,14 +191,14 @@ func (e *etcdRegistry) registerNode(s *regpb.Service, node *regpb.Node, opts ...
 
 	// renew the lease if it exists
 	if leaseID > 0 {
-		log.Infof("Renewing existing lease for %s %d", s.Name, leaseID)
+		log.Debugf("Renewing existing lease for %s %d", s.Name, leaseID)
 
 		if _, err := e.client.KeepAliveOnce(context.TODO(), leaseID); err != nil {
 			if err != rpctypes.ErrLeaseNotFound {
 				return err
 			}
 
-			log.Infof("Lease not found for %s %d", s.Name, leaseID)
+			log.Errorf("Lease not found for %s %d", s.Name, leaseID)
 			// lease not found do register
 			leaseNotFound = true
 		}
@@ -217,7 +217,7 @@ func (e *etcdRegistry) registerNode(s *regpb.Service, node *regpb.Node, opts ...
 
 	// the service is unchanged, skip registering
 	if ok && v == h && !leaseNotFound {
-		log.Infof("Service %s node %s unchanged skipping registration", s.Name, node.Id)
+		log.Debugf("Service %s node %s unchanged skipping registration", s.Name, node.Id)
 		return nil
 	}
 

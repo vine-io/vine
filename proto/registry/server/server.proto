@@ -13,7 +13,6 @@ service Registry {
   rpc Watch(WatchRequest) returns (stream registry.Result) {};
 }
 
-
 message EmptyResponse {}
 
 message GetRequest {
