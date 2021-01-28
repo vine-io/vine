@@ -22,7 +22,7 @@ import (
 	"sync"
 	"testing"
 
-	srv "github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/server"
 )
@@ -81,11 +81,11 @@ func TestHTTPRouter(t *testing.T) {
 	wg.Add(1)
 
 	// new vine service
-	service := srv.NewService(
-		srv.Context(ctx),
-		srv.Name("foobar"),
+	service := vine.NewService(
+		vine.Context(ctx),
+		vine.Name("foobar"),
 		//vine.Registry(memory.NewRegistry()),
-		srv.AfterStart(func() error {
+		vine.AfterStart(func() error {
 			wg.Done()
 			return nil
 		}),

@@ -18,10 +18,10 @@ package dns
 import (
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/handler"
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/provider/cloudflare"
 	dns "github.com/lack-io/vine/proto/network/dns"
-	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 )
 
@@ -32,8 +32,8 @@ func Run(c *cli.Context) {
 		log.Fatal("The only implemented DNS provider is cloudflare")
 	}
 
-	dnsService := service.NewService(
-		service.Name("go.vine.network.dns"),
+	dnsService := vine.NewService(
+		vine.Name("go.vine.network.dns"),
 	)
 
 	// Create handler

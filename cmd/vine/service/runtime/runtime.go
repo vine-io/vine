@@ -20,11 +20,11 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/handler"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/manager"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/profile"
 	pb "github.com/lack-io/vine/proto/runtime"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/runtime"
@@ -38,7 +38,7 @@ var (
 )
 
 // Run the runtime service
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 
 	// Get the profile
 	var prof []string
@@ -67,7 +67,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, service.Address(Address))
+		srvOpts = append(srvOpts, vine.Address(Address))
 	}
 
 	// create runtime
@@ -77,10 +77,10 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// append name
-	srvOpts = append(srvOpts, service.Name(Name))
+	srvOpts = append(srvOpts, vine.Name(Name))
 
 	// new service
-	srv := service.NewService(srvOpts...)
+	srv := vine.NewService(srvOpts...)
 
 	// create a new runtime manager
 	manager := manager.New(muRuntime,
@@ -97,7 +97,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	// register the runtime handler
 	pb.RegisterRuntimeHandler(srv.Server(), &handler.Runtime{
 		// Client to publish events
-		Client: service.NewEvent("go.vine.runtime.events", srv.Client()),
+		Client: vine.NewEvent("go.vine.runtime.events", srv.Client()),
 		// using the vine runtime
 		Runtime: manager,
 	})
@@ -144,7 +144,7 @@ func Flags() []cli.Flag {
 	}
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := []*cli.Command{
 		{
 			Name:  "runtime",

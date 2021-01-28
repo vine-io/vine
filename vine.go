@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Package vine is a pluggable framework for vine services
-package service
+package vine
 
 import (
 	"context"

@@ -185,7 +185,7 @@ var (
 		&cli.StringFlag{
 			Name:    "server-advertise",
 			EnvVars: []string{"VINE_SERVER_ADVERTISE"},
-			Usage:   "Use instead of the server_address when registering with discovery. 127.0.0.1:8080",
+			Usage:   "Use instead of the server-address when registering with discovery. 127.0.0.1:8080",
 		},
 		&cli.StringSliceFlag{
 			Name:    "server-metadata",
@@ -324,7 +324,7 @@ var (
 		&cli.StringFlag{
 			Name:    "auth-provider-endpoint",
 			EnvVars: []string{"VINE_AUTH_PROVIDER_ENDPOINT"},
-			Usage:   "The enpoint to be used for oauth",
+			Usage:   "The endpoint to be used for oauth",
 		},
 		&cli.StringFlag{
 			Name:    "auth-provider-redirect",

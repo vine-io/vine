@@ -23,8 +23,8 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	pb "github.com/lack-io/vine/proto/router"
-	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/router"
 	"github.com/lack-io/vine/service/router/handler"
@@ -95,24 +95,24 @@ type rtr struct {
 	// router is the vine router
 	router.Router
 	// publisher to publish router adverts
-	service.Event
+	vine.Event
 }
 
 // newRouter creates new vine router and returns it
-func newRouter(srv service.Service, router router.Router) *rtr {
+func newRouter(srv vine.Service, router router.Router) *rtr {
 	s := &sub{
 		router: router,
 	}
 
 	// register subscriber
-	if err := service.RegisterSubscriber(Topic, srv.Server(), s); err != nil {
+	if err := vine.RegisterSubscriber(Topic, srv.Server(), s); err != nil {
 		log.Errorf("failed to subscribe to adverts: %s", err)
 		os.Exit(1)
 	}
 
 	return &rtr{
 		Router: router,
-		Event:  service.NewEvent(Topic, srv.Client()),
+		Event:  vine.NewEvent(Topic, srv.Client()),
 	}
 }
 
@@ -174,7 +174,7 @@ func (r *rtr) Stop() error {
 }
 
 // Run runs the vine server
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 
 	// Init plugins
 	for _, p := range Plugins() {
@@ -213,11 +213,11 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// Initialise service
-	service := service.NewService(
-		service.Name(Name),
-		service.Address(Address),
-		service.RegisterTTL(time.Duration(ctx.Int("register-ttl"))*time.Second),
-		service.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
+	service := vine.NewService(
+		vine.Name(Name),
+		vine.Address(Address),
+		vine.RegisterTTL(time.Duration(ctx.Int("register-ttl"))*time.Second),
+		vine.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
 	)
 
 	r := regRouter.NewRouter(
@@ -302,7 +302,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	log.Info("successfully stopped")
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "router",
 		Usage: "Run the vine network router",

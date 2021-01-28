@@ -20,13 +20,13 @@ import (
 
 	json "github.com/json-iterator/go"
 
+	"github.com/lack-io/vine"
 	regpb "github.com/lack-io/vine/proto/registry"
-	"github.com/lack-io/vine/service"
 	maddr "github.com/lack-io/vine/util/addr"
 )
 
 type openAPI struct {
-	svc    service.Service
+	svc    vine.Service
 	prefix string
 }
 
@@ -141,7 +141,7 @@ func (o *openAPI) ServeHTTP(h http.Handler) http.Handler {
 	})
 }
 
-func New(svc service.Service) *openAPI {
+func New(svc vine.Service) *openAPI {
 	return &openAPI{svc: svc}
 }
 

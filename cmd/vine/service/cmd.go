@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cmd
+package service
 
 import (
 	"fmt"
@@ -23,14 +23,14 @@ import (
 
 	ccli "github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/client/api"
-	"github.com/lack-io/vine/client/bot"
-	"github.com/lack-io/vine/client/cli"
-	cliNew "github.com/lack-io/vine/client/cli/new"
-	"github.com/lack-io/vine/client/cli/util"
-	"github.com/lack-io/vine/client/proxy"
-	"github.com/lack-io/vine/client/web"
-	cmdSrv "github.com/lack-io/vine/cmd/vine/service"
+	"github.com/lack-io/vine"
+	"github.com/lack-io/vine/cmd/vine/client/api"
+	"github.com/lack-io/vine/cmd/vine/client/bot"
+	"github.com/lack-io/vine/cmd/vine/client/cli"
+	cliNew "github.com/lack-io/vine/cmd/vine/client/cli/new"
+	"github.com/lack-io/vine/cmd/vine/client/cli/util"
+	"github.com/lack-io/vine/cmd/vine/client/proxy"
+	"github.com/lack-io/vine/cmd/vine/client/web"
 	"github.com/lack-io/vine/cmd/vine/service/auth"
 	"github.com/lack-io/vine/cmd/vine/service/broker"
 	"github.com/lack-io/vine/cmd/vine/service/config"
@@ -45,7 +45,6 @@ import (
 	"github.com/lack-io/vine/cmd/vine/service/tunnel"
 	"github.com/lack-io/vine/plugin"
 	"github.com/lack-io/vine/plugin/build"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config/cmd"
 	gostore "github.com/lack-io/vine/service/store"
 	inauth "github.com/lack-io/vine/util/auth"
@@ -336,7 +335,7 @@ func buildVersion() string {
 }
 
 // Init initialised the command line
-func Init(options ...service.Option) {
+func Init(options ...vine.Option) {
 	Setup(cmd.App(), options...)
 
 	cmd.Init(
@@ -369,7 +368,7 @@ func (s commands) Less(i, j int) bool {
 }
 
 // Setup sets up a cli.App
-func Setup(app *ccli.App, options ...service.Option) {
+func Setup(app *ccli.App, options ...vine.Option) {
 	// Add the various commands
 	app.Commands = append(app.Commands, runtime.Commands(options...)...)
 	app.Commands = append(app.Commands, store.Commands(options...)...)
@@ -384,7 +383,7 @@ func Setup(app *ccli.App, options ...service.Option) {
 	app.Commands = append(app.Commands, registry.Commands(options...)...)
 	app.Commands = append(app.Commands, debug.Commands(options...)...)
 	app.Commands = append(app.Commands, server.Commands(options...)...)
-	app.Commands = append(app.Commands, cmdSrv.Commands(options...)...)
+	app.Commands = append(app.Commands, Commands(options...)...)
 	app.Commands = append(app.Commands, web.Commands(options...)...)
 	app.Commands = append(app.Commands, cliNew.Commands()...)
 	app.Commands = append(app.Commands, build.Commands()...)

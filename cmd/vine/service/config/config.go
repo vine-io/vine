@@ -23,9 +23,9 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/config/handler"
 	proto "github.com/lack-io/vine/proto/config"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/client"
@@ -41,7 +41,7 @@ var (
 	Namespace = "global"
 )
 
-func Run(c *cli.Context, srvOpts ...service.Option) {
+func Run(c *cli.Context, svcOpts ...vine.Option) {
 	if len(c.String("server-name")) > 0 {
 		Name = c.String("server-name")
 	}
@@ -50,16 +50,16 @@ func Run(c *cli.Context, srvOpts ...service.Option) {
 		handler.WatchTopic = c.String("watch-topic")
 	}
 
-	srvOpts = append(srvOpts, service.Name(Name))
+	svcOpts = append(svcOpts, vine.Name(Name))
 
-	srv := service.NewService(srvOpts...)
+	srv := vine.NewService(svcOpts...)
 
 	h := &handler.Config{
 		Store: *cmd.DefaultCmd.Options().Store,
 	}
 
 	proto.RegisterConfigHandler(srv.Server(), h)
-	service.RegisterSubscriber(handler.WatchTopic, srv.Server(), handler.Watcher)
+	vine.RegisterSubscriber(handler.WatchTopic, srv.Server(), handler.Watcher)
 
 	if err := srv.Run(); err != nil {
 		log.Fatalf("config Run the service error: ", err)
@@ -193,7 +193,7 @@ func delConfig(ctx *cli.Context) error {
 	return nil
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "config",
 		Usage: "Manage configuration values",

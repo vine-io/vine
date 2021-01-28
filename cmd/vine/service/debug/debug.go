@@ -18,13 +18,13 @@ package debug
 import (
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	logHandler "github.com/lack-io/vine/cmd/vine/service/debug/log"
 	statshandler "github.com/lack-io/vine/cmd/vine/service/debug/stats"
 	tracehandler "github.com/lack-io/vine/cmd/vine/service/debug/trace"
 	pblog "github.com/lack-io/vine/proto/debug/log"
 	pbstats "github.com/lack-io/vine/proto/debug/stats"
 	pbtrace "github.com/lack-io/vine/proto/debug/trace"
-	"github.com/lack-io/vine/service"
 	dservice "github.com/lack-io/vine/service/debug"
 	"github.com/lack-io/vine/service/debug/log"
 	ulog "github.com/lack-io/vine/service/logger"
@@ -37,7 +37,7 @@ var (
 	Address = ":8089"
 )
 
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// Init plugins
 	for _, p := range Plugins() {
@@ -53,14 +53,14 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, service.Address(Address))
+		svcOpts = append(svcOpts, vine.Address(Address))
 	}
 
 	// append name
-	srvOpts = append(srvOpts, service.Name(Name))
+	svcOpts = append(svcOpts, vine.Name(Name))
 
 	// new service
-	srv := service.NewService(srvOpts...)
+	svc := vine.NewService(svcOpts...)
 
 	// default log initialiser
 	newLog := func(service string) log.Log {
@@ -104,7 +104,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		}
 
 		// Register the logs handler
-		pblog.RegisterLogHandler(srv.Server(), lgHandler)
+		pblog.RegisterLogHandler(svc.Server(), lgHandler)
 
 		// stats handler
 		statsHandler, err := statshandler.New(done, ctx.Int("window"), c.services)
@@ -119,21 +119,21 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		}
 
 		// Register the stats handler
-		pbstats.RegisterStatsHandler(srv.Server(), statsHandler)
+		pbstats.RegisterStatsHandler(svc.Server(), statsHandler)
 		// register trace handler
-		pbtrace.RegisterTraceHandler(srv.Server(), traceHandler)
+		pbtrace.RegisterTraceHandler(svc.Server(), traceHandler)
 
 		// TODO: implement debug service for k8s cruft
 
 		// start debug service
-		if err := srv.Run(); err != nil {
+		if err := svc.Run(); err != nil {
 			ulog.Fatal(err)
 		}
 	}
 }
 
 // Commands populates the debug commands
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := []*cli.Command{
 		{
 			Name:  "debug",

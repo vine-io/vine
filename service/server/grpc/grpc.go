@@ -61,7 +61,7 @@ const (
 
 type grpcServer struct {
 	rpc  *rServer
-	srv  *grpc.Server
+	svc  *grpc.Server
 	exit chan chan error
 	wg   *sync.WaitGroup
 
@@ -88,7 +88,7 @@ func newGRPCServer(opts ...server.Option) server.Server {
 	options := newOptions(opts...)
 
 	// create a grpc server
-	srv := &grpcServer{
+	svc := &grpcServer{
 		opts: options,
 		rpc: &rServer{
 			serviceMap: make(map[string]*service),
@@ -100,9 +100,9 @@ func newGRPCServer(opts ...server.Option) server.Server {
 	}
 
 	// configure the grpc server
-	srv.configure()
+	svc.configure()
 
-	return srv
+	return svc
 }
 
 type grpcRouter struct {
@@ -123,7 +123,7 @@ func (g *grpcServer) configure(opts ...server.Option) {
 	defer g.Unlock()
 
 	// Don't reprocess where there's no config
-	if len(opts) == 0 && g.srv != nil {
+	if len(opts) == 0 && g.svc != nil {
 		return
 	}
 
@@ -148,7 +148,7 @@ func (g *grpcServer) configure(opts ...server.Option) {
 	}
 
 	g.rsvc = nil
-	g.srv = grpc.NewServer(gopts...)
+	g.svc = grpc.NewServer(gopts...)
 }
 
 func (g *grpcServer) getMaxMsgSize() int {
@@ -195,7 +195,7 @@ func (g *grpcServer) getListener() net.Listener {
 	return nil
 }
 
-func (g *grpcServer) handler(srv interface{}, stream grpc.ServerStream) error {
+func (g *grpcServer) handler(svc interface{}, stream grpc.ServerStream) error {
 	if g.wg != nil {
 		g.wg.Add(1)
 		defer g.wg.Done()
@@ -890,7 +890,7 @@ func (g *grpcServer) Start() error {
 
 	// vine: go ts.Accept(s.accept)
 	go func() {
-		if err := g.srv.Serve(ts); err != nil {
+		if err := g.svc.Serve(ts); err != nil {
 			log.Errorf("gRPC Server start error: %v", err)
 		}
 	}()
@@ -934,14 +934,14 @@ func (g *grpcServer) Start() error {
 		exit := make(chan bool)
 
 		go func() {
-			g.srv.GracefulStop()
+			g.svc.GracefulStop()
 			close(exit)
 		}()
 
 		select {
 		case <-exit:
 		case <-time.After(time.Second):
-			g.srv.Stop()
+			g.svc.Stop()
 		}
 
 		// close transport

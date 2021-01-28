@@ -22,9 +22,9 @@ import (
 
 	"github.com/lack-io/cli"
 
-	mcli "github.com/lack-io/vine/client/cli"
+	"github.com/lack-io/vine"
+	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	proto "github.com/lack-io/vine/proto/debug"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/client"
 	log "github.com/lack-io/vine/service/logger"
 	qcli "github.com/lack-io/vine/util/command/cli"
@@ -83,7 +83,7 @@ func Run(ctx *cli.Context) {
 	}
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "health",
 		Usage: "Check the health of a service",

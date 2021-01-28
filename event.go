@@ -12,34 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package api
+package vine
 
 import (
-	"github.com/lack-io/cli"
+	"context"
 
-	"github.com/lack-io/vine"
-	pb "github.com/lack-io/vine/proto/api/auth"
-	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/service/client"
 )
 
-var (
-	// Name of the auth api
-	Name = "go.vine.api.auth"
-	// Address is the api address
-	Address = ":8011"
-)
+type event struct {
+	c     client.Client
+	topic string
+}
 
-// Run the vine auth api
-func Run(ctx *cli.Context, svcOpts ...vine.Option) {
-
-	svc := vine.NewService(
-		vine.Name(Name),
-		vine.Address(Address),
-	)
-
-	_ = pb.RegisterAuthHandler(svc.Server(), NewHandler(svc))
-
-	if err := svc.Run(); err != nil {
-		log.Error(err)
-	}
+func (e *event) Publish(ctx context.Context, msg interface{}, opts ...client.PublishOption) error {
+	return e.c.Publish(ctx, e.c.NewMessage(e.topic, msg), opts...)
 }

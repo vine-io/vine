@@ -21,9 +21,9 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/handler/exec"
 	"github.com/lack-io/vine/cmd/vine/service/handler/file"
-	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/proxy/grpc"
@@ -33,7 +33,7 @@ import (
 	"github.com/lack-io/vine/service/server"
 )
 
-func Run(ctx *cli.Context, opts ...service.Option) {
+func Run(ctx *cli.Context, opts ...vine.Option) {
 
 	name := ctx.String("name")
 	address := ctx.String("address")
@@ -54,15 +54,15 @@ func Run(ctx *cli.Context, opts ...service.Option) {
 	}
 
 	if len(metadata) > 0 {
-		opts = append(opts, service.Metadata(metadata))
+		opts = append(opts, vine.Metadata(metadata))
 	}
 
 	if len(name) > 0 {
-		opts = append(opts, service.Name(name))
+		opts = append(opts, vine.Name(name))
 	}
 
 	if len(address) > 0 {
-		opts = append(opts, service.Address(address))
+		opts = append(opts, vine.Address(address))
 	}
 
 	if len(endpoint) == 0 {
@@ -117,7 +117,7 @@ func Run(ctx *cli.Context, opts ...service.Option) {
 	log.Infof("Service [%s] Serving %s at endpoint %s\n", p.String(), name, endpoint)
 
 	// new service
-	service := service.NewService(opts...)
+	service := vine.NewService(opts...)
 
 	// create new muxer
 	//	muxer := mux.New(name, p)
@@ -131,7 +131,7 @@ func Run(ctx *cli.Context, opts ...service.Option) {
 	service.Run()
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "service",
 		Usage: "Run a vine service",

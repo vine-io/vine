@@ -19,10 +19,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/proto/errors"
 	regpb "github.com/lack-io/vine/proto/registry"
 	pb "github.com/lack-io/vine/proto/registry/server"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
@@ -33,7 +33,7 @@ type Registry struct {
 	// service id
 	Id string
 	// the publisher
-	Publisher service.Event
+	Publisher vine.Event
 	// internal registry
 	Registry registry.Registry
 	// auth to verify clients

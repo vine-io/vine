@@ -25,8 +25,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/proto/errors"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/server"
 )
 
@@ -266,14 +266,14 @@ func NewSingleHostRouter(url string) *Router {
 //		// Set the http endpoint
 //		http.WithBackend("http://localhost:10001"),
 //	 )
-func NewService(opts ...service.Option) service.Service {
+func NewService(opts ...vine.Option) vine.Service {
 	// prepend router to opts
-	opts = append([]service.Option{
+	opts = append([]vine.Option{
 		WithRouter(DefaultRouter),
 	}, opts...)
 
 	// create the new service
-	return service.NewService(opts...)
+	return vine.NewService(opts...)
 }
 
 // RegisterEndpoint registers a http endpoint against an RPC endpoint

@@ -21,11 +21,11 @@ import (
 
 	"github.com/lack-io/cli"
 
-	rcli "github.com/lack-io/vine/client/cli"
+	"github.com/lack-io/vine"
+	rcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/registry/handler"
 	regpb "github.com/lack-io/vine/proto/registry"
 	pb "github.com/lack-io/vine/proto/registry/server"
-	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/helper"
@@ -93,7 +93,7 @@ func (s *subscriber) Process(ctx context.Context, event *regpb.Event) error {
 	return nil
 }
 
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -108,39 +108,39 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// service opts
-	srvOpts = append(srvOpts, service.Name(Name))
+	svcOpts = append(svcOpts, vine.Name(Name))
 	if i := time.Duration(ctx.Int("register-ttl")); i > 0 {
-		srvOpts = append(srvOpts, service.RegisterTTL(i*time.Second))
+		svcOpts = append(svcOpts, vine.RegisterTTL(i*time.Second))
 	}
 	if i := time.Duration(ctx.Int("register-interval")); i > 0 {
-		srvOpts = append(srvOpts, service.RegisterInterval(i*time.Second))
+		svcOpts = append(svcOpts, vine.RegisterInterval(i*time.Second))
 	}
 
 	// set address
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, service.Address(Address))
+		svcOpts = append(svcOpts, vine.Address(Address))
 	}
 
 	// new service
-	srv := service.NewService(srvOpts...)
+	svc := vine.NewService(svcOpts...)
 	// get server id
-	id := srv.Server().Options().Id
+	id := svc.Server().Options().Id
 
 	// register the handler
-	pb.RegisterRegistryHandler(srv.Server(), &handler.Registry{
+	pb.RegisterRegistryHandler(svc.Server(), &handler.Registry{
 		Id:        id,
-		Publisher: service.NewEvent(Topic, srv.Client()),
-		Registry:  srv.Options().Registry,
-		Auth:      srv.Options().Auth,
+		Publisher: vine.NewEvent(Topic, svc.Client()),
+		Registry:  svc.Options().Registry,
+		Auth:      svc.Options().Auth,
 	})
 
 	// run the service
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "registry",
 		Usage: "Run the service registry",

@@ -18,9 +18,9 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/broker/handler"
 	pb "github.com/lack-io/vine/proto/broker"
-	"github.com/lack-io/vine/service"
 )
 
 var (
@@ -30,7 +30,7 @@ var (
 	Address = ":8001"
 )
 
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -45,21 +45,21 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// service opts
-	srvOpts = append(srvOpts, service.Name(Name))
+	srvOpts = append(srvOpts, vine.Name(Name))
 	if i := time.Duration(ctx.Int("register-ttl")); i > 0 {
-		srvOpts = append(srvOpts, service.RegisterTTL(i*time.Second))
+		srvOpts = append(srvOpts, vine.RegisterTTL(i*time.Second))
 	}
 	if i := time.Duration(ctx.Int("register-interval")); i > 0 {
-		srvOpts = append(srvOpts, service.RegisterInterval(i*time.Second))
+		srvOpts = append(srvOpts, vine.RegisterInterval(i*time.Second))
 	}
 
 	// set address
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, service.Address(Address))
+		srvOpts = append(srvOpts, vine.Address(Address))
 	}
 
 	// new service
-	srv := service.NewService(srvOpts...)
+	srv := vine.NewService(srvOpts...)
 
 	// connect to the broker
 	srv.Options().Broker.Connect()
@@ -74,7 +74,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	srv.Run()
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "broker",
 		Usage: "Run the message broker",

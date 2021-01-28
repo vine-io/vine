@@ -18,10 +18,10 @@ import (
 	"github.com/lack-io/cli"
 	"github.com/pkg/errors"
 
-	mcli "github.com/lack-io/vine/client/cli"
+	"github.com/lack-io/vine"
+	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/store/handler"
 	pb "github.com/lack-io/vine/proto/store"
-	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/util/helper"
@@ -35,7 +35,7 @@ var (
 )
 
 // Run runs the vine server
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// Init plugins
 	for _, p := range Plugins() {
@@ -50,13 +50,13 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// Initialise service
-	srv := service.NewService(
-		service.Name(Name),
+	svc := vine.NewService(
+		vine.Name(Name),
 	)
 
 	// the store handler
 	storeHandler := &handler.Store{
-		Default: srv.Options().Store,
+		Default: svc.Options().Store,
 		Stores:  make(map[string]bool),
 	}
 
@@ -94,16 +94,16 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		return storeHandler.Default, nil
 	}
 
-	pb.RegisterStoreHandler(srv.Server(), storeHandler)
+	pb.RegisterStoreHandler(svc.Server(), storeHandler)
 
 	// start the service
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
 
 // Commands is the cli interface for the store service
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "store",
 		Usage: "Run the vine store service",

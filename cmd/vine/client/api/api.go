@@ -26,11 +26,11 @@ import (
 	"github.com/lack-io/cli"
 	"github.com/rakyll/statik/fs"
 
-	"github.com/lack-io/vine/client/api/auth"
-	"github.com/lack-io/vine/client/api/handler"
-	rrvine "github.com/lack-io/vine/client/resolver/api"
+	"github.com/lack-io/vine"
+	"github.com/lack-io/vine/cmd/vine/client/api/auth"
+	"github.com/lack-io/vine/cmd/vine/client/api/handler"
+	rrvine "github.com/lack-io/vine/cmd/vine/client/resolver/api"
 	"github.com/lack-io/vine/plugin"
-	"github.com/lack-io/vine/service"
 	ahandler "github.com/lack-io/vine/service/api/handler"
 	aapi "github.com/lack-io/vine/service/api/handler/api"
 	"github.com/lack-io/vine/service/api/handler/event"
@@ -75,7 +75,7 @@ var (
 	ACMECA                = acme.LetsEncryptProductionCA
 )
 
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -108,14 +108,14 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	apiNamespace := Namespace + "." + Type
 
 	// append name to opts
-	srvOpts = append(
-		srvOpts,
-		service.Name(Name),
-		service.Metadata(map[string]string{"api-address": Address}),
+	svcOpts = append(
+		svcOpts,
+		vine.Name(Name),
+		vine.Metadata(map[string]string{"api-address": Address}),
 	)
 
 	// initialise service
-	srv := service.NewService(srvOpts...)
+	svc := vine.NewService(svcOpts...)
 
 	// Init plugins
 	for _, p := range Plugins() {
@@ -144,7 +144,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 
 			storage := certmagic.NewStorage(
 				memory.NewSync(),
-				srv.Options().Store,
+				svc.Options().Store,
 			)
 
 			config := cloudflare.NewDefaultConfig()
@@ -198,7 +198,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	if ctx.Bool("enable-openapi") {
-		openAPI := openapi.New(srv)
+		openAPI := openapi.New(svc)
 		mime.AddExtensionType(".svg", "image/svg+xml")
 		statikFs, err := fs.New()
 		if err != nil {
@@ -254,12 +254,12 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		rt := regRouter.NewRouter(
 			router.WithHandler(arpc.Handler),
 			router.WithResolver(rr),
-			router.WithRegistry(srv.Options().Registry),
+			router.WithRegistry(svc.Options().Registry),
 		)
 		rp := arpc.NewHandler(
 			ahandler.WithNamespace(apiNamespace),
 			ahandler.WithRouter(rt),
-			ahandler.WithClient(srv.Client()),
+			ahandler.WithClient(svc.Client()),
 		)
 		r.PathPrefix(APIPath).Handler(rp)
 	case "api":
@@ -267,12 +267,12 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		rt := regRouter.NewRouter(
 			router.WithHandler(aapi.Handler),
 			router.WithResolver(rr),
-			router.WithRegistry(srv.Options().Registry),
+			router.WithRegistry(svc.Options().Registry),
 		)
 		ap := aapi.NewHandler(
 			ahandler.WithNamespace(apiNamespace),
 			ahandler.WithRouter(rt),
-			ahandler.WithClient(srv.Client()),
+			ahandler.WithClient(svc.Client()),
 		)
 		r.PathPrefix(APIPath).Handler(ap)
 	case "event":
@@ -280,12 +280,12 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		rt := regRouter.NewRouter(
 			router.WithHandler(event.Handler),
 			router.WithResolver(rr),
-			router.WithRegistry(srv.Options().Registry),
+			router.WithRegistry(svc.Options().Registry),
 		)
 		ev := event.NewHandler(
 			ahandler.WithNamespace(apiNamespace),
 			ahandler.WithRouter(rt),
-			ahandler.WithClient(srv.Client()),
+			ahandler.WithClient(svc.Client()),
 		)
 		r.PathPrefix(APIPath).Handler(ev)
 	case "http", "proxy":
@@ -293,12 +293,12 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		rt := regRouter.NewRouter(
 			router.WithHandler(ahttp.Handler),
 			router.WithResolver(rr),
-			router.WithRegistry(srv.Options().Registry),
+			router.WithRegistry(svc.Options().Registry),
 		)
 		ht := ahttp.NewHandler(
 			ahandler.WithNamespace(apiNamespace),
 			ahandler.WithRouter(rt),
-			ahandler.WithClient(srv.Client()),
+			ahandler.WithClient(svc.Client()),
 		)
 		r.PathPrefix(ProxyPath).Handler(ht)
 	case "web":
@@ -306,21 +306,21 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		rt := regRouter.NewRouter(
 			router.WithHandler(aweb.Handler),
 			router.WithResolver(rr),
-			router.WithRegistry(srv.Options().Registry),
+			router.WithRegistry(svc.Options().Registry),
 		)
 		w := aweb.NewHandler(
 			ahandler.WithNamespace(apiNamespace),
 			ahandler.WithRouter(rt),
-			ahandler.WithClient(srv.Client()),
+			ahandler.WithClient(svc.Client()),
 		)
 		r.PathPrefix(APIPath).Handler(w)
 	default:
 		log.Infof("Registering API Default Handler at %s", APIPath)
 		rt := regRouter.NewRouter(
 			router.WithResolver(rr),
-			router.WithRegistry(srv.Options().Registry),
+			router.WithRegistry(svc.Options().Registry),
 		)
-		r.PathPrefix(APIPath).Handler(handler.Meta(srv, rt, nsResolver.ResolveWithType))
+		r.PathPrefix(APIPath).Handler(handler.Meta(svc, rt, nsResolver.ResolveWithType))
 	}
 
 	// reverse wrap handler
@@ -342,7 +342,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// Run server
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -352,7 +352,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "api",
 		Usage: "Run the api gateway",

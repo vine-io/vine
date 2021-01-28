@@ -12,19 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package service
+package vine
 
 import (
-	"context"
+	"fmt"
 
-	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/plugin"
 )
 
-type event struct {
-	c     client.Client
-	topic string
+var (
+	defaultManager = plugin.NewManager()
+)
+
+// Plugins lists the service plugins
+func Plugins() []plugin.Plugin {
+	return defaultManager.Plugins()
 }
 
-func (e *event) Publish(ctx context.Context, msg interface{}, opts ...client.PublishOption) error {
-	return e.c.Publish(ctx, e.c.NewMessage(e.topic, msg), opts...)
+// Register registers an service plugin
+func Register(pl plugin.Plugin) error {
+	if plugin.IsRegistered(pl) {
+		return fmt.Errorf("%s registered globally", pl.String())
+	}
+	return defaultManager.Register(pl)
 }

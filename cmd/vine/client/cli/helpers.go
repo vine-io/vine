@@ -26,7 +26,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	cliutil "github.com/lack-io/vine/client/cli/util"
+	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
 	"github.com/lack-io/vine/service/client"
 	cbytes "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/config/cmd"

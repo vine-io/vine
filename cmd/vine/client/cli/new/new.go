@@ -27,7 +27,7 @@ import (
 	"github.com/lack-io/cli"
 	"github.com/xlab/treeprint"
 
-	tmpl "github.com/lack-io/vine/client/cli/new/template"
+	tmpl "github.com/lack-io/vine/cmd/vine/client/cli/new/template"
 	"github.com/lack-io/vine/util/usage"
 )
 

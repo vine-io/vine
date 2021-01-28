@@ -22,7 +22,7 @@ import (
 	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/api/server/acme"
 	"github.com/lack-io/vine/service/api/server/acme/autocert"
 	"github.com/lack-io/vine/service/api/server/acme/certmagic"
@@ -64,7 +64,7 @@ var (
 	ACMECA                = acme.LetsEncryptProductionCA
 )
 
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 
 	// because VINE_PROXY_ADDRESS is used internally by the vine/client
 	// we need to unset it so we don't end up calling ourselves infinitely
@@ -92,10 +92,10 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// service opts
-	srvOpts = append(srvOpts, service.Name(Name))
+	srvOpts = append(srvOpts, vine.Name(Name))
 
 	// new service
-	srv := service.NewService(srvOpts...)
+	srv := vine.NewService(srvOpts...)
 
 	// set the context
 	var popts []proxy.Option
@@ -289,7 +289,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "proxy",
 		Usage: "Run the service proxy",

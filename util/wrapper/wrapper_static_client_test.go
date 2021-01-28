@@ -51,18 +51,18 @@ func TestStaticClientWrapper(t *testing.T) {
 	brk := bmemory.NewBroker(broker.Registry(reg))
 	tr := tmemory.NewTransport()
 
-	srv := server.NewServer(
+	svc := server.NewServer(
 		server.Broker(brk),
 		server.Registry(reg),
 		server.Name("go.vine.service.foo"),
 		server.Address("127.0.0.1:0"),
 		server.Transport(tr),
 	)
-	if err = srv.Handle(srv.NewHandler(&TestFoo{})); err != nil {
+	if err = svc.Handle(svc.NewHandler(&TestFoo{})); err != nil {
 		t.Fatal(err)
 	}
 
-	if err = srv.Start(); err != nil {
+	if err = svc.Start(); err != nil {
 		t.Fatal(err)
 	}
 
@@ -77,7 +77,7 @@ func TestStaticClientWrapper(t *testing.T) {
 		t.Fatal("address xxx_#localhost:12345 must not exists and call must be failed")
 	}
 
-	w2 := wrapper.StaticClient(srv.Options().Address, cli)
+	w2 := wrapper.StaticClient(svc.Options().Address, cli)
 	if err = w2.Call(context.TODO(), req, rsp); err != nil {
 		t.Fatal(err)
 	} else if rsp.Data != "pass" {

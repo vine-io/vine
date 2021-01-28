@@ -34,12 +34,12 @@ import (
 	"github.com/serenize/snaker"
 	"golang.org/x/net/publicsuffix"
 
-	apiAuth "github.com/lack-io/vine/client/api/auth"
-	"github.com/lack-io/vine/client/api/handler"
-	"github.com/lack-io/vine/client/resolver/web"
+	"github.com/lack-io/vine"
+	apiAuth "github.com/lack-io/vine/cmd/vine/client/api/auth"
+	"github.com/lack-io/vine/cmd/vine/client/api/handler"
+	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
 	"github.com/lack-io/vine/plugin"
 	regpb "github.com/lack-io/vine/proto/registry"
-	"github.com/lack-io/vine/service"
 	res "github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/server"
 	"github.com/lack-io/vine/service/api/server/acme"
@@ -463,7 +463,7 @@ func (s *srv) render(w http.ResponseWriter, r *http.Request, tmpl string, data i
 	}
 }
 
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -489,10 +489,10 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// service opts
-	srvOpts = append(srvOpts, service.Name(Name))
+	srvOpts = append(srvOpts, vine.Name(Name))
 
 	// Initialize Server
-	svc := service.NewService(srvOpts...)
+	svc := vine.NewService(srvOpts...)
 
 	reg := &reg{Registry: *cmd.DefaultOptions().Registry}
 
@@ -638,7 +638,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 }
 
 //Commands for `vine web`
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "web",
 		Usage: "Run the web dashboard",

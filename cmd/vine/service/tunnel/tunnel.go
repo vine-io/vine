@@ -21,7 +21,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/client"
 	cmucp "github.com/lack-io/vine/service/client/mucp"
 	log "github.com/lack-io/vine/service/logger"
@@ -49,7 +49,7 @@ var (
 )
 
 // Run runs the vine server
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	// Init plugins
 	for _, p := range Plugins() {
 		p.Init(ctx)
@@ -78,16 +78,16 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// Initialise service
-	srv := service.NewService(
-		service.Name(Name),
-		service.RegisterTTL(time.Duration(ctx.Int("register-ttl"))*time.Second),
-		service.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
+	svc := vine.NewService(
+		vine.Name(Name),
+		vine.RegisterTTL(time.Duration(ctx.Int("register-ttl"))*time.Second),
+		vine.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
 	)
 
 	// local tunnel router
 	r := regRouter.NewRouter(
-		router.Id(srv.Server().Options().Id),
-		router.Registry(srv.Client().Options().Registry),
+		router.Id(svc.Server().Options().Id),
+		router.Registry(svc.Client().Options().Registry),
 	)
 
 	// start the router
@@ -130,19 +130,19 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	mux := muxer.New(Name, localProxy)
 
 	// init server
-	srv.Server().Init(
+	svc.Server().Init(
 		server.WithRouter(mux),
 	)
 
 	// local transport client
-	srv.Client().Init(
-		client.Transport(srv.Options().Transport),
+	svc.Client().Init(
+		client.Transport(svc.Options().Transport),
 	)
 
 	// local proxy
 	tunProxy := mucp.NewProxy(
 		proxy.WithRouter(r),
-		proxy.WithClient(srv.Client()),
+		proxy.WithClient(svc.Client()),
 	)
 
 	// create memory registry
@@ -161,7 +161,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 		os.Exit(1)
 	}
 
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Errorf("Tunnel %s failed: %v", Name, err)
 	}
 
@@ -180,7 +180,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "tunnel",
 		Usage: "Run the vine network tunnel",

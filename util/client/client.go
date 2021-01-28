@@ -17,7 +17,7 @@ import (
 
 	ccli "github.com/lack-io/cli"
 
-	cliutil "github.com/lack-io/vine/client/cli/util"
+	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/grpc"

@@ -41,7 +41,7 @@
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;1初始化&#34;&gt;1.初始化&lt;/h2&gt;
 &lt;p&gt;使用 &lt;code&gt;service.NewService&lt;/code&gt; 创建服务&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; vine &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service&amp;#34;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine&amp;#34;&lt;/span&gt;
 
 service = vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;()
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建时使用选项&lt;/p&gt;
@@ -56,7 +56,7 @@ service = vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
 
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/cli&amp;#34;&lt;/span&gt;
-	vine &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine&amp;#34;&lt;/span&gt;
 )
 
 	service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
@@ -187,7 +187,7 @@ pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterGreeterHandler&lt;/span&gt;
         &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
         &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
 
-        vine &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine&amp;#34;&lt;/span&gt;
         pb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/examples/service/proto&amp;#34;&lt;/span&gt;
 )
 
@@ -252,7 +252,7 @@ fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(rsp.Greeting)
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;1初始化&#34;&gt;1.初始化&lt;/h2&gt;
 &lt;p&gt;使用 &lt;code&gt;service.NewFunction&lt;/code&gt; 创建 Function&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; vine &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service&amp;#34;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine&amp;#34;&lt;/span&gt;
 
 function = vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewFunction&lt;/span&gt;()
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建时使用选项&lt;/p&gt;
@@ -267,7 +267,7 @@ function = vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewFunction&lt;/span&g
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
 
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/cli&amp;#34;&lt;/span&gt;
-	vine &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine&amp;#34;&lt;/span&gt;
 )
 
 	function &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewFunction&lt;/span&gt;(
@@ -392,7 +392,7 @@ pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterGreeterHandler&lt;/span&gt;
         &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
         &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
 
-        vine &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service&amp;#34;&lt;/span&gt;
+        &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine&amp;#34;&lt;/span&gt;
         pb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/examples/service/proto&amp;#34;&lt;/span&gt;
 )
 

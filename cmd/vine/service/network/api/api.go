@@ -26,8 +26,8 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	pb "github.com/lack-io/vine/proto/network"
-	"github.com/lack-io/vine/service"
 	goapi "github.com/lack-io/vine/service/api"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network"
@@ -239,8 +239,8 @@ func (n *Network) Nodes(ctx context.Context, req *map[string]interface{}, rsp *m
 
 func Run(ctx *cli.Context) {
 	// create the api service
-	api := service.NewService(
-		service.Name("go.vine.api.network"),
+	api := vine.NewService(
+		vine.Name("go.vine.api.network"),
 	)
 
 	// create the network client
@@ -266,7 +266,7 @@ func Run(ctx *cli.Context) {
 	}
 
 	// register the handler
-	service.RegisterHandler(api.Server(), netHandler, goapi.WithEndpoint(ep))
+	vine.RegisterHandler(api.Server(), netHandler, goapi.WithEndpoint(ep))
 
 	// run the api
 	api.Run()

@@ -18,9 +18,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/proto/errors"
 	pb "github.com/lack-io/vine/proto/runtime"
-	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/runtime"
 )
@@ -29,7 +29,7 @@ type Runtime struct {
 	// The runtime used to manage services
 	Runtime runtime.Runtime
 	// The client used to publish events
-	Client service.Event
+	Client vine.Event
 }
 
 func (r *Runtime) Read(ctx context.Context, req *pb.ReadRequest, rsp *pb.ReadResponse) error {

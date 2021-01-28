@@ -27,8 +27,8 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/vine"
 	proto "github.com/lack-io/vine/proto/bot"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/agent/command"
 	"github.com/lack-io/vine/service/agent/input"
 	log "github.com/lack-io/vine/service/logger"
@@ -43,7 +43,7 @@ import (
 type bot struct {
 	exit    chan bool
 	ctx     *cli.Context
-	service service.Service
+	service vine.Service
 
 	sync.RWMutex
 	inputs   map[string]input.Input
@@ -94,7 +94,7 @@ func help(commands map[string]command.Command, serviceCommands []string) command
 	})
 }
 
-func newBot(ctx *cli.Context, inputs map[string]input.Input, commands map[string]command.Command, srv service.Service) *bot {
+func newBot(ctx *cli.Context, inputs map[string]input.Input, commands map[string]command.Command, srv vine.Service) *bot {
 	commands["^help$"] = help(commands, nil)
 
 	return &bot{
@@ -421,12 +421,12 @@ func run(ctx *cli.Context) error {
 	}
 
 	// setup service
-	srv := service.NewService(
-		service.Name(Name),
-		service.RegisterTTL(
+	srv := vine.NewService(
+		vine.Name(Name),
+		vine.RegisterTTL(
 			time.Duration(ctx.Int("register-ttl"))*time.Second,
 		),
-		service.RegisterInterval(
+		vine.RegisterInterval(
 			time.Duration(ctx.Int("register-interval"))*time.Second,
 		),
 	)

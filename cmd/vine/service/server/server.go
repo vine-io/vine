@@ -21,7 +21,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	gorun "github.com/lack-io/vine/service/runtime"
@@ -58,7 +58,7 @@ var (
 	Address = ":10001"
 )
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "server",
 		Usage: "Run the vine server",
@@ -197,9 +197,9 @@ func Run(context *cli.Context) error {
 	// start the console
 	// cli.Init(context)
 
-	server := service.NewService(
-		service.Name(Name),
-		service.Address(Address),
+	server := vine.NewService(
+		vine.Name(Name),
+		vine.Address(Address),
 	)
 
 	// @todo make this configurable

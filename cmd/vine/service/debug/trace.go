@@ -20,7 +20,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/debug"
 	log "github.com/lack-io/vine/service/logger"
 )
@@ -30,7 +30,7 @@ const (
 	traceUsage = "Required usage: vine trace example"
 )
 
-func getTrace(ctx *cli.Context, srvOpts ...service.Option) {
+func getTrace(ctx *cli.Context, srvOpts ...vine.Option) {
 	log.Trace("debug")
 
 	// TODO look for trace id

@@ -15,19 +15,19 @@ package api
 import (
 	"context"
 
+	"github.com/lack-io/vine"
 	pb "github.com/lack-io/vine/proto/api/auth"
 	"github.com/lack-io/vine/proto/errors"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/auth"
 )
 
-// Handler is an impementation of the auth api
+// Handler is an implementation of the auth api
 type Handler struct {
 	auth.Auth
 }
 
 // NewHandler returns an initialized Handler
-func NewHandler(srv service.Service) *Handler {
+func NewHandler(svc vine.Service) *Handler {
 	return &Handler{auth.DefaultAuth}
 }
 

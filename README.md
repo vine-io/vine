@@ -42,7 +42,7 @@ Vine 遵守 Apache 2.0 开源许可.
 go get github.com/gogo/protobuf
 go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
-go get github.com/lack-io/vine
+go get github.com/lack-io/cmd/vine
 ```
 
 ### proto 文件
@@ -84,7 +84,7 @@ import (
 	"context"
 	"fmt"
 
-	vine "github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	pb "example/proto"
 )
 
@@ -119,7 +119,7 @@ import (
 	"context"
 	"fmt"
 
-	vine "github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	pb "example/proto"
 )
 
@@ -150,7 +150,7 @@ curl -H 'Content-Type: application/json' -d '{}' http://localhost:8080/api/vine
 ```
 
 ## 接下来的事
-- [ ] 修改 github.com/lack-io/vine/service 结构
+- [x] 修改 github.com/lack-io/vine/service 结构
 - [ ] 使用高性能的 web 库替换 mux
 - [ ] 修改 Auth 组件
 - [ ] 减少对应依赖，如 ACEM

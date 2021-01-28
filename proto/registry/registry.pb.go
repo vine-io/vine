@@ -5199,7 +5199,7 @@ func (m *Service) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if skippy < 0 {
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
 						return ErrInvalidLengthRegistry
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -5354,10 +5354,7 @@ func (m *Service) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -5600,7 +5597,7 @@ func (m *Node) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if skippy < 0 {
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
 						return ErrInvalidLengthRegistry
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -5617,10 +5614,7 @@ func (m *Node) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -5884,7 +5878,7 @@ func (m *Endpoint) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if skippy < 0 {
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
 						return ErrInvalidLengthRegistry
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -5901,10 +5895,7 @@ func (m *Endpoint) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -6052,10 +6043,7 @@ func (m *Value) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -6124,10 +6112,7 @@ func (m *Options) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -6264,10 +6249,7 @@ func (m *Result) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -6423,10 +6405,7 @@ func (m *Event) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -6760,7 +6739,7 @@ func (m *OpenAPI) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if skippy < 0 {
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
 						return ErrInvalidLengthRegistry
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -6813,10 +6792,7 @@ func (m *OpenAPI) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -6930,10 +6906,7 @@ func (m *OpenAPIServer) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -7183,10 +7156,7 @@ func (m *OpenAPIInfo) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -7300,10 +7270,7 @@ func (m *OpenAPIContact) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -7417,10 +7384,7 @@ func (m *OpenAPILicense) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -7570,10 +7534,7 @@ func (m *OpenAPITag) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -7687,10 +7648,7 @@ func (m *OpenAPIExternalDocs) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -7920,10 +7878,7 @@ func (m *OpenAPIPath) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -8303,7 +8258,7 @@ func (m *OpenAPIPathDocs) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if skippy < 0 {
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
 						return ErrInvalidLengthRegistry
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -8354,10 +8309,7 @@ func (m *OpenAPIPathDocs) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -8503,10 +8455,7 @@ func (m *PathSecurity) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -8832,10 +8781,7 @@ func (m *PathParameters) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -8973,10 +8919,7 @@ func (m *PathRequestBody) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -9098,10 +9041,7 @@ func (m *PathRequestBodyContent) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -9187,10 +9127,7 @@ func (m *ApplicationContent) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -9308,10 +9245,7 @@ func (m *PathResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -9509,7 +9443,7 @@ func (m *OpenAPIComponents) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if skippy < 0 {
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
 						return ErrInvalidLengthRegistry
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -9526,10 +9460,7 @@ func (m *OpenAPIComponents) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -9687,10 +9618,7 @@ func (m *SecuritySchemes) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -9804,10 +9732,7 @@ func (m *BasicSecurity) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -9953,10 +9878,7 @@ func (m *APIKeysSecurity) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -10102,10 +10024,7 @@ func (m *BearerSecurity) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -10299,7 +10218,7 @@ func (m *Model) Unmarshal(dAtA []byte) error {
 					if err != nil {
 						return err
 					}
-					if skippy < 0 {
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
 						return ErrInvalidLengthRegistry
 					}
 					if (iNdEx + skippy) > postIndex {
@@ -10348,10 +10267,7 @@ func (m *Model) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {
@@ -10978,10 +10894,7 @@ func (m *Schema) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthRegistry
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthRegistry
 			}
 			if (iNdEx + skippy) > l {

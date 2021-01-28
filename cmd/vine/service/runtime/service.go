@@ -29,12 +29,12 @@ import (
 
 	"github.com/lack-io/cli"
 
-	cliutil "github.com/lack-io/vine/client/cli/util"
+	"github.com/lack-io/vine"
+	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/handler"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/service/runtime"
-	srvRuntime "github.com/lack-io/vine/service/runtime/grpc"
+	svcRuntime "github.com/lack-io/vine/service/runtime/grpc"
 	"github.com/lack-io/vine/service/runtime/local/git"
 	"github.com/lack-io/vine/util/client"
 	"github.com/lack-io/vine/util/file"
@@ -81,7 +81,7 @@ func runtimeFromContext(ctx *cli.Context) runtime.Runtime {
 		return *cmd.DefaultCmd.Options().Runtime
 	}
 
-	return srvRuntime.NewRuntime(runtime.WithClient(client.New(ctx)))
+	return svcRuntime.NewRuntime(runtime.WithClient(client.New(ctx)))
 }
 
 // exists returns whether the given file or directory exists
@@ -96,7 +96,7 @@ func dirExists(path string) (bool, error) {
 	return true, err
 }
 
-func runService(ctx *cli.Context, srvOpts ...service.Option) {
+func runService(ctx *cli.Context, srvOpts ...vine.Option) {
 	// Init plugins
 	for _, p := range Plugins() {
 		p.Init(ctx)
@@ -204,7 +204,7 @@ func runService(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 }
 
-func killService(ctx *cli.Context, srvOpts ...service.Option) {
+func killService(ctx *cli.Context, srvOpts ...vine.Option) {
 	// we need some args to run
 	if ctx.Args().Len() == 0 {
 		fmt.Println(RunUsage)
@@ -273,7 +273,7 @@ func upload(ctx *cli.Context, source *git.Source) (string, error) {
 	return uploadedFileName, nil
 }
 
-func updateService(ctx *cli.Context, srvOpts ...service.Option) {
+func updateService(ctx *cli.Context, srvOpts ...vine.Option) {
 	// we need some args to run
 	if ctx.Args().Len() == 0 {
 		fmt.Println(RunUsage)
@@ -315,7 +315,7 @@ func updateService(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 }
 
-func getService(ctx *cli.Context, srvOpts ...service.Option) {
+func getService(ctx *cli.Context, srvOpts ...vine.Option) {
 	name := ""
 	version := "latest"
 	typ := ctx.String("type")
@@ -434,7 +434,7 @@ const (
 	logUsage = "Required usage: vine log example"
 )
 
-func getLogs(ctx *cli.Context, srvOpts ...service.Option) {
+func getLogs(ctx *cli.Context, srvOpts ...vine.Option) {
 	if ctx.Args().Len() == 0 {
 		fmt.Println("Service name is required")
 		return

@@ -24,11 +24,11 @@ import (
 
 	"github.com/lack-io/cli"
 
-	mcli "github.com/lack-io/vine/client/cli"
+	"github.com/lack-io/vine"
+	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/network/api"
 	netdns "github.com/lack-io/vine/cmd/vine/service/network/dns"
 	"github.com/lack-io/vine/cmd/vine/service/network/handler"
-	"github.com/lack-io/vine/service"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network"
 	"github.com/lack-io/vine/service/network/resolver"
@@ -63,7 +63,7 @@ var (
 )
 
 // Run runs the vine server
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// Init plugins
 	for _, p := range Plugins() {
@@ -119,10 +119,10 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	}
 
 	// Initialise service
-	srv := service.NewService(
-		service.Name(Name),
-		service.RegisterTTL(time.Duration(ctx.Int("register-ttl"))*time.Second),
-		service.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
+	srv := vine.NewService(
+		vine.Name(Name),
+		vine.RegisterTTL(time.Duration(ctx.Int("register-ttl"))*time.Second),
+		vine.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
 	)
 
 	// create a tunnel
@@ -233,7 +233,7 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	netClose(net)
 }
 
-func Commands(options ...service.Option) []*cli.Command {
+func Commands(options ...vine.Option) []*cli.Command {
 	command := &cli.Command{
 		Name:  "network",
 		Usage: "Run the vine network node",

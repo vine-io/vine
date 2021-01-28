@@ -42,56 +42,56 @@ type Component struct {
 }
 
 func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
-	srvName := svc.Proto.GetName()
-	srvTags := g.extractTags(svc.Comments)
-	if _, ok := srvTags[_openapi]; !ok {
+	svcName := svc.Proto.GetName()
+	svcTags := g.extractTags(svc.Comments)
+	if _, ok := svcTags[_openapi]; !ok {
 		return
 	}
 	g.P(`Openapi: "3.0.1",`)
 	g.P("Info: &registry.OpenAPIInfo{")
-	g.P(`Title: "`, srvName, `Service",`)
+	g.P(`Title: "`, svcName, `Service",`)
 	desc := extractDesc(svc.Comments)
 	if len(desc) == 0 {
-		desc = []string{"OpenAPI3.0 for " + srvName}
+		desc = []string{"OpenAPI3.0 for " + svcName}
 	}
 	g.P(`Description: "`, strings.Join(desc, " "), `",`)
-	term, ok := srvTags[_termURL]
+	term, ok := svcTags[_termURL]
 	if ok {
 		g.P(fmt.Sprintf(`TermsOfService: "%s",`, term.Value))
 	}
-	contactName, ok := srvTags[_contactName]
+	contactName, ok := svcTags[_contactName]
 	if ok {
 		g.P("Contact: &registry.OpenAPIContact{")
 		g.P(fmt.Sprintf(`Name: "%s",`, contactName.Value))
-		if contactEmail, ok := srvTags[_contactEmail]; ok {
+		if contactEmail, ok := svcTags[_contactEmail]; ok {
 			g.P(fmt.Sprintf(`Email: "%s",`, contactEmail.Value))
 		} else {
 			g.P(`Email: "''",`)
 		}
 		g.P("},")
 	}
-	licenseName, ok := srvTags[_licenseName]
+	licenseName, ok := svcTags[_licenseName]
 	if ok {
 		g.P("License: &registry.OpenAPILicense{")
 		g.P(fmt.Sprintf(`Name: "%s",`, licenseName.Value))
-		if licenseUrl, ok := srvTags[_licenseUrl]; ok {
+		if licenseUrl, ok := svcTags[_licenseUrl]; ok {
 			g.P(fmt.Sprintf(`Url: "%s",`, licenseUrl.Value))
 		} else {
 			g.P(`Url: "''"`)
 		}
 		g.P("},")
 	}
-	if version, ok := srvTags[_version]; ok {
+	if version, ok := svcTags[_version]; ok {
 		g.P(fmt.Sprintf(`Version: "%s",`, version.Value))
 	} else {
 		g.P(fmt.Sprintf(`Version: "%s",`, "v1.0.0"))
 	}
 	g.P("},")
-	externalDocDesc, extOk := srvTags[_externalDocDesc]
+	externalDocDesc, extOk := svcTags[_externalDocDesc]
 	if extOk {
 		g.P("ExternalDocs: &registry.OpenAPIExternalDocs{")
 		g.P(fmt.Sprintf(`Description: "%s",`, externalDocDesc.Value))
-		if externalDocUrl, ok := srvTags[_externalDocUrl]; ok {
+		if externalDocUrl, ok := svcTags[_externalDocUrl]; ok {
 			g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
 		} else {
 			g.P(`Url: "''"`)
@@ -101,12 +101,12 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
 	g.P("Servers: []*registry.OpenAPIServer{},")
 	g.P("Tags: []*registry.OpenAPITag{")
 	g.P("&registry.OpenAPITag{")
-	g.P(fmt.Sprintf(`Name: "%s",`, srvName))
+	g.P(fmt.Sprintf(`Name: "%s",`, svcName))
 	g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
 	if extOk {
 		g.P("ExternalDocs: &registry.OpenAPIExternalDocs{")
 		g.P(fmt.Sprintf(`Description: "%s",`, externalDocDesc.Value))
-		if externalDocUrl, ok := srvTags[_externalDocUrl]; ok {
+		if externalDocUrl, ok := svcTags[_externalDocUrl]; ok {
 			g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
 		} else {
 			g.P(`Url: "''"`)
@@ -122,7 +122,7 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
 	}
 	g.P("},")
 	g.P(`Components: &registry.OpenAPIComponents{`)
-	g.generateComponents(srvName)
+	g.generateComponents(svcName)
 	g.P("},")
 }
 

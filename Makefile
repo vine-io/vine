@@ -2,7 +2,7 @@ NAME=vine
 IMAGE_NAME=lack-io/$(NAME)
 GIT_COMMIT=$(shell git rev-parse --short HEAD)
 GIT_TAG=$(shell git describe --abbrev=0 --tags --always --match "v*")
-GIT_IMPORT=github.com/lack-io/vine/cmd/vine
+GIT_IMPORT=github.com/lack-io/vine/cmd/vine/service
 CGO_ENABLED=0
 BUILD_DATE=$(shell date +%s)
 LDFLAGS=-X $(GIT_IMPORT).GitCommit=$(GIT_COMMIT) -X $(GIT_IMPORT).GitTag=$(GIT_TAG) -X $(GIT_IMPORT).BuildDate=$(BUILD_DATE)
@@ -15,7 +15,7 @@ vendor:
 	go mod vendor
 
 build:
-	go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o $(NAME)
+	go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o $(NAME) cmd/vine/main.go
 
 install:
 	go get github.com/gogo/protobuf

@@ -19,15 +19,15 @@
 <link rel="icon" type="image/png" href="/vine/favicons/android-144x144.png" sizes="144x144">
 <link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
 
-<title>欢迎来到 Vine 文档 | Vine</title><meta property="og:title" content="欢迎来到 Vine 文档" />
+<title>Vine</title><meta property="og:title" content="" />
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/" />
-<meta property="og:updated_time" content="2020-12-31T20:37:43+08:00" /><meta property="og:site_name" content="Vine" />
-<meta itemprop="name" content="欢迎来到 Vine 文档">
+<meta property="og:updated_time" content="2021-01-25T19:52:09+08:00" /><meta property="og:site_name" content="Vine" />
+<meta itemprop="name" content="">
 <meta itemprop="description" content="Vine 文档">
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="欢迎来到 Vine 文档"/>
+<meta name="twitter:title" content=""/>
 <meta name="twitter:description" content="Vine 文档"/>
 
 
@@ -70,16 +70,6 @@ if (!doNotTrack) {
 	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
 		<ul class="navbar-nav mt-2 mt-lg-0">
 			
-			
-			<li class="nav-item mr-4 mb-2 mb-lg-0">
-				
-				
-				
-				
-				
-				
-				<a  class="nav-link active" href="/vine/docs/" ><span class="active">文档</span></a>
-			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
 				
@@ -133,7 +123,7 @@ This the multi-page printable view of this section.
 
 
 
-<h1 class="title">欢迎来到 Vine 文档</h1>
+<h1 class="title"></h1>
 
 
 
@@ -141,7 +131,7 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/lack-io/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/lack-io/vine"><img src="https://api.travis-ci.org/lack-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/lack-io/vine"><img src="https://goreportcard.com/badge/lack-io/vine" alt="Go Report Card"></a></p>
+      <p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/lack/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/lack-io/vine"><img src="https://api.travis-ci.org/lack-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/lack-io/vine"><img src="https://goreportcard.com/badge/lack-io/vine" alt="Go Report Card"></a></p>
 <p>Vine (<em>/vaɪn/</em>) 一套简单、高效、可插拔的分布式 RPC 框架。</p>
 <h2 id="简介">简介</h2>
 <p><strong>Vine</strong> 基于 <a href="https://github.com/asim/go-micro">go-micro</a> 框架，因此继承了它的优点。并在此基础上增加性能和可用性。</p>
@@ -184,21 +174,19 @@ This the multi-page printable view of this section.
 <h2 id="起步">起步</h2>
 <h3 id="安装">安装</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/gogo/googleapis
 go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
-go get github.com/lack-io/vine
+go get github.com/lack-io/cmd/vine
 </code></pre></div><h3 id="proto-文件">proto 文件</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
 
 <span style="color:#ff79c6">package</span> testdata;
 
-<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/gogo/googleapis/google/api/annotations.proto&#34;</span>;
-
-<span style="color:#8be9fd;font-style:italic">service</span> Rpc {
-  <span style="color:#ff79c6">rpc</span> HelloWorld(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {
-    <span style="color:#ff79c6">option</span> (google.api.http) <span style="color:#ff79c6">=</span> { post<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;/api/{name}&#34;</span>; body<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;*&#34;</span>; };
-  };
+<span style="color:#6272a4">// +gen:openapi
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Rpc {
+  <span style="color:#6272a4">// +gen:post=/api/{name}
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> HelloWorld(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
 }
 
 <span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
@@ -212,7 +200,6 @@ go get github.com/lack-io/vine
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span>. <span style="color:#f1fa8c">\
 </span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src <span style="color:#f1fa8c">\
 </span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis <span style="color:#f1fa8c">\
 </span><span style="color:#f1fa8c"></span>  --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>. example/proto/test.proto
 </code></pre></div><h3 id="服务端">服务端</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
@@ -221,7 +208,7 @@ go get github.com/lack-io/vine
 	<span style="color:#f1fa8c">&#34;context&#34;</span>
 	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
 
-	vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 	pb <span style="color:#f1fa8c">&#34;example/proto&#34;</span>
 )
 
@@ -253,7 +240,7 @@ go get github.com/lack-io/vine
 	<span style="color:#f1fa8c">&#34;context&#34;</span>
 	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
 
-	vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 	pb <span style="color:#f1fa8c">&#34;example/proto&#34;</span>
 )
 
@@ -339,7 +326,7 @@ go get github.com/lack-io/vine
 }
 </code></pre></div><h2 id="1初始化">1.初始化</h2>
 <p>使用 <code>service.NewService</code> 创建服务</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 
 service = vine.<span style="color:#50fa7b">NewService</span>()
 </code></pre></div><p>创建时使用选项</p>
@@ -354,7 +341,7 @@ service = vine.<span style="color:#50fa7b">NewService</span>()
 	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
 
 	<span style="color:#f1fa8c">&#34;github.com/lack-io/cli&#34;</span>
-	vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 )
 
 	service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
@@ -485,7 +472,7 @@ pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(service.Server, <sp
         <span style="color:#f1fa8c">&#34;log&#34;</span>
         <span style="color:#f1fa8c">&#34;context&#34;</span>
 
-        vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+        <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
         pb <span style="color:#f1fa8c">&#34;github.com/lack-io/examples/service/proto&#34;</span>
 )
 
@@ -566,7 +553,7 @@ fmt.<span style="color:#50fa7b">Println</span>(rsp.Greeting)
 }
 </code></pre></div><h2 id="1初始化">1.初始化</h2>
 <p>使用 <code>service.NewFunction</code> 创建 Function</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 
 function = vine.<span style="color:#50fa7b">NewFunction</span>()
 </code></pre></div><p>创建时使用选项</p>
@@ -581,7 +568,7 @@ function = vine.<span style="color:#50fa7b">NewFunction</span>()
 	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
 
 	<span style="color:#f1fa8c">&#34;github.com/lack-io/cli&#34;</span>
-	vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 )
 
 	function <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewFunction</span>(
@@ -706,7 +693,7 @@ pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(function.Server, <s
         <span style="color:#f1fa8c">&#34;log&#34;</span>
         <span style="color:#f1fa8c">&#34;context&#34;</span>
 
-        vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+        <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
         pb <span style="color:#f1fa8c">&#34;github.com/lack-io/examples/service/proto&#34;</span>
 )
 
@@ -1491,7 +1478,7 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
-    vine <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service&#34;</span>
+    <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 
     <span style="color:#6272a4">// consul registry
 </span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/lack-io/plugins/registry/consul&#34;</span>

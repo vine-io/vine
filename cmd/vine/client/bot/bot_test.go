@@ -23,7 +23,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/agent/command"
 	"github.com/lack-io/vine/service/agent/input"
 	"github.com/lack-io/vine/service/registry/memory"
@@ -117,8 +117,8 @@ func TestBot(t *testing.T) {
 		}),
 	}
 
-	srv := service.NewService(
-		service.Registry(memory.NewRegistry()),
+	srv := vine.NewService(
+		vine.Registry(memory.NewRegistry()),
 	)
 
 	bot := newBot(ctx, inputs, commands, srv)

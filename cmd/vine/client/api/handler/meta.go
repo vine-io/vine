@@ -17,8 +17,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/proto/errors"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/api/handler/event"
 	"github.com/lack-io/vine/service/api/router"
@@ -75,7 +75,7 @@ func (m *metaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // Meta is a http.Handler that routes based on endpoint metadata
-func Meta(s service.Service, r router.Router, ns func(*http.Request) string) http.Handler {
+func Meta(s vine.Service, r router.Router, ns func(*http.Request) string) http.Handler {
 	return &metaHandler{
 		c:  s.Client(),
 		r:  r,

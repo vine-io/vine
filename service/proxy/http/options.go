@@ -15,13 +15,13 @@
 package http
 
 import (
-	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/server"
 )
 
 // WithBackend provides an option to set the http backend url
-func WithBackend(url string) service.Option {
-	return func(o *service.Options) {
+func WithBackend(url string) vine.Option {
+	return func(o *vine.Options) {
 		// get the router
 		r := o.Server.Options().Router
 
@@ -39,8 +39,8 @@ func WithBackend(url string) service.Option {
 }
 
 // WithRouter provides an option to set the http router
-func WithRouter(r server.Router) service.Option {
-	return func(o *service.Options) {
+func WithRouter(r server.Router) vine.Option {
+	return func(o *vine.Options) {
 		o.Server.Init(server.WithRouter(r))
 	}
 }

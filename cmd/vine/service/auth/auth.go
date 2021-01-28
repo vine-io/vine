@@ -22,13 +22,13 @@ import (
 
 	"github.com/lack-io/cli"
 
-	cliutil "github.com/lack-io/vine/client/cli/util"
+	"github.com/lack-io/vine"
+	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
 	"github.com/lack-io/vine/cmd/vine/service/auth/api"
 	authHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/auth"
 	rulesHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/rules"
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/proto/errors"
-	"github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/auth"
 	srvAuth "github.com/lack-io/vine/service/auth/grpc"
 	"github.com/lack-io/vine/service/auth/token"
@@ -103,13 +103,13 @@ var (
 )
 
 // run the auth service
-func Run(ctx *cli.Context, srvOpts ...service.Option) {
+func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 
 	if len(ctx.String("address")) > 0 {
 		Address = ctx.String("address")
 	}
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, service.Address(Address))
+		srvOpts = append(srvOpts, vine.Address(Address))
 	}
 
 	// Init plugins
@@ -138,8 +138,8 @@ func Run(ctx *cli.Context, srvOpts ...service.Option) {
 	ruleH.Init(auth.Store(st))
 
 	// setup service
-	srvOpts = append(srvOpts, service.Name(Name))
-	service := service.NewService(srvOpts...)
+	srvOpts = append(srvOpts, vine.Name(Name))
+	service := vine.NewService(srvOpts...)
 
 	// register handlers
 	pb.RegisterAuthHandler(service.Server(), authH)
@@ -233,7 +233,7 @@ func whoami(ctx *cli.Context) {
 }
 
 //Commands for auth
-func Commands(srvOpts ...service.Option) []*cli.Command {
+func Commands(srvOpts ...vine.Option) []*cli.Command {
 	commands := []*cli.Command{
 		{
 			Name:  "auth",
