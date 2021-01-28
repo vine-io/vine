@@ -5,7 +5,8 @@ var (
 
 import (
   	log	"github.com/lack-io/vine/service/logger"
-	vine "github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
+
 	"{{.Dir}}/handler"
 	"{{.Dir}}/subscriber"
 )
@@ -37,7 +38,8 @@ func main() {
 
 import (
 	log "github.com/lack-io/vine/service/logger"
-	vine "github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
+
 	"{{.Dir}}/handler"
 	"{{.Dir}}/subscriber"
 
@@ -70,11 +72,10 @@ func main() {
 
 import (
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine"
 
-	vine "github.com/lack-io/vine/service"
 	"{{.Dir}}/handler"
 	"{{.Dir}}/client"
-
 	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
 

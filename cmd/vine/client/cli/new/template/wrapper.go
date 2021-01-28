@@ -6,7 +6,8 @@ var (
 import (
 	"context"
 
-	vine "github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
+
 	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
 
