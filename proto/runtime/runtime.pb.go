@@ -1248,92 +1248,92 @@ func (*UnimplementedRuntimeServer) Delete(ctx context.Context, req *DeleteReques
 func (*UnimplementedRuntimeServer) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (*UnimplementedRuntimeServer) Logs(req *LogsRequest, srv Runtime_LogsServer) error {
+func (*UnimplementedRuntimeServer) Logs(req *LogsRequest, svc Runtime_LogsServer) error {
 	return status.Errorf(codes.Unimplemented, "method Logs not implemented")
 }
 
-func RegisterRuntimeServer(s *grpc.Server, srv RuntimeServer) {
-	s.RegisterService(&_Runtime_serviceDesc, srv)
+func RegisterRuntimeServer(s *grpc.Server, svc RuntimeServer) {
+	s.RegisterService(&_Runtime_serviceDesc, svc)
 }
 
-func _Runtime_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Runtime_Create_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RuntimeServer).Create(ctx, in)
+		return svc.(RuntimeServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/runtime.Runtime/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuntimeServer).Create(ctx, req.(*CreateRequest))
+		return svc.(RuntimeServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Runtime_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Runtime_Read_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RuntimeServer).Read(ctx, in)
+		return svc.(RuntimeServer).Read(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/runtime.Runtime/Read",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuntimeServer).Read(ctx, req.(*ReadRequest))
+		return svc.(RuntimeServer).Read(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Runtime_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Runtime_Delete_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RuntimeServer).Delete(ctx, in)
+		return svc.(RuntimeServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/runtime.Runtime/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuntimeServer).Delete(ctx, req.(*DeleteRequest))
+		return svc.(RuntimeServer).Delete(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Runtime_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Runtime_Update_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RuntimeServer).Update(ctx, in)
+		return svc.(RuntimeServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/runtime.Runtime/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RuntimeServer).Update(ctx, req.(*UpdateRequest))
+		return svc.(RuntimeServer).Update(ctx, req.(*UpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Runtime_Logs_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _Runtime_Logs_Handler(svc interface{}, stream grpc.ServerStream) error {
 	m := new(LogsRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(RuntimeServer).Logs(m, &runtimeLogsServer{stream})
+	return svc.(RuntimeServer).Logs(m, &runtimeLogsServer{stream})
 }
 
 type Runtime_LogsServer interface {

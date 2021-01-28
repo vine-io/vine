@@ -30,7 +30,7 @@ import (
 	pb "github.com/lack-io/vine/proto/auth"
 	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/auth"
-	srvAuth "github.com/lack-io/vine/service/auth/grpc"
+	svcAuth "github.com/lack-io/vine/service/auth/grpc"
 	"github.com/lack-io/vine/service/auth/token"
 	"github.com/lack-io/vine/service/auth/token/jwt"
 	"github.com/lack-io/vine/service/config/cmd"
@@ -103,13 +103,13 @@ var (
 )
 
 // run the auth service
-func Run(ctx *cli.Context, srvOpts ...vine.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("address")) > 0 {
 		Address = ctx.String("address")
 	}
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, vine.Address(Address))
+		svcOpts = append(svcOpts, vine.Address(Address))
 	}
 
 	// Init plugins
@@ -138,8 +138,8 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	ruleH.Init(auth.Store(st))
 
 	// setup service
-	srvOpts = append(srvOpts, vine.Name(Name))
-	service := vine.NewService(srvOpts...)
+	svcOpts = append(svcOpts, vine.Name(Name))
+	service := vine.NewService(svcOpts...)
 
 	// register handlers
 	pb.RegisterAuthHandler(service.Server(), authH)
@@ -156,7 +156,7 @@ func authFromContext(ctx *cli.Context) auth.Auth {
 	if cliutil.IsLocal(ctx) {
 		return *cmd.DefaultCmd.Options().Auth
 	}
-	return srvAuth.NewAuth(
+	return svcAuth.NewAuth(
 		auth.WithClient(client.New(ctx)),
 	)
 }
@@ -233,7 +233,7 @@ func whoami(ctx *cli.Context) {
 }
 
 //Commands for auth
-func Commands(srvOpts ...vine.Option) []*cli.Command {
+func Commands(svcOpts ...vine.Option) []*cli.Command {
 	commands := []*cli.Command{
 		{
 			Name:  "auth",
@@ -313,7 +313,7 @@ func Commands(srvOpts ...vine.Option) []*cli.Command {
 					Description: "Run the auth api",
 					Flags:       ServiceFlags,
 					Action: func(ctx *cli.Context) error {
-						api.Run(ctx, srvOpts...)
+						api.Run(ctx, svcOpts...)
 						return nil
 					},
 				},

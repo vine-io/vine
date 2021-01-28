@@ -119,7 +119,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	// Initialise service
-	srv := vine.NewService(
+	svc := vine.NewService(
 		vine.Name(Name),
 		vine.RegisterTTL(time.Duration(ctx.Int("register-ttl"))*time.Second),
 		vine.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
@@ -146,13 +146,13 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	gateway := ctx.String("gateway")
 	tun := tunnel.NewTunnel(tunOpts...)
-	id := srv.Server().Options().Id
+	id := svc.Server().Options().Id
 
 	// local tunnel router
 	rtr := regRouter.NewRouter(
 		router.Network(Network),
 		router.Id(id),
-		router.Registry(srv.Client().Options().Registry),
+		router.Registry(svc.Client().Options().Registry),
 		router.Advertise(strategy),
 		router.Gateway(gateway),
 	)
@@ -172,7 +172,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	// local proxy
 	prx := mucp.NewProxy(
 		proxy.WithRouter(rtr),
-		proxy.WithClient(srv.Client()),
+		proxy.WithClient(svc.Client()),
 		proxy.WithLink("network", net.Client()),
 	)
 
@@ -190,7 +190,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	mux := mux.New(Name, prx)
 
 	// init server
-	srv.Server().Init(
+	svc.Server().Init(
 		server.WithRouter(mux),
 	)
 
@@ -223,7 +223,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	log.Infof("Network [%s] listening on %s", Network, Address)
 
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Errorf("Network %s failed: %v", Network, err)
 		netClose(net)
 		os.Exit(1)

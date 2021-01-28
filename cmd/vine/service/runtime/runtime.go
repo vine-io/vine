@@ -38,7 +38,7 @@ var (
 )
 
 // Run the runtime service
-func Run(ctx *cli.Context, srvOpts ...vine.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// Get the profile
 	var prof []string
@@ -67,7 +67,7 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, vine.Address(Address))
+		svcOpts = append(svcOpts, vine.Address(Address))
 	}
 
 	// create runtime
@@ -77,14 +77,14 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 
 	// append name
-	srvOpts = append(srvOpts, vine.Name(Name))
+	svcOpts = append(svcOpts, vine.Name(Name))
 
 	// new service
-	srv := vine.NewService(srvOpts...)
+	svc := vine.NewService(svcOpts...)
 
 	// create a new runtime manager
 	manager := manager.New(muRuntime,
-		manager.Store(srv.Options().Store),
+		manager.Store(svc.Options().Store),
 		manager.Profile(prof),
 	)
 
@@ -95,15 +95,15 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 
 	// register the runtime handler
-	pb.RegisterRuntimeHandler(srv.Server(), &handler.Runtime{
+	pb.RegisterRuntimeHandler(svc.Server(), &handler.Runtime{
 		// Client to publish events
-		Client: vine.NewEvent("go.vine.runtime.events", srv.Client()),
+		Client: vine.NewEvent("go.vine.runtime.events", svc.Client()),
 		// using the vine runtime
 		Runtime: manager,
 	})
 
 	// start runtime service
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Errorf("error running service: %v", err)
 	}
 

@@ -94,13 +94,13 @@ func help(commands map[string]command.Command, serviceCommands []string) command
 	})
 }
 
-func newBot(ctx *cli.Context, inputs map[string]input.Input, commands map[string]command.Command, srv vine.Service) *bot {
+func newBot(ctx *cli.Context, inputs map[string]input.Input, commands map[string]command.Command, svc vine.Service) *bot {
 	commands["^help$"] = help(commands, nil)
 
 	return &bot{
 		ctx:      ctx,
 		exit:     make(chan bool),
-		service:  srv,
+		service:  svc,
 		commands: commands,
 		inputs:   inputs,
 		services: make(map[string]string),
@@ -421,7 +421,7 @@ func run(ctx *cli.Context) error {
 	}
 
 	// setup service
-	srv := vine.NewService(
+	svc := vine.NewService(
 		vine.Name(Name),
 		vine.RegisterTTL(
 			time.Duration(ctx.Int("register-ttl"))*time.Second,
@@ -432,7 +432,7 @@ func run(ctx *cli.Context) error {
 	)
 
 	// Start bot
-	b := newBot(ctx, ios, cmds, srv)
+	b := newBot(ctx, ios, cmds, svc)
 
 	if err := b.start(); err != nil {
 		log.Errorf("error starting bot %v", err)
@@ -440,7 +440,7 @@ func run(ctx *cli.Context) error {
 	}
 
 	// Run server
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Fatal(err)
 	}
 

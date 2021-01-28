@@ -65,7 +65,7 @@ import (
 	rmem "github.com/lack-io/vine/service/registry/memory"
 
 	// runtimes
-	srvRuntime "github.com/lack-io/vine/service/runtime/grpc"
+	svcRuntime "github.com/lack-io/vine/service/runtime/grpc"
 	lRuntime "github.com/lack-io/vine/service/runtime/local"
 
 	// selectors
@@ -165,7 +165,7 @@ var (
 		&cli.StringFlag{
 			Name:    "server-name",
 			EnvVars: []string{"VINE_SERVER_NAME"},
-			Usage:   "Name of the server. go.vine.srv.example",
+			Usage:   "Name of the server. go.vine.svc.example",
 		},
 		&cli.StringFlag{
 			Name:    "server-version",
@@ -378,7 +378,7 @@ var (
 
 	DefaultRuntimes = map[string]func(...runtime.Option) runtime.Runtime{
 		"local":   lRuntime.NewRuntime,
-		"service": srvRuntime.NewRuntime,
+		"service": svcRuntime.NewRuntime,
 	}
 
 	DefaultStores = map[string]func(...store.Option) store.Store{

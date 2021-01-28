@@ -212,16 +212,16 @@ func writeLoop(rw io.ReadWriter, stream client.Stream) {
 	}
 }
 
-func isStream(r *http.Request, srv *api.Service) bool {
+func isStream(r *http.Request, svc *api.Service) bool {
 	// check if it's a web socket
 	if !isWebSocket(r) {
 		return false
 	}
 	// check if the endpoint supports streaming
-	for _, service := range srv.Services {
+	for _, service := range svc.Services {
 		for _, ep := range service.Endpoints {
 			// skip if it doesn't match the name
-			if ep.Name != srv.Endpoint.Name {
+			if ep.Name != svc.Endpoint.Name {
 				continue
 			}
 			// matched if the name

@@ -42,8 +42,8 @@ func (s *service) Key() string {
 }
 
 // createService writes the service to the store
-func (m *manager) createService(srv *runtime.Service, opts *runtime.CreateOptions) error {
-	s := &service{srv, opts}
+func (m *manager) createService(svc *runtime.Service, opts *runtime.CreateOptions) error {
+	s := &service{svc, opts}
 
 	bytes, err := json.Marshal(s)
 	if err != nil {
@@ -55,13 +55,13 @@ func (m *manager) createService(srv *runtime.Service, opts *runtime.CreateOption
 
 // readServices returns all the services in a given namespace. If a service name and
 // version are provided it will filter using these as well
-func (m *manager) readServices(namespace string, srv *runtime.Service) ([]*runtime.Service, error) {
+func (m *manager) readServices(namespace string, svc *runtime.Service) ([]*runtime.Service, error) {
 	prefix := servicePrefix + namespace + ":"
-	if len(srv.Name) > 0 {
-		prefix += srv.Name + ":"
+	if len(svc.Name) > 0 {
+		prefix += svc.Name + ":"
 	}
-	if len(srv.Name) > 0 && len(srv.Version) > 0 {
-		prefix += srv.Version
+	if len(svc.Name) > 0 && len(svc.Version) > 0 {
+		prefix += svc.Version
 	}
 
 	recs, err := m.options.Store.Read(prefix, store.ReadPrefix())
@@ -71,21 +71,21 @@ func (m *manager) readServices(namespace string, srv *runtime.Service) ([]*runti
 		return make([]*runtime.Service, 0), nil
 	}
 
-	srvs := make([]*runtime.Service, 0, len(recs))
+	svcs := make([]*runtime.Service, 0, len(recs))
 	for _, r := range recs {
 		var s *service
 		if err := json.Unmarshal(r.Value, &s); err != nil {
 			return nil, err
 		}
-		srvs = append(srvs, s.Service)
+		svcs = append(svcs, s.Service)
 	}
 
-	return srvs, nil
+	return svcs, nil
 }
 
 // deleteSevice from the store
-func (m *manager) deleteService(namespace string, srv *runtime.Service) error {
-	obj := &service{srv, &runtime.CreateOptions{Namespace: namespace}}
+func (m *manager) deleteService(namespace string, svc *runtime.Service) error {
+	obj := &service{svc, &runtime.CreateOptions{Namespace: namespace}}
 	return m.options.Store.Delete(obj.Key())
 }
 

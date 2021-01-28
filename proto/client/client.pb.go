@@ -326,37 +326,37 @@ type UnimplementedClientServer struct {
 func (*UnimplementedClientServer) Call(ctx context.Context, req *Request) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Call not implemented")
 }
-func (*UnimplementedClientServer) Stream(srv Client_StreamServer) error {
+func (*UnimplementedClientServer) Stream(svc Client_StreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 func (*UnimplementedClientServer) Publish(ctx context.Context, req *Message) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
 
-func RegisterClientServer(s *grpc.Server, srv ClientServer) {
-	s.RegisterService(&_Client_serviceDesc, srv)
+func RegisterClientServer(s *grpc.Server, svc ClientServer) {
+	s.RegisterService(&_Client_serviceDesc, svc)
 }
 
-func _Client_Call_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Client_Call_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientServer).Call(ctx, in)
+		return svc.(ClientServer).Call(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/client.Client/Call",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientServer).Call(ctx, req.(*Request))
+		return svc.(ClientServer).Call(ctx, req.(*Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Client_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ClientServer).Stream(&clientStreamServer{stream})
+func _Client_Stream_Handler(svc interface{}, stream grpc.ServerStream) error {
+	return svc.(ClientServer).Stream(&clientStreamServer{stream})
 }
 
 type Client_StreamServer interface {
@@ -381,20 +381,20 @@ func (x *clientStreamServer) Recv() (*Request, error) {
 	return m, nil
 }
 
-func _Client_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Client_Publish_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Message)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientServer).Publish(ctx, in)
+		return svc.(ClientServer).Publish(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/client.Client/Publish",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientServer).Publish(ctx, req.(*Message))
+		return svc.(ClientServer).Publish(ctx, req.(*Message))
 	}
 	return interceptor(ctx, in, info, handler)
 }

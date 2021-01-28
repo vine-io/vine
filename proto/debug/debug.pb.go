@@ -888,7 +888,7 @@ type DebugServer interface {
 type UnimplementedDebugServer struct {
 }
 
-func (*UnimplementedDebugServer) Log(req *LogRequest, srv Debug_LogServer) error {
+func (*UnimplementedDebugServer) Log(req *LogRequest, svc Debug_LogServer) error {
 	return status.Errorf(codes.Unimplemented, "method Log not implemented")
 }
 func (*UnimplementedDebugServer) Health(ctx context.Context, req *HealthRequest) (*HealthResponse, error) {
@@ -904,16 +904,16 @@ func (*UnimplementedDebugServer) Cache(ctx context.Context, req *CacheRequest) (
 	return nil, status.Errorf(codes.Unimplemented, "method Cache not implemented")
 }
 
-func RegisterDebugServer(s *grpc.Server, srv DebugServer) {
-	s.RegisterService(&_Debug_serviceDesc, srv)
+func RegisterDebugServer(s *grpc.Server, svc DebugServer) {
+	s.RegisterService(&_Debug_serviceDesc, svc)
 }
 
-func _Debug_Log_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _Debug_Log_Handler(svc interface{}, stream grpc.ServerStream) error {
 	m := new(LogRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(DebugServer).Log(m, &debugLogServer{stream})
+	return svc.(DebugServer).Log(m, &debugLogServer{stream})
 }
 
 type Debug_LogServer interface {
@@ -929,74 +929,74 @@ func (x *debugLogServer) Send(m *Record) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Debug_Health_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Debug_Health_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HealthRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DebugServer).Health(ctx, in)
+		return svc.(DebugServer).Health(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/debug.Debug/Health",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DebugServer).Health(ctx, req.(*HealthRequest))
+		return svc.(DebugServer).Health(ctx, req.(*HealthRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Debug_Stats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Debug_Stats_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StatsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DebugServer).Stats(ctx, in)
+		return svc.(DebugServer).Stats(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/debug.Debug/Stats",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DebugServer).Stats(ctx, req.(*StatsRequest))
+		return svc.(DebugServer).Stats(ctx, req.(*StatsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Debug_Trace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Debug_Trace_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TraceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DebugServer).Trace(ctx, in)
+		return svc.(DebugServer).Trace(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/debug.Debug/Trace",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DebugServer).Trace(ctx, req.(*TraceRequest))
+		return svc.(DebugServer).Trace(ctx, req.(*TraceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Debug_Cache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Debug_Cache_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CacheRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DebugServer).Cache(ctx, in)
+		return svc.(DebugServer).Cache(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/debug.Debug/Cache",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DebugServer).Cache(ctx, req.(*CacheRequest))
+		return svc.(DebugServer).Cache(ctx, req.(*CacheRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

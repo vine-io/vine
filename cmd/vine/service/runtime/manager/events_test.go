@@ -52,8 +52,8 @@ func TestEvents(t *testing.T) {
 		timeout.Reset(time.Millisecond * 500)
 
 		select {
-		case srv := <-eventChan:
-			if srv.Name != testSrv.Name || srv.Version != testSrv.Version {
+		case svc := <-eventChan:
+			if svc.Name != testSrv.Name || svc.Version != testSrv.Version {
 				t.Errorf("Incorrect service passed to the runtime")
 			}
 		case <-timeout.C:
@@ -75,8 +75,8 @@ func TestEvents(t *testing.T) {
 		timeout.Reset(time.Millisecond * 500)
 
 		select {
-		case srv := <-eventChan:
-			if srv.Name != testSrv.Name || srv.Version != testSrv.Version {
+		case svc := <-eventChan:
+			if svc.Name != testSrv.Name || svc.Version != testSrv.Version {
 				t.Errorf("Incorrect service passed to the runtime")
 			}
 		case <-timeout.C:
@@ -98,8 +98,8 @@ func TestEvents(t *testing.T) {
 		timeout.Reset(time.Millisecond * 500)
 
 		select {
-		case srv := <-eventChan:
-			if srv.Name != testSrv.Name || srv.Version != testSrv.Version {
+		case svc := <-eventChan:
+			if svc.Name != testSrv.Name || svc.Version != testSrv.Version {
 				t.Errorf("Incorrect service passed to the runtime")
 			}
 		case <-timeout.C:

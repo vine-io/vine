@@ -228,7 +228,7 @@ func (p *Router) ServeRequest(ctx context.Context, req server.Request, rsp serve
 //	r.RegisterEndpoint("Hello.World", "/helloworld")
 //
 // 	// Create your new service
-// 	srv := service.NewService(
+// 	svc := service.NewService(
 // 		service.Name("greeter"),
 //		// Set the router
 //		http.WithRouter(r),
@@ -250,7 +250,7 @@ func NewSingleHostRouter(url string) *Router {
 //
 // Usage:
 //
-// 	srv := NewService(
+// 	svc := NewService(
 //		service.Name("greeter"),
 //		// Sets the default http endpoint
 //		http.WithBackend("http://localhost:10001"),
@@ -261,7 +261,7 @@ func NewSingleHostRouter(url string) *Router {
 //	// register an endpoint
 //	http.RegisterEndpoint("Hello.World", "/helloworld")
 //
-// 	srv := NewService(
+// 	svc := NewService(
 //		service.Name("greeter"),
 //		// Set the http endpoint
 //		http.WithBackend("http://localhost:10001"),

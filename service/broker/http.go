@@ -580,7 +580,7 @@ func (h *httpBroker) Publish(topic string, msg *Message, opts ...PublishOption) 
 		return nil
 	}
 
-	srv := func(s []*regpb.Service, b []byte) {
+	svc := func(s []*regpb.Service, b []byte) {
 		for _, service := range s {
 			var nodes []*regpb.Node
 
@@ -643,7 +643,7 @@ func (h *httpBroker) Publish(topic string, msg *Message, opts ...PublishOption) 
 		// publish all the messages
 		for _, msg := range messages {
 			// serialize here
-			srv(s, msg)
+			svc(s, msg)
 
 			// sending a backlog of messages
 			if delay {

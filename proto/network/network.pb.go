@@ -1200,114 +1200,114 @@ func (*UnimplementedNetworkServer) Status(ctx context.Context, req *StatusReques
 	return nil, status.Errorf(codes.Unimplemented, "method Status not implemented")
 }
 
-func RegisterNetworkServer(s *grpc.Server, srv NetworkServer) {
-	s.RegisterService(&_Network_serviceDesc, srv)
+func RegisterNetworkServer(s *grpc.Server, svc NetworkServer) {
+	s.RegisterService(&_Network_serviceDesc, svc)
 }
 
-func _Network_Connect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Network_Connect_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ConnectRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NetworkServer).Connect(ctx, in)
+		return svc.(NetworkServer).Connect(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/network.Network/Connect",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NetworkServer).Connect(ctx, req.(*ConnectRequest))
+		return svc.(NetworkServer).Connect(ctx, req.(*ConnectRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Network_Graph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Network_Graph_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GraphRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NetworkServer).Graph(ctx, in)
+		return svc.(NetworkServer).Graph(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/network.Network/Graph",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NetworkServer).Graph(ctx, req.(*GraphRequest))
+		return svc.(NetworkServer).Graph(ctx, req.(*GraphRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Network_Nodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Network_Nodes_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NodesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NetworkServer).Nodes(ctx, in)
+		return svc.(NetworkServer).Nodes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/network.Network/Nodes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NetworkServer).Nodes(ctx, req.(*NodesRequest))
+		return svc.(NetworkServer).Nodes(ctx, req.(*NodesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Network_Routes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Network_Routes_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RoutesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NetworkServer).Routes(ctx, in)
+		return svc.(NetworkServer).Routes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/network.Network/Routes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NetworkServer).Routes(ctx, req.(*RoutesRequest))
+		return svc.(NetworkServer).Routes(ctx, req.(*RoutesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Network_Services_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Network_Services_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ServicesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NetworkServer).Services(ctx, in)
+		return svc.(NetworkServer).Services(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/network.Network/Services",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NetworkServer).Services(ctx, req.(*ServicesRequest))
+		return svc.(NetworkServer).Services(ctx, req.(*ServicesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Network_Status_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Network_Status_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NetworkServer).Status(ctx, in)
+		return svc.(NetworkServer).Status(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/network.Network/Status",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NetworkServer).Status(ctx, req.(*StatusRequest))
+		return svc.(NetworkServer).Status(ctx, req.(*StatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

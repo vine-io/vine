@@ -46,17 +46,17 @@ var (
 // New generates a new usage report to be filled in
 func New(service string) *pb.Usage {
 	id := fmt.Sprintf("vine.%s.%s.%s", service, version.V, uuid.New().String())
-	srv := "vine." + service
+	svc := "vine." + service
 
 	if len(service) == 0 {
 		id = fmt.Sprintf("vine.%s.%s", version.V, uuid.New().String())
-		srv = "vine"
+		svc = "vine"
 	}
 
 	sum := sha256.Sum256([]byte(id))
 
 	return &pb.Usage{
-		Service:   srv,
+		Service:   svc,
 		Version:   v,
 		Id:        fmt.Sprintf("%x", sum),
 		Timestamp: uint64(time.Now().UnixNano()),

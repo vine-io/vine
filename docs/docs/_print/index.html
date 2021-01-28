@@ -245,8 +245,8 @@ go get github.com/lack-io/cmd/vine
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	srv <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>))
-	service <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewRpcService</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>, srv.<span style="color:#50fa7b">Client</span>())
+	svc <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>))
+	service <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewRpcService</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>, svc.<span style="color:#50fa7b">Client</span>())
 
 	rsp, err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">HelloWorld</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.HelloWorldRequest{Name: <span style="color:#f1fa8c">&#34;world&#34;</span>})
 	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
@@ -872,13 +872,13 @@ fmt.<span style="color:#50fa7b">Println</span>(rsp.Greeting)
 <h2 id="使用">使用</h2>
 <p>让我们假设程序中发生错误，然后，你应该确定返回哪种错误，并执行以下操作。
 假设提供的数据无效：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">badRequest</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;invalid field&#34;</span>)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">badRequest</span>(<span style="color:#f1fa8c">&#34;com.example.svc.service&#34;</span>, <span style="color:#f1fa8c">&#34;invalid field&#34;</span>)
 </code></pre></div><p>如果发生内部错误</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-    <span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">InternalServerError</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;failed to read db: %v&#34;</span>, err.<span style="color:#50fa7b">Error</span>())
+    <span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">InternalServerError</span>(<span style="color:#f1fa8c">&#34;com.example.svc.service&#34;</span>, <span style="color:#f1fa8c">&#34;failed to read db: %v&#34;</span>, err.<span style="color:#50fa7b">Error</span>())
 }
 </code></pre></div><p>如果你从客户端收到一些错误，可以按照以下方式处理:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.greeter&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;go.vine.svc.greeter&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
 rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Clinet</span>(ctx, req)
 <span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
     <span style="color:#6272a4">// parse out the error 
@@ -905,12 +905,12 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 </code></pre></div><h2 id="自定义错误">自定义错误</h2>
 <p>除了内置的错误类型之外，<strong>Vine</strong> 支持自定义错误类型</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 自定义错误，并记录错误位置
-</span><span style="color:#6272a4"></span>customErr <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;custom error&#34;</span>, <span style="color:#bd93f9">510</span>, <span style="color:#ff79c6">true</span>)
+</span><span style="color:#6272a4"></span>customErr <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.svc.example&#34;</span>, <span style="color:#f1fa8c">&#34;custom error&#34;</span>, <span style="color:#bd93f9">510</span>, <span style="color:#ff79c6">true</span>)
 </code></pre></div><h2 id="其他">其他</h2>
 <p>判断错误类型是否相同</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">b <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Equal</span>(err1, err2)
 </code></pre></div><p>链式调用</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;name must be set&#34;</span>, <span style="color:#bd93f9">404</span>).
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.svc.example&#34;</span>, <span style="color:#f1fa8c">&#34;name must be set&#34;</span>, <span style="color:#bd93f9">404</span>).
         <span style="color:#50fa7b">WithChild</span>(<span style="color:#bd93f9">111</span>, <span style="color:#f1fa8c">&#34;%v&#34;</span>, <span style="color:#f1fa8c">&#34;child error&#34;</span>). <span style="color:#6272a4">// 添加额外错误
 </span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">WithPos</span>(). <span style="color:#6272a4">// 记录错误位置 
 </span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">WithStack</span>(<span style="color:#bd93f9">10001</span>, <span style="color:#f1fa8c">&#34;stack context&#34;</span>) <span style="color:#6272a4">// 追加上下文信息 
@@ -1927,7 +1927,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 </span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
 
 	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
-		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
+		Name:     <span style="color:#f1fa8c">&#34;go.vine.svc&#34;</span>,
 		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
 		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
 		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{{
@@ -1943,7 +1943,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 </span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Register</span>(s)
 
 	<span style="color:#6272a4">// watch registry
-</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>))
+</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.svc&#34;</span>))
 	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 		<span style="color:#ff79c6">return</span>
 	}
@@ -1962,7 +1962,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
 	<span style="color:#6272a4">// get service
-</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>)
+</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.svc&#34;</span>)
 	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 		log.<span style="color:#50fa7b">Fatal</span>(err)
 	}

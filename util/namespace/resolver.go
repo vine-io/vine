@@ -24,13 +24,13 @@ import (
 	log "github.com/lack-io/vine/service/logger"
 )
 
-func NewResolver(srvType, namespace string) *Resolver {
-	return &Resolver{srvType, namespace}
+func NewResolver(svcType, namespace string) *Resolver {
+	return &Resolver{svcType, namespace}
 }
 
 // Resolver determines the namespace for a request
 type Resolver struct {
-	srvType   string
+	svcType   string
 	namespace string
 }
 
@@ -39,7 +39,7 @@ func (r Resolver) String() string {
 }
 
 func (r Resolver) ResolveWithType(req *http.Request) string {
-	return r.Resolve(req) + "." + r.srvType
+	return r.Resolve(req) + "." + r.svcType
 }
 
 func (r Resolver) Resolve(req *http.Request) string {

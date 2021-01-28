@@ -230,7 +230,7 @@ func (c *Config) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Upda
 			Format:    req.Change.ChangeSet.Format,
 		})
 		if err != nil {
-			return errors.BadRequest("go.vine.srv.config.Update", "merge all error: %v", err)
+			return errors.BadRequest("go.vine.svc.config.Update", "merge all error: %v", err)
 		}
 	}
 
@@ -259,11 +259,11 @@ func (c *Config) Update(ctx context.Context, req *pb.UpdateRequest, rsp *pb.Upda
 
 func (c *Config) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.DeleteResponse) error {
 	if req.Change == nil {
-		return errors.BadRequest("go.vine.srv.Delete", "invalid change")
+		return errors.BadRequest("go.vine.svc.Delete", "invalid change")
 	}
 
 	if len(req.Change.Namespace) == 0 {
-		return errors.BadRequest("go.vine.srv.Delete", "invalid id")
+		return errors.BadRequest("go.vine.svc.Delete", "invalid id")
 	}
 
 	if req.Change.ChangeSet == nil {
@@ -277,7 +277,7 @@ func (c *Config) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Dele
 	// We're going to delete the record as we have no path and no data
 	if len(req.Change.Path) == 0 {
 		if err := c.Store.Delete(namespace); err != nil {
-			return errors.BadRequest("go.vine.srv.Delete", "delete from db error: %v", err)
+			return errors.BadRequest("go.vine.svc.Delete", "delete from db error: %v", err)
 		}
 		return nil
 	}
@@ -288,7 +288,7 @@ func (c *Config) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Dele
 	records, err := c.Store.Read(namespace)
 	if err != nil {
 		if err.Error() != "not found" {
-			return errors.BadRequest("go.vine.srv.Delete", "read old value error: %v", err)
+			return errors.BadRequest("go.vine.svc.Delete", "read old value error: %v", err)
 		}
 		return nil
 	}
@@ -308,7 +308,7 @@ func (c *Config) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Dele
 		Format:    ch.ChangeSet.Format,
 	})
 	if err != nil {
-		return errors.BadRequest("go.vine.srv.Delete", "Get the current config as values error: %v", err)
+		return errors.BadRequest("go.vine.svc.Delete", "Get the current config as values error: %v", err)
 	}
 
 	// Delete at the given path
@@ -317,7 +317,7 @@ func (c *Config) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Dele
 	// Create a change record from the values
 	change, err := merge(&source.ChangeSet{Data: values.Bytes()})
 	if err != nil {
-		return errors.BadRequest("go.vine.srv.Delete", "Create a change record from the values error: %v", err)
+		return errors.BadRequest("go.vine.svc.Delete", "Create a change record from the values error: %v", err)
 	}
 
 	// Update change set
@@ -335,7 +335,7 @@ func (c *Config) Delete(ctx context.Context, req *pb.DeleteRequest, rsp *pb.Dele
 	}
 
 	if err := c.Store.Write(records[0]); err != nil {
-		return errors.BadRequest("go.vine.srv.Delete", "update record set to db error: %v", err)
+		return errors.BadRequest("go.vine.svc.Delete", "update record set to db error: %v", err)
 	}
 
 	_ = publish(ctx, &pb.WatchResponse{Namespace: namespace, ChangeSet: req.Change.ChangeSet})
@@ -379,14 +379,14 @@ func (c *Config) List(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResp
 
 func (c *Config) Watch(ctx context.Context, req *pb.WatchRequest, stream pb.Config_WatchStream) error {
 	if len(req.Namespace) == 0 {
-		return errors.BadRequest("go.vine.srv.Watch", "invalid id")
+		return errors.BadRequest("go.vine.svc.Watch", "invalid id")
 	}
 
 	namespace := setNamespace(ctx, req.Namespace)
 
 	watch, err := Watch(namespace)
 	if err != nil {
-		return errors.BadRequest("go.vine.srv.Watch", "watch error: %v", err)
+		return errors.BadRequest("go.vine.svc.Watch", "watch error: %v", err)
 	}
 	defer watch.Stop()
 
@@ -401,13 +401,13 @@ func (c *Config) Watch(ctx context.Context, req *pb.WatchRequest, stream pb.Conf
 	for {
 		ch, err := watch.Next()
 		if err != nil {
-			return errors.BadRequest("go.vine.srv.Watch", "listen the Next error: %v", err)
+			return errors.BadRequest("go.vine.svc.Watch", "listen the Next error: %v", err)
 		}
 		if ch.ChangeSet != nil {
 			ch.ChangeSet.Data = string(ch.ChangeSet.Data)
 		}
 		if err := stream.Send(ch); err != nil {
-			return errors.BadRequest("go.vine.srv.Watch", "send the Change error: %v", err)
+			return errors.BadRequest("go.vine.svc.Watch", "send the Change error: %v", err)
 		}
 	}
 }

@@ -84,7 +84,7 @@ func (s *gRPCRegistry) Options() registry.Options {
 	return s.opts
 }
 
-func (s *gRPCRegistry) Register(srv *regpb.Service, opts ...registry.RegisterOption) error {
+func (s *gRPCRegistry) Register(svc *regpb.Service, opts ...registry.RegisterOption) error {
 	var options registry.RegisterOptions
 	for _, o := range opts {
 		o(&options)
@@ -93,15 +93,15 @@ func (s *gRPCRegistry) Register(srv *regpb.Service, opts ...registry.RegisterOpt
 		options.Context = context.TODO()
 	}
 
-	// encode srv into protobuf adn pack Register TTL into it
-	srv.Options.Ttl = int64(options.TTL.Seconds())
+	// encode svc into protobuf adn pack Register TTL into it
+	svc.Options.Ttl = int64(options.TTL.Seconds())
 
 	// register the service
-	_, err := s.client.Register(options.Context, srv, s.callOpts()...)
+	_, err := s.client.Register(options.Context, svc, s.callOpts()...)
 	return err
 }
 
-func (s *gRPCRegistry) Deregister(srv *regpb.Service, opts ...registry.DeregisterOption) error {
+func (s *gRPCRegistry) Deregister(svc *regpb.Service, opts ...registry.DeregisterOption) error {
 	var options registry.DeregisterOptions
 	for _, o := range opts {
 		o(&options)
@@ -111,7 +111,7 @@ func (s *gRPCRegistry) Deregister(srv *regpb.Service, opts ...registry.Deregiste
 	}
 
 	// deregister the service
-	_, err := s.client.Deregister(options.Context, srv, s.callOpts()...)
+	_, err := s.client.Deregister(options.Context, svc, s.callOpts()...)
 	return err
 }
 

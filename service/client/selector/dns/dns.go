@@ -45,19 +45,19 @@ func (d *dnsSelector) Options() selector.Options {
 }
 
 func (d *dnsSelector) Select(service string, opts ...selector.SelectOption) (selector.Next, error) {
-	var srv []*net.SRV
+	var svc []*net.SRV
 
 	// check if its host:port
 	host, port, err := net.SplitHostPort(service)
 	// not host:port
 	if err != nil {
 		// lookup the SRV record
-		_, srvs, err := net.LookupSRV(service, "tcp", d.domain)
+		_, svcs, err := net.LookupSRV(service, "tcp", d.domain)
 		if err != nil {
 			return nil, err
 		}
 		// set SRV records
-		srv = srvs
+		svc = svcs
 		// got host:port
 	} else {
 		p, _ := strconv.Atoi(port)
@@ -70,15 +70,15 @@ func (d *dnsSelector) Select(service string, opts ...selector.SelectOption) (sel
 
 		// create SRV records
 		for _, ip := range ips {
-			srv = append(srv, &net.SRV{
+			svc = append(svc, &net.SRV{
 				Target: ip,
 				Port:   uint16(p),
 			})
 		}
 	}
 
-	nodes := make([]*regpb.Node, 0, len(srv))
-	for _, node := range srv {
+	nodes := make([]*regpb.Node, 0, len(svc))
+	for _, node := range svc {
 		nodes = append(nodes, &regpb.Node{
 			Id:      node.Target,
 			Address: fmt.Sprintf("%s:%d", node.Target, node.Port),

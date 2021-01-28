@@ -165,13 +165,13 @@ func (e *etcdRegistry) registerNode(s *regpb.Service, node *regpb.Node, opts ...
 				leaseID = clientv3.LeaseID(kv.Lease)
 
 				// decode the existing node
-				srv := decode(kv.Value)
-				if srv == nil || len(srv.Nodes) == 0 {
+				svc := decode(kv.Value)
+				if svc == nil || len(svc.Nodes) == 0 {
 					continue
 				}
 
 				// create hash of service; uint64
-				h, err := hash.Hash(srv.Nodes[0], nil)
+				h, err := hash.Hash(svc.Nodes[0], nil)
 				if err != nil {
 					continue
 				}

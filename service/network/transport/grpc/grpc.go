@@ -88,13 +88,13 @@ func (t *grpcTransportListener) Accept(fn func(transport.Socket)) error {
 	}
 
 	// new service
-	srv := grpc.NewServer(opts...)
+	svc := grpc.NewServer(opts...)
 
 	// register service
-	pb.RegisterTransportServer(srv, &vineTransport{addr: t.listener.Addr().String(), fn: fn})
+	pb.RegisterTransportServer(svc, &vineTransport{addr: t.listener.Addr().String(), fn: fn})
 
 	// start serving
-	return srv.Serve(t.listener)
+	return svc.Serve(t.listener)
 }
 
 func (t *grpcTransport) Dial(addr string, opts ...transport.DialOption) (transport.Client, error) {

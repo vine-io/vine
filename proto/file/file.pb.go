@@ -797,96 +797,96 @@ func (*UnimplementedFileServer) Close(ctx context.Context, req *CloseRequest) (*
 	return nil, status.Errorf(codes.Unimplemented, "method Close not implemented")
 }
 
-func RegisterFileServer(s *grpc.Server, srv FileServer) {
-	s.RegisterService(&_File_serviceDesc, srv)
+func RegisterFileServer(s *grpc.Server, svc FileServer) {
+	s.RegisterService(&_File_serviceDesc, svc)
 }
 
-func _File_Open_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _File_Open_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OpenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FileServer).Open(ctx, in)
+		return svc.(FileServer).Open(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/file.File/Open",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileServer).Open(ctx, req.(*OpenRequest))
+		return svc.(FileServer).Open(ctx, req.(*OpenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _File_Stat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _File_Stat_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StatRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FileServer).Stat(ctx, in)
+		return svc.(FileServer).Stat(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/file.File/Stat",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileServer).Stat(ctx, req.(*StatRequest))
+		return svc.(FileServer).Stat(ctx, req.(*StatRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _File_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _File_Read_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FileServer).Read(ctx, in)
+		return svc.(FileServer).Read(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/file.File/Read",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileServer).Read(ctx, req.(*ReadRequest))
+		return svc.(FileServer).Read(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _File_Write_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _File_Write_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FileServer).Write(ctx, in)
+		return svc.(FileServer).Write(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/file.File/Write",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileServer).Write(ctx, req.(*WriteRequest))
+		return svc.(FileServer).Write(ctx, req.(*WriteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _File_Close_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _File_Close_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CloseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FileServer).Close(ctx, in)
+		return svc.(FileServer).Close(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/file.File/Close",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileServer).Close(ctx, req.(*CloseRequest))
+		return svc.(FileServer).Close(ctx, req.(*CloseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

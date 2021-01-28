@@ -30,7 +30,7 @@ var (
 	Address = ":8001"
 )
 
-func Run(ctx *cli.Context, srvOpts ...vine.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -45,33 +45,33 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 
 	// service opts
-	srvOpts = append(srvOpts, vine.Name(Name))
+	svcOpts = append(svcOpts, vine.Name(Name))
 	if i := time.Duration(ctx.Int("register-ttl")); i > 0 {
-		srvOpts = append(srvOpts, vine.RegisterTTL(i*time.Second))
+		svcOpts = append(svcOpts, vine.RegisterTTL(i*time.Second))
 	}
 	if i := time.Duration(ctx.Int("register-interval")); i > 0 {
-		srvOpts = append(srvOpts, vine.RegisterInterval(i*time.Second))
+		svcOpts = append(svcOpts, vine.RegisterInterval(i*time.Second))
 	}
 
 	// set address
 	if len(Address) > 0 {
-		srvOpts = append(srvOpts, vine.Address(Address))
+		svcOpts = append(svcOpts, vine.Address(Address))
 	}
 
 	// new service
-	srv := vine.NewService(srvOpts...)
+	svc := vine.NewService(svcOpts...)
 
 	// connect to the broker
-	srv.Options().Broker.Connect()
+	svc.Options().Broker.Connect()
 
 	// register the broker handler
-	pb.RegisterBrokerHandler(srv.Server(), &handler.Broker{
+	pb.RegisterBrokerHandler(svc.Server(), &handler.Broker{
 		// using the mdns broker
-		Broker: srv.Options().Broker,
+		Broker: svc.Options().Broker,
 	})
 
 	// run the service
-	srv.Run()
+	svc.Run()
 }
 
 func Commands(options ...vine.Option) []*cli.Command {

@@ -127,7 +127,7 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
 }
 
 func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *generator.MethodDescriptor) {
-	srvName := svc.Proto.GetName()
+	svcName := svc.Proto.GetName()
 	methodName := method.Proto.GetName()
 	tags := g.extractTags(method.Comments)
 	if len(tags) == 0 {
@@ -159,16 +159,16 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *g
 	summary, _ := tags[_summary]
 	g.P(fmt.Sprintf(`"%s": &registry.OpenAPIPath{`, path))
 	g.P(fmt.Sprintf(`%s: &registry.OpenAPIPathDocs{`, generator.CamelCase(meth)))
-	g.P(fmt.Sprintf(`Tags: []string{"%s"},`, srvName))
+	g.P(fmt.Sprintf(`Tags: []string{"%s"},`, svcName))
 	if summary != nil {
 		g.P(fmt.Sprintf(`Summary: "%s",`, summary.Value))
 	}
 	desc := extractDesc(method.Comments)
 	if len(desc) == 0 {
-		desc = []string{srvName + " " + methodName}
+		desc = []string{svcName + " " + methodName}
 	}
 	g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
-	g.P(fmt.Sprintf(`OperationId: "%s", `, srvName+methodName))
+	g.P(fmt.Sprintf(`OperationId: "%s", `, svcName+methodName))
 	msg := g.extractMessage(method.Proto.GetInputType())
 	if msg == nil {
 		g.gen.Fail("%s not found", method.Proto.GetInputType())
@@ -178,13 +178,13 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *g
 	g.schemas.Push(&Component{
 		Name:    mname,
 		Kind:    Request,
-		Service: srvName,
+		Service: svcName,
 		Proto:   msg,
 	})
 
 	if len(pathParams) > 0 || meth == _get {
 		g.P("Parameters: []*registry.PathParameters{")
-		g.generateParameters(srvName, msg, pathParams)
+		g.generateParameters(svcName, msg, pathParams)
 		g.P("},")
 	}
 	if meth != _get {
@@ -212,7 +212,7 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *g
 	g.schemas.Push(&Component{
 		Name:    mname,
 		Kind:    Response,
-		Service: srvName,
+		Service: svcName,
 		Proto:   msg,
 	})
 	g.P("Responses: map[string]*registry.PathResponse{")
@@ -225,7 +225,7 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *g
 	g.P("},")
 }
 
-func (g *vine) generateParameters(srvName string, msg *generator.MessageDescriptor, paths []string) {
+func (g *vine) generateParameters(svcName string, msg *generator.MessageDescriptor, paths []string) {
 	if msg == nil {
 		return
 	}
@@ -251,14 +251,14 @@ func (g *vine) generateParameters(srvName string, msg *generator.MessageDescript
 		g.P("Explode: true,")
 		g.P("Schema: &registry.Schema{")
 		fieldTags := g.extractTags(field.Comments)
-		g.generateSchema(srvName, field, fieldTags, false)
+		g.generateSchema(svcName, field, fieldTags, false)
 		g.P("},")
 		g.P("},")
 	}
 
 	fields := make([]string, 0)
 	for _, p := range paths {
-		field := g.extractMessageField(srvName, p, msg)
+		field := g.extractMessageField(svcName, p, msg)
 		generateField(g, field, "path")
 		fields = append(fields, field.Proto.GetJsonName())
 	}
@@ -382,7 +382,7 @@ func (g *vine) generateSecurity(tags map[string]*Tag) {
 	g.P("},")
 }
 
-func (g *vine) generateComponents(srvName string) {
+func (g *vine) generateComponents(svcName string) {
 	g.P(`SecuritySchemes: &registry.SecuritySchemes{`)
 	g.security.Range(func(c *Component) {
 		switch c.Name {
@@ -440,7 +440,7 @@ func (g *vine) generateComponents(srvName string) {
 						requirements = append(requirements, `"`+field.Proto.GetJsonName()+`"`)
 					}
 					g.P(fmt.Sprintf(`"%s": &registry.Schema{`, field.Proto.GetJsonName()))
-					g.generateSchema(srvName, field, tags, false)
+					g.generateSchema(svcName, field, tags, false)
 					g.P("},")
 				}
 				g.P("},")
@@ -455,7 +455,7 @@ func (g *vine) generateComponents(srvName string) {
 				for _, field := range c.Proto.Fields {
 					tags := g.extractTags(field.Comments)
 					g.P(fmt.Sprintf(`"%s": &registry.Schema{`, field.Proto.GetJsonName()))
-					g.generateSchema(srvName, field, tags, false)
+					g.generateSchema(svcName, field, tags, false)
 					g.P("},")
 				}
 				g.P("},")
@@ -471,7 +471,7 @@ func (g *vine) generateComponents(srvName string) {
 	g.P("},")
 }
 
-func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, tags map[string]*Tag, allowRequired bool) {
+func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, tags map[string]*Tag, allowRequired bool) {
 	generateNumber := func(g *vine, field *generator.FieldDescriptor, tags map[string]*Tag) {
 		if _, ok := tags[_required]; ok {
 			if allowRequired {
@@ -579,10 +579,10 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 			g.schemas.Push(&Component{
 				Name:    mname,
 				Kind:    Request,
-				Service: srvName,
+				Service: svcName,
 				Proto:   msg,
 			})
-			g.generateSchema(srvName, valueField, g.extractTags(valueField.Comments), allowRequired)
+			g.generateSchema(svcName, valueField, g.extractTags(valueField.Comments), allowRequired)
 		} else {
 			// inner MapEntry
 			name := field.Proto.GetTypeName()
@@ -593,7 +593,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 				if m.Proto.GetName() == name {
 					for _, f := range m.Fields {
 						if f.Proto.GetName() == "value" {
-							g.generateSchema(srvName, f, g.extractTags(f.Comments), allowRequired)
+							g.generateSchema(svcName, f, g.extractTags(f.Comments), allowRequired)
 						}
 					}
 				}
@@ -629,7 +629,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 			g.schemas.Push(&Component{
 				Name:    mname,
 				Kind:    Request,
-				Service: srvName,
+				Service: svcName,
 				Proto:   msg,
 			})
 			g.P(fmt.Sprintf(`Items: &registry.Schema{Ref: "#/components/schemas/%s"},`, mname))
@@ -686,7 +686,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 		g.schemas.Push(&Component{
 			Name:    mname,
 			Kind:    Request,
-			Service: srvName,
+			Service: svcName,
 			Proto:   msg,
 		})
 		g.P(fmt.Sprintf(`Ref: "#/components/schemas/%s",`, mname))
@@ -700,7 +700,7 @@ func (g *vine) generateSchema(srvName string, field *generator.FieldDescriptor, 
 	}
 }
 
-func (g *vine) extractMessageField(srvName, fname string, msg *generator.MessageDescriptor) *generator.FieldDescriptor {
+func (g *vine) extractMessageField(svcName, fname string, msg *generator.MessageDescriptor) *generator.FieldDescriptor {
 	name := fname
 	index := strings.Index(fname, ".")
 	if index > 0 {
@@ -720,10 +720,10 @@ func (g *vine) extractMessageField(srvName, fname string, msg *generator.Message
 			g.schemas.Push(&Component{
 				Name:    mname,
 				Kind:    Request,
-				Service: srvName,
+				Service: svcName,
 				Proto:   submsg,
 			})
-			return g.extractMessageField(srvName, fname[index+1:], submsg)
+			return g.extractMessageField(svcName, fname[index+1:], submsg)
 		}
 	}
 	g.gen.Fail("%s not found", fname)

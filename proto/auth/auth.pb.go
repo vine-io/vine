@@ -1332,60 +1332,60 @@ func (*UnimplementedAuthServer) Token(ctx context.Context, req *TokenRequest) (*
 	return nil, status.Errorf(codes.Unimplemented, "method Token not implemented")
 }
 
-func RegisterAuthServer(s *grpc.Server, srv AuthServer) {
-	s.RegisterService(&_Auth_serviceDesc, srv)
+func RegisterAuthServer(s *grpc.Server, svc AuthServer) {
+	s.RegisterService(&_Auth_serviceDesc, svc)
 }
 
-func _Auth_Generate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Auth_Generate_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GenerateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServer).Generate(ctx, in)
+		return svc.(AuthServer).Generate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/auth.Auth/Generate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Generate(ctx, req.(*GenerateRequest))
+		return svc.(AuthServer).Generate(ctx, req.(*GenerateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Auth_Inspect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Auth_Inspect_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(InspectRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServer).Inspect(ctx, in)
+		return svc.(AuthServer).Inspect(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/auth.Auth/Inspect",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Inspect(ctx, req.(*InspectRequest))
+		return svc.(AuthServer).Inspect(ctx, req.(*InspectRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Auth_Token_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Auth_Token_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServer).Token(ctx, in)
+		return svc.(AuthServer).Token(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/auth.Auth/Token",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).Token(ctx, req.(*TokenRequest))
+		return svc.(AuthServer).Token(ctx, req.(*TokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1448,24 +1448,24 @@ func (*UnimplementedAccountsServer) List(ctx context.Context, req *ListAccountsR
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 
-func RegisterAccountsServer(s *grpc.Server, srv AccountsServer) {
-	s.RegisterService(&_Accounts_serviceDesc, srv)
+func RegisterAccountsServer(s *grpc.Server, svc AccountsServer) {
+	s.RegisterService(&_Accounts_serviceDesc, svc)
 }
 
-func _Accounts_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_List_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListAccountsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).List(ctx, in)
+		return svc.(AccountsServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/auth.Accounts/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).List(ctx, req.(*ListAccountsRequest))
+		return svc.(AccountsServer).List(ctx, req.(*ListAccountsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1548,60 +1548,60 @@ func (*UnimplementedRulesServer) List(ctx context.Context, req *ListRequest) (*L
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 
-func RegisterRulesServer(s *grpc.Server, srv RulesServer) {
-	s.RegisterService(&_Rules_serviceDesc, srv)
+func RegisterRulesServer(s *grpc.Server, svc RulesServer) {
+	s.RegisterService(&_Rules_serviceDesc, svc)
 }
 
-func _Rules_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Rules_Create_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RulesServer).Create(ctx, in)
+		return svc.(RulesServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/auth.Rules/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RulesServer).Create(ctx, req.(*CreateRequest))
+		return svc.(RulesServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Rules_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Rules_Delete_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RulesServer).Delete(ctx, in)
+		return svc.(RulesServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/auth.Rules/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RulesServer).Delete(ctx, req.(*DeleteRequest))
+		return svc.(RulesServer).Delete(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Rules_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Rules_List_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RulesServer).List(ctx, in)
+		return svc.(RulesServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/auth.Rules/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RulesServer).List(ctx, req.(*ListRequest))
+		return svc.(RulesServer).List(ctx, req.(*ListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

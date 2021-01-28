@@ -117,11 +117,11 @@ func TestBot(t *testing.T) {
 		}),
 	}
 
-	srv := vine.NewService(
+	svc := vine.NewService(
 		vine.Registry(memory.NewRegistry()),
 	)
 
-	bot := newBot(ctx, inputs, commands, srv)
+	bot := newBot(ctx, inputs, commands, svc)
 
 	if err := bot.start(); err != nil {
 		t.Fatal(err)

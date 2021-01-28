@@ -157,7 +157,7 @@ func TestMDNSService_InstanceAddr_SRV(t *testing.T) {
 	if len(recs) != 3 {
 		t.Fatalf("bad: %v", recs)
 	}
-	srv, ok := recs[0].(*dns.SRV)
+	svc, ok := recs[0].(*dns.SRV)
 	if !ok {
 		t.Fatalf("bad: %v", recs[0])
 	}
@@ -168,7 +168,7 @@ func TestMDNSService_InstanceAddr_SRV(t *testing.T) {
 		t.Fatalf("bad: %v", recs[2])
 	}
 
-	if srv.Port != uint16(s.Port) {
+	if svc.Port != uint16(s.Port) {
 		t.Fatalf("bad: %v", recs[0])
 	}
 }

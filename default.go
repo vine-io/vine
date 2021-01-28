@@ -20,7 +20,7 @@ import (
 	"github.com/lack-io/vine/service/debug/trace"
 	memTrace "github.com/lack-io/vine/service/debug/trace/memory"
 	"github.com/lack-io/vine/service/server"
-	gsrv "github.com/lack-io/vine/service/server/grpc"
+	gsvc "github.com/lack-io/vine/service/server/grpc"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"
 )
@@ -29,7 +29,7 @@ func init() {
 	// default client
 	client.DefaultClient = gcli.NewClient()
 	// default server
-	server.DefaultServer = gsrv.NewServer()
+	server.DefaultServer = gsvc.NewServer()
 	// default store
 	store.DefaultStore = memStore.NewStore()
 	// default trace

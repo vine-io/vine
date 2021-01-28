@@ -371,7 +371,7 @@ func (s *Server) probe() {
 	q.SetQuestion(name, dns.TypePTR)
 	q.RecursionDesired = false
 
-	srv := &dns.SRV{
+	svc := &dns.SRV{
 		Hdr: dns.RR_Header{
 			Name:   name,
 			Rrtype: dns.TypeSRV,
@@ -392,7 +392,7 @@ func (s *Server) probe() {
 		},
 		Txt: sd.TXT,
 	}
-	q.Ns = []dns.RR{srv, txt}
+	q.Ns = []dns.RR{svc, txt}
 
 	randomizer := rand.New(rand.NewSource(time.Now().UnixNano()))
 

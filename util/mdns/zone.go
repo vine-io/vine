@@ -283,7 +283,7 @@ func (m *MDNSService) instanceRecords(q dns.Question) []dns.RR {
 
 	case dns.TypeSRV:
 		// Create the SRV Record
-		srv := &dns.SRV{
+		svc := &dns.SRV{
 			Hdr: dns.RR_Header{
 				Name:   q.Name,
 				Rrtype: dns.TypeSRV,
@@ -295,7 +295,7 @@ func (m *MDNSService) instanceRecords(q dns.Question) []dns.RR {
 			Port:     uint16(m.Port),
 			Target:   m.HostName,
 		}
-		recs := []dns.RR{srv}
+		recs := []dns.RR{svc}
 
 		// Add the A record
 		recs = append(recs, m.instanceRecords(dns.Question{

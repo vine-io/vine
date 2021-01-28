@@ -83,15 +83,15 @@ func (r *Registry) GetService(ctx context.Context, req *pb.GetRequest, rsp *pb.G
 	// includes the namespace as the prefix, e.g. 'foo/go.vine.service.bar'
 	if namespace.FromContext(ctx) != namespace.DefaultNamespace {
 		name := namespace.FromContext(ctx) + nameSeperator + req.Service
-		srvs, err := r.Registry.GetService(name)
+		svcs, err := r.Registry.GetService(name)
 		if err != nil {
 			return errors.InternalServerError("go.vine.registry", err.Error())
 		}
-		services = append(services, srvs...)
+		services = append(services, svcs...)
 	}
 
-	for _, srv := range services {
-		rsp.Services = append(rsp.Services, withoutNamespace(*srv))
+	for _, svc := range services {
+		rsp.Services = append(rsp.Services, withoutNamespace(*svc))
 	}
 	return nil
 }
@@ -135,15 +135,15 @@ func (r *Registry) ListServices(ctx context.Context, req *pb.ListRequest, rsp *p
 		return errors.InternalServerError("go.vine.registry", err.Error())
 	}
 
-	for _, srv := range services {
+	for _, svc := range services {
 		// check to see if the service belongs to the defaut namespace
 		// or the contexts namespace. TODO: think about adding a prefix
 		//argument to ListServices
-		if !canReadService(ctx, srv) {
+		if !canReadService(ctx, svc) {
 			continue
 		}
 
-		rsp.Services = append(rsp.Services, withoutNamespace(*srv))
+		rsp.Services = append(rsp.Services, withoutNamespace(*svc))
 	}
 
 	return nil
@@ -177,16 +177,16 @@ func (r *Registry) Watch(ctx context.Context, req *pb.WatchRequest, rsp pb.Regis
 
 // canReadService is a helper function which returns a boolean indicating
 // if a context can read a service.
-func canReadService(ctx context.Context, srv *regpb.Service) bool {
+func canReadService(ctx context.Context, svc *regpb.Service) bool {
 	// check if the service has no prefix which means it was written
 	// directly to the store and is therefore assumed to be part of
 	// the default namespace
-	if len(strings.Split(srv.Name, nameSeperator)) == 1 {
+	if len(strings.Split(svc.Name, nameSeperator)) == 1 {
 		return true
 	}
 
 	// the service belongs to the contexts namespace
-	if strings.HasPrefix(srv.Name, namespace.FromContext(ctx)+nameSeperator) {
+	if strings.HasPrefix(svc.Name, namespace.FromContext(ctx)+nameSeperator) {
 		return true
 	}
 
@@ -199,21 +199,21 @@ const nameSeperator = "/"
 
 // withoutNamespace returns the service with the namespace stripped from
 // the name, e.g. 'bar/go.vine.service.foo' => 'go.vine.service.foo'.
-func withoutNamespace(srv regpb.Service) *regpb.Service {
-	comps := strings.Split(srv.Name, nameSeperator)
-	srv.Name = comps[len(comps)-1]
-	return &srv
+func withoutNamespace(svc regpb.Service) *regpb.Service {
+	comps := strings.Split(svc.Name, nameSeperator)
+	svc.Name = comps[len(comps)-1]
+	return &svc
 }
 
 // withNamespace returns the service with the namespace prefixed to the
 // name, e.g. 'go.vine.service.foo' => 'bar/go.vine.service.foo'
-func withNamespace(srv regpb.Service, ns string) *regpb.Service {
+func withNamespace(svc regpb.Service, ns string) *regpb.Service {
 	// if the namespace is the default, don't append anything since this
 	// means users not leveraging multi-tenancy won't experience any changes
 	if ns == namespace.DefaultNamespace {
-		return &srv
+		return &svc
 	}
 
-	srv.Name = strings.Join([]string{ns, srv.Name}, nameSeperator)
-	return &srv
+	svc.Name = strings.Join([]string{ns, svc.Name}, nameSeperator)
+	return &svc
 }

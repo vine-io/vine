@@ -57,14 +57,14 @@ func (m *manager) syncStatus() {
 	}
 
 	for _, ns := range namespaces {
-		srvs, err := m.Runtime.Read(runtime.ReadNamespace(ns))
+		svcs, err := m.Runtime.Read(runtime.ReadNamespace(ns))
 		if err != nil {
 			log.Warnf("Error reading namespace %v: %v", ns, err)
 			return
 		}
 
-		for _, srv := range srvs {
-			if err := m.cacheStatus(ns, srv); err != nil {
+		for _, svc := range svcs {
+			if err := m.cacheStatus(ns, svc); err != nil {
 				log.Warnf("Error caching status: %v", err)
 				return
 			}
@@ -74,15 +74,15 @@ func (m *manager) syncStatus() {
 
 // cacheStatus writes a services status to the memory store which is then later returned in service
 // metadata on Runtime.Read
-func (m *manager) cacheStatus(ns string, srv *runtime.Service) error {
-	// errors / status is returned from the underlying runtime using srv.Metadata. TODO: Consider
+func (m *manager) cacheStatus(ns string, svc *runtime.Service) error {
+	// errors / status is returned from the underlying runtime using svc.Metadata. TODO: Consider
 	// changing this so status / error are attributes on runtime.Service.
-	if srv.Metadata == nil {
-		return fmt.Errorf("Service %v:%v (%v) is missing metadata", srv.Name, srv.Version, ns)
+	if svc.Metadata == nil {
+		return fmt.Errorf("Service %v:%v (%v) is missing metadata", svc.Name, svc.Version, ns)
 	}
 
-	key := fmt.Sprintf("%v%v:%v:%v", statusPrefix, ns, srv.Name, srv.Version)
-	val := &serviceStatus{Status: srv.Metadata["status"], Error: srv.Metadata["error"]}
+	key := fmt.Sprintf("%v%v:%v:%v", statusPrefix, ns, svc.Name, svc.Version)
+	val := &serviceStatus{Status: svc.Metadata["status"], Error: svc.Metadata["error"]}
 
 	bytes, err := json.Marshal(val)
 	if err != nil {

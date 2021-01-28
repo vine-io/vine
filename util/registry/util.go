@@ -103,7 +103,7 @@ func Copy(current []*regpb.Service) []*regpb.Service {
 
 // Merge merges two lists of services and returns a new copy
 func Merge(olist []*regpb.Service, nlist []*regpb.Service) []*regpb.Service {
-	var srv []*regpb.Service
+	var svc []*regpb.Service
 
 	for _, n := range nlist {
 		var seen bool
@@ -117,20 +117,20 @@ func Merge(olist []*regpb.Service, nlist []*regpb.Service) []*regpb.Service {
 
 				// mark as seen
 				seen = true
-				srv = append(srv, sp)
+				svc = append(svc, sp)
 				break
 			} else {
 				sp := new(regpb.Service)
 				// make copy
 				*sp = *o
-				srv = append(srv, sp)
+				svc = append(svc, sp)
 			}
 		}
 		if !seen {
-			srv = append(srv, Copy([]*regpb.Service{n})...)
+			svc = append(svc, Copy([]*regpb.Service{n})...)
 		}
 	}
-	return srv
+	return svc
 }
 
 // Remove removes services and returns a new copy
@@ -138,23 +138,23 @@ func Remove(old, del []*regpb.Service) []*regpb.Service {
 	var services []*regpb.Service
 
 	for _, o := range old {
-		srv := new(regpb.Service)
-		*srv = *o
+		svc := new(regpb.Service)
+		*svc = *o
 
 		var rem bool
 
 		for _, s := range del {
-			if srv.Version == s.Version {
-				srv.Nodes = delNodes(srv.Nodes, s.Nodes)
+			if svc.Version == s.Version {
+				svc.Nodes = delNodes(svc.Nodes, s.Nodes)
 
-				if len(srv.Nodes) == 0 {
+				if len(svc.Nodes) == 0 {
 					rem = true
 				}
 			}
 		}
 
 		if !rem {
-			services = append(services, srv)
+			services = append(services, svc)
 		}
 	}
 

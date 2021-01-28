@@ -96,7 +96,7 @@ func dirExists(path string) (bool, error) {
 	return true, err
 }
 
-func runService(ctx *cli.Context, srvOpts ...vine.Option) {
+func runService(ctx *cli.Context, svcOpts ...vine.Option) {
 	// Init plugins
 	for _, p := range Plugins() {
 		p.Init(ctx)
@@ -204,7 +204,7 @@ func runService(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 }
 
-func killService(ctx *cli.Context, srvOpts ...vine.Option) {
+func killService(ctx *cli.Context, svcOpts ...vine.Option) {
 	// we need some args to run
 	if ctx.Args().Len() == 0 {
 		fmt.Println(RunUsage)
@@ -273,7 +273,7 @@ func upload(ctx *cli.Context, source *git.Source) (string, error) {
 	return uploadedFileName, nil
 }
 
-func updateService(ctx *cli.Context, srvOpts ...vine.Option) {
+func updateService(ctx *cli.Context, svcOpts ...vine.Option) {
 	// we need some args to run
 	if ctx.Args().Len() == 0 {
 		fmt.Println(RunUsage)
@@ -315,7 +315,7 @@ func updateService(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 }
 
-func getService(ctx *cli.Context, srvOpts ...vine.Option) {
+func getService(ctx *cli.Context, svcOpts ...vine.Option) {
 	name := ""
 	version := "latest"
 	typ := ctx.String("type")
@@ -434,7 +434,7 @@ const (
 	logUsage = "Required usage: vine log example"
 )
 
-func getLogs(ctx *cli.Context, srvOpts ...vine.Option) {
+func getLogs(ctx *cli.Context, svcOpts ...vine.Option) {
 	if ctx.Args().Len() == 0 {
 		fmt.Println("Service name is required")
 		return

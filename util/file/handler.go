@@ -76,7 +76,7 @@ func (h *handler) Stat(ctx context.Context, req *proto.StatRequest, rsp *proto.S
 	path := filepath.Join(h.readDir, req.Filename)
 	fi, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		return errors.InternalServerError("go.vine.srv.file", err.Error())
+		return errors.InternalServerError("go.vine.svc.file", err.Error())
 	}
 
 	if fi.IsDir() {
@@ -95,13 +95,13 @@ func (h *handler) Stat(ctx context.Context, req *proto.StatRequest, rsp *proto.S
 func (h *handler) Read(ctx context.Context, req *proto.ReadRequest, rsp *proto.ReadResponse) error {
 	file := h.session.Get(req.Id)
 	if file == nil {
-		return errors.InternalServerError("go.vine.srv.file", "You must call open first.")
+		return errors.InternalServerError("go.vine.svc.file", "You must call open first.")
 	}
 
 	rsp.Data = make([]byte, req.Size())
 	n, err := file.ReadAt(rsp.Data, req.Offset)
 	if err != nil && err != io.EOF {
-		return errors.InternalServerError("go.vine.srv.file", err.Error())
+		return errors.InternalServerError("go.vine.svc.file", err.Error())
 	}
 
 	if err == io.EOF {
@@ -119,7 +119,7 @@ func (h *handler) Read(ctx context.Context, req *proto.ReadRequest, rsp *proto.R
 func (h *handler) Write(ctx context.Context, req *proto.WriteRequest, rsp *proto.WriteResponse) error {
 	file := h.session.Get(req.Id)
 	if file == nil {
-		return errors.InternalServerError("go.vine.srv.file", "You must call open first.")
+		return errors.InternalServerError("go.vine.svc.file", "You must call open first.")
 	}
 
 	if _, err := file.WriteAt(req.GetData(), req.GetOffset()); err != nil {

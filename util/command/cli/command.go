@@ -192,18 +192,18 @@ func RegisterService(c *cli.Context, args []string) ([]byte, error) {
 
 	req := strings.Join(args, " ")
 
-	var srv *regpb.Service
+	var svc *regpb.Service
 
 	d := json.NewDecoder(strings.NewReader(req))
 	d.UseNumber()
 
-	if err := d.Decode(&srv); err != nil {
+	if err := d.Decode(&svc); err != nil {
 		return nil, err
 	}
 
 	reg := *cmd.DefaultOptions().Registry
 	reg.Init(grpc.WithClient(inclient.New(c)))
-	if err := reg.Register(srv); err != nil {
+	if err := reg.Register(svc); err != nil {
 		return nil, err
 	}
 
@@ -217,18 +217,18 @@ func DeregisterService(c *cli.Context, args []string) ([]byte, error) {
 
 	req := strings.Join(args, " ")
 
-	var srv *regpb.Service
+	var svc *regpb.Service
 
 	d := json.NewDecoder(strings.NewReader(req))
 	d.UseNumber()
 
-	if err := d.Decode(&srv); err != nil {
+	if err := d.Decode(&svc); err != nil {
 		return nil, err
 	}
 
 	reg := *cmd.DefaultOptions().Registry
 	reg.Init(grpc.WithClient(inclient.New(c)))
-	if err := reg.Deregister(srv); err != nil {
+	if err := reg.Deregister(svc); err != nil {
 		return nil, err
 	}
 
@@ -241,23 +241,23 @@ func GetService(c *cli.Context, args []string) ([]byte, error) {
 	}
 
 	var output []string
-	var srv []*regpb.Service
+	var svc []*regpb.Service
 	var err error
 
 	reg := *cmd.DefaultOptions().Registry
 	reg.Init(grpc.WithClient(inclient.New(c)))
-	srv, err = reg.GetService(args[0])
+	svc, err = reg.GetService(args[0])
 	if err != nil {
 		return nil, err
 	}
 
-	if len(srv) == 0 {
+	if len(svc) == 0 {
 		return nil, errors.New("Service not found")
 	}
 
-	output = append(output, "service  "+srv[0].Name)
+	output = append(output, "service  "+svc[0].Name)
 
-	for _, serv := range srv {
+	for _, serv := range svc {
 		if len(serv.Version) > 0 {
 			output = append(output, "\nversion "+serv.Version)
 		}
@@ -272,7 +272,7 @@ func GetService(c *cli.Context, args []string) ([]byte, error) {
 		}
 	}
 
-	for _, e := range srv[0].Endpoints {
+	for _, e := range svc[0].Endpoints {
 		var request, response string
 		var meta []string
 		for k, v := range e.Metadata {

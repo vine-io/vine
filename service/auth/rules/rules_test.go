@@ -7,7 +7,7 @@ import (
 )
 
 func TestVerify(t *testing.T) {
-	srvResource := &auth.Resource{
+	svcResource := &auth.Resource{
 		Type:     "service",
 		Name:     "go.vine.service.foo",
 		Endpoint: "Foo.Bar",
@@ -36,13 +36,13 @@ func TestVerify(t *testing.T) {
 			Name:     "NoRules",
 			Rules:    []*auth.Rule{},
 			Account:  nil,
-			Resource: srvResource,
+			Resource: svcResource,
 			Error:    auth.ErrForbidden,
 		},
 		{
 			Name:     "CatchallPublicAccount",
 			Account:  &auth.Account{},
-			Resource: srvResource,
+			Resource: svcResource,
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope:    "",
@@ -52,7 +52,7 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "CatchallPublicNoAccount",
-			Resource: srvResource,
+			Resource: svcResource,
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope:    "",
@@ -63,7 +63,7 @@ func TestVerify(t *testing.T) {
 		{
 			Name:     "CatchallPrivateAccount",
 			Account:  &auth.Account{},
-			Resource: srvResource,
+			Resource: svcResource,
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope:    "*",
@@ -73,7 +73,7 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "CatchallPrivateNoAccount",
-			Resource: srvResource,
+			Resource: svcResource,
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope:    "*",
@@ -84,14 +84,14 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "CatchallServiceRuleMatch",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account:  &auth.Account{},
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope: "*",
 					Resource: &auth.Resource{
-						Type:     srvResource.Type,
-						Name:     srvResource.Name,
+						Type:     svcResource.Type,
+						Name:     svcResource.Name,
 						Endpoint: "*",
 					},
 				},
@@ -99,13 +99,13 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "CatchallServiceRuleNoMatch",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account:  &auth.Account{},
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope: "*",
 					Resource: &auth.Resource{
-						Type:     srvResource.Type,
+						Type:     svcResource.Type,
 						Name:     "wrongname",
 						Endpoint: "*",
 					},
@@ -115,34 +115,34 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "ExactRuleValidScope",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account: &auth.Account{
 				Scopes: []string{"neededscope"},
 			},
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope:    "neededscope",
-					Resource: srvResource,
+					Resource: svcResource,
 				},
 			},
 		},
 		{
 			Name:     "ExactRuleInvalidScope",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account: &auth.Account{
 				Scopes: []string{"neededscope"},
 			},
 			Rules: []*auth.Rule{
 				&auth.Rule{
 					Scope:    "invalidscope",
-					Resource: srvResource,
+					Resource: svcResource,
 				},
 			},
 			Error: auth.ErrForbidden,
 		},
 		{
 			Name:     "CatchallDenyWithAccount",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account:  &auth.Account{},
 			Rules: []*auth.Rule{
 				&auth.Rule{
@@ -155,7 +155,7 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "CatchallDenyWithNoAccount",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account:  &auth.Account{},
 			Rules: []*auth.Rule{
 				&auth.Rule{
@@ -168,7 +168,7 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "RulePriorityGrantFirst",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account:  &auth.Account{},
 			Rules: []*auth.Rule{
 				&auth.Rule{
@@ -187,7 +187,7 @@ func TestVerify(t *testing.T) {
 		},
 		{
 			Name:     "RulePriorityDenyFirst",
-			Resource: srvResource,
+			Resource: svcResource,
 			Account:  &auth.Account{},
 			Rules: []*auth.Rule{
 				&auth.Rule{

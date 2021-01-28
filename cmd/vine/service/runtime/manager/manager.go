@@ -28,7 +28,7 @@ func (m *manager) Init(...runtime.Option) error {
 }
 
 // Create registers a service
-func (m *manager) Create(srv *runtime.Service, opts ...runtime.CreateOption) error {
+func (m *manager) Create(svc *runtime.Service, opts ...runtime.CreateOption) error {
 	// parse the options
 	var options runtime.CreateOptions
 	for _, o := range opts {
@@ -39,20 +39,20 @@ func (m *manager) Create(srv *runtime.Service, opts ...runtime.CreateOption) err
 	}
 
 	// set defaults
-	if srv.Metadata == nil {
-		srv.Metadata = make(map[string]string)
+	if svc.Metadata == nil {
+		svc.Metadata = make(map[string]string)
 	}
-	if len(srv.Version) == 0 {
-		srv.Version = "latest"
+	if len(svc.Version) == 0 {
+		svc.Version = "latest"
 	}
 
 	// write the object to the store
-	if err := m.createService(srv, &options); err != nil {
+	if err := m.createService(svc, &options); err != nil {
 		return err
 	}
 
 	// publish the event, this will apply it aysnc to the runtime
-	return m.publishEvent(runtime.Create, srv, &options)
+	return m.publishEvent(runtime.Create, svc, &options)
 }
 
 // Read returns the service which matches the criteria provided
@@ -66,8 +66,8 @@ func (m *manager) Read(opts ...runtime.ReadOption) ([]*runtime.Service, error) {
 		options.Namespace = namespace.DefaultNamespace
 	}
 
-	// query the store. TODO: query by type? (it isn't an attr of srv)
-	srvs, err := m.readServices(options.Namespace, &runtime.Service{
+	// query the store. TODO: query by type? (it isn't an attr of svc)
+	svcs, err := m.readServices(options.Namespace, &runtime.Service{
 		Name:    options.Service,
 		Version: options.Version,
 	})
@@ -80,20 +80,20 @@ func (m *manager) Read(opts ...runtime.ReadOption) ([]*runtime.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, srv := range srvs {
-		md, ok := statuses[srv.Name+":"+srv.Version]
+	for _, svc := range svcs {
+		md, ok := statuses[svc.Name+":"+svc.Version]
 		if !ok {
 			continue
 		}
-		srv.Metadata["status"] = md.Status
-		srv.Metadata["error"] = md.Error
+		svc.Metadata["status"] = md.Status
+		svc.Metadata["error"] = md.Error
 	}
 
-	return srvs, nil
+	return svcs, nil
 }
 
 // Update the service in place
-func (m *manager) Update(srv *runtime.Service, opts ...runtime.UpdateOption) error {
+func (m *manager) Update(svc *runtime.Service, opts ...runtime.UpdateOption) error {
 	// parse the options
 	var options runtime.UpdateOptions
 	for _, o := range opts {
@@ -104,16 +104,16 @@ func (m *manager) Update(srv *runtime.Service, opts ...runtime.UpdateOption) err
 	}
 
 	// set defaults
-	if len(srv.Version) == 0 {
-		srv.Version = "latest"
+	if len(svc.Version) == 0 {
+		svc.Version = "latest"
 	}
 
 	// publish the update event which will trigger an update in the runtime
-	return m.publishEvent(runtime.Update, srv, &runtime.CreateOptions{Namespace: options.Namespace})
+	return m.publishEvent(runtime.Update, svc, &runtime.CreateOptions{Namespace: options.Namespace})
 }
 
 // Remove a service
-func (m *manager) Delete(srv *runtime.Service, opts ...runtime.DeleteOption) error {
+func (m *manager) Delete(svc *runtime.Service, opts ...runtime.DeleteOption) error {
 	// parse the options
 	var options runtime.DeleteOptions
 	for _, o := range opts {
@@ -124,17 +124,17 @@ func (m *manager) Delete(srv *runtime.Service, opts ...runtime.DeleteOption) err
 	}
 
 	// set defaults
-	if len(srv.Version) == 0 {
-		srv.Version = "latest"
+	if len(svc.Version) == 0 {
+		svc.Version = "latest"
 	}
 
 	// delete from the store
-	if err := m.deleteService(options.Namespace, srv); err != nil {
+	if err := m.deleteService(options.Namespace, svc); err != nil {
 		return err
 	}
 
 	// publish the event which will trigger a delete in the runtime
-	return m.publishEvent(runtime.Delete, srv, &runtime.CreateOptions{Namespace: options.Namespace})
+	return m.publishEvent(runtime.Delete, svc, &runtime.CreateOptions{Namespace: options.Namespace})
 }
 
 // Starts the manager

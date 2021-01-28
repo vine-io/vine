@@ -86,7 +86,7 @@ var (
 	Host, _ = os.Hostname()
 )
 
-type srv struct {
+type service struct {
 	*mux.Router
 	// registry we use
 	registry registry.Registry
@@ -109,7 +109,7 @@ type reg struct {
 }
 
 // ServeHTTP serves the web dashboard and proxies where appropriate
-func (s *srv) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if len(r.URL.Host) == 0 {
 		r.URL.Host = r.Host
 	}
@@ -182,7 +182,7 @@ func (s *srv) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // proxy is a http reverse proxy
-func (s *srv) proxy() *proxy {
+func (s *service) proxy() *proxy {
 	director := func(r *http.Request) {
 		kill := func() {
 			r.URL.Host = ""
@@ -268,7 +268,7 @@ func faviconHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (s *srv) indexHandler(w http.ResponseWriter, r *http.Request) {
+func (s *service) indexHandler(w http.ResponseWriter, r *http.Request) {
 	cors.SetHeaders(w, r)
 
 	if r.Method == "OPTIONS" {
@@ -290,9 +290,9 @@ func (s *srv) indexHandler(w http.ResponseWriter, r *http.Request) {
 	domain, _ := publicsuffix.EffectiveTLDPlusOne(r.URL.Hostname())
 
 	var webServices []webService
-	for _, srv := range services {
+	for _, svc := range services {
 		// not a web app
-		comps := strings.Split(srv.Name, ".web.")
+		comps := strings.Split(svc.Name, ".web.")
 		if len(comps) == 1 {
 			continue
 		}
@@ -322,7 +322,7 @@ func (s *srv) indexHandler(w http.ResponseWriter, r *http.Request) {
 	s.render(w, r, indexTemplate, data)
 }
 
-func (s *srv) registryHandler(w http.ResponseWriter, r *http.Request) {
+func (s *service) registryHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	svc := vars["name"]
 
@@ -378,7 +378,7 @@ func (s *srv) registryHandler(w http.ResponseWriter, r *http.Request) {
 	s.render(w, r, registryTemplate, services)
 }
 
-func (s *srv) callHandler(w http.ResponseWriter, r *http.Request) {
+func (s *service) callHandler(w http.ResponseWriter, r *http.Request) {
 	services, err := s.registry.ListServices(registry.ListContext(r.Context()))
 	if err != nil {
 		log.Errorf("Error listing services: %v", err)
@@ -419,7 +419,7 @@ func (s *srv) callHandler(w http.ResponseWriter, r *http.Request) {
 	s.render(w, r, callTemplate, serviceMap)
 }
 
-func (s *srv) render(w http.ResponseWriter, r *http.Request, tmpl string, data interface{}) {
+func (s *service) render(w http.ResponseWriter, r *http.Request, tmpl string, data interface{}) {
 	t, err := template.New("template").Funcs(template.FuncMap{
 		"format": format,
 		"Title":  strings.Title,
@@ -463,7 +463,7 @@ func (s *srv) render(w http.ResponseWriter, r *http.Request, tmpl string, data i
 	}
 }
 
-func Run(ctx *cli.Context, srvOpts ...vine.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -489,14 +489,14 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 
 	// service opts
-	srvOpts = append(srvOpts, vine.Name(Name))
+	svcOpts = append(svcOpts, vine.Name(Name))
 
 	// Initialize Server
-	svc := vine.NewService(srvOpts...)
+	svc := vine.NewService(svcOpts...)
 
 	reg := &reg{Registry: *cmd.DefaultOptions().Registry}
 
-	s := &srv{
+	s := &service{
 		Router:   mux.NewRouter(),
 		registry: reg,
 		// our internal resolver
@@ -612,10 +612,10 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	authWrapper := apiAuth.Wrapper(s.resolver, s.nsResolver)
 
 	// create the service and add the auth wrapper
-	srv := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
+	server := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
 
-	srv.Init(opts...)
-	srv.Handle("/", h)
+	server.Init(opts...)
+	server.Handle("/", h)
 
 	// Setup auth redirect
 	if len(ctx.String("auth-login-url")) > 0 {
@@ -623,7 +623,7 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 		svc.Options().Auth.Init(auth.LoginURL(loginURL))
 	}
 
-	if err := srv.Start(); err != nil {
+	if err := server.Start(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -632,7 +632,7 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 		log.Fatal(err)
 	}
 
-	if err := srv.Stop(); err != nil {
+	if err := server.Stop(); err != nil {
 		log.Fatal(err)
 	}
 }

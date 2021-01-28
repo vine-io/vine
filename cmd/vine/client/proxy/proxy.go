@@ -64,7 +64,7 @@ var (
 	ACMECA                = acme.LetsEncryptProductionCA
 )
 
-func Run(ctx *cli.Context, srvOpts ...vine.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// because VINE_PROXY_ADDRESS is used internally by the vine/client
 	// we need to unset it so we don't end up calling ourselves infinitely
@@ -92,10 +92,10 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 
 	// service opts
-	srvOpts = append(srvOpts, vine.Name(Name))
+	svcOpts = append(svcOpts, vine.Name(Name))
 
 	// new service
-	srv := vine.NewService(srvOpts...)
+	svc := vine.NewService(svcOpts...)
 
 	// set the context
 	var popts []proxy.Option
@@ -182,7 +182,7 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 
 			storage := certmagic.NewStorage(
 				memory.NewSync(),
-				srv.Options().Store,
+				svc.Options().Store,
 			)
 
 			config := cloudflare.NewDefaultConfig()
@@ -269,7 +269,7 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	muxer := muxer.New(Name, p)
 
 	// set the router
-	srv.Server().Init(
+	svc.Server().Init(
 		server.WithRouter(muxer),
 	)
 
@@ -279,7 +279,7 @@ func Run(ctx *cli.Context, srvOpts ...vine.Option) {
 	}
 
 	// Run internal service
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Fatal(err)
 	}
 

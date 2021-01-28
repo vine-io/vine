@@ -89,7 +89,7 @@ func main() {
 	// Initialise service
 	service.Init(
 		// create wrap for the {{title .Alias}} service client
-		vine.WrapHandler(client.{{title .Alias}}Wrapper(srv)),
+		vine.WrapHandler(client.{{title .Alias}}Wrapper(svc)),
 	)
 
 	// Register Handler

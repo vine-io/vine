@@ -29,7 +29,7 @@ import (
 	"github.com/lack-io/cli"
 
 	regpb "github.com/lack-io/vine/proto/registry"
-	srv "github.com/lack-io/vine/service"
+	svc "github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	maddr "github.com/lack-io/vine/util/addr"
@@ -45,7 +45,7 @@ type service struct {
 	opts Options
 
 	mux *http.ServeMux
-	srv *regpb.Service
+	svc *regpb.Service
 
 	sync.RWMutex
 	running bool
@@ -60,7 +60,7 @@ func newService(opts ...Option) Service {
 		mux:    http.NewServeMux(),
 		static: true,
 	}
-	s.srv = s.genSrv()
+	s.svc = s.genSrv()
 	return s
 }
 
@@ -132,7 +132,7 @@ func (s *service) register() error {
 	s.Lock()
 	defer s.Unlock()
 
-	if s.srv == nil {
+	if s.svc == nil {
 		return nil
 	}
 	// default to service registry
@@ -143,9 +143,9 @@ func (s *service) register() error {
 	}
 
 	// service node need modify, node address maybe changed
-	srv := s.genSrv()
-	srv.Endpoints = s.srv.Endpoints
-	s.srv = srv
+	svc := s.genSrv()
+	svc.Endpoints = s.svc.Endpoints
+	s.svc = svc
 
 	// use RegisterCheck func before register
 	if err := s.opts.RegisterCheck(s.opts.Context); err != nil {
@@ -158,7 +158,7 @@ func (s *service) register() error {
 	// try three times if necessary
 	for i := 0; i < 3; i++ {
 		// attempt to register
-		if err := r.Register(s.srv, registry.RegisterTTL(s.opts.RegisterTTL)); err != nil {
+		if err := r.Register(s.svc, registry.RegisterTTL(s.opts.RegisterTTL)); err != nil {
 			// set the error
 			regErr = err
 			// backoff then retry
@@ -177,7 +177,7 @@ func (s *service) deregister() error {
 	s.Lock()
 	defer s.Unlock()
 
-	if s.srv == nil {
+	if s.svc == nil {
 		return nil
 	}
 	// default to service registry
@@ -186,7 +186,7 @@ func (s *service) deregister() error {
 	if s.opts.Registry != nil {
 		r = s.opts.Registry
 	}
-	return r.Deregister(s.srv)
+	return r.Deregister(s.svc)
 }
 
 func (s *service) start() error {
@@ -209,9 +209,9 @@ func (s *service) start() error {
 	}
 
 	s.opts.Address = l.Addr().String()
-	srv := s.genSrv()
-	srv.Endpoints = s.srv.Endpoints
-	s.srv = srv
+	svc := s.genSrv()
+	svc.Endpoints = s.svc.Endpoints
+	s.svc = svc
 
 	var h http.Handler
 
@@ -314,7 +314,7 @@ func (s *service) Client() *http.Client {
 func (s *service) Handle(pattern string, handler http.Handler) {
 	var seen bool
 	s.RLock()
-	for _, ep := range s.srv.Endpoints {
+	for _, ep := range s.svc.Endpoints {
 		if ep.Name == pattern {
 			seen = true
 			break
@@ -325,7 +325,7 @@ func (s *service) Handle(pattern string, handler http.Handler) {
 	// if its unseen then add an endpoint
 	if !seen {
 		s.Lock()
-		s.srv.Endpoints = append(s.srv.Endpoints, &regpb.Endpoint{
+		s.svc.Endpoints = append(s.svc.Endpoints, &regpb.Endpoint{
 			Name: pattern,
 		})
 		s.Unlock()
@@ -346,7 +346,7 @@ func (s *service) HandleFunc(pattern string, handler func(http.ResponseWriter, *
 
 	var seen bool
 	s.RLock()
-	for _, ep := range s.srv.Endpoints {
+	for _, ep := range s.svc.Endpoints {
 		if ep.Name == pattern {
 			seen = true
 			break
@@ -356,7 +356,7 @@ func (s *service) HandleFunc(pattern string, handler func(http.ResponseWriter, *
 
 	if !seen {
 		s.Lock()
-		s.srv.Endpoints = append(s.srv.Endpoints, &regpb.Endpoint{
+		s.svc.Endpoints = append(s.svc.Endpoints, &regpb.Endpoint{
 			Name: pattern,
 		})
 		s.Unlock()
@@ -379,19 +379,19 @@ func (s *service) Init(opts ...Option) error {
 		o(&s.opts)
 	}
 
-	serviceOpts := []srv.Option{}
+	serviceOpts := []svc.Option{}
 
 	if len(s.opts.Flags) > 0 {
-		serviceOpts = append(serviceOpts, srv.Flags(s.opts.Flags...))
+		serviceOpts = append(serviceOpts, svc.Flags(s.opts.Flags...))
 	}
 
 	if s.opts.Registry != nil {
-		serviceOpts = append(serviceOpts, srv.Registry(s.opts.Registry))
+		serviceOpts = append(serviceOpts, svc.Registry(s.opts.Registry))
 	}
 
 	s.Unlock()
 
-	serviceOpts = append(serviceOpts, srv.Action(func(ctx *cli.Context) error {
+	serviceOpts = append(serviceOpts, svc.Action(func(ctx *cli.Context) error {
 		s.Lock()
 		defer s.Unlock()
 
@@ -433,17 +433,17 @@ func (s *service) Init(opts ...Option) error {
 	s.RLock()
 	// pass in own name and version
 	if s.opts.Service.Name() == "" {
-		serviceOpts = append(serviceOpts, srv.Name(s.opts.Name))
+		serviceOpts = append(serviceOpts, svc.Name(s.opts.Name))
 	}
-	serviceOpts = append(serviceOpts, srv.Version(s.opts.Version))
+	serviceOpts = append(serviceOpts, svc.Version(s.opts.Version))
 	s.RUnlock()
 
 	s.opts.Service.Init(serviceOpts...)
 
 	s.Lock()
-	srv := s.genSrv()
-	srv.Endpoints = s.srv.Endpoints
-	s.srv = srv
+	svc := s.genSrv()
+	svc.Endpoints = s.svc.Endpoints
+	s.svc = svc
 	s.Unlock()
 
 	return nil
@@ -451,9 +451,9 @@ func (s *service) Init(opts ...Option) error {
 
 func (s *service) Run() error {
 	// generate an auth account
-	srvID := s.opts.Service.Server().Options().Id
-	srvName := s.Options().Name
-	if err := authutil.Generate(srvID, srvName, s.opts.Service.Options().Auth); err != nil {
+	svcID := s.opts.Service.Server().Options().Id
+	svcName := s.Options().Name
+	if err := authutil.Generate(svcID, svcName, s.opts.Service.Options().Auth); err != nil {
 		return err
 	}
 

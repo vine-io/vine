@@ -202,13 +202,13 @@ func (m *mdnsRegistry) Register(service *regpb.Service, opts ...RegisterOption) 
 			return err
 		}
 
-		srv, err := mdns.NewServer(&mdns.Config{Zone: &mdns.DNSSDService{MDNSService: s}})
+		svc, err := mdns.NewServer(&mdns.Config{Zone: &mdns.DNSSDService{MDNSService: s}})
 		if err != nil {
 			return err
 		}
 
 		// append the wildcard entry
-		entries = append(entries, &mdnsEntry{id: "*", node: srv})
+		entries = append(entries, &mdnsEntry{id: "*", node: svc})
 	}
 
 	var gerr error
@@ -271,14 +271,14 @@ func (m *mdnsRegistry) Register(service *regpb.Service, opts ...RegisterOption) 
 			continue
 		}
 
-		srv, err := mdns.NewServer(&mdns.Config{Zone: s, LocalhostChecking: true})
+		svc, err := mdns.NewServer(&mdns.Config{Zone: s, LocalhostChecking: true})
 		if err != nil {
 			gerr = err
 			continue
 		}
 
 		e.id = node.Id
-		e.node = srv
+		e.node = svc
 		entries = append(entries, e)
 	}
 

@@ -124,8 +124,8 @@ import (
 )
 
 func main() {
-	srv := vine.NewService(vine.Name("tt"))
-	service := pb.NewRpcService("tt", srv.Client())
+	svc := vine.NewService(vine.Name("tt"))
+	service := pb.NewRpcService("tt", svc.Client())
 
 	rsp, err := service.HelloWorld(context.TODO(), &pb.HelloWorldRequest{Name: "world"})
 	if err != nil {

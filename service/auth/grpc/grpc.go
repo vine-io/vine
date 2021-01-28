@@ -155,7 +155,7 @@ func (s *gRPC) Verify(acc *auth.Account, res *auth.Resource, opts ...auth.Verify
 
 // Inspect a token
 func (s *gRPC) Inspect(token string) (*auth.Account, error) {
-	// try to decode JWT locally and fall back to srv if an error occurs
+	// try to decode JWT locally and fall back to svc if an error occurs
 	if len(strings.Split(token, ".")) == 3 && s.jwt != nil {
 		return s.jwt.Inspect(token)
 	}

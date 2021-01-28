@@ -777,56 +777,56 @@ func (*UnimplementedTraceServer) Read(ctx context.Context, req *ReadRequest) (*R
 func (*UnimplementedTraceServer) Write(ctx context.Context, req *WriteRequest) (*WriteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Write not implemented")
 }
-func (*UnimplementedTraceServer) Stream(req *StreamRequest, srv Trace_StreamServer) error {
+func (*UnimplementedTraceServer) Stream(req *StreamRequest, svc Trace_StreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 
-func RegisterTraceServer(s *grpc.Server, srv TraceServer) {
-	s.RegisterService(&_Trace_serviceDesc, srv)
+func RegisterTraceServer(s *grpc.Server, svc TraceServer) {
+	s.RegisterService(&_Trace_serviceDesc, svc)
 }
 
-func _Trace_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Trace_Read_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TraceServer).Read(ctx, in)
+		return svc.(TraceServer).Read(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/trace.Trace/Read",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TraceServer).Read(ctx, req.(*ReadRequest))
+		return svc.(TraceServer).Read(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Trace_Write_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Trace_Write_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TraceServer).Write(ctx, in)
+		return svc.(TraceServer).Write(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     srv,
+		Server:     svc,
 		FullMethod: "/trace.Trace/Write",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TraceServer).Write(ctx, req.(*WriteRequest))
+		return svc.(TraceServer).Write(ctx, req.(*WriteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Trace_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _Trace_Stream_Handler(svc interface{}, stream grpc.ServerStream) error {
 	m := new(StreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(TraceServer).Stream(m, &traceStreamServer{stream})
+	return svc.(TraceServer).Stream(m, &traceStreamServer{stream})
 }
 
 type Trace_StreamServer interface {

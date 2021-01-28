@@ -38,11 +38,11 @@ var (
 const eventPrefix = "event/"
 
 // publishEvent will write the event to the global store and immediately process the event
-func (m *manager) publishEvent(eType runtime.EventType, srv *runtime.Service, opts *runtime.CreateOptions) error {
+func (m *manager) publishEvent(eType runtime.EventType, svc *runtime.Service, opts *runtime.CreateOptions) error {
 	e := &runtime.Event{
 		ID:      uuid.New().String(),
 		Type:    eType,
-		Service: srv,
+		Service: svc,
 		Options: opts,
 	}
 

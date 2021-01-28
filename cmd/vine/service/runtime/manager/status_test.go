@@ -39,24 +39,24 @@ func (r *testRuntime) Reset() {
 	r.deleteCount = 0
 }
 
-func (r *testRuntime) Create(srv *runtime.Service, opts ...runtime.CreateOption) error {
+func (r *testRuntime) Create(svc *runtime.Service, opts ...runtime.CreateOption) error {
 	r.createCount++
 	if r.events != nil {
-		r.events <- srv
+		r.events <- svc
 	}
 	return nil
 }
-func (r *testRuntime) Update(srv *runtime.Service, opts ...runtime.UpdateOption) error {
+func (r *testRuntime) Update(svc *runtime.Service, opts ...runtime.UpdateOption) error {
 	r.updateCount++
 	if r.events != nil {
-		r.events <- srv
+		r.events <- svc
 	}
 	return nil
 }
-func (r *testRuntime) Delete(srv *runtime.Service, opts ...runtime.DeleteOption) error {
+func (r *testRuntime) Delete(svc *runtime.Service, opts ...runtime.DeleteOption) error {
 	r.deleteCount++
 	if r.events != nil {
-		r.events <- srv
+		r.events <- svc
 	}
 	return nil
 }
@@ -93,24 +93,24 @@ func TestStatus(t *testing.T) {
 	}
 
 	// loop through the test services and check the status matches what was set in the metadata
-	for _, srv := range testServices {
-		s, ok := statuses[srv.Name+":"+srv.Version]
+	for _, svc := range testServices {
+		s, ok := statuses[svc.Name+":"+svc.Version]
 		if !ok {
-			t.Errorf("Missing status for %v:%v", srv.Name, srv.Version)
+			t.Errorf("Missing status for %v:%v", svc.Name, svc.Version)
 			continue
 		}
-		if s.Status != srv.Metadata["status"] {
-			t.Errorf("Incorrect status for %v:%v, expepcted %v but got %v", srv.Name, srv.Version, srv.Metadata["status"], s.Status)
+		if s.Status != svc.Metadata["status"] {
+			t.Errorf("Incorrect status for %v:%v, expepcted %v but got %v", svc.Name, svc.Version, svc.Metadata["status"], s.Status)
 		}
-		if s.Error != srv.Metadata["error"] {
-			t.Errorf("Incorrect error for %v:%v, expepcted %v but got %v", srv.Name, srv.Version, srv.Metadata["error"], s.Error)
+		if s.Error != svc.Metadata["error"] {
+			t.Errorf("Incorrect error for %v:%v, expepcted %v but got %v", svc.Name, svc.Version, svc.Metadata["error"], s.Error)
 		}
 	}
 
 	// update the status for a service and check it correctly updated
-	srv := testServices[0]
-	srv.Metadata["status"] = "running"
-	if err := m.cacheStatus(namespace.DefaultNamespace, srv); err != nil {
+	svc := testServices[0]
+	svc.Metadata["status"] = "running"
+	if err := m.cacheStatus(namespace.DefaultNamespace, svc); err != nil {
 		t.Fatalf("Unexpected error when caching status: %v", err)
 	}
 
@@ -121,14 +121,14 @@ func TestStatus(t *testing.T) {
 	}
 
 	// check the new status matches the changed service
-	s, ok := statuses[srv.Name+":"+srv.Version]
+	s, ok := statuses[svc.Name+":"+svc.Version]
 	if !ok {
-		t.Errorf("Missing status for %v:%v", srv.Name, srv.Version)
+		t.Errorf("Missing status for %v:%v", svc.Name, svc.Version)
 	}
-	if s.Status != srv.Metadata["status"] {
-		t.Errorf("Incorrect status for %v:%v, expepcted %v but got %v", srv.Name, srv.Version, srv.Metadata["status"], s.Status)
+	if s.Status != svc.Metadata["status"] {
+		t.Errorf("Incorrect status for %v:%v, expepcted %v but got %v", svc.Name, svc.Version, svc.Metadata["status"], s.Status)
 	}
-	if s.Error != srv.Metadata["error"] {
-		t.Errorf("Incorrect error for %v:%v, expepcted %v but got %v", srv.Name, srv.Version, srv.Metadata["error"], s.Error)
+	if s.Error != svc.Metadata["error"] {
+		t.Errorf("Incorrect error for %v:%v, expepcted %v but got %v", svc.Name, svc.Version, svc.Metadata["error"], s.Error)
 	}
 }

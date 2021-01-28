@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package dns srv resolves names to dns srv records
-package dnssrv
+// Package dns svc resolves names to dns svc records
+package dnssvc
 
 import (
 	"fmt"

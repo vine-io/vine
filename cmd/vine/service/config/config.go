@@ -52,16 +52,16 @@ func Run(c *cli.Context, svcOpts ...vine.Option) {
 
 	svcOpts = append(svcOpts, vine.Name(Name))
 
-	srv := vine.NewService(svcOpts...)
+	svc := vine.NewService(svcOpts...)
 
 	h := &handler.Config{
 		Store: *cmd.DefaultCmd.Options().Store,
 	}
 
-	proto.RegisterConfigHandler(srv.Server(), h)
-	vine.RegisterSubscriber(handler.WatchTopic, srv.Server(), handler.Watcher)
+	proto.RegisterConfigHandler(svc.Server(), h)
+	vine.RegisterSubscriber(handler.WatchTopic, svc.Server(), handler.Watcher)
 
-	if err := srv.Run(); err != nil {
+	if err := svc.Run(); err != nil {
 		log.Fatalf("config Run the service error: ", err)
 	}
 }
@@ -225,7 +225,7 @@ func Commands(options ...vine.Option) []*cli.Command {
 			&cli.StringFlag{
 				Name:    "namespace",
 				EnvVars: []string{"VINE_CONFIG_NAMESPACE"},
-				Usage:   "Set the namespace used by the Config Service e.g. go.vine.srv.config",
+				Usage:   "Set the namespace used by the Config Service e.g. go.vine.svc.config",
 			},
 			&cli.StringFlag{
 				Name:    "watch-topic",

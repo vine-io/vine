@@ -46,32 +46,32 @@ func TestServices(t *testing.T) {
 
 	// creating a service should not error
 	t.Run("CreateService", func(t *testing.T) {
-		for _, srv := range testServices {
-			if err := m.createService(srv, &runtime.CreateOptions{Namespace: testNamespace}); err != nil {
-				t.Fatalf("Unexpected error when creating service %v:%v: %v", srv.Name, srv.Version, err)
+		for _, svc := range testServices {
+			if err := m.createService(svc, &runtime.CreateOptions{Namespace: testNamespace}); err != nil {
+				t.Fatalf("Unexpected error when creating service %v:%v: %v", svc.Name, svc.Version, err)
 			}
 		}
 	})
 
 	// Calling readServices with a blank service should return all the services in the namespace
 	t.Run("ReadServices", func(t *testing.T) {
-		srvs, err := m.readServices(testNamespace, &runtime.Service{})
+		svcs, err := m.readServices(testNamespace, &runtime.Service{})
 		if err != nil {
 			t.Fatalf("Unexpected error when reading services%v", err)
 		}
-		if len(srvs) != 3 {
-			t.Errorf("Expected 3 services, got %v", len(srvs))
+		if len(svcs) != 3 {
+			t.Errorf("Expected 3 services, got %v", len(svcs))
 		}
 	})
 
 	// Calling readServices with a name should return any service with that name
 	t.Run("ReadServicesWithName", func(t *testing.T) {
-		srvs, err := m.readServices(testNamespace, &runtime.Service{Name: "go.vine.service.foo"})
+		svcs, err := m.readServices(testNamespace, &runtime.Service{Name: "go.vine.service.foo"})
 		if err != nil {
 			t.Fatalf("Unexpected error when reading services%v", err)
 		}
-		if len(srvs) != 2 {
-			t.Errorf("Expected 2 services, got %v", len(srvs))
+		if len(svcs) != 2 {
+			t.Errorf("Expected 2 services, got %v", len(svcs))
 		}
 	})
 
@@ -79,12 +79,12 @@ func TestServices(t *testing.T) {
 	// and version
 	t.Run("ReadServicesWithNameAndVersion", func(t *testing.T) {
 		query := &runtime.Service{Name: "go.vine.service.foo", Version: "1.0.0"}
-		srvs, err := m.readServices(testNamespace, query)
+		svcs, err := m.readServices(testNamespace, query)
 		if err != nil {
 			t.Fatalf("Unexpected error when reading services%v", err)
 		}
-		if len(srvs) != 1 {
-			t.Errorf("Expected 1 service, got %v", len(srvs))
+		if len(svcs) != 1 {
+			t.Errorf("Expected 1 service, got %v", len(svcs))
 		}
 	})
 
@@ -95,27 +95,27 @@ func TestServices(t *testing.T) {
 			t.Fatalf("Unexpected error when reading services%v", err)
 		}
 
-		srvs, err := m.readServices(testNamespace, &runtime.Service{})
+		svcs, err := m.readServices(testNamespace, &runtime.Service{})
 		if err != nil {
 			t.Fatalf("Unexpected error when reading services%v", err)
 		}
-		if len(srvs) != 2 {
-			t.Errorf("Expected 2 services, got %v", len(srvs))
+		if len(svcs) != 2 {
+			t.Errorf("Expected 2 services, got %v", len(svcs))
 		}
 	})
 
 	// a service created in one namespace shouldn't be returned when querying another
 	t.Run("NamespaceScope", func(t *testing.T) {
-		srv := &runtime.Service{Name: "go.vine.service.apple", Version: "latest"}
+		svc := &runtime.Service{Name: "go.vine.service.apple", Version: "latest"}
 
-		if err := m.createService(srv, &runtime.CreateOptions{Namespace: "random"}); err != nil {
+		if err := m.createService(svc, &runtime.CreateOptions{Namespace: "random"}); err != nil {
 			t.Fatalf("Unexpected error when creating service %v", err)
 		}
 
-		if srvs, err := m.readServices(testNamespace, srv); err != nil {
+		if svcs, err := m.readServices(testNamespace, svc); err != nil {
 			t.Fatalf("Unexpected error when listing services %v", err)
-		} else if len(srvs) != 0 {
-			t.Errorf("Expected 0 services, got %v", len(srvs))
+		} else if len(svcs) != 0 {
+			t.Errorf("Expected 0 services, got %v", len(svcs))
 		}
 	})
 }

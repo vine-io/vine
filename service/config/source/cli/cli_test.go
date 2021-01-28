@@ -21,7 +21,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	srv "github.com/lack-io/vine/service"
+	svc "github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/config"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/service/config/source"
@@ -30,8 +30,8 @@ import (
 func TestCliSourceDefault(t *testing.T) {
 	const expVal string = "flagvalue"
 
-	service := srv.NewService(
-		srv.Flags(
+	service := svc.NewService(
+		svc.Flags(
 			// to be able to run inside go test
 			&cli.StringFlag{
 				Name: "test.timeout",
@@ -56,7 +56,7 @@ func TestCliSourceDefault(t *testing.T) {
 	var cliSrc source.Source
 	service.Init(
 		// Loads CLI configuration
-		srv.Action(func(c *cli.Context) error {
+		svc.Action(func(c *cli.Context) error {
 			cliSrc = NewSource(
 				Context(c),
 			)

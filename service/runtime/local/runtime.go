@@ -546,14 +546,14 @@ func (r *localRuntime) Update(s *runtime.Service, opts ...runtime.UpdateOption) 
 	}
 
 	r.Lock()
-	srvs, ok := r.namespaces[options.Namespace]
+	svcs, ok := r.namespaces[options.Namespace]
 	r.Unlock()
 	if !ok {
 		return errors.New("Service not found")
 	}
 
 	r.Lock()
-	service, ok := srvs[serviceKey(s)]
+	service, ok := svcs[serviceKey(s)]
 	r.Unlock()
 	if !ok {
 		return errors.New("Service not found")
@@ -580,22 +580,22 @@ func (r *localRuntime) Delete(s *runtime.Service, opts ...runtime.DeleteOption) 
 		options.Namespace = defaultNamespace
 	}
 
-	srvs, ok := r.namespaces[options.Namespace]
+	svcs, ok := r.namespaces[options.Namespace]
 	if !ok {
 		return nil
 	}
 
 	logger.Debugf("Runtime deleting service %s", s.Name)
 
-	service, ok := srvs[serviceKey(s)]
+	service, ok := svcs[serviceKey(s)]
 	if !ok {
 		return nil
 	}
 
 	// check if running
 	if !service.Running() {
-		delete(srvs, service.key())
-		r.namespaces[options.Namespace] = srvs
+		delete(svcs, service.key())
+		r.namespaces[options.Namespace] = svcs
 		return nil
 	}
 	// otherwise stop it
@@ -603,8 +603,8 @@ func (r *localRuntime) Delete(s *runtime.Service, opts ...runtime.DeleteOption) 
 		return err
 	}
 	// delete it
-	delete(srvs, service.key())
-	r.namespaces[options.Namespace] = srvs
+	delete(svcs, service.key())
+	r.namespaces[options.Namespace] = svcs
 	return nil
 }
 

@@ -99,20 +99,20 @@ type rtr struct {
 }
 
 // newRouter creates new vine router and returns it
-func newRouter(srv vine.Service, router router.Router) *rtr {
+func newRouter(svc vine.Service, router router.Router) *rtr {
 	s := &sub{
 		router: router,
 	}
 
 	// register subscriber
-	if err := vine.RegisterSubscriber(Topic, srv.Server(), s); err != nil {
+	if err := vine.RegisterSubscriber(Topic, svc.Server(), s); err != nil {
 		log.Errorf("failed to subscribe to adverts: %s", err)
 		os.Exit(1)
 	}
 
 	return &rtr{
 		Router: router,
-		Event:  vine.NewEvent(Topic, srv.Client()),
+		Event:  vine.NewEvent(Topic, svc.Client()),
 	}
 }
 
@@ -174,7 +174,7 @@ func (r *rtr) Stop() error {
 }
 
 // Run runs the vine server
-func Run(ctx *cli.Context, srvOpts ...vine.Option) {
+func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// Init plugins
 	for _, p := range Plugins() {

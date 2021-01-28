@@ -69,7 +69,7 @@ func Plugin() plugin.Plugin {
 					s, _ := registry.ListServices()
 					// get requests
 					reqs := atomic.LoadUint64(&requests)
-					srvs := uint64(len(s))
+					svcs := uint64(len(s))
 
 					// reset requests
 					atomic.StoreUint64(&requests, 0)
@@ -77,7 +77,7 @@ func Plugin() plugin.Plugin {
 					// set metrics
 					u.Metrics.Count["instances"] = uint64(1)
 					u.Metrics.Count["requests"] = reqs
-					u.Metrics.Count["services"] = srvs
+					u.Metrics.Count["services"] = svcs
 
 					// attempt to send report 3 times
 					for i := 1; i <= 3; i++ {

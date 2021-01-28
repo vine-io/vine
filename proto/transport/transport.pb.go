@@ -170,16 +170,16 @@ type TransportServer interface {
 type UnimplementedTransportServer struct {
 }
 
-func (*UnimplementedTransportServer) Stream(srv Transport_StreamServer) error {
+func (*UnimplementedTransportServer) Stream(svc Transport_StreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 
-func RegisterTransportServer(s *grpc.Server, srv TransportServer) {
-	s.RegisterService(&_Transport_serviceDesc, srv)
+func RegisterTransportServer(s *grpc.Server, svc TransportServer) {
+	s.RegisterService(&_Transport_serviceDesc, svc)
 }
 
-func _Transport_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TransportServer).Stream(&transportStreamServer{stream})
+func _Transport_Stream_Handler(svc interface{}, stream grpc.ServerStream) error {
+	return svc.(TransportServer).Stream(&transportStreamServer{stream})
 }
 
 type Transport_StreamServer interface {

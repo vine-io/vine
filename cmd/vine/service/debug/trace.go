@@ -30,7 +30,7 @@ const (
 	traceUsage = "Required usage: vine trace example"
 )
 
-func getTrace(ctx *cli.Context, srvOpts ...vine.Option) {
+func getTrace(ctx *cli.Context, svcOpts ...vine.Option) {
 	log.Trace("debug")
 
 	// TODO look for trace id

@@ -478,17 +478,17 @@ func (h *httpTransportListener) Accept(fn func(Socket)) error {
 	}
 
 	// default http2 server
-	srv := &http.Server{
+	svc := &http.Server{
 		Handler: mux,
 	}
 
 	// insecure connection use h2c
 	if !(h.ht.opts.Secure || h.ht.opts.TLSConfig != nil) {
-		srv.Handler = h2c.NewHandler(mux, &http2.Server{})
+		svc.Handler = h2c.NewHandler(mux, &http2.Server{})
 	}
 
 	// begin serving
-	return srv.Serve(h.listener)
+	return svc.Serve(h.listener)
 }
 
 func (h *httpTransport) Dial(addr string, opts ...DialOption) (Client, error) {

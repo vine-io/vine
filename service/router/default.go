@@ -154,13 +154,13 @@ func (r *router) manageRegistryRoutes(reg registry.Registry, action string) erro
 	// add each service node as a separate route
 	for _, service := range services {
 		// get the service to retrieve all its info
-		srvs, err := reg.GetService(service.Name)
+		svcs, err := reg.GetService(service.Name)
 		if err != nil {
 			continue
 		}
 		// manage the routes for all returned services
-		for _, srv := range srvs {
-			if err := r.manageRoutes(srv, action); err != nil {
+		for _, svc := range svcs {
+			if err := r.manageRoutes(svc, action); err != nil {
 				return err
 			}
 		}

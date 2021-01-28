@@ -305,15 +305,15 @@ func (c *cache) update(res *regpb.Result) {
 
 		// still have more than 1 service
 		// check the version and keep what we know
-		var srvs []*regpb.Service
+		var svcs []*regpb.Service
 		for _, s := range services {
 			if s.Version != service.Version {
-				srvs = append(srvs, s)
+				svcs = append(svcs, s)
 			}
 		}
 
 		// save
-		c.set(service.Name, srvs)
+		c.set(service.Name, svcs)
 	}
 }
 
