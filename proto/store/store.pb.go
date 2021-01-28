@@ -1172,7 +1172,7 @@ func (*UnimplementedStoreServer) Write(ctx context.Context, req *WriteRequest) (
 func (*UnimplementedStoreServer) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (*UnimplementedStoreServer) List(req *ListRequest, svc Store_ListServer) error {
+func (*UnimplementedStoreServer) List(req *ListRequest, srv Store_ListServer) error {
 	return status.Errorf(codes.Unimplemented, "method List not implemented")
 }
 func (*UnimplementedStoreServer) Databases(ctx context.Context, req *DatabasesRequest) (*DatabasesResponse, error) {
@@ -1182,70 +1182,70 @@ func (*UnimplementedStoreServer) Tables(ctx context.Context, req *TablesRequest)
 	return nil, status.Errorf(codes.Unimplemented, "method Tables not implemented")
 }
 
-func RegisterStoreServer(s *grpc.Server, svc StoreServer) {
-	s.RegisterService(&_Store_serviceDesc, svc)
+func RegisterStoreServer(s *grpc.Server, srv StoreServer) {
+	s.RegisterService(&_Store_serviceDesc, srv)
 }
 
-func _Store_Read_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Store_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(StoreServer).Read(ctx, in)
+		return srv.(StoreServer).Read(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/store.Store/Read",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(StoreServer).Read(ctx, req.(*ReadRequest))
+		return srv.(StoreServer).Read(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Store_Write_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Store_Write_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(StoreServer).Write(ctx, in)
+		return srv.(StoreServer).Write(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/store.Store/Write",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(StoreServer).Write(ctx, req.(*WriteRequest))
+		return srv.(StoreServer).Write(ctx, req.(*WriteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Store_Delete_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Store_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(StoreServer).Delete(ctx, in)
+		return srv.(StoreServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/store.Store/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(StoreServer).Delete(ctx, req.(*DeleteRequest))
+		return srv.(StoreServer).Delete(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Store_List_Handler(svc interface{}, stream grpc.ServerStream) error {
+func _Store_List_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ListRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return svc.(StoreServer).List(m, &storeListServer{stream})
+	return srv.(StoreServer).List(m, &storeListServer{stream})
 }
 
 type Store_ListServer interface {
@@ -1261,38 +1261,38 @@ func (x *storeListServer) Send(m *ListResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Store_Databases_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Store_Databases_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DatabasesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(StoreServer).Databases(ctx, in)
+		return srv.(StoreServer).Databases(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/store.Store/Databases",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(StoreServer).Databases(ctx, req.(*DatabasesRequest))
+		return srv.(StoreServer).Databases(ctx, req.(*DatabasesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Store_Tables_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Store_Tables_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TablesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(StoreServer).Tables(ctx, in)
+		return srv.(StoreServer).Tables(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/store.Store/Tables",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(StoreServer).Tables(ctx, req.(*TablesRequest))
+		return srv.(StoreServer).Tables(ctx, req.(*TablesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

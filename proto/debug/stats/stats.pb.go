@@ -689,56 +689,56 @@ func (*UnimplementedStatsServer) Read(ctx context.Context, req *ReadRequest) (*R
 func (*UnimplementedStatsServer) Write(ctx context.Context, req *WriteRequest) (*WriteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Write not implemented")
 }
-func (*UnimplementedStatsServer) Stream(req *StreamRequest, svc Stats_StreamServer) error {
+func (*UnimplementedStatsServer) Stream(req *StreamRequest, srv Stats_StreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 
-func RegisterStatsServer(s *grpc.Server, svc StatsServer) {
-	s.RegisterService(&_Stats_serviceDesc, svc)
+func RegisterStatsServer(s *grpc.Server, srv StatsServer) {
+	s.RegisterService(&_Stats_serviceDesc, srv)
 }
 
-func _Stats_Read_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Stats_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(StatsServer).Read(ctx, in)
+		return srv.(StatsServer).Read(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/stats.Stats/Read",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(StatsServer).Read(ctx, req.(*ReadRequest))
+		return srv.(StatsServer).Read(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Stats_Write_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Stats_Write_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(StatsServer).Write(ctx, in)
+		return srv.(StatsServer).Write(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/stats.Stats/Write",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(StatsServer).Write(ctx, req.(*WriteRequest))
+		return srv.(StatsServer).Write(ctx, req.(*WriteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Stats_Stream_Handler(svc interface{}, stream grpc.ServerStream) error {
+func _Stats_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(StreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return svc.(StatsServer).Stream(m, &statsStreamServer{stream})
+	return srv.(StatsServer).Stream(m, &statsStreamServer{stream})
 }
 
 type Stats_StreamServer interface {

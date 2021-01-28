@@ -481,60 +481,60 @@ func (*UnimplementedDnsServer) Resolve(ctx context.Context, req *ResolveRequest)
 	return nil, status.Errorf(codes.Unimplemented, "method Resolve not implemented")
 }
 
-func RegisterDnsServer(s *grpc.Server, svc DnsServer) {
-	s.RegisterService(&_Dns_serviceDesc, svc)
+func RegisterDnsServer(s *grpc.Server, srv DnsServer) {
+	s.RegisterService(&_Dns_serviceDesc, srv)
 }
 
-func _Dns_Advertise_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Dns_Advertise_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AdvertiseRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(DnsServer).Advertise(ctx, in)
+		return srv.(DnsServer).Advertise(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/dns.Dns/Advertise",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(DnsServer).Advertise(ctx, req.(*AdvertiseRequest))
+		return srv.(DnsServer).Advertise(ctx, req.(*AdvertiseRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Dns_Remove_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Dns_Remove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RemoveRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(DnsServer).Remove(ctx, in)
+		return srv.(DnsServer).Remove(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/dns.Dns/Remove",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(DnsServer).Remove(ctx, req.(*RemoveRequest))
+		return srv.(DnsServer).Remove(ctx, req.(*RemoveRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Dns_Resolve_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Dns_Resolve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ResolveRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(DnsServer).Resolve(ctx, in)
+		return srv.(DnsServer).Resolve(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/dns.Dns/Resolve",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(DnsServer).Resolve(ctx, req.(*ResolveRequest))
+		return srv.(DnsServer).Resolve(ctx, req.(*ResolveRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

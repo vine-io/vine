@@ -334,38 +334,38 @@ type UnimplementedBrokerServer struct {
 func (*UnimplementedBrokerServer) Publish(ctx context.Context, req *PublishRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
-func (*UnimplementedBrokerServer) Subscribe(req *SubscribeRequest, svc Broker_SubscribeServer) error {
+func (*UnimplementedBrokerServer) Subscribe(req *SubscribeRequest, srv Broker_SubscribeServer) error {
 	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
 
-func RegisterBrokerServer(s *grpc.Server, svc BrokerServer) {
-	s.RegisterService(&_Broker_serviceDesc, svc)
+func RegisterBrokerServer(s *grpc.Server, srv BrokerServer) {
+	s.RegisterService(&_Broker_serviceDesc, srv)
 }
 
-func _Broker_Publish_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Broker_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PublishRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(BrokerServer).Publish(ctx, in)
+		return srv.(BrokerServer).Publish(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/broker.Broker/Publish",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(BrokerServer).Publish(ctx, req.(*PublishRequest))
+		return srv.(BrokerServer).Publish(ctx, req.(*PublishRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Broker_Subscribe_Handler(svc interface{}, stream grpc.ServerStream) error {
+func _Broker_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(SubscribeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return svc.(BrokerServer).Subscribe(m, &brokerSubscribeServer{stream})
+	return srv.(BrokerServer).Subscribe(m, &brokerSubscribeServer{stream})
 }
 
 type Broker_SubscribeServer interface {

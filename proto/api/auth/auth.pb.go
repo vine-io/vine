@@ -176,24 +176,24 @@ func (*UnimplementedAuthServer) Verify(ctx context.Context, req *VerifyRequest) 
 	return nil, status.Errorf(codes.Unimplemented, "method Verify not implemented")
 }
 
-func RegisterAuthServer(s *grpc.Server, svc AuthServer) {
-	s.RegisterService(&_Auth_serviceDesc, svc)
+func RegisterAuthServer(s *grpc.Server, srv AuthServer) {
+	s.RegisterService(&_Auth_serviceDesc, srv)
 }
 
-func _Auth_Verify_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Auth_Verify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VerifyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(AuthServer).Verify(ctx, in)
+		return srv.(AuthServer).Verify(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/auth.Auth/Verify",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(AuthServer).Verify(ctx, req.(*VerifyRequest))
+		return srv.(AuthServer).Verify(ctx, req.(*VerifyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

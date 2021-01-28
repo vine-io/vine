@@ -293,42 +293,42 @@ func (*UnimplementedServerServer) Subscribe(ctx context.Context, req *SubscribeR
 	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
 
-func RegisterServerServer(s *grpc.Server, svc ServerServer) {
-	s.RegisterService(&_Server_serviceDesc, svc)
+func RegisterServerServer(s *grpc.Server, srv ServerServer) {
+	s.RegisterService(&_Server_serviceDesc, srv)
 }
 
-func _Server_Handle_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Server_Handle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HandleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(ServerServer).Handle(ctx, in)
+		return srv.(ServerServer).Handle(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/server.Server/Handle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(ServerServer).Handle(ctx, req.(*HandleRequest))
+		return srv.(ServerServer).Handle(ctx, req.(*HandleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Server_Subscribe_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Server_Subscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubscribeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(ServerServer).Subscribe(ctx, in)
+		return srv.(ServerServer).Subscribe(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/server.Server/Subscribe",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(ServerServer).Subscribe(ctx, req.(*SubscribeRequest))
+		return srv.(ServerServer).Subscribe(ctx, req.(*SubscribeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

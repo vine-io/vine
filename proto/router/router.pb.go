@@ -1079,44 +1079,44 @@ type UnimplementedRouterServer struct {
 func (*UnimplementedRouterServer) Lookup(ctx context.Context, req *LookupRequest) (*LookupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Lookup not implemented")
 }
-func (*UnimplementedRouterServer) Watch(req *WatchRequest, svc Router_WatchServer) error {
+func (*UnimplementedRouterServer) Watch(req *WatchRequest, srv Router_WatchServer) error {
 	return status.Errorf(codes.Unimplemented, "method Watch not implemented")
 }
-func (*UnimplementedRouterServer) Advertise(req *Request, svc Router_AdvertiseServer) error {
+func (*UnimplementedRouterServer) Advertise(req *Request, srv Router_AdvertiseServer) error {
 	return status.Errorf(codes.Unimplemented, "method Advertise not implemented")
 }
 func (*UnimplementedRouterServer) Process(ctx context.Context, req *Advert) (*ProcessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Process not implemented")
 }
 
-func RegisterRouterServer(s *grpc.Server, svc RouterServer) {
-	s.RegisterService(&_Router_serviceDesc, svc)
+func RegisterRouterServer(s *grpc.Server, srv RouterServer) {
+	s.RegisterService(&_Router_serviceDesc, srv)
 }
 
-func _Router_Lookup_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Router_Lookup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LookupRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(RouterServer).Lookup(ctx, in)
+		return srv.(RouterServer).Lookup(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/router.Router/Lookup",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(RouterServer).Lookup(ctx, req.(*LookupRequest))
+		return srv.(RouterServer).Lookup(ctx, req.(*LookupRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Router_Watch_Handler(svc interface{}, stream grpc.ServerStream) error {
+func _Router_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(WatchRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return svc.(RouterServer).Watch(m, &routerWatchServer{stream})
+	return srv.(RouterServer).Watch(m, &routerWatchServer{stream})
 }
 
 type Router_WatchServer interface {
@@ -1132,12 +1132,12 @@ func (x *routerWatchServer) Send(m *Event) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Router_Advertise_Handler(svc interface{}, stream grpc.ServerStream) error {
+func _Router_Advertise_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(Request)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return svc.(RouterServer).Advertise(m, &routerAdvertiseServer{stream})
+	return srv.(RouterServer).Advertise(m, &routerAdvertiseServer{stream})
 }
 
 type Router_AdvertiseServer interface {
@@ -1153,20 +1153,20 @@ func (x *routerAdvertiseServer) Send(m *Advert) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _Router_Process_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Router_Process_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Advert)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(RouterServer).Process(ctx, in)
+		return srv.(RouterServer).Process(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/router.Router/Process",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(RouterServer).Process(ctx, req.(*Advert))
+		return srv.(RouterServer).Process(ctx, req.(*Advert))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1292,96 +1292,96 @@ func (*UnimplementedTableServer) Query(ctx context.Context, req *QueryRequest) (
 	return nil, status.Errorf(codes.Unimplemented, "method Query not implemented")
 }
 
-func RegisterTableServer(s *grpc.Server, svc TableServer) {
-	s.RegisterService(&_Table_serviceDesc, svc)
+func RegisterTableServer(s *grpc.Server, srv TableServer) {
+	s.RegisterService(&_Table_serviceDesc, srv)
 }
 
-func _Table_Create_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Table_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Route)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(TableServer).Create(ctx, in)
+		return srv.(TableServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/router.Table/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(TableServer).Create(ctx, req.(*Route))
+		return srv.(TableServer).Create(ctx, req.(*Route))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Table_Delete_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Table_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Route)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(TableServer).Delete(ctx, in)
+		return srv.(TableServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/router.Table/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(TableServer).Delete(ctx, req.(*Route))
+		return srv.(TableServer).Delete(ctx, req.(*Route))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Table_Update_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Table_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Route)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(TableServer).Update(ctx, in)
+		return srv.(TableServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/router.Table/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(TableServer).Update(ctx, req.(*Route))
+		return srv.(TableServer).Update(ctx, req.(*Route))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Table_List_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Table_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(TableServer).List(ctx, in)
+		return srv.(TableServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/router.Table/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(TableServer).List(ctx, req.(*Request))
+		return srv.(TableServer).List(ctx, req.(*Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Table_Query_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Table_Query_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(TableServer).Query(ctx, in)
+		return srv.(TableServer).Query(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/router.Table/Query",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(TableServer).Query(ctx, req.(*QueryRequest))
+		return srv.(TableServer).Query(ctx, req.(*QueryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -302,42 +302,42 @@ func (*UnimplementedCommandServer) Exec(ctx context.Context, req *ExecRequest) (
 	return nil, status.Errorf(codes.Unimplemented, "method Exec not implemented")
 }
 
-func RegisterCommandServer(s *grpc.Server, svc CommandServer) {
-	s.RegisterService(&_Command_serviceDesc, svc)
+func RegisterCommandServer(s *grpc.Server, srv CommandServer) {
+	s.RegisterService(&_Command_serviceDesc, srv)
 }
 
-func _Command_Help_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Command_Help_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HelpRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(CommandServer).Help(ctx, in)
+		return srv.(CommandServer).Help(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/bot.Command/Help",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(CommandServer).Help(ctx, req.(*HelpRequest))
+		return srv.(CommandServer).Help(ctx, req.(*HelpRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Command_Exec_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Command_Exec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ExecRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(CommandServer).Exec(ctx, in)
+		return srv.(CommandServer).Exec(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/bot.Command/Exec",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(CommandServer).Exec(ctx, req.(*ExecRequest))
+		return srv.(CommandServer).Exec(ctx, req.(*ExecRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

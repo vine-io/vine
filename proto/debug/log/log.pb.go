@@ -266,24 +266,24 @@ func (*UnimplementedLogServer) Read(ctx context.Context, req *ReadRequest) (*Rea
 	return nil, status.Errorf(codes.Unimplemented, "method Read not implemented")
 }
 
-func RegisterLogServer(s *grpc.Server, svc LogServer) {
-	s.RegisterService(&_Log_serviceDesc, svc)
+func RegisterLogServer(s *grpc.Server, srv LogServer) {
+	s.RegisterService(&_Log_serviceDesc, srv)
 }
 
-func _Log_Read_Handler(svc interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Log_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return svc.(LogServer).Read(ctx, in)
+		return srv.(LogServer).Read(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
-		Server:     svc,
+		Server:     srv,
 		FullMethod: "/log.Log/Read",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return svc.(LogServer).Read(ctx, req.(*ReadRequest))
+		return srv.(LogServer).Read(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
