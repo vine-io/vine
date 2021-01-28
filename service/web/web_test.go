@@ -23,7 +23,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/web"
 )
@@ -39,11 +39,11 @@ func testFunc() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*250)
 	defer cancel()
 
-	s := service.NewService(
-		service.Name("test"),
-		service.Context(ctx),
-		service.HandleSignal(false),
-		service.Flags(
+	s := vine.NewService(
+		vine.Name("test"),
+		vine.Context(ctx),
+		vine.HandleSignal(false),
+		vine.Flags(
 			&cli.StringFlag{
 				Name: "test.timeout",
 			},

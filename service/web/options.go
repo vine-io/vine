@@ -22,7 +22,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	svc "github.com/lack-io/vine/service"
+	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/service/registry"
 )
 
@@ -51,7 +51,7 @@ type Options struct {
 	Context context.Context
 
 	Registry registry.Registry
-	Service  svc.Service
+	Service  vine.Service
 
 	Secure      bool
 	TLSConfig   *tls.Config
@@ -75,7 +75,7 @@ func newOptions(opts ...Option) Options {
 		RegisterTTL:      DefaultRegisterTTL,
 		RegisterInterval: DefaultRegisterInterval,
 		StaticDir:        DefaultStaticDir,
-		Service:          svc.NewService(),
+		Service:          vine.NewService(),
 		Context:          context.TODO(),
 		Signal:           true,
 	}
@@ -188,7 +188,7 @@ func Server(svc *http.Server) Option {
 }
 
 // VineService sets the vine.Service used internally
-func VineService(s svc.Service) Option {
+func VineService(s vine.Service) Option {
 	return func(o *Options) {
 		o.Service = s
 	}

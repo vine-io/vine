@@ -28,8 +28,8 @@ import (
 
 	"github.com/lack-io/cli"
 
+	svc "github.com/lack-io/vine"
 	regpb "github.com/lack-io/vine/proto/registry"
-	svc "github.com/lack-io/vine/service"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	maddr "github.com/lack-io/vine/util/addr"
