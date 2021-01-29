@@ -27,8 +27,8 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	pbNet "github.com/lack-io/vine/proto/network"
-	pbRtr "github.com/lack-io/vine/proto/router"
+	pbNet "github.com/lack-io/vine/proto/services/network"
+	pbRtr "github.com/lack-io/vine/proto/services/router"
 	"github.com/lack-io/vine/service/client"
 	cmucp "github.com/lack-io/vine/service/client/mucp"
 	rtr "github.com/lack-io/vine/service/client/selector/router"

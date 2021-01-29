@@ -22,7 +22,7 @@ import (
 	"sync"
 
 	regpb "github.com/lack-io/vine/proto/apis/registry"
-	pb "github.com/lack-io/vine/proto/router"
+	pb "github.com/lack-io/vine/proto/services/router"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/registry"

@@ -17,7 +17,7 @@ package service
 import (
 	"time"
 
-	proto "github.com/lack-io/vine/proto/config"
+	proto "github.com/lack-io/vine/proto/services/config"
 	"github.com/lack-io/vine/service/config/source"
 )
 

@@ -19,7 +19,7 @@ import (
 	"context"
 	"time"
 
-	proto "github.com/lack-io/vine/proto/debug"
+	proto "github.com/lack-io/vine/proto/services/debug"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/debug/log"
 	"github.com/lack-io/vine/service/debug/stats"

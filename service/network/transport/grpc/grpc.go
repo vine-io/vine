@@ -23,7 +23,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	pb "github.com/lack-io/vine/proto/transport"
+	pb "github.com/lack-io/vine/proto/services/transport"
 	"github.com/lack-io/vine/service/network/transport"
 	maddr "github.com/lack-io/vine/util/addr"
 	mnet "github.com/lack-io/vine/util/net"

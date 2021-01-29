@@ -23,7 +23,7 @@ import (
 	"log"
 	"os"
 
-	proto "github.com/lack-io/vine/proto/file"
+	proto "github.com/lack-io/vine/proto/services/file"
 	"github.com/lack-io/vine/service/client"
 )
 

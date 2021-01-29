@@ -19,7 +19,7 @@ import (
 	"sync"
 
 	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/debug/log"
+	pb "github.com/lack-io/vine/proto/services/debug/log"
 	"github.com/lack-io/vine/service/debug/log"
 )
 

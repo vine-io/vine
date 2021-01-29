@@ -28,7 +28,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/google/uuid"
 
-	pb "github.com/lack-io/vine/proto/usage"
+	pb "github.com/lack-io/vine/proto/apis/usage"
 	"github.com/lack-io/vine/util/version"
 )
 

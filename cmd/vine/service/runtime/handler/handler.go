@@ -20,7 +20,7 @@ import (
 
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/runtime"
+	pb "github.com/lack-io/vine/proto/services/runtime"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/runtime"
 )

@@ -24,7 +24,7 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
-	pb "github.com/lack-io/vine/proto/router"
+	pb "github.com/lack-io/vine/proto/services/router"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/router"
 	"github.com/lack-io/vine/service/router/handler"

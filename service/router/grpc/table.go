@@ -17,7 +17,7 @@ package grpc
 import (
 	"context"
 
-	pb "github.com/lack-io/vine/proto/router"
+	pb "github.com/lack-io/vine/proto/services/router"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/router"
 )

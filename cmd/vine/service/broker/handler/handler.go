@@ -18,7 +18,7 @@ import (
 	"context"
 
 	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/broker"
+	pb "github.com/lack-io/vine/proto/services/broker"
 	"github.com/lack-io/vine/service/broker"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/namespace"

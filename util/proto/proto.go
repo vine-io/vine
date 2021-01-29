@@ -16,7 +16,7 @@
 package proto
 
 import (
-	pbRtr "github.com/lack-io/vine/proto/router"
+	pbRtr "github.com/lack-io/vine/proto/services/router"
 	"github.com/lack-io/vine/service/router"
 )
 

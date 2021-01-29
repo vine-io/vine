@@ -16,7 +16,7 @@
 package provider
 
 import (
-	dns "github.com/lack-io/vine/proto/network/dns"
+	dns "github.com/lack-io/vine/proto/services/network/dns"
 )
 
 // Provider is an interface for interacting with a DNS provider

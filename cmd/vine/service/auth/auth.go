@@ -28,7 +28,7 @@ import (
 	authHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/auth"
 	rulesHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/rules"
 	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/auth"
+	pb "github.com/lack-io/vine/proto/services/auth"
 	"github.com/lack-io/vine/service/auth"
 	svcAuth "github.com/lack-io/vine/service/auth/grpc"
 	"github.com/lack-io/vine/service/auth/token"

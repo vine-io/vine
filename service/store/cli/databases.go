@@ -21,7 +21,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	storeproto "github.com/lack-io/vine/proto/store"
+	storeproto "github.com/lack-io/vine/proto/services/store"
 	"github.com/lack-io/vine/service/config/cmd"
 )
 

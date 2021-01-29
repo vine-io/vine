@@ -17,7 +17,7 @@ package handler
 import (
 	"errors"
 
-	proto "github.com/lack-io/vine/proto/config"
+	proto "github.com/lack-io/vine/proto/services/config"
 )
 
 type watcher struct {

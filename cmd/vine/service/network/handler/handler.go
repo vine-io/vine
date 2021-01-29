@@ -17,8 +17,8 @@ import (
 	"context"
 
 	"github.com/lack-io/vine/proto/apis/errors"
-	pbNet "github.com/lack-io/vine/proto/network"
-	pbRtr "github.com/lack-io/vine/proto/router"
+	pbNet "github.com/lack-io/vine/proto/services/network"
+	pbRtr "github.com/lack-io/vine/proto/services/router"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network"
 	"github.com/lack-io/vine/service/router"

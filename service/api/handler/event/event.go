@@ -27,7 +27,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/oxtoacart/bpool"
 
-	proto "github.com/lack-io/vine/proto/api"
+	proto "github.com/lack-io/vine/proto/services/api"
 	"github.com/lack-io/vine/service/api/handler"
 	ctx "github.com/lack-io/vine/util/context"
 )

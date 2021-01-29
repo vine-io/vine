@@ -22,8 +22,8 @@ import (
 
 	"github.com/lack-io/vine/proto/apis/errors"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
-	"github.com/lack-io/vine/proto/debug"
-	"github.com/lack-io/vine/proto/debug/stats"
+	"github.com/lack-io/vine/proto/services/debug"
+	"github.com/lack-io/vine/proto/services/debug/stats"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/util/ring"

@@ -21,7 +21,7 @@ import (
 	"sync"
 
 	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/auth"
+	pb "github.com/lack-io/vine/proto/services/auth"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/store"
 	memStore "github.com/lack-io/vine/service/store/memory"

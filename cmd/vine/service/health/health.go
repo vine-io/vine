@@ -24,7 +24,7 @@ import (
 
 	"github.com/lack-io/vine"
 	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
-	proto "github.com/lack-io/vine/proto/debug"
+	proto "github.com/lack-io/vine/proto/services/debug"
 	"github.com/lack-io/vine/service/client"
 	log "github.com/lack-io/vine/service/logger"
 	qcli "github.com/lack-io/vine/util/command/cli"

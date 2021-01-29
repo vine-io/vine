@@ -25,7 +25,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/auth"
+	pb "github.com/lack-io/vine/proto/services/auth"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/auth/token"
 	"github.com/lack-io/vine/service/auth/token/basic"

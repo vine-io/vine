@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	pb "github.com/lack-io/vine/proto/runtime"
+	pb "github.com/lack-io/vine/proto/services/runtime"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/util/namespace"
 )

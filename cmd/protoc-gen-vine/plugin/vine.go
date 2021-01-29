@@ -327,6 +327,8 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 	g.P("Method:", fmt.Sprintf(`[]string{"%s"},`, meth))
 	if v, ok := tags[_body]; ok {
 		g.P("Body:", fmt.Sprintf(`"%s",`, v.Value))
+	} else {
+		g.P("Body:", `"*",`)
 	}
 	if method.Proto.GetServerStreaming() || method.Proto.GetClientStreaming() {
 		g.P("Stream: true,")

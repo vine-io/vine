@@ -21,7 +21,7 @@ import (
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/handler"
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/provider/cloudflare"
-	dns "github.com/lack-io/vine/proto/network/dns"
+	dns "github.com/lack-io/vine/proto/services/network/dns"
 	log "github.com/lack-io/vine/service/logger"
 )
 

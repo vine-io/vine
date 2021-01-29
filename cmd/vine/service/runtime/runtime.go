@@ -24,7 +24,7 @@ import (
 	"github.com/lack-io/vine/cmd/vine/service/runtime/handler"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/manager"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/profile"
-	pb "github.com/lack-io/vine/proto/runtime"
+	pb "github.com/lack-io/vine/proto/services/runtime"
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/runtime"

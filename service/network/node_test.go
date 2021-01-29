@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	pb "github.com/lack-io/vine/proto/network"
+	pb "github.com/lack-io/vine/proto/services/network"
 )
 
 var (

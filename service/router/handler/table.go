@@ -18,7 +18,7 @@ import (
 	"context"
 
 	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/router"
+	pb "github.com/lack-io/vine/proto/services/router"
 	"github.com/lack-io/vine/service/router"
 )
 

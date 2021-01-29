@@ -20,7 +20,7 @@ import (
 
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/broker/handler"
-	pb "github.com/lack-io/vine/proto/broker"
+	pb "github.com/lack-io/vine/proto/services/broker"
 )
 
 var (

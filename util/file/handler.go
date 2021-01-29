@@ -22,7 +22,7 @@ import (
 	"sync"
 
 	"github.com/lack-io/vine/proto/apis/errors"
-	proto "github.com/lack-io/vine/proto/file"
+	proto "github.com/lack-io/vine/proto/services/file"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/server"
 )

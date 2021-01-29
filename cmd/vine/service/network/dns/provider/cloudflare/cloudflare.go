@@ -25,7 +25,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/provider"
-	dns "github.com/lack-io/vine/proto/network/dns"
+	dns "github.com/lack-io/vine/proto/services/network/dns"
 	log "github.com/lack-io/vine/service/logger"
 )
 

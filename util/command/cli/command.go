@@ -32,8 +32,8 @@ import (
 	"github.com/serenize/snaker"
 
 	regpb "github.com/lack-io/vine/proto/apis/registry"
-	proto "github.com/lack-io/vine/proto/debug"
-	dns "github.com/lack-io/vine/proto/network/dns"
+	proto "github.com/lack-io/vine/proto/services/debug"
+	dns "github.com/lack-io/vine/proto/services/network/dns"
 	"github.com/lack-io/vine/service/client"
 	cbytes "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/config/cmd"

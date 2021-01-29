@@ -22,7 +22,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	go_api "github.com/lack-io/vine/proto/api"
+	go_api "github.com/lack-io/vine/proto/services/api"
 )
 
 func TestRequestPayloadFromRequest(t *testing.T) {

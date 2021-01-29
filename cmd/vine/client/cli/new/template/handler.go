@@ -117,7 +117,7 @@ import (
 
 	"{{.Dir}}/client"
 	"github.com/lack-io/vine/proto/apis/errors"
-	"github.com/lack-io/vine/proto/api"
+	"github.com/lack-io/vine/proto/services/api"
 	{{.Alias}} "path/to/service/proto/{{.Alias}}"
 )
 

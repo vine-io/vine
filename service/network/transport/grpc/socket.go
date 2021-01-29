@@ -17,7 +17,7 @@ package grpc
 import (
 	"google.golang.org/grpc"
 
-	pb "github.com/lack-io/vine/proto/transport"
+	pb "github.com/lack-io/vine/proto/services/transport"
 	"github.com/lack-io/vine/service/network/transport"
 )
 
