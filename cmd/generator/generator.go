@@ -521,7 +521,7 @@ func (g *Generator) CommandLineParameters(parameter string) {
 	if pluginList != "" {
 		// Amend the set of plugins.
 		enabled := map[string]bool{
-			"vine": true,
+			g.name: true,
 		}
 		for _, name := range strings.Split(pluginList, "+") {
 			enabled[name] = true
