@@ -65,8 +65,8 @@ type Parser struct {
 // Creates a custom Parser with custom options.
 //
 //  // Standard parser without descriptors
-//  specParser := NewParser(Minute | Hour | Dom | Month | Dow)
-//  sched, err := specParser.Parse("0 0 15 */3 *")
+//  specParser := NewParser(Second | Minute | Hour | Dom | Month | Dow)
+//  sched, err := specParser.Parse("0 0 0 15 */3 *")
 //
 //  // Same as above, just excludes time fields
 //  subsParser := NewParser(Dom | Month | Dow)
@@ -174,7 +174,7 @@ var standardParser = NewParser(
 
 // ParseStandard returns a new crontab schedule representing the given standardSpec
 // (https://en.wikipedia.org/wiki/Cron). It differs from Parse requiring to always
-// pass 5 entries representing: minute, hour, day of month, month and day of week,
+// pass 6 entries representing: second, minute, hour, day of month, month and day of week,
 // in that order. It returns a descriptive error if the spec is not valid.
 //
 // It accepts

@@ -134,6 +134,17 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			expr: "5 * * * *",
+			expected: &SpecCron{
+				Second: 1 << 5,
+				Minute: all(minutes),
+				Hour:   all(hours),
+				Dom:    all(dom),
+				Month:  all(months),
+				Dow:    all(dow),
+			},
+		},
+		{
 			expr:     "@every 5m",
 			expected: ConstantDelayCron{Delay: time.Duration(5) * time.Minute},
 		},
@@ -194,7 +205,7 @@ func TestParse(t *testing.T) {
 			t.Errorf("%s => unexpected error %v", c.expr, err)
 		}
 		if !reflect.DeepEqual(actual, c.expected) {
-			t.Errorf("%s => expected %b, got %b", c.expr, c.expected, actual)
+			t.Errorf("%s => expected %b \ngot %b", c.expr, c.expected, actual)
 		}
 	}
 }
