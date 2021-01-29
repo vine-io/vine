@@ -23,7 +23,7 @@
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/" />
-<meta property="og:updated_time" content="2021-01-25T19:52:09+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-01-28T19:22:52+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="">
 <meta itemprop="description" content="Vine 文档">
 <meta name="twitter:card" content="summary"/>
@@ -919,8 +919,8 @@ go get github.com/lack-io/cmd/vine
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	svc <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>))
-	service <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewRpcService</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>, svc.<span style="color:#50fa7b">Client</span>())
+	srv <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>))
+	service <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewRpcService</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>, srv.<span style="color:#50fa7b">Client</span>())
 
 	rsp, err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">HelloWorld</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.HelloWorldRequest{Name: <span style="color:#f1fa8c">&#34;world&#34;</span>})
 	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
@@ -1017,7 +1017,7 @@ go get github.com/lack-io/cmd/vine
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 January 25, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/85b56d1d116b4367582aa121e3868d009870aac5">modify (85b56d1)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 January 28, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/1a208fe1cacf6df80419d8b7b875be51c5bba807">rebuilding site 2021年 1月28日 星期四 19时22分52秒 CST (1a208fe)</a>
 </div>
 </div>
 

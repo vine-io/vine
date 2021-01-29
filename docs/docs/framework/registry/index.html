@@ -844,7 +844,7 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
 
 	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
-		Name:     <span style="color:#f1fa8c">&#34;go.vine.svc&#34;</span>,
+		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
 		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
 		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
 		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{{
@@ -860,7 +860,7 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Register</span>(s)
 
 	<span style="color:#6272a4">// watch registry
-</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.svc&#34;</span>))
+</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>))
 	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 		<span style="color:#ff79c6">return</span>
 	}
@@ -879,7 +879,7 @@ if (!doNotTrack) {
 
 	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
 	<span style="color:#6272a4">// get service
-</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.svc&#34;</span>)
+</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>)
 	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 		log.<span style="color:#50fa7b">Fatal</span>(err)
 	}
