@@ -26,7 +26,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	verrors "github.com/lack-io/vine/proto/errors"
+	verrors "github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/service/codec"
 	log "github.com/lack-io/vine/service/logger"
 )

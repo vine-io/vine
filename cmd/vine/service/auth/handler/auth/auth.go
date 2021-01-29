@@ -24,8 +24,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/auth"
-	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/auth/token"
 	"github.com/lack-io/vine/service/auth/token/basic"

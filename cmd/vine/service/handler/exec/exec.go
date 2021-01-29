@@ -22,7 +22,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/server"
 )

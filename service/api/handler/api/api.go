@@ -19,7 +19,7 @@ import (
 	"net/http"
 
 	"github.com/lack-io/vine/proto/api"
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	goapi "github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client"

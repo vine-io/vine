@@ -21,7 +21,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/server"

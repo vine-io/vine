@@ -30,16 +30,16 @@ const (
 	apiPkgPath      = "github.com/lack-io/vine/service/api"
 	clientPkgPath   = "github.com/lack-io/vine/service/client"
 	serverPkgPath   = "github.com/lack-io/vine/service/server"
-	registryPkgPath = "github.com/lack-io/vine/proto/registry"
+	registryPkgPath = "github.com/lack-io/vine/proto/apis/registry"
 )
 
 // vine is an implementation of the Go protocol buffer compiler's
 // plugin architecture.  It generates bindings for vine support.
 type vine struct {
-	gen        *generator.Generator
-	security   *LinkComponents
-	schemas    *LinkComponents
-	m          sync.Map
+	gen      *generator.Generator
+	security *LinkComponents
+	schemas  *LinkComponents
+	m        sync.Map
 }
 
 func New() *vine {

@@ -31,9 +31,9 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/serenize/snaker"
 
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	proto "github.com/lack-io/vine/proto/debug"
 	dns "github.com/lack-io/vine/proto/network/dns"
-	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client"
 	cbytes "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/config/cmd"

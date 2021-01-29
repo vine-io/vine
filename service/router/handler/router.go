@@ -19,7 +19,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/router"
 	"github.com/lack-io/vine/service/router"
 )

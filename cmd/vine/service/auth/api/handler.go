@@ -17,7 +17,7 @@ import (
 
 	"github.com/lack-io/vine"
 	pb "github.com/lack-io/vine/proto/api/auth"
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/service/auth"
 )
 

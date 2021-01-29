@@ -19,8 +19,8 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/auth"
-	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/util/namespace"

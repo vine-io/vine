@@ -17,7 +17,7 @@ package server
 import (
 	"context"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 type HandlerOption func(*HandlerOptions)

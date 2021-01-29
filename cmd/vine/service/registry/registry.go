@@ -24,8 +24,8 @@ import (
 	"github.com/lack-io/vine"
 	rcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/registry/handler"
-	regpb "github.com/lack-io/vine/proto/registry"
-	pb "github.com/lack-io/vine/proto/registry/server"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regsvcpb "github.com/lack-io/vine/proto/services/registry"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/helper"
@@ -127,7 +127,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	id := svc.Server().Options().Id
 
 	// register the handler
-	pb.RegisterRegistryHandler(svc.Server(), &handler.Registry{
+	regsvcpb.RegisterRegistryHandler(svc.Server(), &handler.Registry{
 		Id:        id,
 		Publisher: vine.NewEvent(Topic, svc.Client()),
 		Registry:  svc.Options().Registry,

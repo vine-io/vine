@@ -34,8 +34,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/net/http2"
 
-	"github.com/lack-io/vine/proto/errors"
-	regpb "github.com/lack-io/vine/proto/registry"
+	"github.com/lack-io/vine/proto/apis/errors"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/codec/json"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/cache"

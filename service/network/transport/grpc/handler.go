@@ -19,7 +19,7 @@ import (
 
 	"google.golang.org/grpc/peer"
 
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/transport"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network/transport"

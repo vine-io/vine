@@ -17,7 +17,7 @@ package memory
 import (
 	"time"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 func serviceToRecord(s *regpb.Service, ttl time.Duration) *record {

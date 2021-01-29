@@ -19,7 +19,7 @@ import (
 	"sync"
 	"time"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 func init() {

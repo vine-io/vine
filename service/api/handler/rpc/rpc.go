@@ -25,8 +25,8 @@ import (
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/oxtoacart/bpool"
 
-	"github.com/lack-io/vine/proto/errors"
-	regpb "github.com/lack-io/vine/proto/registry"
+	"github.com/lack-io/vine/proto/apis/errors"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client"

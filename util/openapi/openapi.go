@@ -21,7 +21,7 @@ import (
 	json "github.com/json-iterator/go"
 
 	"github.com/lack-io/vine"
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	maddr "github.com/lack-io/vine/util/addr"
 )
 

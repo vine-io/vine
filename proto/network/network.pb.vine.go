@@ -12,7 +12,7 @@ import (
 
 import (
 	context "context"
-	registry "github.com/lack-io/vine/proto/registry"
+	registry "github.com/lack-io/vine/proto/apis/registry"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"

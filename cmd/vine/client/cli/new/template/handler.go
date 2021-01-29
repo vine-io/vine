@@ -116,7 +116,7 @@ import (
 	log "github.com/lack-io/vine/service/logger"
 
 	"{{.Dir}}/client"
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/proto/api"
 	{{.Alias}} "path/to/service/proto/{{.Alias}}"
 )

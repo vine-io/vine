@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/store"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/store"

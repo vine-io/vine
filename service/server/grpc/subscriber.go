@@ -21,8 +21,8 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/lack-io/vine/proto/errors"
-	regpb "github.com/lack-io/vine/proto/registry"
+	"github.com/lack-io/vine/proto/apis/errors"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/broker"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/server"

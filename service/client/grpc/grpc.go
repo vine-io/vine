@@ -29,8 +29,8 @@ import (
 	"google.golang.org/grpc/encoding"
 	gmetadata "google.golang.org/grpc/metadata"
 
-	"github.com/lack-io/vine/proto/errors"
-	regpb "github.com/lack-io/vine/proto/registry"
+	"github.com/lack-io/vine/proto/apis/errors"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"

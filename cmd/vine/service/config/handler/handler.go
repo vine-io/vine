@@ -21,8 +21,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/config"
-	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/client"
 	cr "github.com/lack-io/vine/service/config/reader"
 	jr "github.com/lack-io/vine/service/config/reader/json"

@@ -19,7 +19,7 @@ import (
 	"net/url"
 	"testing"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/client/selector"
 	dnsSelector "github.com/lack-io/vine/service/client/selector/dns"

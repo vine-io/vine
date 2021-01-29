@@ -19,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 func TestMDNS(t *testing.T) {

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package registry;
-option go_package = "github.com/lack-io/vine/proto/registry;registry";
+option go_package = "github.com/lack-io/vine/proto/apis/registry;registry";
 
 // Service represents a vine service
 message Service {

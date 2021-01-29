@@ -20,10 +20,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lack-io/vine/proto/apis/errors"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/proto/debug"
 	"github.com/lack-io/vine/proto/debug/stats"
-	"github.com/lack-io/vine/proto/errors"
-	regpb "github.com/lack-io/vine/proto/registry"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/util/ring"

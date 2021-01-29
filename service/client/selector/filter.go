@@ -15,7 +15,7 @@
 package selector
 
 import (
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 // FilterEndpoint is an endpoint based Select Filter which will

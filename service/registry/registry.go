@@ -17,7 +17,7 @@ package registry
 import (
 	"errors"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 var (

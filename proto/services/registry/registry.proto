@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package server;
-option go_package = "github.com/lack-io/vine/proto/registry/server;server";
+package registry;
+option go_package = "github.com/lack-io/vine/proto/services/registry;registry";
 
-import "github.com/lack-io/vine/proto/registry/registry.proto";
+import "github.com/lack-io/vine/proto/apis/registry/registry.proto";
 
 service Registry {
   rpc GetService(GetRequest) returns (GetResponse) {};

@@ -20,7 +20,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/resolver/vpath"

@@ -19,9 +19,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/proto/errors"
-	regpb "github.com/lack-io/vine/proto/registry"
-	"github.com/lack-io/vine/proto/registry/server"
+	"github.com/lack-io/vine/proto/apis/errors"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regSvc "github.com/lack-io/vine/proto/services/registry"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/grpc"
 	"github.com/lack-io/vine/service/registry"
@@ -39,7 +39,7 @@ type gRPCRegistry struct {
 	// address
 	address []string
 	// client to call registry
-	client server.RegistryService
+	client regSvc.RegistryService
 }
 
 func (s *gRPCRegistry) callOpts() []client.CallOption {
@@ -75,7 +75,7 @@ func (s *gRPCRegistry) Init(opts ...registry.Option) error {
 		cli = grpc.NewClient()
 	}
 
-	s.client = server.NewRegistryService(DefaultService, cli)
+	s.client = regSvc.NewRegistryService(DefaultService, cli)
 
 	return nil
 }
@@ -124,7 +124,7 @@ func (s *gRPCRegistry) GetService(name string, opts ...registry.GetOption) ([]*r
 		options.Context = context.TODO()
 	}
 
-	rsp, err := s.client.GetService(options.Context, &server.GetRequest{Service: name}, s.callOpts()...)
+	rsp, err := s.client.GetService(options.Context, &regSvc.GetRequest{Service: name}, s.callOpts()...)
 
 	if verr, ok := err.(*errors.Error); ok && verr.Code == 404 {
 		return nil, registry.ErrNotFound
@@ -144,7 +144,7 @@ func (s *gRPCRegistry) ListServices(opts ...registry.ListOption) ([]*regpb.Servi
 		options.Context = context.TODO()
 	}
 
-	rsp, err := s.client.ListServices(options.Context, &server.ListRequest{}, s.callOpts()...)
+	rsp, err := s.client.ListServices(options.Context, &regSvc.ListRequest{}, s.callOpts()...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func (s *gRPCRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, er
 		options.Context = context.TODO()
 	}
 
-	stream, err := s.client.Watch(options.Context, &server.WatchRequest{Service: options.Service}, s.callOpts()...)
+	stream, err := s.client.Watch(options.Context, &regSvc.WatchRequest{Service: options.Service}, s.callOpts()...)
 	if err != nil {
 		return nil, err
 	}
@@ -205,6 +205,6 @@ func NewRegistry(opts ...registry.Option) registry.Registry {
 		opts:    options,
 		name:    name,
 		address: addrs,
-		client:  server.NewRegistryService(name, cli),
+		client:  regSvc.NewRegistryService(name, cli),
 	}
 }

@@ -24,7 +24,7 @@ import (
 	"github.com/oxtoacart/bpool"
 
 	"github.com/lack-io/vine/proto/api"
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/client/selector"
 )
 

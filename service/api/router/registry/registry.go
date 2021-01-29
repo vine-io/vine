@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/router"
 	"github.com/lack-io/vine/service/api/router/util"

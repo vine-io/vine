@@ -39,7 +39,7 @@ import (
 	"github.com/lack-io/vine/cmd/vine/client/api/handler"
 	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
 	"github.com/lack-io/vine/plugin"
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	res "github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/server"
 	"github.com/lack-io/vine/service/api/server/acme"

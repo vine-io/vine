@@ -16,7 +16,7 @@ package handler
 import (
 	"context"
 
-	"github.com/lack-io/vine/proto/errors"
+	"github.com/lack-io/vine/proto/apis/errors"
 	pbNet "github.com/lack-io/vine/proto/network"
 	pbRtr "github.com/lack-io/vine/proto/router"
 	log "github.com/lack-io/vine/service/logger"

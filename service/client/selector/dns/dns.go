@@ -20,7 +20,7 @@ import (
 	"net"
 	"strconv"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/client/selector"
 )
 

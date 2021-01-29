@@ -30,7 +30,7 @@ import (
 	"github.com/google/uuid"
 	json "github.com/json-iterator/go"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/mdns"
 )

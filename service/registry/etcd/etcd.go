@@ -30,7 +30,7 @@ import (
 	json "github.com/json-iterator/go"
 	hash "github.com/mitchellh/hashstructure"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
 )

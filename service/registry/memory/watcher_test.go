@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	regpb "github.com/lack-io/vine/proto/registry"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 func TestWatcher(t *testing.T) {

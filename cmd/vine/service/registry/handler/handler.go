@@ -20,9 +20,9 @@ import (
 	"time"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/proto/errors"
-	regpb "github.com/lack-io/vine/proto/registry"
-	pb "github.com/lack-io/vine/proto/registry/server"
+	"github.com/lack-io/vine/proto/apis/errors"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regsvcpb "github.com/lack-io/vine/proto/services/registry"
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
@@ -70,7 +70,7 @@ func (r *Registry) publishEvent(action string, service *regpb.Service) error {
 }
 
 // GetService from the registry with the name requested
-func (r *Registry) GetService(ctx context.Context, req *pb.GetRequest, rsp *pb.GetResponse) error {
+func (r *Registry) GetService(ctx context.Context, req *regsvcpb.GetRequest, rsp *regsvcpb.GetResponse) error {
 	// get the services in the default namespace
 	services, err := r.Registry.GetService(req.Service)
 	if err == registry.ErrNotFound {
@@ -97,7 +97,7 @@ func (r *Registry) GetService(ctx context.Context, req *pb.GetRequest, rsp *pb.G
 }
 
 // Register a service
-func (r *Registry) Register(ctx context.Context, req *regpb.Service, rsp *pb.EmptyResponse) error {
+func (r *Registry) Register(ctx context.Context, req *regpb.Service, rsp *regsvcpb.EmptyResponse) error {
 	var regOpts []registry.RegisterOption
 	if req.Options != nil {
 		ttl := time.Duration(req.Options.Ttl) * time.Second
@@ -116,7 +116,7 @@ func (r *Registry) Register(ctx context.Context, req *regpb.Service, rsp *pb.Emp
 }
 
 // Deregister a service
-func (r *Registry) Deregister(ctx context.Context, req *regpb.Service, rsp *pb.EmptyResponse) error {
+func (r *Registry) Deregister(ctx context.Context, req *regpb.Service, rsp *regsvcpb.EmptyResponse) error {
 	service := withNamespace(*req, namespace.FromContext(ctx))
 	if err := r.Registry.Deregister(service); err != nil {
 		return errors.InternalServerError("go.vine.registry", err.Error())
@@ -129,7 +129,7 @@ func (r *Registry) Deregister(ctx context.Context, req *regpb.Service, rsp *pb.E
 }
 
 // ListServices returns all the services
-func (r *Registry) ListServices(ctx context.Context, req *pb.ListRequest, rsp *pb.ListResponse) error {
+func (r *Registry) ListServices(ctx context.Context, req *regsvcpb.ListRequest, rsp *regsvcpb.ListResponse) error {
 	services, err := r.Registry.ListServices()
 	if err != nil {
 		return errors.InternalServerError("go.vine.registry", err.Error())
@@ -150,7 +150,7 @@ func (r *Registry) ListServices(ctx context.Context, req *pb.ListRequest, rsp *p
 }
 
 // Watch a service for changes
-func (r *Registry) Watch(ctx context.Context, req *pb.WatchRequest, rsp pb.Registry_WatchStream) error {
+func (r *Registry) Watch(ctx context.Context, req *regsvcpb.WatchRequest, rsp regsvcpb.Registry_WatchStream) error {
 	watcher, err := r.Registry.Watch(registry.WatchService(req.Service))
 	if err != nil {
 		return errors.InternalServerError("go.vine.registry", err.Error())

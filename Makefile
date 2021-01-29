@@ -25,6 +25,8 @@ install:
 
 protoc:
 	cd $(GOPATH)/src && \
+	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/registry/registry.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/errors/errors.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/api/api.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/api/auth/auth.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/auth/auth.proto && \
@@ -36,12 +38,10 @@ protoc:
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/debug/log/log.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/debug/stats/stats.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/debug/trace/trace.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/errors/errors.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/file/file.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/network/dns/dns.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/network/network.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/registry/registry.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/registry/server/server.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/registry/registry.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/router/router.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/runtime/runtime.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/server/server.proto && \
@@ -50,9 +50,9 @@ protoc:
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/usage/usage.proto
 
 
-	sed -i "" "s/ref,omitempty/$$\ref,omitempty/g" proto/registry/registry.pb.go
-	sed -i "" "s/applicationJson,omitempty/application\/json,omitempty/g" proto/registry/registry.pb.go
-	sed -i "" "s/applicationXml,omitempty/application\/xml,omitempty/g" proto/registry/registry.pb.go
+	sed -i "" "s/ref,omitempty/$$\ref,omitempty/g" proto/apis/registry/registry.pb.go
+	sed -i "" "s/applicationJson,omitempty/application\/json,omitempty/g" proto/apis/registry/registry.pb.go
+	sed -i "" "s/applicationXml,omitempty/application\/xml,omitempty/g" proto/apis/registry/registry.pb.go
 
 docker:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .

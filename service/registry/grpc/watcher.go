@@ -15,13 +15,13 @@
 package grpc
 
 import (
-	regpb "github.com/lack-io/vine/proto/registry"
-	pb "github.com/lack-io/vine/proto/registry/server"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regsvcpb "github.com/lack-io/vine/proto/services/registry"
 	"github.com/lack-io/vine/service/registry"
 )
 
 type serviceWatcher struct {
-	stream pb.Registry_WatchService
+	stream regsvcpb.Registry_WatchService
 	closed chan bool
 }
 
@@ -54,7 +54,7 @@ func (s *serviceWatcher) Stop() {
 	}
 }
 
-func newWatcher(stream pb.Registry_WatchService) registry.Watcher {
+func newWatcher(stream regsvcpb.Registry_WatchService) registry.Watcher {
 	return &serviceWatcher{
 		stream: stream,
 		closed: make(chan bool),

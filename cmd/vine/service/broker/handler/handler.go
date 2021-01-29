@@ -17,8 +17,8 @@ package handler
 import (
 	"context"
 
+	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/broker"
-	"github.com/lack-io/vine/proto/errors"
 	"github.com/lack-io/vine/service/broker"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/namespace"
