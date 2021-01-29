@@ -254,7 +254,7 @@ func (m *mdnsRegistry) Register(service *regpb.Service, opts ...RegisterOption) 
 		}
 		port, _ := strconv.Atoi(pt)
 
-		log.Debugf("[mdns] registry create new service with ip: %s for: %s", net.ParseIP(host).String(), host)
+		log.Infof("[mdns] registry create new service with ip: %s for: %s", net.ParseIP(host).String(), host)
 
 		// we got here, new node
 		s, err := mdns.NewMDNSService(
