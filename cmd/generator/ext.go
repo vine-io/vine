@@ -106,11 +106,13 @@ func extractFileDescriptor(file *FileDescriptor) {
 		case OptionType:
 		case ServiceType:
 			switch len(parts) {
+			// service comments
 			case 2:
 				index, _ := strconv.Atoi(parts[1])
 				if len(file.tagServices) > index {
 					file.tagServices[index].Comments = parseTagComment(comment)
 				}
+			// service inner method comments
 			case 4:
 				index, _ := strconv.Atoi(parts[1])
 				mIndex, _ := strconv.Atoi(parts[3])
@@ -118,7 +120,7 @@ func extractFileDescriptor(file *FileDescriptor) {
 					file.tagServices[index].Methods[mIndex].Comments = parseTagComment(comment)
 				}
 			case 6:
-				//
+				// do nothing
 			}
 		case MessageType:
 			switch len(parts) {
@@ -136,7 +138,7 @@ func extractFileDescriptor(file *FileDescriptor) {
 					file.messages[index].Fields[fIndex].Comments = parseTagComment(comment)
 				}
 			case 6:
-				//
+				// do nothing
 			}
 		}
 	}
