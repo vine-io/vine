@@ -117,115 +117,127 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
 	g.P("},")
 
 	g.P(`Paths: map[string]*registry.OpenAPIPath{`)
-	for _, meth := range svc.Methods {
-		g.generateMethodOpenAPI(svc, meth)
-	}
+	g.generateMethodOpenAPI(svc, svc.Methods)
 	g.P("},")
 	g.P(`Components: &registry.OpenAPIComponents{`)
 	g.generateComponents(svcName)
 	g.P("},")
 }
 
-func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, method *generator.MethodDescriptor) {
+func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods []*generator.MethodDescriptor) {
 	svcName := svc.Proto.GetName()
-	methodName := method.Proto.GetName()
-	tags := g.extractTags(method.Comments)
-	if len(tags) == 0 {
-		return
-	}
-	var meth string
-	var path string
-	if v, ok := tags[_get]; ok {
-		meth = v.Key
-		path = v.Value
-	} else if v, ok = tags[_post]; ok {
-		meth = v.Key
-		path = v.Value
-	} else if v, ok = tags[_patch]; ok {
-		meth = v.Key
-		path = v.Value
-	} else if v, ok = tags[_put]; ok {
-		meth = v.Key
-		path = v.Value
-	} else if v, ok = tags[_delete]; ok {
-		meth = v.Key
-		path = v.Value
-	} else {
-		return
-	}
 
-	pathParams := g.extractPathParams(path)
-
-	summary, _ := tags[_summary]
-	g.P(fmt.Sprintf(`"%s": &registry.OpenAPIPath{`, path))
-	g.P(fmt.Sprintf(`%s: &registry.OpenAPIPathDocs{`, generator.CamelCase(meth)))
-	g.P(fmt.Sprintf(`Tags: []string{"%s"},`, svcName))
-	if summary != nil {
-		g.P(fmt.Sprintf(`Summary: "%s",`, summary.Value))
-	}
-	desc := extractDesc(method.Comments)
-	if len(desc) == 0 {
-		desc = []string{svcName + " " + methodName}
-	}
-	g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
-	g.P(fmt.Sprintf(`OperationId: "%s", `, svcName+methodName))
-	msg := g.extractMessage(method.Proto.GetInputType())
-	if msg == nil {
-		g.gen.Fail("%s not found", method.Proto.GetInputType())
-		return
-	}
-	mname := g.extractImportMessageName(msg)
-	g.schemas.Push(&Component{
-		Name:    mname,
-		Kind:    Request,
-		Service: svcName,
-		Proto:   msg,
-	})
-
-	if len(pathParams) > 0 || meth == _get {
-		g.P("Parameters: []*registry.PathParameters{")
-		g.generateParameters(svcName, msg, pathParams)
-		g.P("},")
-	}
-	if meth != _get {
-		g.P("RequestBody: &registry.PathRequestBody{")
-		desc := extractDesc(msg.Comments)
-		if len(desc) == 0 {
-			desc = []string{methodName + " " + msg.Proto.GetName()}
+	methodsMap := make(map[string]map[string]*generator.MethodDescriptor, 0)
+	for _, method := range methods {
+		tags := g.extractTags(method.Comments)
+		if len(tags) == 0 {
+			continue
 		}
-		g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
-		g.P("Content: &registry.PathRequestBodyContent{")
-		g.P("ApplicationJson: &registry.ApplicationContent{")
-		g.P("Schema: &registry.Schema{")
-		g.P(fmt.Sprintf(`Ref: "#/components/schemas/%s",`, mname))
-		g.P("},")
-		g.P("},")
-		g.P("},")
+		var meth string
+		var path string
+		if v, ok := tags[_get]; ok {
+			meth = v.Key
+			path = v.Value
+		} else if v, ok = tags[_post]; ok {
+			meth = v.Key
+			path = v.Value
+		} else if v, ok = tags[_patch]; ok {
+			meth = v.Key
+			path = v.Value
+		} else if v, ok = tags[_put]; ok {
+			meth = v.Key
+			path = v.Value
+		} else if v, ok = tags[_delete]; ok {
+			meth = v.Key
+			path = v.Value
+		} else {
+			continue
+		}
+		if _, ok := methodsMap[path]; !ok {
+			methodsMap[path] = make(map[string]*generator.MethodDescriptor, 0)
+		}
+		methodsMap[path][meth] = method
+	}
+
+	for path, methods := range methodsMap {
+		pathParams := g.extractPathParams(path)
+		g.P(fmt.Sprintf(`"%s": &registry.OpenAPIPath{`, path))
+		for meth, method := range methods {
+			methodName := method.Proto.GetName()
+			tags := g.extractTags(method.Comments)
+
+			summary, _ := tags[_summary]
+			g.P(fmt.Sprintf(`%s: &registry.OpenAPIPathDocs{`, generator.CamelCase(meth)))
+			g.P(fmt.Sprintf(`Tags: []string{"%s"},`, svcName))
+			if summary != nil {
+				g.P(fmt.Sprintf(`Summary: "%s",`, summary.Value))
+			}
+			desc := extractDesc(method.Comments)
+			if len(desc) == 0 {
+				desc = []string{svcName + " " + methodName}
+			}
+			g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
+			g.P(fmt.Sprintf(`OperationId: "%s", `, svcName+methodName))
+			msg := g.extractMessage(method.Proto.GetInputType())
+			if msg == nil {
+				g.gen.Fail(method.Proto.GetInputType(), "not found")
+				return
+			}
+			mname := g.extractImportMessageName(msg)
+			g.schemas.Push(&Component{
+				Name:    mname,
+				Kind:    Request,
+				Service: svcName,
+				Proto:   msg,
+			})
+
+			if len(pathParams) > 0 || meth == _get {
+				g.P("Parameters: []*registry.PathParameters{")
+				g.generateParameters(svcName, msg, pathParams, meth)
+				g.P("},")
+			}
+			if meth != _get {
+				g.P("RequestBody: &registry.PathRequestBody{")
+				desc := extractDesc(msg.Comments)
+				if len(desc) == 0 {
+					desc = []string{methodName + " " + msg.Proto.GetName()}
+				}
+				g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
+				g.P("Content: &registry.PathRequestBodyContent{")
+				g.P("ApplicationJson: &registry.ApplicationContent{")
+				g.P("Schema: &registry.Schema{")
+				g.P(fmt.Sprintf(`Ref: "#/components/schemas/%s",`, mname))
+				g.P("},")
+				g.P("},")
+				g.P("},")
+				g.P("},")
+			}
+			msg = g.extractMessage(method.Proto.GetOutputType())
+			if msg == nil {
+				g.gen.Fail(method.Proto.GetOutputType(), "not found")
+				return
+			}
+			mname = g.extractImportMessageName(msg)
+			g.schemas.Push(&Component{
+				Name:    mname,
+				Kind:    Response,
+				Service: svcName,
+				Proto:   msg,
+			})
+			g.P("Responses: map[string]*registry.PathResponse{")
+			g.generateResponse(msg, tags)
+			g.P("},")
+			g.P(`Security: []*registry.PathSecurity{`)
+			g.generateSecurity(tags)
+			g.P("},")
+			g.P("},")
+		}
 		g.P("},")
 	}
-	msg = g.extractMessage(method.Proto.GetOutputType())
-	if msg == nil {
-		g.gen.Fail("%s not found", method.Proto.GetOutputType())
-		return
-	}
-	mname = g.extractImportMessageName(msg)
-	g.schemas.Push(&Component{
-		Name:    mname,
-		Kind:    Response,
-		Service: svcName,
-		Proto:   msg,
-	})
-	g.P("Responses: map[string]*registry.PathResponse{")
-	g.generateResponse(msg, tags)
-	g.P("},")
-	g.P(`Security: []*registry.PathSecurity{`)
-	g.generateSecurity(tags)
-	g.P("},")
-	g.P("},")
-	g.P("},")
 }
 
-func (g *vine) generateParameters(svcName string, msg *generator.MessageDescriptor, paths []string) {
+// generateParameters generate swagger Parameters, if paths length > 0, only generate path Parameters
+func (g *vine) generateParameters(svcName string, msg *generator.MessageDescriptor, paths []string, method string) {
 	if msg == nil {
 		return
 	}
@@ -263,11 +275,22 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 		fields = append(fields, field.Proto.GetJsonName())
 	}
 
-	for _, field := range msg.Fields {
-		for _, f := range fields {
-			if f == field.Proto.GetJsonName() {
-				continue
+	if method != _get {
+		return
+	}
+
+	in := func(arr []string, text string) bool {
+		for _, item := range arr {
+			if text == item {
+				return true
 			}
+		}
+		return false
+	}
+
+	for _, field := range msg.Fields {
+		if in(fields, field.Proto.GetJsonName()) {
+			continue
 		}
 		if field.Proto.IsMessage() || field.Proto.IsEnum() || field.Proto.IsBytes() {
 			g.gen.Fail("invalid field type: ", field.Proto.GetName())
@@ -320,7 +343,7 @@ func (g *vine) generateResponse(msg *generator.MessageDescriptor, tags map[strin
 		part = strings.TrimSpace(part)
 		code, _ := strconv.ParseInt(part, 10, 64)
 		if !(code >= 200 && code <= 599) {
-			g.gen.Fail("invalid result code: %s", part)
+			g.gen.Fail("invalid result code:", part)
 			return
 		}
 		switch code {
@@ -565,7 +588,7 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 		g.P(`AdditionalProperties: &registry.Schema{`)
 		msg := g.extractMessage(field.Proto.GetTypeName())
 		if msg == nil {
-			g.gen.Fail("message<%s> not found", field.Proto.GetTypeName())
+			g.gen.Fail("couldn't found message:", field.Proto.GetTypeName())
 			return
 		}
 		var valueField *generator.FieldDescriptor
@@ -622,7 +645,7 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 		case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 			msg := g.extractMessage(field.Proto.GetTypeName())
 			if msg == nil {
-				g.gen.Fail("message<%s> not found", field.Proto.GetTypeName())
+				g.gen.Fail("couldn't found message: ", field.Proto.GetTypeName())
 				return
 			}
 			mname := g.extractImportMessageName(msg)
@@ -679,7 +702,7 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 		}
 		msg := g.extractMessage(field.Proto.GetTypeName())
 		if msg == nil {
-			g.gen.Fail("message<%s> not found", field.Proto.GetTypeName())
+			g.gen.Fail("couldn't found message:", field.Proto.GetTypeName())
 			return
 		}
 		mname := g.extractImportMessageName(msg)
@@ -713,7 +736,7 @@ func (g *vine) extractMessageField(svcName, fname string, msg *generator.Message
 		case *field.Proto.JsonName == name && index > 0 && field.Proto.IsMessage():
 			submsg := g.extractMessage(field.Proto.GetTypeName())
 			if submsg == nil {
-				g.gen.Fail("message<%s> not found", field.Proto.GetTypeName())
+				g.gen.Fail("couldn't found message:", field.Proto.GetTypeName())
 				return nil
 			}
 			mname := g.extractImportMessageName(submsg)
@@ -726,7 +749,7 @@ func (g *vine) extractMessageField(svcName, fname string, msg *generator.Message
 			return g.extractMessageField(svcName, fname[index+1:], submsg)
 		}
 	}
-	g.gen.Fail("%s not found", fname)
+	g.gen.Fail(fname, "not found")
 	return nil
 }
 
@@ -759,15 +782,18 @@ func (g *vine) extractPathParams(path string) []string {
 		}
 		if c == '}' {
 			if cur+1 >= i {
-				g.gen.Fail("invalid path")
+				g.gen.Fail("invalid path, missing '}' at", path)
 				return nil
 			}
 			paths = append(paths, path[cur+1:i])
 			cur = 0
 		}
+		if c == '/' && cur != 0 {
+			g.gen.Fail("invalid path, get '/' after '}' at", path)
+		}
 	}
 	if cur != 0 {
-		g.gen.Fail("invalid path")
+		g.gen.Fail("invalid path at", path)
 		return nil
 	}
 	return paths

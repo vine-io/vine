@@ -16,13 +16,14 @@
 package rpc
 
 import (
-	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 	"strings"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
+	json "github.com/json-iterator/go"
 	"github.com/oxtoacart/bpool"
 
 	"github.com/lack-io/vine/proto/apis/errors"
@@ -64,6 +65,25 @@ var (
 
 	bufferPool = bpool.NewSizedBufferPool(1024, 8)
 )
+
+type RawMessage json.RawMessage
+
+// MarshalJSON returns m as the JSON encoding of m.
+func (m RawMessage) MarshalJSON() ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	return m, nil
+}
+
+// UnmarshalJSON sets *m to a copy of data.
+func (m *RawMessage) UnmarshalJSON(data []byte) error {
+	if m == nil {
+		return fmt.Errorf("RawMessage: UnmarshalJSON on nil pointer")
+	}
+	*m = append((*m)[0:0], data...)
+	return nil
+}
 
 type rpcHandler struct {
 	opts handler.Options
@@ -190,14 +210,14 @@ func (h *rpcHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// default to trying json
-		var request json.RawMessage
+		var request RawMessage
 		// if the extracted payload isn't empty lets use it
 		if len(br) > 0 {
-			request = json.RawMessage(br)
+			request = br
 		}
 
 		// create request/response
-		var response json.RawMessage
+		var response RawMessage
 
 		req := c.NewRequest(
 			service.Name,
@@ -223,13 +243,13 @@ func (h *rpcHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	writeResponse(w, r, rsp)
 }
 
-func (rh *rpcHandler) String() string {
+func (h *rpcHandler) String() string {
 	return "rpc"
 }
 
 func hasCodec(ct string, codecs []string) bool {
-	for _, codec := range codecs {
-		if ct == codec {
+	for _, c := range codecs {
+		if ct == c {
 			return true
 		}
 	}
@@ -256,7 +276,7 @@ func requestPayload(r *http.Request) ([]byte, error) {
 		if err = c.ReadHeader(&msg, codec.Request); err != nil {
 			return nil, err
 		}
-		var raw json.RawMessage
+		var raw RawMessage
 		if err = c.ReadBody(&raw); err != nil {
 			return nil, err
 		}
@@ -436,7 +456,6 @@ func requestPayload(r *http.Request) ([]byte, error) {
 
 		//fallback to previous unknown behaviour
 		return bodybuf, nil
-
 	}
 
 	return []byte{}, nil
