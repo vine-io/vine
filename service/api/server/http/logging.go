@@ -224,7 +224,11 @@ func writeCombinedLog(params LogFormatterParams) {
 	buf = append(buf, `" "`...)
 	buf = appendQuoted(buf, params.Request.UserAgent())
 	buf = append(buf, '"')
-	logger.Info(string(buf))
+	if params.StatusCode >= 200 && params.StatusCode < 400 {
+		logger.Info(string(buf))
+	} else {
+		logger.Error(string(buf))
+	}
 }
 
 func loggingHandler(h http.Handler) http.Handler {

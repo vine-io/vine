@@ -35,6 +35,7 @@ import (
 	aapi "github.com/lack-io/vine/service/api/handler/api"
 	"github.com/lack-io/vine/service/api/handler/event"
 	ahttp "github.com/lack-io/vine/service/api/handler/http"
+	"github.com/lack-io/vine/service/api/handler/openapi"
 	arpc "github.com/lack-io/vine/service/api/handler/rpc"
 	aweb "github.com/lack-io/vine/service/api/handler/web"
 	"github.com/lack-io/vine/service/api/resolver"
@@ -52,10 +53,9 @@ import (
 	"github.com/lack-io/vine/service/sync/memory"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/namespace"
-	"github.com/lack-io/vine/util/openapi"
 	"github.com/lack-io/vine/util/stats"
 
-	_ "github.com/lack-io/vine/util/openapi/statik"
+	_ "github.com/lack-io/vine/service/api/handler/openapi/statik"
 )
 
 var (

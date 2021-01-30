@@ -18,6 +18,7 @@ build:
 	go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o $(NAME) cmd/vine/main.go
 
 install:
+	go get github.com/rakyll/statik
 	go get github.com/gogo/protobuf
 	go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 	go get github.com/lack-io/vine/cmd/protoc-gen-vine
@@ -54,6 +55,9 @@ protoc:
 	sed -i "" "s/applicationJson,omitempty/application\/json,omitempty/g" proto/apis/registry/registry.pb.go
 	sed -i "" "s/applicationXml,omitempty/application\/xml,omitempty/g" proto/apis/registry/registry.pb.go
 
+openapi:
+	statik -m -f -src third_party/OpenAPI/ -dest service/api/handler/openapi
+
 docker:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
 	docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(IMAGE_NAME):latest
@@ -69,4 +73,4 @@ test: vet
 clean:
 	rm -rf ./vine
 
-.PHONY: build clean vet test docker install protoc
+.PHONY: build clean vet test docker install protoc openapi
