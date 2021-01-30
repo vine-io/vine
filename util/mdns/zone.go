@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -283,7 +283,7 @@ func (m *MDNSService) instanceRecords(q dns.Question) []dns.RR {
 
 	case dns.TypeSRV:
 		// Create the SRV Record
-		svc := &dns.SRV{
+		srv := &dns.SRV{
 			Hdr: dns.RR_Header{
 				Name:   q.Name,
 				Rrtype: dns.TypeSRV,
@@ -295,7 +295,7 @@ func (m *MDNSService) instanceRecords(q dns.Question) []dns.RR {
 			Port:     uint16(m.Port),
 			Target:   m.HostName,
 		}
-		recs := []dns.RR{svc}
+		recs := []dns.RR{srv}
 
 		// Add the A record
 		recs = append(recs, m.instanceRecords(dns.Question{

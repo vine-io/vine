@@ -445,21 +445,10 @@ func (m *mdnsRegistry) ListServices(opts ...ListOption) ([]*regpb.Service, error
 					continue
 				}
 
-				txt, err := decode(e.InfoFields)
-				if err != nil {
-					continue
-				}
-
 				name := strings.TrimSuffix(e.Name, "."+p.Service+"."+p.Domain+".")
 				if !serviceMap[name] {
 					serviceMap[name] = true
-					services = append(services, &regpb.Service{
-						Name:      name,
-						Version:   txt.Version,
-						Metadata:  txt.Metadata,
-						Nodes:     txt.node,
-						Endpoints: txt.Endpoints,
-					})
+					services = append(services, &regpb.Service{Name: name})
 				}
 			case <-p.Context.Done():
 				close(done)
@@ -607,6 +596,7 @@ func (m *mdnsWatcher) Next() (*regpb.Result, error) {
 				Name:      txt.Service,
 				Version:   txt.Version,
 				Endpoints: txt.Endpoints,
+				Metadata:  txt.Metadata,
 			}
 
 			// skip anything without the domain we care about

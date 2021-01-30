@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -103,7 +103,7 @@ func NewServer(config *Config) (*Server, error) {
 	ipv4List, _ := net.ListenUDP("udp4", mdnsWildcardAddrIPv4)
 	ipv6List, _ := net.ListenUDP("udp6", mdnsWildcardAddrIPv6)
 	if ipv4List == nil && ipv6List == nil {
-		return nil, fmt.Errorf("[ERR] mdns: Failed to bind to any udp port")
+		return nil, fmt.Errorf("[ERR] mdns: Failed to bind to any udp port!")
 	}
 
 	if ipv4List == nil {
@@ -371,7 +371,7 @@ func (s *Server) probe() {
 	q.SetQuestion(name, dns.TypePTR)
 	q.RecursionDesired = false
 
-	svc := &dns.SRV{
+	srv := &dns.SRV{
 		Hdr: dns.RR_Header{
 			Name:   name,
 			Rrtype: dns.TypeSRV,
@@ -392,7 +392,7 @@ func (s *Server) probe() {
 		},
 		Txt: sd.TXT,
 	}
-	q.Ns = []dns.RR{svc, txt}
+	q.Ns = []dns.RR{srv, txt}
 
 	randomizer := rand.New(rand.NewSource(time.Now().UnixNano()))
 
