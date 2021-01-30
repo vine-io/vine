@@ -101,6 +101,9 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 				for name, path := range api.Paths {
 					paths[name] = path
 				}
+				if api.Components.SecuritySchemes == nil {
+					continue
+				}
 				for name, schema := range api.Components.Schemas {
 					schemas[name] = schema
 				}
