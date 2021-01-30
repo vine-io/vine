@@ -175,13 +175,17 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	g.P()
 
 	g.P()
-	g.P("// Swagger OpenAPI 3.0 for ", servName, " service")
-	g.P("func New", servName, "OpenAPI () *", registryPkg, ".OpenAPI {")
-	g.P("return &", registryPkg, ".OpenAPI{")
-	g.generateOpenAPI(service)
-	g.P("}")
-	g.P("}")
-	g.P()
+
+	svcTags := g.extractTags(service.Comments)
+	if _, ok := svcTags[_openapi]; ok {
+		g.P("// Swagger OpenAPI 3.0 for ", servName, " service")
+		g.P("func New", servName, "OpenAPI () *", registryPkg, ".OpenAPI {")
+		g.P("return &", registryPkg, ".OpenAPI{")
+		g.generateOpenAPI(service, svcTags)
+		g.P("}")
+		g.P("}")
+		g.P()
+	}
 
 	g.P()
 	g.P("// Client API for ", servName, " service")
@@ -271,7 +275,9 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	for _, method := range service.Methods {
 		g.generateEndpoint(servName, method, true)
 	}
-	g.P("opts = append(opts, server.OpenAPIHandler(New", servName, "OpenAPI()))")
+	if _, ok := svcTags[_openapi]; ok {
+		g.P("opts = append(opts, server.OpenAPIHandler(New", servName, "OpenAPI()))")
+	}
 	g.P("return s.Handle(s.NewHandler(&", servName, "{h}, opts...))")
 	g.P("}")
 	g.P()

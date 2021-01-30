@@ -41,12 +41,8 @@ type Component struct {
 	Proto   *generator.MessageDescriptor
 }
 
-func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor) {
+func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor, svcTags map[string]*Tag) {
 	svcName := svc.Proto.GetName()
-	svcTags := g.extractTags(svc.Comments)
-	if _, ok := svcTags[_openapi]; !ok {
-		return
-	}
 	g.P(`Openapi: "3.0.1",`)
 	g.P("Info: &registry.OpenAPIInfo{")
 	g.P(`Title: "`, svcName, `Service",`)
