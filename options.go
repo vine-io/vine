@@ -121,7 +121,7 @@ func Context(ctx context.Context) Option {
 // handler, should control liveness of the service through the context
 func HandleSignal(b bool) Option {
 	return func(o *Options) {
-		o.Signal = true
+		o.Signal = b
 	}
 }
 
