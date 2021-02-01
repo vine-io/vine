@@ -15,8 +15,6 @@ package plugin
 
 import (
 	"fmt"
-	"path"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -56,13 +54,13 @@ func (g *vine) Name() string {
 // They may vary from the final path component of the import path
 // if the name is used by other packages.
 var (
-	apiPbPkg    string
-	apiPkg      string
-	openApiPkg  string
-	contextPkg  string
-	clientPkg   string
-	serverPkg   string
-	pkgImports  map[generator.GoPackageName]bool
+	apiPbPkg   string
+	apiPkg     string
+	openApiPkg string
+	contextPkg string
+	clientPkg  string
+	serverPkg  string
+	pkgImports map[generator.GoPackageName]bool
 )
 
 // Init initializes the plugin.
@@ -70,12 +68,6 @@ func (g *vine) Init(gen *generator.Generator) {
 	g.gen = gen
 	g.security = NewLinkComponents()
 	g.schemas = NewLinkComponents()
-	contextPkg = generator.RegisterUniquePackageName("context", nil)
-	apiPbPkg = generator.RegisterUniquePackageName("apipb", nil)
-	apiPkg = generator.RegisterUniquePackageName("api", nil)
-	openApiPkg = generator.RegisterUniquePackageName("openapi", nil)
-	clientPkg = generator.RegisterUniquePackageName("client", nil)
-	serverPkg = generator.RegisterUniquePackageName("server", nil)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -98,6 +90,14 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	if len(file.FileDescriptorProto.Service) == 0 {
 		return
 	}
+
+	contextPkg = string(g.gen.AddImport(contextPkgPath))
+	apiPbPkg = string(g.gen.AddImport(apiPbPkgPath))
+	apiPkg = string(g.gen.AddImport(apiPkgPath))
+	openApiPkg = string(g.gen.AddImport(openApiPkgPath))
+	clientPkg = string(g.gen.AddImport(clientPkgPath))
+	serverPkg = string(g.gen.AddImport(serverPkgPath))
+
 	g.P("// Reference imports to suppress errors if they are not otherwise used.")
 	g.P("var _ ", apiPbPkg, ".Endpoint")
 	g.P("var _ ", apiPkg, ".Option")
@@ -117,15 +117,6 @@ func (g *vine) GenerateImports(file *generator.FileDescriptor, imports map[gener
 	if len(file.FileDescriptorProto.Service) == 0 {
 		return
 	}
-	g.P("import (")
-	g.P(contextPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, contextPkgPath)))
-	g.P(apiPbPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPbPkgPath)))
-	g.P(apiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPkgPath)))
-	g.P(openApiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, openApiPkgPath)))
-	g.P(clientPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, clientPkgPath)))
-	g.P(serverPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, serverPkgPath)))
-	g.P(")")
-	g.P()
 
 	// We need to keep track of imported packages to make sure we don't produce
 	// a name collision when generating types.

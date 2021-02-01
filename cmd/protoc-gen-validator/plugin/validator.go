@@ -16,8 +16,6 @@ package plugin
 
 import (
 	"fmt"
-	"path"
-	"strconv"
 	"strings"
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
@@ -112,9 +110,9 @@ var (
 // Init initializes the plugin.
 func (g *validator) Init(gen *generator.Generator) {
 	g.gen = gen
-	isPkg = generator.RegisterUniquePackageName("is", nil)
-	stringsPkg = generator.RegisterUniquePackageName("strings", nil)
-	errorsPkg = generator.RegisterUniquePackageName("errors", nil)
+	//isPkg = generator.RegisterUniquePackageName("is", nil)
+	//stringsPkg = generator.RegisterUniquePackageName("strings", nil)
+	//errorsPkg = generator.RegisterUniquePackageName("errors", nil)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -137,6 +135,11 @@ func (g *validator) Generate(file *generator.FileDescriptor) {
 	if len(file.Comments()) == 0 {
 		return
 	}
+
+	isPkg = string(g.gen.AddImport(isPkgPath))
+	stringsPkg = string(g.gen.AddImport(stringsPkgPath))
+	errorsPkg = string(g.gen.AddImport(errorsPkgPath))
+
 	g.P("// Reference imports to suppress errors if they are not otherwise used.")
 	g.P("var _ ", isPkg, ".Empty")
 	g.P("var _ ", stringsPkg, ".Builder")
@@ -152,12 +155,7 @@ func (g *validator) GenerateImports(file *generator.FileDescriptor, imports map[
 	if len(file.Comments()) == 0 {
 		return
 	}
-	g.P("import (")
-	g.P(isPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, isPkgPath)))
-	g.P(stringsPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, stringsPkgPath)))
-	g.P(errorsPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, errorsPkgPath)))
-	g.P(")")
-	g.P()
+
 	// We need to keep track of imported packages to make sure we don't produce
 	// a name collision when generating types.
 	pkgImports = make(map[generator.GoPackageName]bool)
