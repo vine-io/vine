@@ -23,7 +23,6 @@ import (
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
-	util "github.com/lack-io/vine/util/registry"
 )
 
 // Cache is the registry cache interface
@@ -134,7 +133,7 @@ func (c *cache) get(service string) ([]*regpb.Service, error) {
 	// get cache ttl
 	ttl := c.ttls[service]
 	// make a copy
-	cp := util.Copy(services)
+	cp := services
 
 	// got services && within ttl so return cache
 	if c.isValid(cp, ttl) {
@@ -167,7 +166,7 @@ func (c *cache) get(service string) ([]*regpb.Service, error) {
 
 		// cache results
 		c.Lock()
-		c.set(service, util.Copy(services))
+		c.set(service, services)
 		c.Unlock()
 
 		return services, nil

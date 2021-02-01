@@ -29,7 +29,6 @@ import (
 	"github.com/lack-io/vine/service/api/router/util"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/context/metadata"
-	rutil "github.com/lack-io/vine/util/registry"
 )
 
 type endpoint struct {
@@ -199,8 +198,7 @@ func (r *staticRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 
 	// hack for stream endpoint
 	if ep.apiep.Stream {
-		svcs := rutil.Copy(services)
-		for _, svc := range svcs {
+		for _, svc := range services {
 			if len(svc.Endpoints) == 0 {
 				e := &regpb.Endpoint{}
 				e.Name = strings.Join(epf[1:], ".")
@@ -214,8 +212,6 @@ func (r *staticRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 				e.Metadata["stream"] = "true"
 			}
 		}
-
-		services = svcs
 	}
 
 	svc := &apipb.Service{

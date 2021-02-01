@@ -23,7 +23,7 @@ import (
 
 	"github.com/oxtoacart/bpool"
 
-	api2 "github.com/lack-io/vine/proto/apis/api"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/client/selector"
 )
@@ -33,17 +33,17 @@ var (
 	bufferPool = bpool.NewSizedBufferPool(1024, 8)
 )
 
-func requestToProto(r *http.Request) (*api2.Request, error) {
+func requestToProto(r *http.Request) (*apipb.Request, error) {
 	if err := r.ParseForm(); err != nil {
 		return nil, fmt.Errorf("Error parsing form: %v", err)
 	}
 
-	req := &api2.Request{
+	req := &apipb.Request{
 		Path:   r.URL.Path,
 		Method: r.Method,
-		Header: make(map[string]*api2.Pair),
-		Get:    make(map[string]*api2.Pair),
-		Post:   make(map[string]*api2.Pair),
+		Header: make(map[string]*apipb.Pair),
+		Get:    make(map[string]*apipb.Pair),
+		Post:   make(map[string]*apipb.Pair),
 		Url:    r.URL.String(),
 	}
 
@@ -75,14 +75,14 @@ func requestToProto(r *http.Request) (*api2.Request, error) {
 		}
 
 		// Set the header
-		req.Header["X-Forwarded-For"] = &api2.Pair{
+		req.Header["X-Forwarded-For"] = &apipb.Pair{
 			Key:    "X-Forwarded-For",
 			Values: []string{ip},
 		}
 	}
 
 	// Host is stripped from net/http Headers so let's add it
-	req.Header["Host"] = &api2.Pair{
+	req.Header["Host"] = &apipb.Pair{
 		Key:    "Host",
 		Values: []string{r.Host},
 	}
@@ -91,7 +91,7 @@ func requestToProto(r *http.Request) (*api2.Request, error) {
 	for key, vals := range r.URL.Query() {
 		header, ok := req.Get[key]
 		if !ok {
-			header = &api2.Pair{
+			header = &apipb.Pair{
 				Key: key,
 			}
 			req.Get[key] = header
@@ -103,7 +103,7 @@ func requestToProto(r *http.Request) (*api2.Request, error) {
 	for key, vals := range r.PostForm {
 		header, ok := req.Post[key]
 		if !ok {
-			header = &api2.Pair{
+			header = &apipb.Pair{
 				Key: key,
 			}
 			req.Post[key] = header
@@ -114,7 +114,7 @@ func requestToProto(r *http.Request) (*api2.Request, error) {
 	for key, vals := range r.Header {
 		header, ok := req.Header[key]
 		if !ok {
-			header = &api2.Pair{
+			header = &apipb.Pair{
 				Key: key,
 			}
 			req.Header[key] = header

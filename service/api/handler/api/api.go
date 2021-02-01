@@ -18,7 +18,6 @@ package api
 import (
 	"net/http"
 
-	api2 "github.com/lack-io/vine/proto/apis/api"
 	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/service/api/handler"
@@ -81,7 +80,7 @@ func (a *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// create request and response
 	c := a.opts.Client
 	req := c.NewRequest(service.Name, service.Endpoint.Name, request)
-	rsp := &api2.Response{}
+	rsp := &apipb.Response{}
 
 	// create the context from headers
 	cx := ctx.FromRequest(r)
