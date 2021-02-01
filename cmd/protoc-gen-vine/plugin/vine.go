@@ -94,14 +94,12 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	contextPkg = string(g.gen.AddImport(contextPkgPath))
 	apiPbPkg = string(g.gen.AddImport(apiPbPkgPath))
 	apiPkg = string(g.gen.AddImport(apiPkgPath))
-	openApiPkg = string(g.gen.AddImport(openApiPkgPath))
 	clientPkg = string(g.gen.AddImport(clientPkgPath))
 	serverPkg = string(g.gen.AddImport(serverPkgPath))
 
 	g.P("// Reference imports to suppress errors if they are not otherwise used.")
 	g.P("var _ ", apiPbPkg, ".Endpoint")
 	g.P("var _ ", apiPkg, ".Option")
-	g.P("var _ ", openApiPkg, ".OpenAPI")
 	g.P("var _ ", contextPkg, ".Context")
 	g.P("var _ ", clientPkg, ".Option")
 	g.P("var _ ", serverPkg, ".Option")
@@ -174,6 +172,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 
 	svcTags := g.extractTags(service.Comments)
 	if _, ok := svcTags[_openapi]; ok {
+		openApiPkg = string(g.gen.AddImport(openApiPkgPath))
 		g.P("// Swagger OpenAPI 3.0 for ", servName, " service")
 		g.P("func New", servName, "OpenAPI () *", openApiPkg, ".OpenAPI {")
 		g.P("return &", openApiPkg, ".OpenAPI{")

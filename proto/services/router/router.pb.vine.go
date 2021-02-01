@@ -4,18 +4,14 @@
 package router
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	math "math"
-)
-
-import (
-	context "context"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	openapi "github.com/lack-io/vine/proto/apis/openapi"
-	api "github.com/lack-io/vine/service/api"
+	api "github.com/lack-io/vine/proto/apis/api"
+	api1 "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -30,16 +26,15 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ apipb.Endpoint
-var _ api.Option
-var _ openapi.OpenAPI
+var _ api.Endpoint
+var _ api1.Option
 var _ context.Context
 var _ client.Option
 var _ server.Option
 
 // API Endpoints for Router service
-func NewRouterEndpoints() []*apipb.Endpoint {
-	return []*apipb.Endpoint{}
+func NewRouterEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
 }
 
 // Client API for Router service
@@ -297,8 +292,8 @@ func (h *routerHandler) Process(ctx context.Context, in *Advert, out *ProcessRes
 }
 
 // API Endpoints for Table service
-func NewTableEndpoints() []*apipb.Endpoint {
-	return []*apipb.Endpoint{}
+func NewTableEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
 }
 
 // Client API for Table service

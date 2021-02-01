@@ -52,9 +52,9 @@ protoc:
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/transport/transport.proto
 
 
-	sed -i "" "s/ref,omitempty/$$\ref,omitempty/g" proto/apis/registry/registry.pb.go
-	sed -i "" "s/applicationJson,omitempty/application\/json,omitempty/g" proto/apis/registry/registry.pb.go
-	sed -i "" "s/applicationXml,omitempty/application\/xml,omitempty/g" proto/apis/registry/registry.pb.go
+	sed -i "" "s/ref,omitempty/$$\ref,omitempty/g" proto/apis/openapi/openapi.pb.go
+	sed -i "" "s/applicationJson,omitempty/application\/json,omitempty/g" proto/apis/openapi/openapi.pb.go
+	sed -i "" "s/applicationXml,omitempty/application\/xml,omitempty/g" proto/apis/openapi/openapi.pb.go
 
 openapi:
 	statik -m -f -src third_party/OpenAPI/ -dest service/api/handler/openapi

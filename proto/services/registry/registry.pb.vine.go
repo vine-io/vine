@@ -4,19 +4,15 @@
 package registry
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
+	api "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
-	math "math"
-)
-
-import (
-	context "context"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	openapi "github.com/lack-io/vine/proto/apis/openapi"
-	api "github.com/lack-io/vine/service/api"
+	api1 "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -31,16 +27,15 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ apipb.Endpoint
-var _ api.Option
-var _ openapi.OpenAPI
+var _ api.Endpoint
+var _ api1.Option
 var _ context.Context
 var _ client.Option
 var _ server.Option
 
 // API Endpoints for Registry service
-func NewRegistryEndpoints() []*apipb.Endpoint {
-	return []*apipb.Endpoint{}
+func NewRegistryEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
 }
 
 // Client API for Registry service

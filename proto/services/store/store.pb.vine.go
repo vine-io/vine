@@ -4,18 +4,14 @@
 package store
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	math "math"
-)
-
-import (
-	context "context"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	openapi "github.com/lack-io/vine/proto/apis/openapi"
-	api "github.com/lack-io/vine/service/api"
+	api "github.com/lack-io/vine/proto/apis/api"
+	api1 "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -30,16 +26,15 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ apipb.Endpoint
-var _ api.Option
-var _ openapi.OpenAPI
+var _ api.Endpoint
+var _ api1.Option
 var _ context.Context
 var _ client.Option
 var _ server.Option
 
 // API Endpoints for Store service
-func NewStoreEndpoints() []*apipb.Endpoint {
-	return []*apipb.Endpoint{}
+func NewStoreEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
 }
 
 // Client API for Store service
