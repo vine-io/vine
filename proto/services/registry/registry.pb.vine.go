@@ -6,14 +6,14 @@ package registry
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	registry1 "github.com/lack-io/vine/proto/apis/registry"
+	registry "github.com/lack-io/vine/proto/apis/registry"
 	math "math"
 )
 
 import (
 	context "context"
 	apipb "github.com/lack-io/vine/proto/apis/api"
-	registry "github.com/lack-io/vine/proto/apis/registry"
+	openapi "github.com/lack-io/vine/proto/apis/openapi"
 	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
@@ -33,10 +33,10 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // Reference imports to suppress errors if they are not otherwise used.
 var _ apipb.Endpoint
 var _ api.Option
+var _ openapi.OpenAPI
 var _ context.Context
 var _ client.Option
 var _ server.Option
-var _ registry.OpenAPI
 
 // API Endpoints for Registry service
 func NewRegistryEndpoints() []*apipb.Endpoint {
@@ -46,8 +46,8 @@ func NewRegistryEndpoints() []*apipb.Endpoint {
 // Client API for Registry service
 type RegistryService interface {
 	GetService(ctx context.Context, in *GetRequest, opts ...client.CallOption) (*GetResponse, error)
-	Register(ctx context.Context, in *registry1.Service, opts ...client.CallOption) (*EmptyResponse, error)
-	Deregister(ctx context.Context, in *registry1.Service, opts ...client.CallOption) (*EmptyResponse, error)
+	Register(ctx context.Context, in *registry.Service, opts ...client.CallOption) (*EmptyResponse, error)
+	Deregister(ctx context.Context, in *registry.Service, opts ...client.CallOption) (*EmptyResponse, error)
 	ListServices(ctx context.Context, in *ListRequest, opts ...client.CallOption) (*ListResponse, error)
 	Watch(ctx context.Context, in *WatchRequest, opts ...client.CallOption) (Registry_WatchService, error)
 }
@@ -74,7 +74,7 @@ func (c *registryService) GetService(ctx context.Context, in *GetRequest, opts .
 	return out, nil
 }
 
-func (c *registryService) Register(ctx context.Context, in *registry1.Service, opts ...client.CallOption) (*EmptyResponse, error) {
+func (c *registryService) Register(ctx context.Context, in *registry.Service, opts ...client.CallOption) (*EmptyResponse, error) {
 	req := c.c.NewRequest(c.name, "Registry.Register", in)
 	out := new(EmptyResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -84,7 +84,7 @@ func (c *registryService) Register(ctx context.Context, in *registry1.Service, o
 	return out, nil
 }
 
-func (c *registryService) Deregister(ctx context.Context, in *registry1.Service, opts ...client.CallOption) (*EmptyResponse, error) {
+func (c *registryService) Deregister(ctx context.Context, in *registry.Service, opts ...client.CallOption) (*EmptyResponse, error) {
 	req := c.c.NewRequest(c.name, "Registry.Deregister", in)
 	out := new(EmptyResponse)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -121,7 +121,7 @@ type Registry_WatchService interface {
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Recv() (*registry1.Result, error)
+	Recv() (*registry.Result, error)
 }
 
 type registryServiceWatch struct {
@@ -144,8 +144,8 @@ func (x *registryServiceWatch) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *registryServiceWatch) Recv() (*registry1.Result, error) {
-	m := new(registry1.Result)
+func (x *registryServiceWatch) Recv() (*registry.Result, error) {
+	m := new(registry.Result)
 	err := x.stream.Recv(m)
 	if err != nil {
 		return nil, err
@@ -156,8 +156,8 @@ func (x *registryServiceWatch) Recv() (*registry1.Result, error) {
 // Server API for Registry service
 type RegistryHandler interface {
 	GetService(context.Context, *GetRequest, *GetResponse) error
-	Register(context.Context, *registry1.Service, *EmptyResponse) error
-	Deregister(context.Context, *registry1.Service, *EmptyResponse) error
+	Register(context.Context, *registry.Service, *EmptyResponse) error
+	Deregister(context.Context, *registry.Service, *EmptyResponse) error
 	ListServices(context.Context, *ListRequest, *ListResponse) error
 	Watch(context.Context, *WatchRequest, Registry_WatchStream) error
 }
@@ -165,8 +165,8 @@ type RegistryHandler interface {
 func RegisterRegistryHandler(s server.Server, hdlr RegistryHandler, opts ...server.HandlerOption) error {
 	type registryImpl interface {
 		GetService(ctx context.Context, in *GetRequest, out *GetResponse) error
-		Register(ctx context.Context, in *registry1.Service, out *EmptyResponse) error
-		Deregister(ctx context.Context, in *registry1.Service, out *EmptyResponse) error
+		Register(ctx context.Context, in *registry.Service, out *EmptyResponse) error
+		Deregister(ctx context.Context, in *registry.Service, out *EmptyResponse) error
 		ListServices(ctx context.Context, in *ListRequest, out *ListResponse) error
 		Watch(ctx context.Context, stream server.Stream) error
 	}
@@ -185,11 +185,11 @@ func (h *registryHandler) GetService(ctx context.Context, in *GetRequest, out *G
 	return h.RegistryHandler.GetService(ctx, in, out)
 }
 
-func (h *registryHandler) Register(ctx context.Context, in *registry1.Service, out *EmptyResponse) error {
+func (h *registryHandler) Register(ctx context.Context, in *registry.Service, out *EmptyResponse) error {
 	return h.RegistryHandler.Register(ctx, in, out)
 }
 
-func (h *registryHandler) Deregister(ctx context.Context, in *registry1.Service, out *EmptyResponse) error {
+func (h *registryHandler) Deregister(ctx context.Context, in *registry.Service, out *EmptyResponse) error {
 	return h.RegistryHandler.Deregister(ctx, in, out)
 }
 
@@ -210,7 +210,7 @@ type Registry_WatchStream interface {
 	SendMsg(interface{}) error
 	RecvMsg(interface{}) error
 	Close() error
-	Send(*registry1.Result) error
+	Send(*registry.Result) error
 }
 
 type registryWatchStream struct {
@@ -233,6 +233,6 @@ func (x *registryWatchStream) RecvMsg(m interface{}) error {
 	return x.stream.Recv(m)
 }
 
-func (x *registryWatchStream) Send(m *registry1.Result) error {
+func (x *registryWatchStream) Send(m *registry.Result) error {
 	return x.stream.Send(m)
 }

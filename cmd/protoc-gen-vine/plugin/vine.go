@@ -26,12 +26,12 @@ import (
 // Paths for packages used by code generated in this file,
 // relative to the import_prefix of the generator.Generator.
 const (
-	contextPkgPath  = "context"
-	apiPbPkgPath    = "github.com/lack-io/vine/proto/apis/api"
-	apiPkgPath    = "github.com/lack-io/vine/service/api"
-	clientPkgPath   = "github.com/lack-io/vine/service/client"
-	serverPkgPath   = "github.com/lack-io/vine/service/server"
-	registryPkgPath = "github.com/lack-io/vine/proto/apis/registry"
+	contextPkgPath = "context"
+	apiPbPkgPath   = "github.com/lack-io/vine/proto/apis/api"
+	openApiPkgPath = "github.com/lack-io/vine/proto/apis/openapi"
+	apiPkgPath     = "github.com/lack-io/vine/service/api"
+	clientPkgPath  = "github.com/lack-io/vine/service/client"
+	serverPkgPath  = "github.com/lack-io/vine/service/server"
 )
 
 // vine is an implementation of the Go protocol buffer compiler's
@@ -57,11 +57,11 @@ func (g *vine) Name() string {
 // if the name is used by other packages.
 var (
 	apiPbPkg    string
-	apiPkg    string
+	apiPkg      string
+	openApiPkg  string
 	contextPkg  string
 	clientPkg   string
 	serverPkg   string
-	registryPkg string
 	pkgImports  map[generator.GoPackageName]bool
 )
 
@@ -73,9 +73,9 @@ func (g *vine) Init(gen *generator.Generator) {
 	contextPkg = generator.RegisterUniquePackageName("context", nil)
 	apiPbPkg = generator.RegisterUniquePackageName("apipb", nil)
 	apiPkg = generator.RegisterUniquePackageName("api", nil)
+	openApiPkg = generator.RegisterUniquePackageName("openapi", nil)
 	clientPkg = generator.RegisterUniquePackageName("client", nil)
 	serverPkg = generator.RegisterUniquePackageName("server", nil)
-	registryPkg = generator.RegisterUniquePackageName("registry", nil)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -101,10 +101,10 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	g.P("// Reference imports to suppress errors if they are not otherwise used.")
 	g.P("var _ ", apiPbPkg, ".Endpoint")
 	g.P("var _ ", apiPkg, ".Option")
+	g.P("var _ ", openApiPkg, ".OpenAPI")
 	g.P("var _ ", contextPkg, ".Context")
 	g.P("var _ ", clientPkg, ".Option")
 	g.P("var _ ", serverPkg, ".Option")
-	g.P("var _ ", registryPkg, ".OpenAPI")
 	g.P()
 
 	for i, service := range file.TagServices() {
@@ -121,9 +121,9 @@ func (g *vine) GenerateImports(file *generator.FileDescriptor, imports map[gener
 	g.P(contextPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, contextPkgPath)))
 	g.P(apiPbPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPbPkgPath)))
 	g.P(apiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPkgPath)))
+	g.P(openApiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, openApiPkgPath)))
 	g.P(clientPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, clientPkgPath)))
 	g.P(serverPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, serverPkgPath)))
-	g.P(registryPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, registryPkgPath)))
 	g.P(")")
 	g.P()
 
@@ -184,8 +184,8 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	svcTags := g.extractTags(service.Comments)
 	if _, ok := svcTags[_openapi]; ok {
 		g.P("// Swagger OpenAPI 3.0 for ", servName, " service")
-		g.P("func New", servName, "OpenAPI () *", registryPkg, ".OpenAPI {")
-		g.P("return &", registryPkg, ".OpenAPI{")
+		g.P("func New", servName, "OpenAPI () *", openApiPkg, ".OpenAPI {")
+		g.P("return &", openApiPkg, ".OpenAPI{")
 		g.generateOpenAPI(service, svcTags)
 		g.P("}")
 		g.P("}")

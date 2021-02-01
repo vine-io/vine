@@ -26,6 +26,7 @@ import (
 	"sync"
 	"time"
 
+	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/codec"
@@ -639,7 +640,7 @@ func (s *rpcServer) Register() error {
 	})
 
 	endpoints := make([]*regpb.Endpoint, 0, len(handlerList)+len(subscriberList))
-	apis := make([]*regpb.OpenAPI, 0, len(handlerList))
+	apis := make([]*openapipb.OpenAPI, 0, len(handlerList))
 
 	for _, h := range handlerList {
 		endpoints = append(endpoints, s.handlers[h].Endpoints()...)

@@ -22,6 +22,7 @@ import (
 
 	"github.com/google/uuid"
 
+	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
@@ -44,7 +45,7 @@ type record struct {
 	Metadata  map[string]string
 	Nodes     map[string]*node
 	Endpoints []*regpb.Endpoint
-	Apis      []*regpb.OpenAPI
+	Apis      []*openapipb.OpenAPI
 }
 
 type Registry struct {

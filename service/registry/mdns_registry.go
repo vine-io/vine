@@ -30,6 +30,7 @@ import (
 	"github.com/google/uuid"
 	json "github.com/json-iterator/go"
 
+	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/mdns"
@@ -46,7 +47,7 @@ type mdnsTxt struct {
 	node      []*regpb.Node
 	Endpoints []*regpb.Endpoint
 	Metadata  map[string]string
-	Apis      []*regpb.OpenAPI
+	Apis      []*openapipb.OpenAPI
 }
 
 type mdnsEntry struct {

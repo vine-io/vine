@@ -44,7 +44,7 @@ type Component struct {
 func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor, svcTags map[string]*Tag) {
 	svcName := svc.Proto.GetName()
 	g.P(`Openapi: "3.0.1",`)
-	g.P("Info: &registry.OpenAPIInfo{")
+	g.P("Info: &openapi.OpenAPIInfo{")
 	g.P(`Title: "`, svcName, `Service",`)
 	desc := extractDesc(svc.Comments)
 	if len(desc) == 0 {
@@ -57,7 +57,7 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor, svcTags map[str
 	}
 	contactName, ok := svcTags[_contactName]
 	if ok {
-		g.P("Contact: &registry.OpenAPIContact{")
+		g.P("Contact: &openapi.OpenAPIContact{")
 		g.P(fmt.Sprintf(`Name: "%s",`, contactName.Value))
 		if contactEmail, ok := svcTags[_contactEmail]; ok {
 			g.P(fmt.Sprintf(`Email: "%s",`, contactEmail.Value))
@@ -68,7 +68,7 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor, svcTags map[str
 	}
 	licenseName, ok := svcTags[_licenseName]
 	if ok {
-		g.P("License: &registry.OpenAPILicense{")
+		g.P("License: &openapi.OpenAPILicense{")
 		g.P(fmt.Sprintf(`Name: "%s",`, licenseName.Value))
 		if licenseUrl, ok := svcTags[_licenseUrl]; ok {
 			g.P(fmt.Sprintf(`Url: "%s",`, licenseUrl.Value))
@@ -85,7 +85,7 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor, svcTags map[str
 	g.P("},")
 	externalDocDesc, extOk := svcTags[_externalDocDesc]
 	if extOk {
-		g.P("ExternalDocs: &registry.OpenAPIExternalDocs{")
+		g.P("ExternalDocs: &openapi.OpenAPIExternalDocs{")
 		g.P(fmt.Sprintf(`Description: "%s",`, externalDocDesc.Value))
 		if externalDocUrl, ok := svcTags[_externalDocUrl]; ok {
 			g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
@@ -94,13 +94,13 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor, svcTags map[str
 		}
 		g.P("},")
 	}
-	g.P("Servers: []*registry.OpenAPIServer{},")
-	g.P("Tags: []*registry.OpenAPITag{")
-	g.P("&registry.OpenAPITag{")
+	g.P("Servers: []*openapi.OpenAPIServer{},")
+	g.P("Tags: []*openapi.OpenAPITag{")
+	g.P("&openapi.OpenAPITag{")
 	g.P(fmt.Sprintf(`Name: "%s",`, svcName))
 	g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
 	if extOk {
-		g.P("ExternalDocs: &registry.OpenAPIExternalDocs{")
+		g.P("ExternalDocs: &openapi.OpenAPIExternalDocs{")
 		g.P(fmt.Sprintf(`Description: "%s",`, externalDocDesc.Value))
 		if externalDocUrl, ok := svcTags[_externalDocUrl]; ok {
 			g.P(fmt.Sprintf(`Url: "%s",`, externalDocUrl.Value))
@@ -112,10 +112,10 @@ func (g *vine) generateOpenAPI(svc *generator.ServiceDescriptor, svcTags map[str
 	g.P("},")
 	g.P("},")
 
-	g.P(`Paths: map[string]*registry.OpenAPIPath{`)
+	g.P(`Paths: map[string]*openapi.OpenAPIPath{`)
 	g.generateMethodOpenAPI(svc, svc.Methods)
 	g.P("},")
-	g.P(`Components: &registry.OpenAPIComponents{`)
+	g.P(`Components: &openapi.OpenAPIComponents{`)
 	g.generateComponents(svcName)
 	g.P("},")
 }
@@ -157,13 +157,13 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods [
 
 	for path, methods := range methodsMap {
 		pathParams := g.extractPathParams(path)
-		g.P(fmt.Sprintf(`"%s": &registry.OpenAPIPath{`, path))
+		g.P(fmt.Sprintf(`"%s": &openapi.OpenAPIPath{`, path))
 		for meth, method := range methods {
 			methodName := method.Proto.GetName()
 			tags := g.extractTags(method.Comments)
 
 			summary, _ := tags[_summary]
-			g.P(fmt.Sprintf(`%s: &registry.OpenAPIPathDocs{`, generator.CamelCase(meth)))
+			g.P(fmt.Sprintf(`%s: &openapi.OpenAPIPathDocs{`, generator.CamelCase(meth)))
 			g.P(fmt.Sprintf(`Tags: []string{"%s"},`, svcName))
 			if summary != nil {
 				g.P(fmt.Sprintf(`Summary: "%s",`, summary.Value))
@@ -188,20 +188,20 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods [
 			})
 
 			if len(pathParams) > 0 || meth == _get {
-				g.P("Parameters: []*registry.PathParameters{")
+				g.P("Parameters: []*openapi.PathParameters{")
 				g.generateParameters(svcName, msg, pathParams, meth)
 				g.P("},")
 			}
 			if meth != _get {
-				g.P("RequestBody: &registry.PathRequestBody{")
+				g.P("RequestBody: &openapi.PathRequestBody{")
 				desc := extractDesc(msg.Comments)
 				if len(desc) == 0 {
 					desc = []string{methodName + " " + msg.Proto.GetName()}
 				}
 				g.P(fmt.Sprintf(`Description: "%s",`, strings.Join(desc, " ")))
-				g.P("Content: &registry.PathRequestBodyContent{")
-				g.P("ApplicationJson: &registry.ApplicationContent{")
-				g.P("Schema: &registry.Schema{")
+				g.P("Content: &openapi.PathRequestBodyContent{")
+				g.P("ApplicationJson: &openapi.ApplicationContent{")
+				g.P("Schema: &openapi.Schema{")
 				g.P(fmt.Sprintf(`Ref: "#/components/schemas/%s",`, mname))
 				g.P("},")
 				g.P("},")
@@ -220,10 +220,10 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods [
 				Service: svcName,
 				Proto:   msg,
 			})
-			g.P("Responses: map[string]*registry.PathResponse{")
+			g.P("Responses: map[string]*openapi.PathResponse{")
 			g.generateResponse(msg, tags)
 			g.P("},")
-			g.P(`Security: []*registry.PathSecurity{`)
+			g.P(`Security: []*openapi.PathSecurity{`)
 			g.generateSecurity(tags)
 			g.P("},")
 			g.P("},")
@@ -240,7 +240,7 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 
 	generateField := func(g *vine, field *generator.FieldDescriptor, in string) {
 		tags := g.extractTags(field.Comments)
-		g.gen.P("&registry.PathParameters{")
+		g.gen.P("&openapi.PathParameters{")
 		g.P(fmt.Sprintf(`Name: "%s",`, field.Proto.GetJsonName()))
 		g.P(fmt.Sprintf(`In: "%s",`, in))
 		desc := extractDesc(field.Comments)
@@ -257,7 +257,7 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 		}
 		g.P(`Style: "form",`)
 		g.P("Explode: true,")
-		g.P("Schema: &registry.Schema{")
+		g.P("Schema: &openapi.Schema{")
 		fieldTags := g.extractTags(field.Comments)
 		g.generateSchema(svcName, field, fieldTags, false)
 		g.P("},")
@@ -298,14 +298,14 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 
 func (g *vine) generateResponse(msg *generator.MessageDescriptor, tags map[string]*Tag) {
 	printer := func(code int32, desc, schema string) {
-		g.P(fmt.Sprintf(`"%d": &registry.PathResponse{`, code))
+		g.P(fmt.Sprintf(`"%d": &openapi.PathResponse{`, code))
 		g.P(fmt.Sprintf(`Description: "%s",`, desc))
-		g.P(`Content: &registry.PathRequestBodyContent{`)
-		g.P(`ApplicationJson: &registry.ApplicationContent{`)
+		g.P(`Content: &openapi.PathRequestBodyContent{`)
+		g.P(`ApplicationJson: &openapi.ApplicationContent{`)
 		if code == 200 {
-			g.P(fmt.Sprintf(`Schema: &registry.Schema{Ref: "#/components/schemas/%s"},`, schema))
+			g.P(fmt.Sprintf(`Schema: &openapi.Schema{Ref: "#/components/schemas/%s"},`, schema))
 		} else {
-			g.P(fmt.Sprintf(`Schema: &registry.Schema{Ref: "#/components/schemas/%s"},`, schema))
+			g.P(fmt.Sprintf(`Schema: &openapi.Schema{Ref: "#/components/schemas/%s"},`, schema))
 		}
 		g.P("},")
 		g.P("},")
@@ -377,7 +377,7 @@ func (g *vine) generateSecurity(tags map[string]*Tag) {
 		return
 	}
 
-	g.P(`&registry.PathSecurity{`)
+	g.P(`&openapi.PathSecurity{`)
 	parts := strings.Split(t.Value, ",")
 	for _, p := range parts {
 		cp := &Component{Kind: Auth}
@@ -402,15 +402,15 @@ func (g *vine) generateSecurity(tags map[string]*Tag) {
 }
 
 func (g *vine) generateComponents(svcName string) {
-	g.P(`SecuritySchemes: &registry.SecuritySchemes{`)
+	g.P(`SecuritySchemes: &openapi.SecuritySchemes{`)
 	g.security.Range(func(c *Component) {
 		switch c.Name {
 		case "Bearer":
-			g.P(`Bearer: &registry.BearerSecurity{Type: "http", Scheme: "bearer"},`)
+			g.P(`Bearer: &openapi.BearerSecurity{Type: "http", Scheme: "bearer"},`)
 		case "ApiKeys":
-			g.P(`ApiKeys: &registry.APIKeysSecurity{Type: "apiKey", In: "header", Name: "X-API-Key"},`)
+			g.P(`ApiKeys: &openapi.APIKeysSecurity{Type: "apiKey", In: "header", Name: "X-API-Key"},`)
 		case "Basic":
-			g.P(`Basic: &registry.BasicSecurity{Type: "http", Scheme: "basic"},`)
+			g.P(`Basic: &openapi.BasicSecurity{Type: "http", Scheme: "basic"},`)
 		}
 	})
 	g.P("},")
@@ -418,47 +418,47 @@ func (g *vine) generateComponents(svcName string) {
 	fn := func(schemas *LinkComponents) {
 		schemas.Range(func(c *Component) {
 			if c.Name == "errors.VineError" {
-				g.P(`"errors.VineError": &registry.Model{
+				g.P(`"errors.VineError": &openapi.Model{
 					Type: "object",
-					Properties: map[string]*registry.Schema{
-						"id":       &registry.Schema{Type: "string", Description: "the name from component"},
-						"code":     &registry.Schema{Type: "integer", Format: "int32", Description: "the code from http"},
-						"detail":   &registry.Schema{Type: "string", Description: "the detail message for error"},
-						"status":   &registry.Schema{Type: "string", Description: "a text for the HTTP status code"},
-						"position": &registry.Schema{Type: "string", Description: "the code position for error"},
-						"child":    &registry.Schema{Ref: "#/components/schemas/errors.Child"},
-						"stacks":   &registry.Schema{Type: "array", Description: "external message", Items: &registry.Schema{Ref: "#/components/schemas/errors.Stack"}},
+					Properties: map[string]*openapi.Schema{
+						"id":       &openapi.Schema{Type: "string", Description: "the name from component"},
+						"code":     &openapi.Schema{Type: "integer", Format: "int32", Description: "the code from http"},
+						"detail":   &openapi.Schema{Type: "string", Description: "the detail message for error"},
+						"status":   &openapi.Schema{Type: "string", Description: "a text for the HTTP status code"},
+						"position": &openapi.Schema{Type: "string", Description: "the code position for error"},
+						"child":    &openapi.Schema{Ref: "#/components/schemas/errors.Child"},
+						"stacks":   &openapi.Schema{Type: "array", Description: "external message", Items: &openapi.Schema{Ref: "#/components/schemas/errors.Stack"}},
 					},
 				},
-				"errors.Child": &registry.Model{
+				"errors.Child": &openapi.Model{
 					Type: "object",
-					Properties: map[string]*registry.Schema{
-						"code":   &registry.Schema{Type: "integer", Description: "context status code", Format: "int32"},
-						"detail": &registry.Schema{Type: "string", Description: "context error message"},
+					Properties: map[string]*openapi.Schema{
+						"code":   &openapi.Schema{Type: "integer", Description: "context status code", Format: "int32"},
+						"detail": &openapi.Schema{Type: "string", Description: "context error message"},
 					},
 				},
-				"errors.Stack": &registry.Model{
+				"errors.Stack": &openapi.Model{
 					Type: "object",
-					Properties: map[string]*registry.Schema{
-						"code":     &registry.Schema{Type: "integer", Format: "int32", Description: "more status code"},
-						"detail":   &registry.Schema{Type: "string", Description: "more message"},
-						"position": &registry.Schema{Type: "string", Description: "the position for more message"},
+					Properties: map[string]*openapi.Schema{
+						"code":     &openapi.Schema{Type: "integer", Format: "int32", Description: "more status code"},
+						"detail":   &openapi.Schema{Type: "string", Description: "more message"},
+						"position": &openapi.Schema{Type: "string", Description: "the position for more message"},
 					},
 				},`)
 				return
 			}
 			switch c.Kind {
 			case Request:
-				g.P(fmt.Sprintf(`"%s": &registry.Model{`, c.Name))
+				g.P(fmt.Sprintf(`"%s": &openapi.Model{`, c.Name))
 				g.P(`Type: "object",`)
-				g.P(`Properties: map[string]*registry.Schema{`)
+				g.P(`Properties: map[string]*openapi.Schema{`)
 				requirements := []string{}
 				for _, field := range c.Proto.Fields {
 					tags := g.extractTags(field.Comments)
 					if _, ok := tags[_required]; ok {
 						requirements = append(requirements, `"`+field.Proto.GetJsonName()+`"`)
 					}
-					g.P(fmt.Sprintf(`"%s": &registry.Schema{`, field.Proto.GetJsonName()))
+					g.P(fmt.Sprintf(`"%s": &openapi.Schema{`, field.Proto.GetJsonName()))
 					g.generateSchema(svcName, field, tags, false)
 					g.P("},")
 				}
@@ -468,12 +468,12 @@ func (g *vine) generateComponents(svcName string) {
 				}
 				g.P("},")
 			case Response:
-				g.P(fmt.Sprintf(`"%s": &registry.Model{`, c.Name))
+				g.P(fmt.Sprintf(`"%s": &openapi.Model{`, c.Name))
 				g.P(`Type: "object",`)
-				g.P(`Properties: map[string]*registry.Schema{`)
+				g.P(`Properties: map[string]*openapi.Schema{`)
 				for _, field := range c.Proto.Fields {
 					tags := g.extractTags(field.Comments)
-					g.P(fmt.Sprintf(`"%s": &registry.Schema{`, field.Proto.GetJsonName()))
+					g.P(fmt.Sprintf(`"%s": &openapi.Schema{`, field.Proto.GetJsonName()))
 					g.generateSchema(svcName, field, tags, false)
 					g.P("},")
 				}
@@ -485,7 +485,7 @@ func (g *vine) generateComponents(svcName string) {
 		})
 	}
 
-	g.P(`Schemas: map[string]*registry.Model{`)
+	g.P(`Schemas: map[string]*openapi.Model{`)
 	fn(g.schemas)
 	g.P("},")
 }
@@ -581,7 +581,7 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 			}
 		}
 		// g.P(`Type: "object",`)
-		g.P(`AdditionalProperties: &registry.Schema{`)
+		g.P(`AdditionalProperties: &openapi.Schema{`)
 		msg := g.extractMessage(field.Proto.GetTypeName())
 		if msg == nil {
 			g.gen.Fail("couldn't found message:", field.Proto.GetTypeName())
@@ -637,7 +637,7 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 			descriptor.FieldDescriptorProto_TYPE_FIXED64,
 			descriptor.FieldDescriptorProto_TYPE_FIXED32,
 			descriptor.FieldDescriptorProto_TYPE_STRING:
-			g.P(`Items: &registry.Schema{Type: "integer"},`)
+			g.P(`Items: &openapi.Schema{Type: "integer"},`)
 		case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 			msg := g.extractMessage(field.Proto.GetTypeName())
 			if msg == nil {
@@ -651,9 +651,9 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 				Service: svcName,
 				Proto:   msg,
 			})
-			g.P(fmt.Sprintf(`Items: &registry.Schema{Ref: "#/components/schemas/%s"},`, mname))
+			g.P(fmt.Sprintf(`Items: &openapi.Schema{Ref: "#/components/schemas/%s"},`, mname))
 		case descriptor.FieldDescriptorProto_TYPE_BOOL:
-			g.P(`Items: &registry.Schema{Type: "boolean"},`)
+			g.P(`Items: &openapi.Schema{Type: "boolean"},`)
 		}
 		return
 	}

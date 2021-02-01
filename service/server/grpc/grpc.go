@@ -38,6 +38,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/lack-io/vine/proto/apis/errors"
+	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/broker"
 	log "github.com/lack-io/vine/service/logger"
@@ -684,7 +685,7 @@ func (g *grpcServer) Register() error {
 	})
 
 	endpoints := make([]*regpb.Endpoint, 0, len(handlerList)+len(subscriberList))
-	apis := make([]*regpb.OpenAPI, 0, len(handlerList))
+	apis := make([]*openapipb.OpenAPI, 0, len(handlerList))
 	for _, h := range handlerList {
 		endpoints = append(endpoints, g.handlers[h].Endpoints()...)
 		apis = append(apis, g.handlers[h].Options().OpenAPI)

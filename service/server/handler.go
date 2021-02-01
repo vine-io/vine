@@ -17,7 +17,7 @@ package server
 import (
 	"context"
 
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 )
 
 type HandlerOption func(*HandlerOptions)
@@ -25,7 +25,7 @@ type HandlerOption func(*HandlerOptions)
 type HandlerOptions struct {
 	Internal bool
 	Metadata map[string]map[string]string
-	OpenAPI  *regpb.OpenAPI
+	OpenAPI  *openapipb.OpenAPI
 }
 
 type SubscriberOption func(*SubscriberOptions)
@@ -49,7 +49,7 @@ func EndpointMetadata(name string, md map[string]string) HandlerOption {
 
 // OpenAPIHandler is a Handler option that allows swagger openapi to be added to
 // individual endpoints.
-func OpenAPIHandler(openAPI *regpb.OpenAPI) HandlerOption {
+func OpenAPIHandler(openAPI *openapipb.OpenAPI) HandlerOption {
 	return func(o *HandlerOptions) {
 		o.OpenAPI = openAPI
 	}

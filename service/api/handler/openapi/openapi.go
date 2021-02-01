@@ -21,7 +21,7 @@ import (
 	json "github.com/json-iterator/go"
 
 	"github.com/lack-io/vine"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	maddr "github.com/lack-io/vine/util/addr"
 )
 
@@ -55,12 +55,12 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	var info *regpb.OpenAPIInfo
-	tags := make(map[string]*regpb.OpenAPITag, 0)
-	paths := make(map[string]*regpb.OpenAPIPath, 0)
-	schemas := make(map[string]*regpb.Model, 0)
-	security := &regpb.SecuritySchemes{}
-	servers := make([]*regpb.OpenAPIServer, 0)
+	var info *openapipb.OpenAPIInfo
+	tags := make(map[string]*openapipb.OpenAPITag, 0)
+	paths := make(map[string]*openapipb.OpenAPIPath, 0)
+	schemas := make(map[string]*openapipb.Model, 0)
+	security := &openapipb.SecuritySchemes{}
+	servers := make([]*openapipb.OpenAPIServer, 0)
 	for _, item := range services {
 		list, err := o.svc.Options().Registry.GetService(item.Name)
 		if err != nil {
@@ -80,7 +80,7 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 					if !strings.HasPrefix(v, "http://") || !strings.HasPrefix(v, "https://") {
 						v = "http://" + v
 					}
-					servers = append(servers, &regpb.OpenAPIServer{
+					servers = append(servers, &openapipb.OpenAPIServer{
 						Url:         v,
 						Description: item.Name,
 					})
@@ -119,13 +119,13 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	openapi := &regpb.OpenAPI{
+	openapi := &openapipb.OpenAPI{
 		Openapi: "3.0.1",
 		Info:    info,
-		Tags:    []*regpb.OpenAPITag{},
+		Tags:    []*openapipb.OpenAPITag{},
 		Paths:   paths,
 		Servers: servers,
-		Components: &regpb.OpenAPIComponents{
+		Components: &openapipb.OpenAPIComponents{
 			SecuritySchemes: security,
 			Schemas:         schemas,
 		},
