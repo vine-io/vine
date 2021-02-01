@@ -11,8 +11,9 @@ import (
 
 import (
 	context "context"
-	api "github.com/lack-io/vine/proto/apis/api"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
+	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 )
@@ -29,15 +30,16 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Reference imports to suppress errors if they are not otherwise used.
-var _ api.Endpoint
+var _ apipb.Endpoint
+var _ api.Option
 var _ context.Context
 var _ client.Option
 var _ server.Option
 var _ registry.OpenAPI
 
 // API Endpoints for Auth service
-func NewAuthEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
+func NewAuthEndpoints() []*apipb.Endpoint {
+	return []*apipb.Endpoint{}
 }
 
 // Client API for Auth service
