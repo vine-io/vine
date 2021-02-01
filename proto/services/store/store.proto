@@ -28,7 +28,7 @@ message Record {
 	// time.Duration (signed int64 nanoseconds)
 	int64 expiry = 3;
 	// the associated metadata
-	map<string,Field> metadata = 4;
+	map<string, Field> metadata = 4;
 }
 
 message ReadOptions {

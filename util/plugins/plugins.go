@@ -23,13 +23,11 @@ import (
 	// import specific plugins
 	fileStore "github.com/lack-io/vine/service/store/bolt"
 	memStore "github.com/lack-io/vine/service/store/memory"
-	pg "github.com/lack-io/vine/service/store/postgres"
 )
 
 func init() {
 	// TODO: make it so we only have to import them
 	cmd.DefaultStores["cloudflare"] = cfStore.NewStore
-	cmd.DefaultStores["postgres"] = pg.NewStore
 	cmd.DefaultStores["file"] = fileStore.NewStore
 	cmd.DefaultStores["memory"] = memStore.NewStore
 }

@@ -34,7 +34,6 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/kr/pretty v0.2.1
 	github.com/lack-io/cli v1.0.2
-	github.com/lib/pq v1.9.0
 	github.com/lucas-clemente/quic-go v0.19.3
 	github.com/miekg/dns v1.1.35
 	github.com/mitchellh/hashstructure v1.1.0

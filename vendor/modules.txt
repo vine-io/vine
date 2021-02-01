@@ -313,11 +313,6 @@ github.com/kr/text
 # github.com/lack-io/cli v1.0.2
 ## explicit
 github.com/lack-io/cli
-# github.com/lib/pq v1.9.0
-## explicit
-github.com/lib/pq
-github.com/lib/pq/oid
-github.com/lib/pq/scram
 # github.com/lucas-clemente/quic-go v0.19.3
 ## explicit
 github.com/lucas-clemente/quic-go
