@@ -11,8 +11,8 @@ import (
 
 import (
 	context "context"
+	api "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
-	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 )
@@ -38,11 +38,6 @@ var _ registry.OpenAPI
 // API Endpoints for Router service
 func NewRouterEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
-}
-
-// Swagger OpenAPI 3.0 for Router service
-func NewRouterOpenAPI() *registry.OpenAPI {
-	return &registry.OpenAPI{}
 }
 
 // Client API for Router service
@@ -204,7 +199,6 @@ func RegisterRouterHandler(s server.Server, hdlr RouterHandler, opts ...server.H
 		routerImpl
 	}
 	h := &routerHandler{hdlr}
-	opts = append(opts, server.OpenAPIHandler(NewRouterOpenAPI()))
 	return s.Handle(s.NewHandler(&Router{h}, opts...))
 }
 
@@ -305,11 +299,6 @@ func NewTableEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
-// Swagger OpenAPI 3.0 for Table service
-func NewTableOpenAPI() *registry.OpenAPI {
-	return &registry.OpenAPI{}
-}
-
 // Client API for Table service
 type TableService interface {
 	Create(ctx context.Context, in *Route, opts ...client.CallOption) (*CreateResponse, error)
@@ -402,7 +391,6 @@ func RegisterTableHandler(s server.Server, hdlr TableHandler, opts ...server.Han
 		tableImpl
 	}
 	h := &tableHandler{hdlr}
-	opts = append(opts, server.OpenAPIHandler(NewTableOpenAPI()))
 	return s.Handle(s.NewHandler(&Table{h}, opts...))
 }
 

@@ -27,6 +27,7 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	pb "github.com/lack-io/vine/proto/services/network"
 	goapi "github.com/lack-io/vine/service/api"
 	log "github.com/lack-io/vine/service/logger"
@@ -258,7 +259,7 @@ func Run(ctx *cli.Context) {
 	defer netHandler.stop()
 
 	// create endpoint
-	ep := &goapi.Endpoint{
+	ep := &apipb.Endpoint{
 		Name:    "Network.Nodes",
 		Path:    []string{"^/network/?$"},
 		Method:  []string{"GET"},

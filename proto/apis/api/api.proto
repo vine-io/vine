@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "github.com/lack-io/vine/proto/apis/api;api";
+
+import "github.com/lack-io/vine/proto/apis/registry/registry.proto";
+
+message Pair {
+  string key = 1;
+  repeated string values = 2;
+}
+
+// A HTTP request as RPC
+// Forward by the api handler
+message Request {
+  string method = 1;
+  string path = 2;
+  map<string, Pair> header = 3;
+  map<string, Pair> get = 4;
+  map<string, Pair> post = 5;
+  string body = 6; // raw request body; if not application/x-www-form-urlencoded
+  string url = 7;
+}
+
+// A HTTP response as RPC
+// Expected response for the api handler
+message Response {
+  int32 statusCode = 1;
+  map<string, Pair> header = 2;
+  string body = 3;
+}
+
+// A HTTP event as RPC
+// Forwarded by the event handler
+message Event {
+  // e.g login
+  string name = 1;
+  // uuid
+  string id = 2;
+  // unix timestamp of event
+  int64 timestamp = 3;
+  // event headers
+  map<string, Pair> header = 4;
+  // the event data
+  string data = 5;
+}
+
+// Endpoint is a mapping between an RPC method and HTTP endpoint
+message Endpoint  {
+  // RPC Method e.g. Greeter.Hello
+  string name = 1;
+  // Description e.g what's this endpoint for
+  string description = 2;
+  // API Handler e.g rpc, proxy
+  string handler = 3;
+  // HTTP Host e.g example.com
+  repeated string host = 4;
+  // HTTP Methods e.g GET, POST
+  repeated  string method = 5;
+  // HTTP Path e.g /greeter. Expect POSIX regex
+  repeated  string path = 6;
+  // Body destination
+  // "*" or "" - top level message value
+  // "string" - inner message value
+  string body = 7;
+  // Stream flag
+  bool stream = 8;
+}
+
+// Service represents an API service
+message Service  {
+  // Name of service
+  string name = 1;
+  // The endpoint for this service
+  Endpoint endpoint = 2;
+  // Versions of this service
+  repeated registry.Service services = 3;
+}

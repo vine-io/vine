@@ -25,7 +25,7 @@ import (
 	"github.com/gobwas/ws/wsutil"
 	json "github.com/json-iterator/go"
 
-	"github.com/lack-io/vine/service/api"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	raw "github.com/lack-io/vine/service/codec/bytes"
@@ -33,7 +33,7 @@ import (
 )
 
 // serveWebsocket will stream rpc back over websockets assuming json
-func serveWebsocket(ctx context.Context, w http.ResponseWriter, r *http.Request, service *api.Service, c client.Client) {
+func serveWebsocket(ctx context.Context, w http.ResponseWriter, r *http.Request, service *apipb.Service, c client.Client) {
 	var op ws.OpCode
 
 	ct := r.Header.Get("Content-Type")
@@ -212,7 +212,7 @@ func writeLoop(rw io.ReadWriter, stream client.Stream) {
 	}
 }
 
-func isStream(r *http.Request, svc *api.Service) bool {
+func isStream(r *http.Request, svc *apipb.Service) bool {
 	// check if it's a web socket
 	if !isWebSocket(r) {
 		return false

@@ -18,9 +18,9 @@ package api
 import (
 	"net/http"
 
+	api2 "github.com/lack-io/vine/proto/apis/api"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/proto/apis/errors"
-	"github.com/lack-io/vine/proto/services/api"
-	goapi "github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
@@ -33,7 +33,7 @@ const (
 
 type apiHandler struct {
 	opts handler.Options
-	s    *goapi.Service
+	s    *apipb.Service
 }
 
 // API handler is the default handler which takes api.Request and returns api.Response
@@ -53,7 +53,7 @@ func (a *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var service *goapi.Service
+	var service *apipb.Service
 
 	if a.s != nil {
 		// we were given the service
@@ -81,7 +81,7 @@ func (a *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// create request and response
 	c := a.opts.Client
 	req := c.NewRequest(service.Name, service.Endpoint.Name, request)
-	rsp := &api.Response{}
+	rsp := &api2.Response{}
 
 	// create the context from headers
 	cx := ctx.FromRequest(r)
@@ -128,7 +128,7 @@ func NewHandler(opts ...handler.Option) handler.Handler {
 	}
 }
 
-func WithService(s *goapi.Service, opts ...handler.Option) handler.Handler {
+func WithService(s *apipb.Service, opts ...handler.Option) handler.Handler {
 	options := handler.NewOptions(opts...)
 	return &apiHandler{
 		opts: options,

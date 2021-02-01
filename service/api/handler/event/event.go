@@ -27,7 +27,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/oxtoacart/bpool"
 
-	proto "github.com/lack-io/vine/proto/services/api"
+	"github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/service/api/handler"
 	ctx "github.com/lack-io/vine/util/context"
 )
@@ -97,11 +97,11 @@ func (e *event) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	topic, action := evRoute(e.opts.Namespace, r.URL.Path)
 
 	// create event
-	ev := &proto.Event{
+	ev := &api.Event{
 		Name: action,
 		// TODO: dedupe event
 		Id:        fmt.Sprintf("%s-%s-%s", topic, action, uuid.New().String()),
-		Header:    make(map[string]*proto.Pair),
+		Header:    make(map[string]*api.Pair),
 		Timestamp: time.Now().Unix(),
 	}
 
@@ -109,7 +109,7 @@ func (e *event) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for key, vals := range r.Header {
 		header, ok := ev.Header[key]
 		if !ok {
-			header = &proto.Pair{
+			header = &api.Pair{
 				Key: key,
 			}
 			ev.Header[key] = header

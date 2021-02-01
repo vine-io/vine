@@ -12,8 +12,8 @@ import (
 
 import (
 	context "context"
+	api "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
-	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 )
@@ -39,11 +39,6 @@ var _ registry.OpenAPI
 // API Endpoints for Network service
 func NewNetworkEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
-}
-
-// Swagger OpenAPI 3.0 for Network service
-func NewNetworkOpenAPI() *registry.OpenAPI {
-	return &registry.OpenAPI{}
 }
 
 // Client API for Network service
@@ -165,7 +160,6 @@ func RegisterNetworkHandler(s server.Server, hdlr NetworkHandler, opts ...server
 		networkImpl
 	}
 	h := &networkHandler{hdlr}
-	opts = append(opts, server.OpenAPIHandler(NewNetworkOpenAPI()))
 	return s.Handle(s.NewHandler(&Network{h}, opts...))
 }
 

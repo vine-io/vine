@@ -27,7 +27,8 @@ import (
 // relative to the import_prefix of the generator.Generator.
 const (
 	contextPkgPath  = "context"
-	apiPkgPath      = "github.com/lack-io/vine/service/api"
+	apiPbPkgPath    = "github.com/lack-io/vine/proto/apis/api"
+	apiPkgPath    = "github.com/lack-io/vine/service/api"
 	clientPkgPath   = "github.com/lack-io/vine/service/client"
 	serverPkgPath   = "github.com/lack-io/vine/service/server"
 	registryPkgPath = "github.com/lack-io/vine/proto/apis/registry"
@@ -55,7 +56,8 @@ func (g *vine) Name() string {
 // They may vary from the final path component of the import path
 // if the name is used by other packages.
 var (
-	apiPkg      string
+	apiPbPkg    string
+	apiPkg    string
 	contextPkg  string
 	clientPkg   string
 	serverPkg   string
@@ -69,6 +71,7 @@ func (g *vine) Init(gen *generator.Generator) {
 	g.security = NewLinkComponents()
 	g.schemas = NewLinkComponents()
 	contextPkg = generator.RegisterUniquePackageName("context", nil)
+	apiPbPkg = generator.RegisterUniquePackageName("apipb", nil)
 	apiPkg = generator.RegisterUniquePackageName("api", nil)
 	clientPkg = generator.RegisterUniquePackageName("client", nil)
 	serverPkg = generator.RegisterUniquePackageName("server", nil)
@@ -96,7 +99,8 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 		return
 	}
 	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ ", apiPkg, ".Endpoint")
+	g.P("var _ ", apiPbPkg, ".Endpoint")
+	g.P("var _ ", apiPkg, ".Option")
 	g.P("var _ ", contextPkg, ".Context")
 	g.P("var _ ", clientPkg, ".Option")
 	g.P("var _ ", serverPkg, ".Option")
@@ -115,6 +119,7 @@ func (g *vine) GenerateImports(file *generator.FileDescriptor, imports map[gener
 	}
 	g.P("import (")
 	g.P(contextPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, contextPkgPath)))
+	g.P(apiPbPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPbPkgPath)))
 	g.P(apiPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, apiPkgPath)))
 	g.P(clientPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, clientPkgPath)))
 	g.P(serverPkg, " ", strconv.Quote(path.Join(g.gen.ImportPrefix, serverPkgPath)))
@@ -165,8 +170,8 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 
 	g.P()
 	g.P("// API Endpoints for ", servName, " service")
-	g.P("func New", servName, "Endpoints () []*", apiPkg, ".Endpoint {")
-	g.P("return []*", apiPkg, ".Endpoint{")
+	g.P("func New", servName, "Endpoints () []*", apiPbPkg, ".Endpoint {")
+	g.P("return []*", apiPbPkg, ".Endpoint{")
 	for _, method := range service.Methods {
 		g.generateEndpoint(servName, method, false)
 	}
@@ -322,10 +327,10 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 		return
 	}
 	if with {
-		g.P("opts = append(opts, ", apiPkg, ".WithEndpoint(&", apiPkg, ".Endpoint{")
+		g.P("opts = append(opts, ", apiPkg, ".WithEndpoint(&", apiPbPkg, ".Endpoint{")
 		defer g.P("}))")
 	} else {
-		g.P("&", apiPkg, ".Endpoint{")
+		g.P("&", apiPbPkg, ".Endpoint{")
 		defer g.P("},")
 	}
 	g.P("Name:", fmt.Sprintf(`"%s.%s",`, servName, method.Proto.GetName()))

@@ -22,6 +22,7 @@ import (
 	"strings"
 	"sync"
 
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/router"
@@ -32,7 +33,7 @@ import (
 )
 
 type endpoint struct {
-	apiep    *api.Endpoint
+	apiep    *apipb.Endpoint
 	hostregs []*regexp.Regexp
 	pathregs []util.Pattern
 	pcreregs []*regexp.Regexp
@@ -102,7 +103,7 @@ func (r *staticRouter) watch() {
 }
 */
 
-func (r *staticRouter) Register(ep *api.Endpoint) error {
+func (r *staticRouter) Register(ep *apipb.Endpoint) error {
 	if err := api.Validate(ep); err != nil {
 		return err
 	}
@@ -160,7 +161,7 @@ func (r *staticRouter) Register(ep *api.Endpoint) error {
 	return nil
 }
 
-func (r *staticRouter) Deregister(ep *api.Endpoint) error {
+func (r *staticRouter) Deregister(ep *apipb.Endpoint) error {
 	if err := api.Validate(ep); err != nil {
 		return err
 	}
@@ -184,7 +185,7 @@ func (r *staticRouter) Close() error {
 	return nil
 }
 
-func (r *staticRouter) Endpoint(req *http.Request) (*api.Service, error) {
+func (r *staticRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 	ep, err := r.endpoint(req)
 	if err != nil {
 		return nil, err
@@ -217,9 +218,9 @@ func (r *staticRouter) Endpoint(req *http.Request) (*api.Service, error) {
 		services = svcs
 	}
 
-	svc := &api.Service{
+	svc := &apipb.Service{
 		Name: epf[0],
-		Endpoint: &api.Endpoint{
+		Endpoint: &apipb.Endpoint{
 			Name:    strings.Join(epf[1:], "."),
 			Handler: "rpc",
 			Host:    ep.apiep.Host,
@@ -336,7 +337,7 @@ func (r *staticRouter) endpoint(req *http.Request) (*endpoint, error) {
 	return nil, fmt.Errorf("endpoint not found for %v", req.URL)
 }
 
-func (r *staticRouter) Route(req *http.Request) (*api.Service, error) {
+func (r *staticRouter) Route(req *http.Request) (*apipb.Service, error) {
 	if r.isClosed() {
 		return nil, errors.New("router closed")
 	}

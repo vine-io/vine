@@ -27,9 +27,9 @@ install:
 protoc:
 	cd $(GOPATH)/src && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/registry/registry.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/api/api.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/errors/errors.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/usage/usage.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/api/api.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/api/auth/auth.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/auth/auth.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/bot/bot.proto && \

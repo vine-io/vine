@@ -26,9 +26,9 @@ import (
 	json "github.com/json-iterator/go"
 	"github.com/oxtoacart/bpool"
 
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/proto/apis/errors"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
-	"github.com/lack-io/vine/service/api"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
@@ -87,7 +87,7 @@ func (m *RawMessage) UnmarshalJSON(data []byte) error {
 
 type rpcHandler struct {
 	opts handler.Options
-	s    *api.Service
+	s    *apipb.Service
 }
 
 type buffer struct {
@@ -115,7 +115,7 @@ func (h *rpcHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, bsize)
 
 	defer r.Body.Close()
-	var service *api.Service
+	var service *apipb.Service
 
 	if h.s != nil {
 		// we were given the service
@@ -528,7 +528,7 @@ func NewHandler(opts ...handler.Option) handler.Handler {
 	}
 }
 
-func WithService(s *api.Service, opts ...handler.Option) handler.Handler {
+func WithService(s *apipb.Service, opts ...handler.Option) handler.Handler {
 	options := handler.NewOptions(opts...)
 	return &rpcHandler{
 		opts: options,

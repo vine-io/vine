@@ -11,8 +11,8 @@ import (
 
 import (
 	context "context"
+	api "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
-	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 )
@@ -38,11 +38,6 @@ var _ registry.OpenAPI
 // API Endpoints for Broker service
 func NewBrokerEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
-}
-
-// Swagger OpenAPI 3.0 for Broker service
-func NewBrokerOpenAPI() *registry.OpenAPI {
-	return &registry.OpenAPI{}
 }
 
 // Client API for Broker service
@@ -137,7 +132,6 @@ func RegisterBrokerHandler(s server.Server, hdlr BrokerHandler, opts ...server.H
 		brokerImpl
 	}
 	h := &brokerHandler{hdlr}
-	opts = append(opts, server.OpenAPIHandler(NewBrokerOpenAPI()))
 	return s.Handle(s.NewHandler(&Broker{h}, opts...))
 }
 

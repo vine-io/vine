@@ -25,7 +25,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/lack-io/vine/service/api"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client/selector"
 )
@@ -36,7 +36,7 @@ const (
 
 type webHandler struct {
 	opts handler.Options
-	s    *api.Service
+	s    *apipb.Service
 }
 
 func (wh *webHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +67,7 @@ func (wh *webHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // getService returns the service for this request from the selector
 func (wh *webHandler) getService(r *http.Request) (string, error) {
-	var service *api.Service
+	var service *apipb.Service
 
 	if wh.s != nil {
 		// we were given the service
@@ -181,7 +181,7 @@ func NewHandler(opts ...handler.Option) handler.Handler {
 	}
 }
 
-func WithService(s *api.Service, opts ...handler.Option) handler.Handler {
+func WithService(s *apipb.Service, opts ...handler.Option) handler.Handler {
 	options := handler.NewOptions(opts...)
 
 	return &webHandler{

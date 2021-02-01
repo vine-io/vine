@@ -19,7 +19,7 @@ import (
 	"regexp"
 	"strings"
 
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/service/server"
 )
 
@@ -29,9 +29,9 @@ type Api interface {
 	// Get the options
 	Options() Options
 	// Register a http handler
-	Register(*Endpoint) error
+	Register(*apipb.Endpoint) error
 	// Register a route
-	Deregister(*Endpoint) error
+	Deregister(*apipb.Endpoint) error
 	// Implemenation of api
 	String() string
 }
@@ -39,38 +39,6 @@ type Api interface {
 type Options struct{}
 
 type Option func(*Options) error
-
-// Endpoint is a mapping between an RPC method and HTTP endpoint
-type Endpoint struct {
-	// RPC Method e.g. Greeter.Hello
-	Name string
-	// Description e.g what's this endpoint for
-	Description string
-	// API Handler e.g rpc, proxy
-	Handler string
-	// HTTP Host e.g example.com
-	Host []string
-	// HTTP Methods e.g GET, POST
-	Method []string
-	// HTTP Path e.g /greeter. Expect POSIX regex
-	Path []string
-	// Body destination
-	// "*" or "" - top level message value
-	// "string" - inner message value
-	Body string
-	// Stream flag
-	Stream bool
-}
-
-// Service represents an API service
-type Service struct {
-	// Name of service
-	Name string
-	// The endpoint for this service
-	Endpoint *Endpoint
-	// Versions of this service
-	Services []*regpb.Service
-}
 
 func strip(s string) string {
 	return strings.TrimSpace(s)
@@ -89,7 +57,7 @@ func slice(s string) []string {
 }
 
 // Encode encodes an endpoint to endpoint metadata
-func Encode(e *Endpoint) map[string]string {
+func Encode(e *apipb.Endpoint) map[string]string {
 	if e == nil {
 		return nil
 	}
@@ -116,12 +84,12 @@ func Encode(e *Endpoint) map[string]string {
 }
 
 // Decode decodes endpoint metadata into an endpoint
-func Decode(e map[string]string) *Endpoint {
+func Decode(e map[string]string) *apipb.Endpoint {
 	if e == nil {
 		return nil
 	}
 
-	return &Endpoint{
+	return &apipb.Endpoint{
 		Name:        e["endpoint"],
 		Description: e["description"],
 		Method:      slice(e["method"]),
@@ -132,7 +100,7 @@ func Decode(e map[string]string) *Endpoint {
 }
 
 // Validate validates an endpoint to guarantee it won't blow up when being served
-func Validate(e *Endpoint) error {
+func Validate(e *apipb.Endpoint) error {
 	if e == nil {
 		return errors.New("endpoint is nil")
 	}
@@ -196,6 +164,6 @@ func NewGateway() Gateway {
 //			Path: []string{"/greeter"},
 //		},
 //	))
-func WithEndpoint(e *Endpoint) server.HandlerOption {
+func WithEndpoint(e *apipb.Endpoint) server.HandlerOption {
 	return server.EndpointMetadata(e.Name, Encode(e))
 }

@@ -12,8 +12,8 @@ import (
 
 import (
 	context "context"
+	api "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
-	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 )
@@ -39,11 +39,6 @@ var _ registry.OpenAPI
 // API Endpoints for Registry service
 func NewRegistryEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
-}
-
-// Swagger OpenAPI 3.0 for Registry service
-func NewRegistryOpenAPI() *registry.OpenAPI {
-	return &registry.OpenAPI{}
 }
 
 // Client API for Registry service
@@ -177,7 +172,6 @@ func RegisterRegistryHandler(s server.Server, hdlr RegistryHandler, opts ...serv
 		registryImpl
 	}
 	h := &registryHandler{hdlr}
-	opts = append(opts, server.OpenAPIHandler(NewRegistryOpenAPI()))
 	return s.Handle(s.NewHandler(&Registry{h}, opts...))
 }
 

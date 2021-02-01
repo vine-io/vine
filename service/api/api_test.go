@@ -17,10 +17,12 @@ package api
 import (
 	"strings"
 	"testing"
+
+	apipb "github.com/lack-io/vine/proto/apis/api"
 )
 
 func TestEncoding(t *testing.T) {
-	testData := []*Endpoint{
+	testData := []*apipb.Endpoint{
 		nil,
 		{
 			Name:        "Foo.Bar",
@@ -127,7 +129,7 @@ func TestEncoding(t *testing.T) {
 }
 
 func TestValidate(t *testing.T) {
-	epPcre := &Endpoint{
+	epPcre := &apipb.Endpoint{
 		Name:        "Foo.Bar",
 		Description: "A test endpoint",
 		Handler:     "meta",
@@ -139,7 +141,7 @@ func TestValidate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	epGpath := &Endpoint{
+	epGpath := &apipb.Endpoint{
 		Name:        "Foo.Bar",
 		Description: "A test endpoint",
 		Handler:     "meta",
@@ -151,7 +153,7 @@ func TestValidate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	epPcreInvalid := &Endpoint{
+	epPcreInvalid := &apipb.Endpoint{
 		Name:        "Foo.Bar",
 		Description: "A test endpoint",
 		Handler:     "meta",

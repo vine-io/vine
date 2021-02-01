@@ -22,13 +22,13 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	go_api "github.com/lack-io/vine/proto/services/api"
+	"github.com/lack-io/vine/proto/apis/api"
 )
 
 func TestRequestPayloadFromRequest(t *testing.T) {
 
 	// our test event so that we can validate serialising / deserializing of true protos works
-	protoEvent := go_api.Event{
+	protoEvent := api.Event{
 		Name: "Test",
 	}
 

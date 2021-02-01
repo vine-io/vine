@@ -11,8 +11,8 @@ import (
 
 import (
 	context "context"
+	api "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
-	api "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 )
@@ -38,11 +38,6 @@ var _ registry.OpenAPI
 // API Endpoints for Runtime service
 func NewRuntimeEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
-}
-
-// Swagger OpenAPI 3.0 for Runtime service
-func NewRuntimeOpenAPI() *registry.OpenAPI {
-	return &registry.OpenAPI{}
 }
 
 // Client API for Runtime service
@@ -176,7 +171,6 @@ func RegisterRuntimeHandler(s server.Server, hdlr RuntimeHandler, opts ...server
 		runtimeImpl
 	}
 	h := &runtimeHandler{hdlr}
-	opts = append(opts, server.OpenAPIHandler(NewRuntimeOpenAPI()))
 	return s.Handle(s.NewHandler(&Runtime{h}, opts...))
 }
 
