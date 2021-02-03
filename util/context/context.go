@@ -33,6 +33,7 @@ func FromRequest(r *http.Request) context.Context {
 		md[textproto.CanonicalMIMEHeaderKey(k)] = strings.Join(v, ",")
 	}
 	// pass http host
+	md["RemoteAddr"] = r.RemoteAddr
 	md["Host"] = r.Host
 	// pass http method
 	md["Method"] = r.Method
