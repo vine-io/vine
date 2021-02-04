@@ -264,7 +264,6 @@ func requestPayload(r *http.Request) ([]byte, error) {
 
 	// we have to decode json-rpc and proto-rpc because we suck
 	// well actually because there's no proxy codec right now
-
 	ct := r.Header.Get("Content-Type")
 	switch {
 	case strings.Contains(ct, "application/json-rpc"):
@@ -280,7 +279,7 @@ func requestPayload(r *http.Request) ([]byte, error) {
 		if err = c.ReadBody(&raw); err != nil {
 			return nil, err
 		}
-		return ([]byte)(raw), nil
+		return raw, nil
 	case strings.Contains(ct, "application/proto-rpc"), strings.Contains(ct, "application/octet-stream"):
 		msg := codec.Message{
 			Type:   codec.Request,
