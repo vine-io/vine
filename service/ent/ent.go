@@ -11,16 +11,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package entity
+package ent
 
-type Entity interface {
+type Driver interface {
 	Init(...Option) error
 	Options() Options
-	Registry() error
+	NewConn() (Conn, error)
+	Migrate() error
+	String() string
+}
+
+type Conn interface {
 	Get() error
+	List() error
 	Create() error
 	Update() error
 	Delete() error
 	Watch() error
-	String() string
 }

@@ -397,7 +397,7 @@ func (p *Proxy) ServeRequest(ctx context.Context, req server.Request, rsp server
 		routes = addr
 	}
 
-	//nolint:prealloc
+	// nolint:prealloc
 	opts := []client.CallOption{
 		// set strategy to round robin
 		client.WithSelectOption(selector.WithStrategy(selector.RoundRobin)),
