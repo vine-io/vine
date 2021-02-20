@@ -18,5 +18,5 @@ import "github.com/lack-io/vine/service/network/transport"
 
 // NewTransport returns a new transport using net/http and supporting http2
 func NewTransport(opts ...transport.Option) transport.Transport {
-	return transport.NewTransport(opts...)
+	return newHTTPTransport(opts...)
 }

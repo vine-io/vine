@@ -12,38 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package mucp
 
-import (
-	"github.com/lack-io/vine/service/codec"
-	"github.com/lack-io/vine/service/network/transport"
-)
+import "sync"
 
-type rpcResponse struct {
-	header map[string]string
-	body   []byte
-	socket transport.Socket
-	codec  codec.Codec
+// waitgroup for global management connections
+type waitGroup struct {
+	// local waitgroup
+	lg sync.WaitGroup
+	// global waitgroup
+	gg *sync.WaitGroup
 }
 
-func (r *rpcResponse) Codec() codec.Reader {
-	return r.codec
-}
-
-func (r *rpcResponse) Header() map[string]string {
-	return r.header
-}
-
-func (r *rpcResponse) Read() ([]byte, error) {
-	var msg transport.Message
-
-	if err := r.socket.Recv(&msg); err != nil {
-		return nil, err
+func (w *waitGroup) Add(i int) {
+	w.lg.Add(i)
+	if w.gg != nil {
+		w.gg.Add(i)
 	}
+}
 
-	// set internals
-	r.header = msg.Header
-	r.body = msg.Body
+func (w *waitGroup) Done() {
+	w.lg.Done()
+	if w.gg != nil {
+		w.gg.Done()
+	}
+}
 
-	return msg.Body, nil
+func (w *waitGroup) Wait() {
+	// only wait on local group
+	w.lg.Wait()
 }

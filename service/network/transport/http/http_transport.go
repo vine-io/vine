@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package transport
+package http
 
 import (
 	"bufio"
@@ -30,6 +30,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/lack-io/vine/service/network/transport"
 	maddr "github.com/lack-io/vine/util/addr"
 	"github.com/lack-io/vine/util/client/buf"
 	mnet "github.com/lack-io/vine/util/net"
@@ -37,14 +38,14 @@ import (
 )
 
 type httpTransport struct {
-	opts Options
+	opts transport.Options
 }
 
 type httpTransportClient struct {
 	ht       *httpTransport
 	addr     string
 	conn     net.Conn
-	dialOpts DialOptions
+	dialOpts transport.DialOptions
 	once     sync.Once
 
 	sync.RWMutex
@@ -95,7 +96,7 @@ func (h *httpTransportClient) Remote() string {
 	return h.remote
 }
 
-func (h *httpTransportClient) Send(m *Message) error {
+func (h *httpTransportClient) Send(m *transport.Message) error {
 	header := make(http.Header)
 
 	for k, v := range m.Header {
@@ -134,7 +135,7 @@ func (h *httpTransportClient) Send(m *Message) error {
 	return req.Write(h.conn)
 }
 
-func (h *httpTransportClient) Recv(m *Message) error {
+func (h *httpTransportClient) Recv(m *transport.Message) error {
 	if m == nil {
 		return errors.New("message passed in is nil")
 	}
@@ -203,7 +204,7 @@ func (h *httpTransportSocket) Remote() string {
 	return h.remote
 }
 
-func (h *httpTransportSocket) Recv(m *Message) error {
+func (h *httpTransportSocket) Recv(m *transport.Message) error {
 	if m == nil {
 		return errors.New("message passed in is nil")
 	}
@@ -296,7 +297,7 @@ func (h *httpTransportSocket) Recv(m *Message) error {
 	return nil
 }
 
-func (h *httpTransportSocket) Send(m *Message) error {
+func (h *httpTransportSocket) Send(m *transport.Message) error {
 	if h.r.ProtoMajor == 1 {
 		// make copy of header
 		hdr := make(http.Header)
@@ -353,7 +354,7 @@ func (h *httpTransportSocket) Send(m *Message) error {
 	return err
 }
 
-func (h *httpTransportSocket) error(m *Message) error {
+func (h *httpTransportSocket) error(m *transport.Message) error {
 	if h.r.ProtoMinor == 1 {
 		rsp := &http.Response{
 			Header:        make(http.Header),
@@ -406,7 +407,7 @@ func (h *httpTransportListener) Close() error {
 	return h.listener.Close()
 }
 
-func (h *httpTransportListener) Accept(fn func(Socket)) error {
+func (h *httpTransportListener) Accept(fn func(transport.Socket)) error {
 	// create handler mux
 	mux := http.NewServeMux()
 
@@ -491,9 +492,9 @@ func (h *httpTransportListener) Accept(fn func(Socket)) error {
 	return svc.Serve(h.listener)
 }
 
-func (h *httpTransport) Dial(addr string, opts ...DialOption) (Client, error) {
-	dopts := DialOptions{
-		Timeout: DefaultDialTimeout,
+func (h *httpTransport) Dial(addr string, opts ...transport.DialOption) (transport.Client, error) {
+	dopts := transport.DialOptions{
+		Timeout: transport.DefaultDialTimeout,
 	}
 
 	for _, opt := range opts {
@@ -537,8 +538,8 @@ func (h *httpTransport) Dial(addr string, opts ...DialOption) (Client, error) {
 	}, nil
 }
 
-func (h *httpTransport) Listen(addr string, opts ...ListenOption) (Listener, error) {
-	var options ListenOptions
+func (h *httpTransport) Listen(addr string, opts ...transport.ListenOption) (transport.Listener, error) {
+	var options transport.ListenOptions
 	for _, o := range opts {
 		o(&options)
 	}
@@ -592,14 +593,14 @@ func (h *httpTransport) Listen(addr string, opts ...ListenOption) (Listener, err
 	}, nil
 }
 
-func (h *httpTransport) Init(opts ...Option) error {
+func (h *httpTransport) Init(opts ...transport.Option) error {
 	for _, o := range opts {
 		o(&h.opts)
 	}
 	return nil
 }
 
-func (h *httpTransport) Options() Options {
+func (h *httpTransport) Options() transport.Options {
 	return h.opts
 }
 
@@ -607,15 +608,10 @@ func (h *httpTransport) String() string {
 	return "http"
 }
 
-func newHTTPTransport(opts ...Option) *httpTransport {
-	var options Options
+func newHTTPTransport(opts ...transport.Option) *httpTransport {
+	var options transport.Options
 	for _, o := range opts {
 		o(&options)
 	}
 	return &httpTransport{opts: options}
-}
-
-// NewTransport returns a new transport using net/http and supporting http2
-func NewTransport(opts ...Option) Transport {
-	return newHTTPTransport(opts...)
 }

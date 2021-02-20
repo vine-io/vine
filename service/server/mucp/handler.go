@@ -12,23 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package mucp
 
 import (
 	"reflect"
 
 	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/lack-io/vine/service/server"
 )
 
 type rpcHandler struct {
 	name      string
 	handler   interface{}
 	endpoints []*regpb.Endpoint
-	opts      HandlerOptions
+	opts      server.HandlerOptions
 }
 
-func newRpcHandler(handler interface{}, opts ...HandlerOption) Handler {
-	options := HandlerOptions{Metadata: make(map[string]map[string]string)}
+func newRpcHandler(handler interface{}, opts ...server.HandlerOption) server.Handler {
+	options := server.HandlerOptions{Metadata: make(map[string]map[string]string)}
 
 	for _, o := range opts {
 		o(&options)
@@ -72,6 +73,6 @@ func (r *rpcHandler) Endpoints() []*regpb.Endpoint {
 	return r.endpoints
 }
 
-func (r *rpcHandler) Options() HandlerOptions {
+func (r *rpcHandler) Options() server.HandlerOptions {
 	return r.opts
 }

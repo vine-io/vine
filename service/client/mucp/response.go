@@ -12,41 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package mucp
 
 import (
-	"github.com/lack-io/vine/service/broker"
+	"github.com/lack-io/vine/service/codec"
 	"github.com/lack-io/vine/service/network/transport"
 )
 
-// event is a broker event we handle on the server transport
-type event struct {
-	err     error
-	message *broker.Message
+type rpcResponse struct {
+	header map[string]string
+	body   []byte
+	socket transport.Socket
+	codec  codec.Codec
 }
 
-func (e *event) Ack() error {
-	// there is no ack support
-	return nil
+func (r *rpcResponse) Codec() codec.Reader {
+	return r.codec
 }
 
-func (e *event) Message() *broker.Message {
-	return e.message
+func (r *rpcResponse) Header() map[string]string {
+	return r.header
 }
 
-func (e *event) Error() error {
-	return e.err
-}
+func (r *rpcResponse) Read() ([]byte, error) {
+	var msg transport.Message
 
-func (e *event) Topic() string {
-	return e.message.Header["Vine-Topic"]
-}
-
-func newEvent(msg transport.Message) *event {
-	return &event{
-		message: &broker.Message{
-			Header: msg.Header,
-			Body:   msg.Body,
-		},
+	if err := r.socket.Recv(&msg); err != nil {
+		return nil, err
 	}
+
+	// set internals
+	r.header = msg.Header
+	r.body = msg.Body
+
+	return msg.Body, nil
 }

@@ -151,18 +151,14 @@ type Subscriber interface {
 type Option func(*Options)
 
 var (
-	DefaultAddress                 = ":0"
-	DefaultName                    = "go.vine.server"
-	DefaultVersion                 = "latest"
-	DefaultId                      = uuid.New().String()
-	DefaultServer           Server = newRpcServer()
-	DefaultRouter                  = newRpcRouter()
-	DefaultRegisterCheck           = func(context.Context) error { return nil }
-	DefaultRegisterInterval        = time.Second * 30
-	DefaultRegisterTTL             = time.Second * 90
-
-	// NewServer creates a new server
-	NewServer func(...Option) Server = newRpcServer
+	DefaultAddress          = ":0"
+	DefaultName             = "go.vine.server"
+	DefaultVersion          = "latest"
+	DefaultId               = uuid.New().String()
+	DefaultServer           Server
+	DefaultRegisterCheck    = func(context.Context) error { return nil }
+	DefaultRegisterInterval = time.Second * 30
+	DefaultRegisterTTL      = time.Second * 90
 )
 
 // DefaultOptions returns config options for the default service
@@ -172,15 +168,7 @@ func DefaultOptions() Options {
 
 // Init initialises the default server with options passed in
 func Init(opts ...Option) {
-	if DefaultServer == nil {
-		DefaultServer = newRpcServer(opts...)
-	}
 	DefaultServer.Init(opts...)
-}
-
-// NewRouter returns a new router
-func NewRouter() *router {
-	return newRpcRouter()
 }
 
 // NewSubscriber creates a new subscriber interface with the given topic

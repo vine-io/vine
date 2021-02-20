@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package mucp
 
 import (
 	"context"
@@ -34,6 +34,7 @@ import (
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/util/addr"
 	"github.com/lack-io/vine/util/backoff"
 	"github.com/lack-io/vine/util/context/metadata"
@@ -46,9 +47,9 @@ type rpcServer struct {
 	exit   chan chan error
 
 	sync.RWMutex
-	opts        Options
-	handlers    map[string]Handler
-	subscribers map[Subscriber][]broker.Subscriber
+	opts        server.Options
+	handlers    map[string]server.Handler
+	subscribers map[server.Subscriber][]broker.Subscriber
 	// marks the serve as started
 	started bool
 	// used for first registration
@@ -61,8 +62,8 @@ type rpcServer struct {
 	rsvc *regpb.Service
 }
 
-func newRpcServer(opts ...Option) Server {
-	options := newOptions(opts...)
+func newRpcServer(opts ...server.Option) server.Server {
+	options := server.NewOptions(opts...)
 	router := newRpcRouter()
 	router.hdlrWrappers = options.HdlrWrappers
 	router.subWrappers = options.SubWrappers
@@ -70,8 +71,8 @@ func newRpcServer(opts ...Option) Server {
 	return &rpcServer{
 		opts:        options,
 		router:      router,
-		handlers:    make(map[string]Handler),
-		subscribers: make(map[Subscriber][]broker.Subscriber),
+		handlers:    make(map[string]server.Handler),
+		subscribers: make(map[server.Subscriber][]broker.Subscriber),
 		exit:        make(chan chan error),
 		wg:          wait(options.Context),
 	}
@@ -126,7 +127,7 @@ func (s *rpcServer) HandleEvent(e broker.Event) error {
 	}
 
 	// existing router
-	r := Router(s.router)
+	r := server.Router(s.router)
 
 	// if the router is present then execute it
 	if s.opts.Router != nil {
@@ -359,13 +360,13 @@ func (s *rpcServer) ServeConn(sock transport.Socket) {
 		}
 
 		// set router
-		r := Router(s.router)
+		r := server.Router(s.router)
 
 		// if not nil use the router specified
 		if s.opts.Router != nil {
 			// create a wrapped function
-			handler := func(ctx context.Context, req Request, rsp interface{}) error {
-				return s.opts.Router.ServeRequest(ctx, req, rsp.(Response))
+			handler := func(ctx context.Context, req server.Request, rsp interface{}) error {
+				return s.opts.Router.ServeRequest(ctx, req, rsp.(server.Response))
 			}
 
 			// execute the wrapper for it
@@ -463,14 +464,14 @@ func (s *rpcServer) newCodec(contentType string) (codec.NewCodec, error) {
 	return nil, fmt.Errorf("unsupported Content-Type: %s", contentType)
 }
 
-func (s *rpcServer) Options() Options {
+func (s *rpcServer) Options() server.Options {
 	s.RLock()
 	opts := s.opts
 	s.RUnlock()
 	return opts
 }
 
-func (s *rpcServer) Init(opts ...Option) error {
+func (s *rpcServer) Init(opts ...server.Option) error {
 	s.Lock()
 	defer s.Unlock()
 
@@ -491,11 +492,11 @@ func (s *rpcServer) Init(opts ...Option) error {
 	return nil
 }
 
-func (s *rpcServer) NewHandler(h interface{}, opts ...HandlerOption) Handler {
+func (s *rpcServer) NewHandler(h interface{}, opts ...server.HandlerOption) server.Handler {
 	return s.router.NewHandler(h, opts...)
 }
 
-func (s *rpcServer) Handle(h Handler) error {
+func (s *rpcServer) Handle(h server.Handler) error {
 	s.Lock()
 	defer s.Unlock()
 
@@ -508,11 +509,11 @@ func (s *rpcServer) Handle(h Handler) error {
 	return nil
 }
 
-func (s *rpcServer) NewSubscriber(topic string, sb interface{}, opts ...SubscriberOption) Subscriber {
+func (s *rpcServer) NewSubscriber(topic string, sb interface{}, opts ...server.SubscriberOption) server.Subscriber {
 	return s.router.NewSubscriber(topic, sb, opts...)
 }
 
-func (s *rpcServer) Subscribe(sb Subscriber) error {
+func (s *rpcServer) Subscribe(sb server.Subscriber) error {
 	s.Lock()
 	defer s.Unlock()
 
@@ -627,7 +628,7 @@ func (s *rpcServer) Register() error {
 
 	sort.Strings(handlerList)
 
-	var subscriberList []Subscriber
+	var subscriberList []server.Subscriber
 	for e := range s.subscribers {
 		// Only advertise non internal subscribers
 		if !e.Options().Internal {

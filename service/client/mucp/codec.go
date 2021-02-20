@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package mucp
 
 import (
 	"bytes"
@@ -64,8 +64,6 @@ type readWriteCloser struct {
 }
 
 var (
-	DefaultContentType = "application/protobuf"
-
 	DefaultCodecs = map[string]codec.NewCodec{
 		"application/grpc":         grpc.NewCodec,
 		"application/grpc+json":    grpc.NewCodec,

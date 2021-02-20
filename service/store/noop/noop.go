@@ -12,38 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package store
+package noop
+
+import "github.com/lack-io/vine/service/store"
 
 type noopStore struct{}
 
-func (n *noopStore) Init(opts ...Option) error {
+func (n *noopStore) Init(opts ...store.Option) error {
 	return nil
 }
 
-func (n *noopStore) Options() Options {
-	return Options{}
+func (n *noopStore) Options() store.Options {
+	return store.Options{}
 }
 
 func (n *noopStore) String() string {
 	return "noop"
 }
 
-func (n *noopStore) Read(key string, opts ...ReadOption) ([]*Record, error) {
-	return []*Record{}, nil
+func (n *noopStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
+	return []*store.Record{}, nil
 }
 
-func (n *noopStore) Write(r *Record, opts ...WriteOption) error {
+func (n *noopStore) Write(r *store.Record, opts ...store.WriteOption) error {
 	return nil
 }
 
-func (n *noopStore) Delete(key string, opts ...DeleteOption) error {
+func (n *noopStore) Delete(key string, opts ...store.DeleteOption) error {
 	return nil
 }
 
-func (n *noopStore) List(opts ...ListOption) ([]string, error) {
+func (n *noopStore) List(opts ...store.ListOption) ([]string, error) {
 	return []string{}, nil
 }
 
 func (n *noopStore) Close() error {
 	return nil
+}
+
+func NewStore() store.Store {
+	return new(noopStore)
 }

@@ -62,7 +62,7 @@ type Options struct {
 	Context context.Context
 }
 
-func newOptions(opt ...Option) Options {
+func NewOptions(opt ...Option) Options {
 	opts := Options{
 		Codecs:           make(map[string]codec.NewCodec),
 		Metadata:         map[string]string{},

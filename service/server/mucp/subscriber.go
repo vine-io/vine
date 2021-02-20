@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package mucp
 
 import (
 	"fmt"
 	"reflect"
 
 	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/lack-io/vine/service/server"
 )
 
 const (
@@ -38,11 +39,11 @@ type subscriber struct {
 	subscriber interface{}
 	handlers   []*handler
 	endpoints  []*regpb.Endpoint
-	opts       SubscriberOptions
+	opts       server.SubscriberOptions
 }
 
-func newSubscriber(topic string, sub interface{}, opts ...SubscriberOption) Subscriber {
-	options := SubscriberOptions{AutoAck: true}
+func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOption) server.Subscriber {
+	options := server.SubscriberOptions{AutoAck: true}
 
 	for _, o := range opts {
 		o(&options)
@@ -116,7 +117,7 @@ func newSubscriber(topic string, sub interface{}, opts ...SubscriberOption) Subs
 	}
 }
 
-func validateSubscriber(sub Subscriber) error {
+func validateSubscriber(sub server.Subscriber) error {
 	typ := reflect.TypeOf(sub.Subscriber())
 	var argType reflect.Type
 
@@ -181,6 +182,6 @@ func (s *subscriber) Endpoints() []*regpb.Endpoint {
 	return s.endpoints
 }
 
-func (s *subscriber) Options() SubscriberOptions {
+func (s *subscriber) Options() server.SubscriberOptions {
 	return s.opts
 }

@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package client
+package mucp
 
-import "github.com/lack-io/vine/service/codec"
+import (
+	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/service/codec"
+)
 
 type rpcRequest struct {
 	service     string
@@ -23,11 +26,11 @@ type rpcRequest struct {
 	contentType string
 	codec       codec.Codec
 	body        interface{}
-	opts        RequestOptions
+	opts        client.RequestOptions
 }
 
-func newRequest(service, endpoint string, request interface{}, contentType string, reqOpts ...RequestOption) Request {
-	var opts RequestOptions
+func newRequest(service, endpoint string, request interface{}, contentType string, reqOpts ...client.RequestOption) client.Request {
+	var opts client.RequestOptions
 
 	for _, o := range reqOpts {
 		o(&opts)

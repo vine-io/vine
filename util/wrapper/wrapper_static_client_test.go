@@ -21,9 +21,11 @@ import (
 	"github.com/lack-io/vine/service/broker"
 	bmemory "github.com/lack-io/vine/service/broker/memory"
 	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/service/client/mucp"
 	tmemory "github.com/lack-io/vine/service/network/transport/memory"
 	rmemory "github.com/lack-io/vine/service/registry/memory"
 	"github.com/lack-io/vine/service/server"
+	serverMucp "github.com/lack-io/vine/service/server/mucp"
 	"github.com/lack-io/vine/util/wrapper"
 )
 
@@ -51,7 +53,7 @@ func TestStaticClientWrapper(t *testing.T) {
 	brk := bmemory.NewBroker(broker.Registry(reg))
 	tr := tmemory.NewTransport()
 
-	svc := server.NewServer(
+	svc := serverMucp.NewServer(
 		server.Broker(brk),
 		server.Registry(reg),
 		server.Name("go.vine.service.foo"),
@@ -66,7 +68,7 @@ func TestStaticClientWrapper(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cli := client.NewClient(
+	cli := mucp.NewClient(
 		client.Registry(reg),
 		client.Broker(brk),
 		client.Transport(tr),

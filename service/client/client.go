@@ -110,7 +110,9 @@ type RequestOption func(*RequestOptions)
 
 var (
 	// DefaultClient is a default client to use out of the box
-	DefaultClient Client = newRpcClient()
+	DefaultClient Client
+	// DefaultContentType is the default content type for client
+	DefaultContentType = "application/protobuf"
 	// DefaultBackoff is the default backoff function for retries
 	DefaultBackoff = exponentialBackoff
 	// DefaultRetry is the default check-for-retry function for retries
@@ -123,8 +125,6 @@ var (
 	DefaultPoolSize = 100
 	// DefaultPoolTTL sets the connection pool ttl
 	DefaultPoolTTL = time.Minute
-	// NewClient returns a new client
-	NewClient func(...Option) Client = newRpcClient
 )
 
 // Makes a synchronous call to a service using the default client

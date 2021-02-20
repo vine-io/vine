@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package mucp
 
 import (
 	"context"
@@ -21,6 +21,7 @@ import (
 	"sync"
 
 	"github.com/lack-io/vine/service/codec"
+	"github.com/lack-io/vine/service/server"
 )
 
 // Implements the Streamer interface
@@ -29,7 +30,7 @@ type rpcStream struct {
 	id      string
 	closed  bool
 	err     error
-	request Request
+	request server.Request
 	codec   codec.Codec
 	ctx     context.Context
 }
@@ -38,7 +39,7 @@ func (r *rpcStream) Context() context.Context {
 	return r.ctx
 }
 
-func (r *rpcStream) Request() Request {
+func (r *rpcStream) Request() server.Request {
 	return r.request
 }
 

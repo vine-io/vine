@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package registry
+package mdns
 
 import (
 	"os"
@@ -20,6 +20,7 @@ import (
 	"time"
 
 	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/lack-io/vine/service/registry"
 )
 
 func TestMDNS(t *testing.T) {
@@ -72,10 +73,10 @@ func TestMDNS(t *testing.T) {
 
 	travis := os.Getenv("TRAVIS")
 
-	var opts []Option
+	var opts []registry.Option
 
 	if travis == "true" {
-		opts = append(opts, Timeout(time.Millisecond*100))
+		opts = append(opts, registry.Timeout(time.Millisecond*100))
 	}
 
 	// new registry
@@ -291,10 +292,10 @@ func TestWatcher(t *testing.T) {
 
 	travis := os.Getenv("TRAVIS")
 
-	var opts []Option
+	var opts []registry.Option
 
 	if travis == "true" {
-		opts = append(opts, Timeout(time.Millisecond*100))
+		opts = append(opts, registry.Timeout(time.Millisecond*100))
 	}
 
 	// new registry

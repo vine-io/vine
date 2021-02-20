@@ -20,6 +20,7 @@ import (
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/registry/cache"
+	registryMdns "github.com/lack-io/vine/service/registry/mdns"
 )
 
 type registrySelector struct {
@@ -110,7 +111,7 @@ func NewSelector(opts ...Option) Selector {
 	}
 
 	if sopts.Registry == nil {
-		sopts.Registry = registry.DefaultRegistry
+		sopts.Registry = registryMdns.NewRegistry()
 	}
 
 	s := &registrySelector{

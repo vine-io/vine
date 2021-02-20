@@ -23,6 +23,7 @@ import (
 	"github.com/lack-io/vine/service/debug/handler"
 	"github.com/lack-io/vine/service/proxy"
 	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/service/server/mucp"
 )
 
 // Server is a proxy muxer that incudes the use of the DefaultHandler
@@ -39,14 +40,14 @@ var (
 
 func (s *Server) ProcessMessage(ctx context.Context, msg server.Message) error {
 	if msg.Topic() == s.Name {
-		return server.DefaultRouter.ProcessMessage(ctx, msg)
+		return mucp.NewRouter().ProcessMessage(ctx, msg)
 	}
 	return s.Proxy.ProcessMessage(ctx, msg)
 }
 
 func (s *Server) ServeRequest(ctx context.Context, req server.Request, rsp server.Response) error {
 	if req.Service() == s.Name {
-		return server.DefaultRouter.ServeRequest(ctx, req, rsp)
+		return mucp.NewRouter().ServeRequest(ctx, req, rsp)
 	}
 	return s.Proxy.ServeRequest(ctx, req, rsp)
 }

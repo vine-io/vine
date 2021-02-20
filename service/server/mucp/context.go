@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package mucp
 
 import (
 	"context"
 	"sync"
+
+	"github.com/lack-io/vine/service/server"
 )
 
 type serverKey struct{}
@@ -32,11 +34,11 @@ func wait(ctx context.Context) *sync.WaitGroup {
 	return wg
 }
 
-func FromContext(ctx context.Context) (Server, bool) {
-	c, ok := ctx.Value(serverKey{}).(Server)
+func FromContext(ctx context.Context) (server.Server, bool) {
+	c, ok := ctx.Value(serverKey{}).(server.Server)
 	return c, ok
 }
 
-func NewContext(ctx context.Context, s Server) context.Context {
+func NewContext(ctx context.Context, s server.Server) context.Context {
 	return context.WithValue(ctx, serverKey{}, s)
 }

@@ -19,5 +19,5 @@ import "github.com/lack-io/vine/service/server"
 
 // NewServer returns a vine server interface
 func NewServer(opts ...server.Option) server.Server {
-	return server.NewServer(opts...)
+	return newRpcServer(opts...)
 }

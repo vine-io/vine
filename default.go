@@ -15,23 +15,35 @@
 package vine
 
 import (
+	"github.com/lack-io/vine/service/broker"
+	brokerHttp "github.com/lack-io/vine/service/broker/http"
 	"github.com/lack-io/vine/service/client"
-	gcli "github.com/lack-io/vine/service/client/grpc"
+	clientGrpc "github.com/lack-io/vine/service/client/grpc"
 	"github.com/lack-io/vine/service/debug/trace"
-	memTrace "github.com/lack-io/vine/service/debug/trace/memory"
+	traceMem "github.com/lack-io/vine/service/debug/trace/memory"
+	"github.com/lack-io/vine/service/network/transport"
+	transportHTTP "github.com/lack-io/vine/service/network/transport/http"
+	"github.com/lack-io/vine/service/registry"
+	registryMdns "github.com/lack-io/vine/service/registry/mdns"
 	"github.com/lack-io/vine/service/server"
-	gsvc "github.com/lack-io/vine/service/server/grpc"
+	serverGrpc "github.com/lack-io/vine/service/server/grpc"
 	"github.com/lack-io/vine/service/store"
-	memStore "github.com/lack-io/vine/service/store/memory"
+	storeMem "github.com/lack-io/vine/service/store/memory"
 )
 
 func init() {
+	// default registry
+	registry.DefaultRegistry = registryMdns.NewRegistry()
+	// default transport
+	transport.DefaultTransport = transportHTTP.NewTransport()
+	// default broker
+	broker.DefaultBroker = brokerHttp.NewBroker()
 	// default client
-	client.DefaultClient = gcli.NewClient()
+	client.DefaultClient = clientGrpc.NewClient()
 	// default server
-	server.DefaultServer = gsvc.NewServer()
+	server.DefaultServer = serverGrpc.NewServer()
 	// default store
-	store.DefaultStore = memStore.NewStore()
+	store.DefaultStore = storeMem.NewStore()
 	// default trace
-	trace.DefaultTracer = memTrace.NewTracer()
+	trace.DefaultTracer = traceMem.NewTracer()
 }

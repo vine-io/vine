@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package registry
+package mdns
 
 import (
 	"bytes"
@@ -33,6 +33,7 @@ import (
 	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/mdns"
 )
 
@@ -56,7 +57,7 @@ type mdnsEntry struct {
 }
 
 type mdnsRegistry struct {
-	opts Options
+	opts registry.Options
 	// the mdns domain
 	domain string
 
@@ -74,7 +75,7 @@ type mdnsRegistry struct {
 
 type mdnsWatcher struct {
 	id   string
-	wo   WatchOptions
+	wo   registry.WatchOptions
 	ch   chan *mdns.ServiceEntry
 	exit chan struct{}
 	// the mdns domain
@@ -146,8 +147,8 @@ func decode(record []string) (*mdnsTxt, error) {
 	return txt, nil
 }
 
-func newRegistry(opts ...Option) Registry {
-	options := Options{
+func newRegistry(opts ...registry.Option) registry.Registry {
+	options := registry.Options{
 		Context: context.Background(),
 		Timeout: time.Millisecond * 100,
 	}
@@ -172,18 +173,18 @@ func newRegistry(opts ...Option) Registry {
 	}
 }
 
-func (m *mdnsRegistry) Init(opts ...Option) error {
+func (m *mdnsRegistry) Init(opts ...registry.Option) error {
 	for _, o := range opts {
 		o(&m.opts)
 	}
 	return nil
 }
 
-func (m *mdnsRegistry) Options() Options {
+func (m *mdnsRegistry) Options() registry.Options {
 	return m.opts
 }
 
-func (m *mdnsRegistry) Register(service *regpb.Service, opts ...RegisterOption) error {
+func (m *mdnsRegistry) Register(service *regpb.Service, opts ...registry.RegisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -289,7 +290,7 @@ func (m *mdnsRegistry) Register(service *regpb.Service, opts ...RegisterOption) 
 	return gerr
 }
 
-func (m *mdnsRegistry) Deregister(service *regpb.Service, opts ...DeregisterOption) error {
+func (m *mdnsRegistry) Deregister(service *regpb.Service, opts ...registry.DeregisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -324,7 +325,7 @@ func (m *mdnsRegistry) Deregister(service *regpb.Service, opts ...DeregisterOpti
 	return nil
 }
 
-func (m *mdnsRegistry) GetService(service string, opts ...GetOption) ([]*regpb.Service, error) {
+func (m *mdnsRegistry) GetService(service string, opts ...registry.GetOption) ([]*regpb.Service, error) {
 	serviceMap := make(map[string]*regpb.Service)
 	entries := make(chan *mdns.ServiceEntry, 10)
 	done := make(chan bool)
@@ -417,7 +418,7 @@ func (m *mdnsRegistry) GetService(service string, opts ...GetOption) ([]*regpb.S
 	return services, nil
 }
 
-func (m *mdnsRegistry) ListServices(opts ...ListOption) ([]*regpb.Service, error) {
+func (m *mdnsRegistry) ListServices(opts ...registry.ListOption) ([]*regpb.Service, error) {
 	serviceMap := make(map[string]bool)
 	entries := make(chan *mdns.ServiceEntry, 10)
 	done := make(chan bool)
@@ -469,8 +470,8 @@ func (m *mdnsRegistry) ListServices(opts ...ListOption) ([]*regpb.Service, error
 	return services, nil
 }
 
-func (m *mdnsRegistry) Watch(opts ...WatchOption) (Watcher, error) {
-	var wo WatchOptions
+func (m *mdnsRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
+	var wo registry.WatchOptions
 	for _, o := range opts {
 		o(&wo)
 	}
@@ -626,7 +627,7 @@ func (m *mdnsWatcher) Next() (*regpb.Result, error) {
 				Service: service,
 			}, nil
 		case <-m.exit:
-			return nil, ErrWatcherStopped
+			return nil, registry.ErrWatcherStopped
 		}
 	}
 }
@@ -642,9 +643,4 @@ func (m *mdnsWatcher) Stop() {
 		delete(m.registry.watchers, m.id)
 		m.registry.mtx.Unlock()
 	}
-}
-
-// NewRegistry returns a new default registry which is mdns
-func NewRegistry(opts ...Option) Registry {
-	return newRegistry(opts...)
 }
