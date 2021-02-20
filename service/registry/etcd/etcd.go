@@ -286,13 +286,14 @@ func (e *etcdRegistry) Deregister(s *regpb.Service, opts ...registry.DeregisterO
 		e.Unlock()
 
 		ctx, cancel := context.WithTimeout(context.Background(), e.options.Timeout)
-		defer cancel()
 
 		log.Infof("Deregistering %s id %s", s.Name, node.Id)
 		_, err := e.client.Delete(ctx, nodePath(s.Name, node.Id))
 		if err != nil {
+			cancel()
 			return err
 		}
+		cancel()
 	}
 
 	return nil
