@@ -167,7 +167,7 @@ func TrimString(s string, c string) string {
 	return s
 }
 
-// fullStringSlice [1,2,3] => `"1", "2", "3"`
+// fullStringSlice converts [1,2,3] => `"1", "2", "3"`
 func fullStringSlice(s string) string {
 	s = strings.TrimPrefix(s, "[")
 	s = strings.TrimSuffix(s, "]")

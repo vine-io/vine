@@ -89,7 +89,7 @@ func NewFunction(opts ...Option) Function {
 	return newFunction(opts...)
 }
 
-// NewEvent creates a new event pulisher
+// NewEvent creates a new event publisher
 func NewEvent(topic string, c client.Client) Event {
 	if c == nil {
 		c = client.DefaultClient
