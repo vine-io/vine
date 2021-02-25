@@ -1,6 +1,7 @@
 package qson
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -15,7 +16,7 @@ func ExampleUnmarshal() {
 	if err := Unmarshal(&ex, "a=xyz&b[c]=456"); err != nil {
 		panic(err)
 	}
-	vine / service / apif("%+v\n", ex)
+	fmt.Printf("%+v\n", ex)
 	// Output: {A:xyz B:{C:456}}
 }
 
@@ -51,7 +52,7 @@ func ExampleToJSON() {
 	if err != nil {
 		panic(err)
 	}
-	vine / service / apif(string(b))
+	fmt.Printf(string(b))
 	// Output: {"a":"xyz","b":{"c":456}}
 }
 

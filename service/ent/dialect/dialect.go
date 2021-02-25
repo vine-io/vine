@@ -1,4 +1,3 @@
-// Copyright 2021 lack
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -22,6 +21,14 @@ import (
 	"github.com/google/uuid"
 
 	log "github.com/lack-io/vine/service/logger"
+)
+
+// Dialect names for external usage.
+const (
+	MySQL    = "mysql"
+	SQLite   = "sqlite3"
+	Postgres = "postgres"
+	Gremlin  = "gremlin"
 )
 
 // ExecQuerier wraps the 2 database operations.

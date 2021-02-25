@@ -4,6 +4,9 @@ github.com/Azure/go-ansiterm/winterm
 # github.com/BurntSushi/toml v0.3.1
 ## explicit
 github.com/BurntSushi/toml
+# github.com/DATA-DOG/go-sqlmock v1.5.0
+## explicit
+github.com/DATA-DOG/go-sqlmock
 # github.com/Microsoft/go-winio v0.4.16
 github.com/Microsoft/go-winio
 github.com/Microsoft/go-winio/pkg/guid
@@ -400,6 +403,7 @@ github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.7.0
 ## explicit
 github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
 # github.com/technoweenie/multipartstreamer v1.0.1
 ## explicit
 github.com/technoweenie/multipartstreamer

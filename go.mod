@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bwmarrin/discordgo v0.22.1
 	github.com/caddyserver/certmagic v0.10.6
