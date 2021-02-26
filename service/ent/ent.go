@@ -68,18 +68,6 @@ type Interface interface {
 	Edges() []Edge
 	// Indexes returns the indexes of the schema.
 	Indexes() []Index
-	// Config returns an optional config for the schema.
-	//
-	// Deprecated: the Config method predates the Annotations method and it
-	// is planned be removed in v0.5.0. New code should use Annotations instead.
-	//
-	//	func (T) Annotations() []schema.Annotation {
-	//		return []schema.Annotation{
-	//			entsql.Annotation{Table: "Name"},
-	//		}
-	//	}
-	//
-	Config() Config
 	// Mixin returns an optional list of Mixin to extends
 	// the schema.
 	Mixin() []Mixin
@@ -131,29 +119,6 @@ type Edge interface {
 //
 type Index interface {
 	Descriptor() *index.Descriptor
-}
-
-// A Config structure is used to configure an entity schema.
-// The usage of this structure is as follows:
-//
-//	func (T) Config() ent.Config {
-//		return ent.Config{
-//			Table: "Name",
-//		}
-//	}
-//
-// Deprecated: the Config object predates the schema.Annotation method and it
-// is planned be removed in v0.5.0. New code should use Annotations instead.
-//
-//	func (T) Annotations() []schema.Annotation {
-//		return []schema.Annotation{
-//			entsql.Annotation{Table: "Name"},
-//		}
-//	}
-//
-type Config struct {
-	// A Table is an optional table name defined for the schema.
-	Table string
 }
 
 // The Mixin type describes a set of methods that can extend
@@ -235,9 +200,6 @@ func (Schema) Edges() []Edge { return nil }
 
 // Indexes of the schema.
 func (Schema) Indexes() []Index { return nil }
-
-// Config of the schema.
-func (Schema) Config() Config { return Config{} }
 
 // Mixin of the schema.
 func (Schema) Mixin() []Mixin { return nil }

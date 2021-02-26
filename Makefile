@@ -27,6 +27,7 @@ install:
 protoc:
 	cd $(GOPATH)/src && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/api/api.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/dao/dao.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/openapi/openapi.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/registry/registry.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/errors/errors.proto && \
@@ -38,6 +39,7 @@ protoc:
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/client/client.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/config/config.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/debug.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/dao/dao.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/log/log.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/stats/stats.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/trace/trace.proto && \

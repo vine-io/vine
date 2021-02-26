@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package dao;
+
+option go_package = "github.com/lack-io/vine/proto/services/dao;dao";
