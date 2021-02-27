@@ -4,8 +4,14 @@
 package dao
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
+	api "github.com/lack-io/vine/proto/apis/api"
+	dao "github.com/lack-io/vine/proto/apis/dao"
+	api1 "github.com/lack-io/vine/service/api"
+	client "github.com/lack-io/vine/service/client"
+	server "github.com/lack-io/vine/service/server"
 	math "math"
 )
 
@@ -19,3 +25,226 @@ var _ = math.Inf
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ api.Endpoint
+var _ api1.Option
+var _ context.Context
+var _ client.Option
+var _ server.Option
+
+// API Endpoints for Dao service
+func NewDaoEndpoints() []*api.Endpoint {
+	return []*api.Endpoint{}
+}
+
+// Client API for Dao service
+type DaoService interface {
+	Migrate(ctx context.Context, in *MigrateRequest, opts ...client.CallOption) (*EmptyResponse, error)
+	Create(ctx context.Context, in *dao.CreationOption, opts ...client.CallOption) (*dao.Result, error)
+	Query(ctx context.Context, in *dao.QueryOption, opts ...client.CallOption) (*dao.Result, error)
+	Update(ctx context.Context, in *dao.UpdateOption, opts ...client.CallOption) (*dao.Result, error)
+	Delete(ctx context.Context, in *dao.DeletionOption, opts ...client.CallOption) (*dao.Result, error)
+	Watch(ctx context.Context, in *dao.WatchOption, opts ...client.CallOption) (Dao_WatchService, error)
+}
+
+type daoService struct {
+	c    client.Client
+	name string
+}
+
+func NewDaoService(name string, c client.Client) DaoService {
+	return &daoService{
+		c:    c,
+		name: name,
+	}
+}
+
+func (c *daoService) Migrate(ctx context.Context, in *MigrateRequest, opts ...client.CallOption) (*EmptyResponse, error) {
+	req := c.c.NewRequest(c.name, "Dao.Migrate", in)
+	out := new(EmptyResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *daoService) Create(ctx context.Context, in *dao.CreationOption, opts ...client.CallOption) (*dao.Result, error) {
+	req := c.c.NewRequest(c.name, "Dao.Create", in)
+	out := new(dao.Result)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *daoService) Query(ctx context.Context, in *dao.QueryOption, opts ...client.CallOption) (*dao.Result, error) {
+	req := c.c.NewRequest(c.name, "Dao.Query", in)
+	out := new(dao.Result)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *daoService) Update(ctx context.Context, in *dao.UpdateOption, opts ...client.CallOption) (*dao.Result, error) {
+	req := c.c.NewRequest(c.name, "Dao.Update", in)
+	out := new(dao.Result)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *daoService) Delete(ctx context.Context, in *dao.DeletionOption, opts ...client.CallOption) (*dao.Result, error) {
+	req := c.c.NewRequest(c.name, "Dao.Delete", in)
+	out := new(dao.Result)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *daoService) Watch(ctx context.Context, in *dao.WatchOption, opts ...client.CallOption) (Dao_WatchService, error) {
+	req := c.c.NewRequest(c.name, "Dao.Watch", &dao.WatchOption{})
+	stream, err := c.c.Stream(ctx, req, opts...)
+	if err != nil {
+		return nil, err
+	}
+	if err := stream.Send(in); err != nil {
+		return nil, err
+	}
+	return &daoServiceWatch{stream}, nil
+}
+
+type Dao_WatchService interface {
+	Context() context.Context
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Recv() (*dao.WatchResult, error)
+}
+
+type daoServiceWatch struct {
+	stream client.Stream
+}
+
+func (x *daoServiceWatch) Close() error {
+	return x.stream.Close()
+}
+
+func (x *daoServiceWatch) Context() context.Context {
+	return x.stream.Context()
+}
+
+func (x *daoServiceWatch) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
+}
+
+func (x *daoServiceWatch) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *daoServiceWatch) Recv() (*dao.WatchResult, error) {
+	m := new(dao.WatchResult)
+	err := x.stream.Recv(m)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// Server API for Dao service
+type DaoHandler interface {
+	Migrate(context.Context, *MigrateRequest, *EmptyResponse) error
+	Create(context.Context, *dao.CreationOption, *dao.Result) error
+	Query(context.Context, *dao.QueryOption, *dao.Result) error
+	Update(context.Context, *dao.UpdateOption, *dao.Result) error
+	Delete(context.Context, *dao.DeletionOption, *dao.Result) error
+	Watch(context.Context, *dao.WatchOption, Dao_WatchStream) error
+}
+
+func RegisterDaoHandler(s server.Server, hdlr DaoHandler, opts ...server.HandlerOption) error {
+	type daoImpl interface {
+		Migrate(ctx context.Context, in *MigrateRequest, out *EmptyResponse) error
+		Create(ctx context.Context, in *dao.CreationOption, out *dao.Result) error
+		Query(ctx context.Context, in *dao.QueryOption, out *dao.Result) error
+		Update(ctx context.Context, in *dao.UpdateOption, out *dao.Result) error
+		Delete(ctx context.Context, in *dao.DeletionOption, out *dao.Result) error
+		Watch(ctx context.Context, stream server.Stream) error
+	}
+	type Dao struct {
+		daoImpl
+	}
+	h := &daoHandler{hdlr}
+	return s.Handle(s.NewHandler(&Dao{h}, opts...))
+}
+
+type daoHandler struct {
+	DaoHandler
+}
+
+func (h *daoHandler) Migrate(ctx context.Context, in *MigrateRequest, out *EmptyResponse) error {
+	return h.DaoHandler.Migrate(ctx, in, out)
+}
+
+func (h *daoHandler) Create(ctx context.Context, in *dao.CreationOption, out *dao.Result) error {
+	return h.DaoHandler.Create(ctx, in, out)
+}
+
+func (h *daoHandler) Query(ctx context.Context, in *dao.QueryOption, out *dao.Result) error {
+	return h.DaoHandler.Query(ctx, in, out)
+}
+
+func (h *daoHandler) Update(ctx context.Context, in *dao.UpdateOption, out *dao.Result) error {
+	return h.DaoHandler.Update(ctx, in, out)
+}
+
+func (h *daoHandler) Delete(ctx context.Context, in *dao.DeletionOption, out *dao.Result) error {
+	return h.DaoHandler.Delete(ctx, in, out)
+}
+
+func (h *daoHandler) Watch(ctx context.Context, stream server.Stream) error {
+	m := new(dao.WatchOption)
+	if err := stream.Recv(m); err != nil {
+		return err
+	}
+	return h.DaoHandler.Watch(ctx, m, &daoWatchStream{stream})
+}
+
+type Dao_WatchStream interface {
+	Context() context.Context
+	SendMsg(interface{}) error
+	RecvMsg(interface{}) error
+	Close() error
+	Send(*dao.WatchResult) error
+}
+
+type daoWatchStream struct {
+	stream server.Stream
+}
+
+func (x *daoWatchStream) Close() error {
+	return x.stream.Close()
+}
+
+func (x *daoWatchStream) Context() context.Context {
+	return x.stream.Context()
+}
+
+func (x *daoWatchStream) SendMsg(m interface{}) error {
+	return x.stream.Send(m)
+}
+
+func (x *daoWatchStream) RecvMsg(m interface{}) error {
+	return x.stream.Recv(m)
+}
+
+func (x *daoWatchStream) Send(m *dao.WatchResult) error {
+	return x.stream.Send(m)
+}

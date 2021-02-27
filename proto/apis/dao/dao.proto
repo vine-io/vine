@@ -3,216 +3,140 @@ syntax = "proto3";
 package dao;
 option go_package = "github.com/lack-io/vine/proto/apis/dao;dao";
 
-enum Rel {
-  Unk = 0; // Unknown.
-  O2O = 1; // One to one / has one.
-  O2M = 2; // One to many / has many.
-  M2O = 3; // Many to one (inverse perspective for O2M).
-  M2M = 4; // Many to many.
+enum FieldType {
+  TypeInvalid = 0;
+  TypeBool = 1;
+  TypeFloat32 = 2;
+  TypeFloat64 = 3;
+  TypeInt32 = 4;
+  TypeInt64 = 5;
+  TypeUint32 = 6;
+  TypeUint64 = 7;
+  TypeString = 8;
+  TypeBytes = 9;
+  TypeJSON = 10;
+}
+
+enum RelType {
+  RelInvalid = 0;
+  RelO2O = 1;   // one to one
+  RelO2M = 2;   // one to many
+  RelM2O = 3;   // many to one
+  RelM2M = 4;   // many to many
+  RelBidi = 5;  // many to many (bidirectional)
+}
+
+message Schema {
+  string name = 1;
+  string dbName = 2;
+  repeated Field fields = 3;
+  repeated Field primaryFields = 4;
+  repeated Index indexes = 5;
+  repeated Relationship relationships = 6;
+  map<string, string> annotations = 21;
+}
+
+message Field {
+  string name = 1;
+  string dbName = 2;
+  FieldType type = 3;
+  bool primaryKey = 4;
+  bool unique = 5;
+  bool notNull = 6;
+  bool autoIncrement = 7;
+  bool default = 8;
+  bytes defaultValue = 9;
+  int32 size = 10;
+  map<string, string> annotations = 21;
+}
+
+message Index {
+  string name = 1;
+  Field field = 2;
+  map<string, string> annotations = 21;
+}
+
+message Relationship {
+  RelType type = 1;
+  Field owner = 2;
+  Schema reference = 3;
+}
+
+message CreationOption {
+  string schema = 1;
+  repeated string fields = 2;
+  map<string, bytes> values = 3;
+}
+
+message QueryOption {
+  string schema = 1;
+  repeated Predicate predicates = 2;
+}
+
+message UpdateOption {
+  string schema = 1;
+  repeated string fields = 2;
+  map<string, bytes> values = 3;
+  repeated Predicate predicates = 4;
+  bool batch = 5;
+}
+
+message DeletionOption {
+  string schema = 1;
+  repeated Predicate predicates = 2;
+  bool batch = 3;
+}
+
+message Result {
+  repeated Value values = 1;
+}
+
+message Value {
+  string schema = 1;
+  map<string, string> annotations = 2;
+  bytes rows = 3;
+}
+
+enum EventType {
+  EventInvalid = 0;
+  EventAdded = 1;
+  EventModified = 2;
+  EventDeleted = 3;
+  EventError = 4;
+}
+
+message WatchOption {
+  repeated string schemas = 1;
+  repeated string allowsEvents = 2;
+}
+
+message WatchResult {
+  EventType type = 1;
+  repeated string changes = 2;
+  Value oldValue = 3;
+  Value value = 4;
 }
 
 enum PredicateOp {
   OpInvalid = 0;
-  OpAnd = 1;    // logical and.
-  OpOr = 2;     // logical or.
-  OpNot = 3;    // logical negation.
-
-  OpEQ = 4;     // =
-  OpNEQ = 5;    // <>
-  OpGT = 6;     // >
-  OpGTE = 7;    // >=
-  OpLT = 8;     // <
-  OpLTE = 9;    // <=
-  OpIn = 10;    // IN
-  OpNotIn = 11; // NOT IN
-
-  OpLike = 12; // LIKE
-
-  OpIsNull = 13; // IS NULL
-  OpNotNull = 14; // IS NOT NULL
-}
-
-enum FieldType {
-  TypeInvalid = 0;
-  TypeBool = 1;
-  TypeTime = 2;
-  TypeJSON = 3;
-  TypeUUID = 4;
-  TypeBytes = 5;
-  TypeEnum = 6;
-  TypeString = 7;
-  TypeOther = 8;
-  TypeInt8 = 9;
-  TypeInt16 = 10;
-  TypeInt32 = 11;
-  TypeInt = 12;
-  TypeInt64 = 13;
-  TypeUint8 = 14;
-  TypeUint16 = 15;
-  TypeUint32 = 16;
-  TypeUint = 17;
-  TypeUint64 = 18;
-  TypeFloat32 = 19;
-  TypeFloat64 = 20;
-}
-
-// Schema definition for SQL dialects.
-message Schema {
-  // Name holds the schema name.
-  string name = 1;
-  // Fields holds all the primitive fields of this type.
-  repeated Field fields = 2;
-  // Indexes are the configured indexes for this type.
-  repeated Index indexes = 3;
-  // PrimaryKey holds database primary key information for this type.
-  repeated Field primaryKey = 4;
-  // ForeignKeys are the foreign-keys that resides in the type table.
-  repeated ForeignKey foreignKeys = 5;
-  // Annotations that were defined for the field in the schema.
-  // The mapping is from the Annotation.Name() to a JSON decoded object.
-  map<string, string> annotations = 6;
-}
-
-message Field {
-  // column name.
-  string name = 1;
-  // column type.
-  FieldType type = 2;
-  // optional schema type per dialect.
-  map<string, string> schemaType = 3;
-  // extra attributes.
-  string attr = 4;
-  // max size parameter for string, blob, etc.
-  int64 size = 5;
-  // key definition (PRI, UNI or MUL).
-  string key = 6;
-  // column with unique constraint.
-  bool unique = 7;
-  // auto increment attribute.
-  bool increment = 8;
-  // null or not null attribute.
-  bool nullable = 9;
-  // default value.
-  string default = 10;
-  // enum values.
-  repeated string enums = 11;
-  // row column type (used for Rows.Scan).
-  string typ = 12;
-  // linked indexes.
-  repeated Index indexes = 13;
-  // linked foreign-key.
-  ForeignKey foreign = 14;
-}
-
-// Index represents a database index used for either increasing speed
-// on database operations or defining constraints such as "UNIQUE INDEX".
-// Note that some indexes are created implicitly like table foreign keys.
-message Index {
-  // Name of the index. One column index is simply the column name.
-  string name = 1;
-  // Unique index or not.
-  bool unique = 2;
-  // Columns are the table columns.
-  repeated string columns = 3;
-}
-
-enum RefOption {
-  NoAction = 0;
-  Restrict = 1;
-  Cascade = 2;
-  SetNull = 3;
-  SetDefault = 4;
-}
-
-// ForeignKey definition for creation.
-message ForeignKey {
-  // foreign-key name. Generated if empty.
-  string symbol = 1;
-  // schema field
-  repeated Field fields = 2;
-  // referenced schema.
-  Schema refSchema = 3;
-  // referenced fields.
-  repeated Field refFields = 4;
-  // action on update.
-  RefOption onUpdate = 5;
-  // action on delete.
-  RefOption onDelete = 6;
-}
-
-enum MutationOp {
-  OpUnknown = 0;
-  OpCreate = 1;
-  OpUpdate = 2;
-  OpUpdateOne = 3;
-  OpDelete = 4;
-  OpDeleteOne = 5;
-}
-
-message SelectTable {
-  string alias = 1;
-  string name = 2;
-  string schema = 3;
-  string quote = 4;
-}
-
-message Expr {
-  PredicateOp op = 1;
-  string key = 2;
-  string value = 3;
+  OpAnd = 1;      // AND
+  OpOr = 2;       // OR
+  OpGT = 3;       // >
+  OpGTE = 4;      // >=
+  OpLT = 5;       // <
+  OpLTE = 6;      // <=
+  OpEQ = 7;       // ==
+  OpNEQ = 8;      // <>
+  OpLike = 9;     // LIKE
+  OpNotLike = 10; // NOT LIKE
+  OpIn = 11;      // IN
+  OpNotIn = 12;   // NOT IN
+  OpIsNull = 13;  // is null
+  OpNotNull = 14; // not null
 }
 
 message Predicate {
-  repeated Expr expr = 1;
-}
-
-message Join {
-  Predicate on = 1;
-  string kind = 2;
-  SelectTable table = 3;
-}
-
-enum OrderFunc {
-  OrderInvalid = 0;
-  OrderAsc = 1;
-  OrderDesc = 2;
-}
-
-message Order {
-  string field = 1;
-  OrderFunc func = 2;
-}
-
-message Selection {
-  string alias = 1;
-  repeated string columns = 2;
-  SelectTable from = 3;
-  repeated Join joins = 4;
-  bool or = 5;
-  bool and = 6;
-  Order order = 7;
-  repeated string group = 8;
-  Predicate having = 9;
-  int32 limit = 10;
-  int32 offset = 11;
-  bool distinct = 12;
-}
-
-message Query {
-  repeated string fields = 1;
-  Selection selection = 2;
-}
-
-// Mutation represents an operation that mutate the graph.
-message Mutation {
-  // Op returns the operation name.
-  MutationOp op = 1;
-  // Type returns the schema type for this mutation.
-  string typ = 2;
-
-  bool done = 3;
-
-  bytes oldValue = 4;
-
-  repeated Predicate predicates = 5;
+  PredicateOp op = 1;
+  Field field = 2;
+  string value = 3;
 }
