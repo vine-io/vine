@@ -33,7 +33,7 @@ type Model interface {
 	Create(ctx context.Context) error
 	FindOne(ctx context.Context, dest interface{}, ps ...P) error
 	FindAll(ctx context.Context, dest interface{}, ps ...P) error
-	Updates(ctx context.Context, value interface{}, ps ...P) error
+	Updates(ctx context.Context, ps ...P) error
 	Delete(ctx context.Context, ps ...P) error
 }
 
