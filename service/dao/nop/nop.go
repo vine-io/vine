@@ -74,19 +74,19 @@ func (db nopDB) Or(query interface{}, args ...interface{}) dao.DB {
 	return db
 }
 
-func (db nopDB) Take(dest dao.Schema, args ...interface{}) dao.DB {
+func (db nopDB) Take(dest interface{}, args ...interface{}) dao.DB {
 	return db
 }
 
-func (db nopDB) First(dest dao.Schema, conds ...interface{}) dao.DB {
+func (db nopDB) First(dest interface{}, conds ...interface{}) dao.DB {
 	return db
 }
 
-func (db nopDB) Last(dest dao.Schema, conds ...interface{}) dao.DB {
+func (db nopDB) Last(dest interface{}, conds ...interface{}) dao.DB {
 	return db
 }
 
-func (db nopDB) Find(dest dao.Schema, conds ...interface{}) dao.DB {
+func (db nopDB) Find(dest interface{}, conds ...interface{}) dao.DB {
 	return db
 }
 
@@ -126,15 +126,11 @@ func (db nopDB) Count(count *int64) dao.DB {
 	return db
 }
 
-func (db nopDB) Save(value interface{}) dao.DB {
-	return db
-}
-
 func (db nopDB) Create(value dao.Schema) dao.DB {
 	return db
 }
 
-func (db nopDB) Update(value dao.Schema) dao.DB {
+func (db nopDB) Updates(value dao.Schema) dao.DB {
 	return db
 }
 
@@ -146,7 +142,7 @@ func (db nopDB) Exec(sql string, values ...interface{}) dao.DB {
 	return db
 }
 
-func (db nopDB) Scan(dest dao.Schema) dao.DB {
+func (db nopDB) Scan(dest interface{}) dao.DB {
 	return db
 }
 

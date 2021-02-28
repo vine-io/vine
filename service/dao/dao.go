@@ -51,10 +51,10 @@ type DB interface {
 	Select(columns ...string) DB
 	Where(query interface{}, args ...interface{}) DB
 	Or(query interface{}, args ...interface{}) DB
-	First(dest Schema, conds ...interface{}) DB
-	Last(dest Schema, conds ...interface{}) DB
-	Find(dest Schema, conds ...interface{}) DB
-	Take(dest Schema, args ...interface{}) DB
+	First(dest interface{}, conds ...interface{}) DB
+	Last(dest interface{}, conds ...interface{}) DB
+	Find(dest interface{}, conds ...interface{}) DB
+	Take(dest interface{}, args ...interface{}) DB
 	Limit(limit int32) DB
 	Offset(offset int32) DB
 	Group(name string) DB
@@ -65,10 +65,10 @@ type DB interface {
 	Not(query interface{}, args ...interface{}) DB
 	Count(count *int64) DB
 	Create(Schema) DB
-	Update(Schema) DB
+	Updates(Schema) DB
 	Delete(value Schema, conds ...interface{}) DB
 	Exec(sql string, values ...interface{}) DB
-	Scan(dest Schema) DB
+	Scan(dest interface{}) DB
 	Row() *sql.Row
 	Rows() (*sql.Rows, error)
 	Begin(opts ...*sql.TxOptions) DB
