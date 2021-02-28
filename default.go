@@ -17,6 +17,8 @@ import (
 	brokerHttp "github.com/lack-io/vine/service/broker/http"
 	"github.com/lack-io/vine/service/client"
 	clientGrpc "github.com/lack-io/vine/service/client/grpc"
+	"github.com/lack-io/vine/service/dao"
+	daoNop "github.com/lack-io/vine/service/dao/nop"
 	"github.com/lack-io/vine/service/debug/trace"
 	traceMem "github.com/lack-io/vine/service/debug/trace/memory"
 	"github.com/lack-io/vine/service/network/transport"
@@ -40,6 +42,8 @@ func init() {
 	client.DefaultClient = clientGrpc.NewClient()
 	// default server
 	server.DefaultServer = serverGrpc.NewServer()
+	// default dao
+	dao.DefaultDao = daoNop.NewDao()
 	// default store
 	store.DefaultStore = storeMem.NewStore()
 	// default trace

@@ -24,6 +24,7 @@ import (
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/config"
 	"github.com/lack-io/vine/service/config/cmd"
+	"github.com/lack-io/vine/service/dao"
 	"github.com/lack-io/vine/service/debug/profile"
 	"github.com/lack-io/vine/service/debug/trace"
 	"github.com/lack-io/vine/service/network/transport"
@@ -41,6 +42,7 @@ type Options struct {
 	Client    client.Client
 	Config    config.Config
 	Server    server.Server
+	Dao       dao.Dao
 	Store     store.Store
 	Registry  registry.Registry
 	Runtime   runtime.Runtime
@@ -68,6 +70,7 @@ func newOptions(opts ...Option) Options {
 		Config:    config.DefaultConfig,
 		Client:    client.DefaultClient,
 		Server:    server.DefaultServer,
+		Dao:       dao.DefaultDao,
 		Store:     store.DefaultStore,
 		Registry:  registry.DefaultRegistry,
 		Runtime:   runtime.DefaultRuntime,
@@ -134,6 +137,13 @@ func Profile(p profile.Profile) Option {
 func Server(s server.Server) Option {
 	return func(o *Options) {
 		o.Server = s
+	}
+}
+
+// Dao sets the dao to use
+func Dao(d dao.Dao) Option {
+	return func(o *Options) {
+		o.Dao = d
 	}
 }
 

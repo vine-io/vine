@@ -27,6 +27,7 @@ import (
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/config"
 	configSrc "github.com/lack-io/vine/service/config/source"
+	"github.com/lack-io/vine/service/dao"
 	"github.com/lack-io/vine/service/debug/profile"
 	"github.com/lack-io/vine/service/debug/profile/http"
 	"github.com/lack-io/vine/service/debug/profile/pprof"
@@ -73,6 +74,8 @@ import (
 	// transports
 	thttp "github.com/lack-io/vine/service/network/transport/http"
 	tmem "github.com/lack-io/vine/service/network/transport/memory"
+
+	daoNop "github.com/lack-io/vine/service/dao/nop"
 
 	// stores
 	fileStore "github.com/lack-io/vine/service/store/bolt"
@@ -234,6 +237,21 @@ var (
 			Usage:   "Selector used to pick nodes for querying",
 		},
 		&cli.StringFlag{
+			Name:    "dao",
+			EnvVars: []string{"VINE_DAO"},
+			Usage:   "Dao used for database service",
+		},
+		&cli.StringFlag{
+			Name:    "dao-dialect",
+			EnvVars: []string{"VINE_DAO_DIALECT"},
+			Usage:   "Database option for the underlying dao",
+		},
+		&cli.StringFlag{
+			Name:    "dao-dsn",
+			EnvVars: []string{"VINE_DSN"},
+			Usage:   "DSN database driver name for underlying dao",
+		},
+		&cli.StringFlag{
 			Name:    "store",
 			EnvVars: []string{"VINE_STORE"},
 			Usage:   "Store used for key-value storage",
@@ -379,6 +397,10 @@ var (
 		"service": svcRuntime.NewRuntime,
 	}
 
+	DefaultDaos = map[string]func(...dao.Option) dao.Dao{
+		"nop": daoNop.NewDao,
+	}
+
 	DefaultStores = map[string]func(...store.Option) store.Store{
 		"file":    fileStore.NewStore,
 		"memory":  memStore.NewStore,
@@ -432,6 +454,7 @@ func newCmd(opts ...Option) Cmd {
 		Servers:    DefaultServers,
 		Transports: DefaultTransports,
 		Runtimes:   DefaultRuntimes,
+		Daos:       DefaultDaos,
 		Stores:     DefaultStores,
 		Tracers:    DefaultTracers,
 		Auths:      DefaultAuths,

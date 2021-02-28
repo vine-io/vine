@@ -20,6 +20,7 @@ import (
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/config"
+	"github.com/lack-io/vine/service/dao"
 	"github.com/lack-io/vine/service/debug/profile"
 	"github.com/lack-io/vine/service/debug/trace"
 	"github.com/lack-io/vine/service/network/transport"
@@ -44,6 +45,7 @@ type Options struct {
 	Client    *client.Client
 	Server    *server.Server
 	Runtime   *runtime.Runtime
+	Dao       *dao.Dao
 	Store     *store.Store
 	Tracer    *trace.Tracer
 	Auth      *auth.Auth
@@ -57,6 +59,7 @@ type Options struct {
 	Servers    map[string]func(...server.Option) server.Server
 	Transports map[string]func(...transport.Option) transport.Transport
 	Runtimes   map[string]func(...runtime.Option) runtime.Runtime
+	Daos       map[string]func(...dao.Option) dao.Dao
 	Stores     map[string]func(...store.Option) store.Store
 	Tracers    map[string]func(...trace.Option) trace.Tracer
 	Auths      map[string]func(...auth.Option) auth.Auth
@@ -135,6 +138,12 @@ func Client(c *client.Client) Option {
 func Server(s *server.Server) Option {
 	return func(o *Options) {
 		o.Server = s
+	}
+}
+
+func Dao(d *dao.Dao) Option {
+	return func(o *Options) {
+		o.Dao = d
 	}
 }
 
@@ -222,5 +231,12 @@ func NewTracer(name string, t func(...trace.Option) trace.Tracer) Option {
 func NewAuth(name string, t func(...auth.Option) auth.Auth) Option {
 	return func(o *Options) {
 		o.Auths[name] = t
+	}
+}
+
+// New dao func
+func NewDao(name string, t func(...dao.Option) dao.Dao) Option {
+	return func(o *Options) {
+		o.Daos[name] = t
 	}
 }
