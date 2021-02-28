@@ -17,10 +17,23 @@ package dao
 type PredicateOp int32
 
 const (
-	FirstOp PredicateOp = iota
-	LastOp
-	OrderOp
-	LimitOp
+	OpFirst PredicateOp = iota
+	OpLast
+	OpOrder
+	OpLimit
+
+	OpAnd   // AND
+	OpOr    // OR
+	OpEQ    // ==
+	OpNEQ   // <>
+	OpGT    // >
+	OpGTE   // >=
+	OpLT    // <
+	OpLTE   // <=
+	OpNot   // not
+	OpIn    // in
+	OpLike  // like
+	OpKeyEQ // map key equal
 )
 
 type Predication struct {
@@ -33,19 +46,19 @@ type P func(*Predication)
 
 func First() P {
 	return func(p *Predication) {
-		p.Op = FirstOp
+		p.Op = OpFirst
 	}
 }
 
 func Last() P {
 	return func(p *Predication) {
-		p.Op = LastOp
+		p.Op = OpLast
 	}
 }
 
 func OrderBy(column string, desc bool) P {
 	return func(p *Predication) {
-		p.Op = OrderOp
+		p.Op = OpOrder
 		p.Expr = column
 		if desc {
 			p.Expr += " DESC"
@@ -55,7 +68,7 @@ func OrderBy(column string, desc bool) P {
 
 func Limit(limit, offset int32) P {
 	return func(p *Predication) {
-		p.Op = LimitOp
+		p.Op = OpLimit
 		p.Vars = []interface{}{limit, offset}
 	}
 }
