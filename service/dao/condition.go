@@ -36,39 +36,45 @@ const (
 	OpKeyEQ // map key equal
 )
 
-type Predication struct {
+type Predicate struct {
 	Op   PredicateOp
 	Expr string
 	Vars []interface{}
 }
 
-type P func(*Predication)
+type Predicates map[PredicateOp]*Predicate
+
+type P func(*Predicates)
 
 func First() P {
-	return func(p *Predication) {
-		p.Op = OpFirst
+	return func(ps *Predicates) {
+		(*ps)[OpFirst] = &Predicate{Op: OpFirst}
 	}
 }
 
 func Last() P {
-	return func(p *Predication) {
-		p.Op = OpLast
+	return func(ps *Predicates) {
+		(*ps)[OpLast] = &Predicate{Op: OpLast}
 	}
 }
 
 func OrderBy(column string, desc bool) P {
-	return func(p *Predication) {
+	return func(ps *Predicates) {
+		p := Predicate{}
 		p.Op = OpOrder
 		p.Expr = column
 		if desc {
 			p.Expr += " DESC"
 		}
+		(*ps)[OpOrder] = &p
 	}
 }
 
 func Limit(limit, offset int32) P {
-	return func(p *Predication) {
+	return func(ps *Predicates) {
+		p := Predicate{}
 		p.Op = OpLimit
 		p.Vars = []interface{}{limit, offset}
+		(*ps)[OpLimit] = &p
 	}
 }
