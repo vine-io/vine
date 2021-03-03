@@ -7,16 +7,4 @@ option go_package = "github.com/lack-io/vine/proto/services/dao;dao";
 import "github.com/lack-io/vine/proto/apis/dao/dao.proto";
 
 service Dao {
-  rpc Migrate(MigrateRequest) returns (EmptyResponse) {};
-  rpc Create(dao.CreationOption) returns (dao.Result) {};
-  rpc Query(dao.QueryOption) returns (dao.Result) {};
-  rpc Update(dao.UpdateOption) returns (dao.Result) {};
-  rpc Delete(dao.DeletionOption) returns (dao.Result) {};
-  rpc Watch(dao.WatchOption) returns (stream dao.WatchResult) {};
 }
-
-message MigrateRequest {
-  repeated dao.Schema schemas = 1;
-}
-
-message EmptyResponse {}

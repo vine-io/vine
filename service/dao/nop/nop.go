@@ -50,6 +50,10 @@ type nopDB struct {
 	err error
 }
 
+func (db nopDB) JSONQuery(predicate *dao.Predicate) dao.DB {
+	panic("implement me")
+}
+
 func (db nopDB) WithContext(ctx context.Context) dao.DB {
 	return db
 }

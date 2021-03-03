@@ -33,13 +33,16 @@ type Model interface {
 	Create(ctx context.Context) error
 	FindOne(ctx context.Context, dest interface{}, ps ...P) error
 	FindAll(ctx context.Context, dest interface{}, ps ...P) error
-	Updates(ctx context.Context, ps ...P) error
+	Update(ctx context.Context, ps ...P) error
+	BatchUpdate(ctx context.Context, ps ...P) error
 	Delete(ctx context.Context, ps ...P) error
+	BatchDelete(ctx context.Context, ps ...P) error
 }
 
 type Schema interface {
-	Name() string
+	TableName() string
 	Fields() []string
+	PrimaryKey() string
 	From(Model) Schema
 	To() Model
 }
@@ -74,6 +77,7 @@ type DB interface {
 	Begin(opts ...*sql.TxOptions) DB
 	Rollback() DB
 	Commit() DB
+	JSONQuery(predicate *Predicate) DB
 	Err() error
 }
 
