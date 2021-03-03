@@ -161,3 +161,6 @@ curl -H 'Content-Type: application/json' -d '{}' http://localhost:8080/api/vine
 - [ ] 添加 protoc-gen-cli 生成服务的客户端命令行
 - [ ] 提供接口，将 openapi 输出 pdf，Markdown 格式
 - [ ] 完善 Vine 文档
+- [ ] 服务热重启
+- [ ] 服务自动升级
+- [ ] 部署工具
