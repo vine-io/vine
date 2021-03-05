@@ -31,6 +31,8 @@ require (
 	github.com/hashicorp/hcl v1.0.0
 	github.com/hpcloud/tail v1.0.0
 	github.com/imdario/mergo v0.3.11
+	github.com/jinzhu/inflection v1.0.0
+	github.com/jinzhu/now v1.1.1
 	github.com/json-iterator/go v1.1.10
 	github.com/kr/pretty v0.2.1
 	github.com/lack-io/cli v1.0.2

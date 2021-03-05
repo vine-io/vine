@@ -22,6 +22,10 @@ type CreateClausesInterface interface {
 	CreateClauses(*Field) []clause.Interface
 }
 
+type QueryClausesInterface interface {
+	QueryClauses(*Field) []clause.Interface
+}
+
 type UpdateClausesInterface interface {
 	UpdateClauses(*Field) []clause.Interface
 }

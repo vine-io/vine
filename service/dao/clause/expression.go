@@ -166,7 +166,7 @@ type IN struct {
 	Values []interface{}
 }
 
-func (in *IN) Build(builder Builder) {
+func (in IN) Build(builder Builder) {
 	builder.WriteQuoted(in.Column)
 
 	switch len(in.Values) {
@@ -187,7 +187,7 @@ func (in *IN) Build(builder Builder) {
 	}
 }
 
-func (in *IN) NegationBuild(builder Builder) {
+func (in IN) NegationBuild(builder Builder) {
 	switch len(in.Values) {
 	case 0:
 	case 1:

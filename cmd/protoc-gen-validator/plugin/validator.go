@@ -80,7 +80,7 @@ const (
 )
 
 // validator is an implementation of the Go protocol buffer compiler's
-// plugin architecture.  It generates bindings for validator support.
+// plugin architecture. It generates bindings for validator support.
 type validator struct {
 	gen *generator.Generator
 }
@@ -106,9 +106,6 @@ var (
 // Init initializes the plugin.
 func (g *validator) Init(gen *generator.Generator) {
 	g.gen = gen
-	//isPkg = generator.RegisterUniquePackageName("is", nil)
-	//stringsPkg = generator.RegisterUniquePackageName("strings", nil)
-	//errorsPkg = generator.RegisterUniquePackageName("errors", nil)
 }
 
 // Given a type name defined in a .proto, return its object.

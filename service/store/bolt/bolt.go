@@ -75,7 +75,7 @@ func key(database, table string) string {
 	return database + ":" + table
 }
 
-func (m *boltStore) delete(fd *boltHandle, key string) error {
+func (s *boltStore) delete(fd *boltHandle, key string) error {
 	return fd.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(dataBucket))
 		if b == nil {
@@ -85,22 +85,22 @@ func (m *boltStore) delete(fd *boltHandle, key string) error {
 	})
 }
 
-func (m *boltStore) init(opts ...store.Option) error {
+func (s *boltStore) init(opts ...store.Option) error {
 	for _, o := range opts {
-		o(&m.options)
+		o(&s.options)
 	}
 
-	if m.options.Database == "" {
-		m.options.Database = DefaultDatabase
+	if s.options.Database == "" {
+		s.options.Database = DefaultDatabase
 	}
 
-	if m.options.Table == "" {
+	if s.options.Table == "" {
 		// bbolt requires bucketname to not be empty
-		m.options.Table = DefaultTable
+		s.options.Table = DefaultTable
 	}
 
 	// create a directory /tmp/vine
-	dir := filepath.Join(DefaultDir, m.options.Database)
+	dir := filepath.Join(DefaultDir, s.options.Database)
 	// Ignoring this as the folder might exist.
 	// Reads/Writes updates will return with sensible error messages
 	// about the dir not existing in case this cannot create the path anyway
@@ -109,18 +109,18 @@ func (m *boltStore) init(opts ...store.Option) error {
 	return nil
 }
 
-func (f *boltStore) getDB(database, table string) (*boltHandle, error) {
+func (s *boltStore) getDB(database, table string) (*boltHandle, error) {
 	if len(database) == 0 {
-		database = f.options.Database
+		database = s.options.Database
 	}
 	if len(table) == 0 {
-		table = f.options.Table
+		table = s.options.Table
 	}
 
 	k := key(database, table)
-	f.RLock()
-	fd, ok := f.handles[k]
-	f.RUnlock()
+	s.RLock()
+	fd, ok := s.handles[k]
+	s.RUnlock()
 
 	// return the bolt handle
 	if ok {
@@ -128,9 +128,9 @@ func (f *boltStore) getDB(database, table string) (*boltHandle, error) {
 	}
 
 	// double check locking
-	f.Lock()
-	defer f.Unlock()
-	if fd, ok := f.handles[k]; ok {
+	s.Lock()
+	defer s.Unlock()
+	if fd, ok := s.handles[k]; ok {
 		return fd, nil
 	}
 
@@ -153,12 +153,12 @@ func (f *boltStore) getDB(database, table string) (*boltHandle, error) {
 		key: k,
 		db:  db,
 	}
-	f.handles[k] = fd
+	s.handles[k] = fd
 
 	return fd, nil
 }
 
-func (m *boltStore) list(fd *boltHandle, limit, offset uint) []string {
+func (s *boltStore) list(fd *boltHandle, limit, offset uint) []string {
 	var allItems []string
 
 	fd.db.View(func(tx *bolt.Tx) error {
@@ -212,7 +212,7 @@ func (m *boltStore) list(fd *boltHandle, limit, offset uint) []string {
 	return allKeys
 }
 
-func (m *boltStore) get(fd *boltHandle, k string) (*store.Record, error) {
+func (s *boltStore) get(fd *boltHandle, k string) (*store.Record, error) {
 	var value []byte
 
 	fd.db.View(func(tx *bolt.Tx) error {
@@ -255,7 +255,7 @@ func (m *boltStore) get(fd *boltHandle, k string) (*store.Record, error) {
 	return newRecord, nil
 }
 
-func (m *boltStore) set(fd *boltHandle, r *store.Record) error {
+func (s *boltStore) set(fd *boltHandle, r *store.Record) error {
 	// copy the incoming record and then
 	// convert the expiry in to a hard timestamp
 	item := &record{}
@@ -287,41 +287,41 @@ func (m *boltStore) set(fd *boltHandle, r *store.Record) error {
 	})
 }
 
-func (f *boltStore) Close() error {
-	f.Lock()
-	defer f.Unlock()
-	for k, v := range f.handles {
+func (s *boltStore) Close() error {
+	s.Lock()
+	defer s.Unlock()
+	for k, v := range s.handles {
 		v.db.Close()
-		delete(f.handles, k)
+		delete(s.handles, k)
 	}
 	return nil
 }
 
-func (f *boltStore) Init(opts ...store.Option) error {
-	return f.init(opts...)
+func (s *boltStore) Init(opts ...store.Option) error {
+	return s.init(opts...)
 }
 
-func (m *boltStore) Delete(key string, opts ...store.DeleteOption) error {
+func (s *boltStore) Delete(key string, opts ...store.DeleteOption) error {
 	var deleteOptions store.DeleteOptions
 	for _, o := range opts {
 		o(&deleteOptions)
 	}
 
-	fd, err := m.getDB(deleteOptions.Database, deleteOptions.Table)
+	fd, err := s.getDB(deleteOptions.Database, deleteOptions.Table)
 	if err != nil {
 		return err
 	}
 
-	return m.delete(fd, key)
+	return s.delete(fd, key)
 }
 
-func (m *boltStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
+func (s *boltStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
 	var readOpts store.ReadOptions
 	for _, o := range opts {
 		o(&readOpts)
 	}
 
-	fd, err := m.getDB(readOpts.Database, readOpts.Table)
+	fd, err := s.getDB(readOpts.Database, readOpts.Table)
 	if err != nil {
 		return nil, err
 	}
@@ -332,7 +332,7 @@ func (m *boltStore) Read(key string, opts ...store.ReadOption) ([]*store.Record,
 	// TODO: do range scan here rather than listing all keys
 	if readOpts.Prefix || readOpts.Suffix {
 		// list the keys
-		k := m.list(fd, readOpts.Limit, readOpts.Offset)
+		k := s.list(fd, readOpts.Limit, readOpts.Offset)
 
 		// check for prefix and suffix
 		for _, v := range k {
@@ -351,7 +351,7 @@ func (m *boltStore) Read(key string, opts ...store.ReadOption) ([]*store.Record,
 	var results []*store.Record
 
 	for _, k := range keys {
-		r, err := m.get(fd, k)
+		r, err := s.get(fd, k)
 		if err != nil {
 			return results, err
 		}
@@ -361,13 +361,13 @@ func (m *boltStore) Read(key string, opts ...store.ReadOption) ([]*store.Record,
 	return results, nil
 }
 
-func (m *boltStore) Write(r *store.Record, opts ...store.WriteOption) error {
+func (s *boltStore) Write(r *store.Record, opts ...store.WriteOption) error {
 	var writeOpts store.WriteOptions
 	for _, o := range opts {
 		o(&writeOpts)
 	}
 
-	fd, err := m.getDB(writeOpts.Database, writeOpts.Table)
+	fd, err := s.getDB(writeOpts.Database, writeOpts.Table)
 	if err != nil {
 		return err
 	}
@@ -391,30 +391,30 @@ func (m *boltStore) Write(r *store.Record, opts ...store.WriteOption) error {
 			newRecord.Metadata[k] = v
 		}
 
-		return m.set(fd, &newRecord)
+		return s.set(fd, &newRecord)
 	}
 
-	return m.set(fd, r)
+	return s.set(fd, r)
 }
 
-func (m *boltStore) Options() store.Options {
-	return m.options
+func (s *boltStore) Options() store.Options {
+	return s.options
 }
 
-func (m *boltStore) List(opts ...store.ListOption) ([]string, error) {
+func (s *boltStore) List(opts ...store.ListOption) ([]string, error) {
 	var listOptions store.ListOptions
 
 	for _, o := range opts {
 		o(&listOptions)
 	}
 
-	fd, err := m.getDB(listOptions.Database, listOptions.Table)
+	fd, err := s.getDB(listOptions.Database, listOptions.Table)
 	if err != nil {
 		return nil, err
 	}
 
 	// TODO apply prefix/suffix in range query
-	allKeys := m.list(fd, listOptions.Limit, listOptions.Offset)
+	allKeys := s.list(fd, listOptions.Limit, listOptions.Offset)
 
 	if len(listOptions.Prefix) > 0 {
 		var prefixKeys []string
@@ -439,6 +439,6 @@ func (m *boltStore) List(opts ...store.ListOption) ([]string, error) {
 	return allKeys, nil
 }
 
-func (m *boltStore) String() string {
+func (s *boltStore) String() string {
 	return "bolt"
 }
