@@ -397,8 +397,8 @@ var (
 		"service": svcRuntime.NewRuntime,
 	}
 
-	DefaultDaos = map[string]func(...dao.Option) dao.Dao{
-		"nop": daoNop.NewDao,
+	DefaultDaos = map[string]func(...dao.Option) dao.Dialector{
+		"nop": daoNop.NewDialector,
 	}
 
 	DefaultStores = map[string]func(...store.Option) store.Store{

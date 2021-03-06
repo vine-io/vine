@@ -25,6 +25,7 @@ import (
 
 	"github.com/lack-io/vine/service/dao/clause"
 	"github.com/lack-io/vine/service/dao/schema"
+	"github.com/lack-io/vine/service/dao/utils"
 )
 
 // Statement statement
@@ -37,7 +38,7 @@ type Statement struct {
 	Dest                 interface{}
 	ReflectValue         reflect.Value
 	Clauses              map[string]clause.Clause
-	Distinct             map[string]clause.Clause
+	Distinct             bool
 	Selects              []string
 	Omits                []string
 	Joins                []join
@@ -89,24 +90,24 @@ func (stmt *Statement) QuoteTo(writer clause.Writer, field interface{}) {
 			if stmt.TableExpr != nil {
 				stmt.TableExpr.Build(stmt)
 			} else {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Table)
+				stmt.DB.Dialect.QuoteTo(writer, stmt.Table)
 			}
 		} else if v.Raw {
 			writer.WriteString(v.Name)
 		} else {
-			stmt.DB.Dialector.QuoteTo(writer, v.Name)
+			stmt.DB.Dialect.QuoteTo(writer, v.Name)
 		}
 
 		if v.Alias != "" {
 			writer.WriteByte(' ')
-			stmt.DB.Dialector.QuoteTo(writer, v.Alias)
+			stmt.DB.Dialect.QuoteTo(writer, v.Alias)
 		}
 	case clause.Column:
 		if v.Table != "" {
 			if v.Table == clause.CurrentTable {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Table)
+				stmt.DB.Dialect.QuoteTo(writer, stmt.Table)
 			} else {
-				stmt.DB.Dialector.QuoteTo(writer, v.Table)
+				stmt.DB.Dialect.QuoteTo(writer, v.Table)
 			}
 			writer.WriteByte('.')
 		}
@@ -115,19 +116,19 @@ func (stmt *Statement) QuoteTo(writer clause.Writer, field interface{}) {
 			if stmt.Schema == nil {
 				stmt.DB.AddError(ErrModelValueRequired)
 			} else if stmt.Schema.PrioritizedPrimaryField != nil {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Schema.PrioritizedPrimaryField.DBName)
+				stmt.DB.Dialect.QuoteTo(writer, stmt.Schema.PrioritizedPrimaryField.DBName)
 			} else if len(stmt.Schema.DBNames) > 0 {
-				stmt.DB.Dialector.QuoteTo(writer, stmt.Schema.DBNames[0])
+				stmt.DB.Dialect.QuoteTo(writer, stmt.Schema.DBNames[0])
 			}
 		} else if v.Raw {
 			writer.WriteString(v.Name)
 		} else {
-			stmt.DB.Dialector.QuoteTo(writer, v.Name)
+			stmt.DB.Dialect.QuoteTo(writer, v.Name)
 		}
 
 		if v.Alias != "" {
 			writer.WriteString(" AS ")
-			stmt.DB.Dialector.QuoteTo(writer, v.Alias)
+			stmt.DB.Dialect.QuoteTo(writer, v.Alias)
 		}
 	case []clause.Column:
 		writer.WriteByte('(')
@@ -139,18 +140,18 @@ func (stmt *Statement) QuoteTo(writer clause.Writer, field interface{}) {
 		}
 		writer.WriteByte(')')
 	case string:
-		stmt.DB.Dialector.QuoteTo(writer, v)
+		stmt.DB.Dialect.QuoteTo(writer, v)
 	case []string:
 		writer.WriteByte('(')
 		for idx, d := range v {
 			if idx > 0 {
 				writer.WriteString(",")
 			}
-			stmt.DB.Dialector.QuoteTo(writer, d)
+			stmt.DB.Dialect.QuoteTo(writer, d)
 		}
 		writer.WriteByte(')')
 	default:
-		stmt.DB.Dialector.QuoteTo(writer, fmt.Sprint(field))
+		stmt.DB.Dialect.QuoteTo(writer, fmt.Sprint(field))
 	}
 }
 
@@ -179,10 +180,10 @@ func (stmt *Statement) AddVar(writer clause.Writer, vars ...interface{}) {
 			v.Build(stmt)
 		case driver.Valuer:
 			stmt.Vars = append(stmt.Vars, v)
-			stmt.DB.Dialector.BindVarTo(writer, stmt, v)
+			stmt.DB.Dialect.BindVarTo(writer, stmt, v)
 		case []byte:
 			stmt.Vars = append(stmt.Vars, v)
-			stmt.DB.Dialector.BindVarTo(writer, stmt, v)
+			stmt.DB.Dialect.BindVarTo(writer, stmt, v)
 		case []interface{}:
 			if len(v) > 0 {
 				writer.WriteByte('(')
@@ -203,7 +204,7 @@ func (stmt *Statement) AddVar(writer clause.Writer, vars ...interface{}) {
 				for _, vv := range vars {
 					subdb.Statement.Vars = append(subdb.Statement.Vars, vv)
 					bindvar := strings.Builder{}
-					v.Dialector.BindVarTo(&bindvar, subdb.Statement, vv)
+					v.Dialect.BindVarTo(&bindvar, subdb.Statement, vv)
 					sql = strings.Replace(sql, bindvar.String(), "?", 1)
 				}
 
@@ -238,7 +239,7 @@ func (stmt *Statement) AddVar(writer clause.Writer, vars ...interface{}) {
 				}
 			default:
 				stmt.Vars = append(stmt.Vars, v)
-				stmt.DB.Dialector.BindVarTo(writer, stmt, v)
+				stmt.DB.Dialect.BindVarTo(writer, stmt, v)
 			}
 		}
 	}
@@ -453,8 +454,213 @@ func (stmt *Statement) Parse(value interface{}) (err error) {
 
 func (stmt *Statement) clone() *Statement {
 	newStmt := &Statement{
-
+		TableExpr:            stmt.TableExpr,
+		Table:                stmt.Table,
+		Model:                stmt.Model,
+		Unscoped:             stmt.Unscoped,
+		Dest:                 stmt.Dest,
+		ReflectValue:         stmt.ReflectValue,
+		Clauses:              map[string]clause.Clause{},
+		Distinct:             stmt.Distinct,
+		Selects:              stmt.Selects,
+		Omits:                stmt.Omits,
+		Preloads:             map[string][]interface{}{},
+		ConnPool:             stmt.ConnPool,
+		Context:              stmt.Context,
+		RaiseErrorOnNotFound: stmt.RaiseErrorOnNotFound,
+		SkipHooks:            stmt.SkipHooks,
 	}
 
+	if stmt.SQL.Len() > 0 {
+		newStmt.SQL.WriteString(stmt.SQL.String())
+		newStmt.Vars = make([]interface{}, 0, len(stmt.Vars))
+		newStmt.Vars = append(newStmt.Vars, stmt.Vars...)
+	}
+
+	for k, v := range stmt.Clauses {
+		newStmt.Clauses[k] = v
+	}
+
+	for k, p := range stmt.Preloads {
+		newStmt.Preloads[k] = p
+	}
+
+	if len(stmt.Joins) > 0 {
+		newStmt.Joins = make([]join, len(stmt.Joins))
+		copy(newStmt.Joins, stmt.Joins)
+	}
+
+	if len(stmt.scopes) > 0 {
+		newStmt.scopes = make([]func(*DB) *DB, len(stmt.scopes))
+		copy(newStmt.scopes, stmt.scopes)
+	}
+
+	stmt.Settings.Range(func(k, v interface{}) bool {
+		newStmt.Settings.Store(k, v)
+		return true
+	})
+
 	return newStmt
+}
+
+// Helpers
+// SetColumn set column's value
+// 	stmt.SetColumn("Name", "aa") // Hooks Method
+//	stmt.SetColumn("Name", "aa", true) // Callbacks Method
+func (stmt *Statement) SetColumn(name string, value interface{}, fromCallbacks ...bool) {
+	if v, ok := stmt.Dest.(map[string]interface{}); ok {
+		v[name] = value
+	} else if v, ok := stmt.Dest.([]map[string]interface{}); ok {
+		for _, m := range v {
+			m[name] = value
+		}
+	} else if stmt.Schema != nil {
+		if field := stmt.Schema.LookUpField(name); field != nil {
+			destValue := reflect.ValueOf(stmt.Dest)
+			for destValue.Kind() == reflect.Ptr {
+				destValue = destValue.Elem()
+			}
+
+			if stmt.ReflectValue != destValue {
+				if !destValue.CanAddr() {
+					destValueCanAddr := reflect.New(destValue.Type())
+					destValueCanAddr.Elem().Set(destValue)
+					stmt.Dest = destValueCanAddr.Interface()
+					destValue = destValueCanAddr.Elem()
+				}
+
+				switch destValue.Kind() {
+				case reflect.Struct:
+					field.Set(destValue, value)
+				default:
+					stmt.AddError(ErrInvalidData)
+				}
+			}
+
+			switch stmt.ReflectValue.Kind() {
+			case reflect.Slice, reflect.Array:
+				if len(fromCallbacks) > 0 {
+					for i := 0; i < stmt.ReflectValue.Len(); i++ {
+						field.Set(stmt.ReflectValue.Index(i), value)
+					}
+				} else {
+					field.Set(stmt.ReflectValue.Index(stmt.CurDestIndex), value)
+				}
+			case reflect.Struct:
+				field.Set(stmt.ReflectValue, value)
+			}
+		} else {
+			stmt.AddError(ErrInvalidField)
+		}
+	} else {
+		stmt.AddError(ErrInvalidField)
+	}
+}
+
+// Changed check model changed or not when updating
+func (stmt *Statement) Changed(fields ...string) bool {
+	modelValue := stmt.ReflectValue
+	switch modelValue.Kind() {
+	case reflect.Slice, reflect.Array:
+		modelValue = stmt.ReflectValue.Index(stmt.CurDestIndex)
+	}
+
+	selectColumns, restricted := stmt.SelectAndOmitColumns(false, true)
+	changed := func(field *schema.Field) bool {
+		fieldValue, _ := field.ValueOf(modelValue)
+		if v, ok := selectColumns[field.DBName]; (ok && v) || (!ok && !restricted) {
+			if v, ok := stmt.Dest.(map[string]interface{}); ok {
+				if fv, ok := v[field.Name]; ok {
+					return !utils.AssertEqual(fv, fieldValue)
+				} else if fv, ok := v[field.DBName]; ok {
+					return !utils.AssertEqual(fv, fieldValue)
+				}
+			} else {
+				destValue := reflect.ValueOf(stmt.Dest)
+				for destValue.Kind() == reflect.Ptr {
+					destValue = destValue.Elem()
+				}
+
+				changedValue, zero := field.ValueOf(destValue)
+				return !zero && !utils.AssertEqual(changedValue, fieldValue)
+			}
+		}
+		return false
+	}
+
+	if len(fields) == 0 {
+		for _, field := range stmt.Schema.FieldsByDBName {
+			if changed(field) {
+				return true
+			}
+		}
+	} else {
+		for _, name := range fields {
+			if field := stmt.Schema.LookUpField(name); field != nil {
+				if changed(field) {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+// SelectAndOmitColumns get select and omit columns, select -> true, omit -> false
+func (stmt *Statement) SelectAndOmitColumns(requiredCreate, requiredUpdate bool) (map[string]bool, bool) {
+	results := map[string]bool{}
+	notRestricted := false
+
+	// select columns
+	for _, column := range stmt.Selects {
+		if stmt.Schema == nil {
+			results[column] = true
+		} else if column == "*" {
+			notRestricted = true
+			for _, dbName := range stmt.Schema.DBNames {
+				results[dbName] = true
+			}
+		} else if column == clause.Associations {
+			for _, rel := range stmt.Schema.Relationships.Relations {
+				results[rel.Name] = true
+			}
+		} else if field := stmt.Schema.LookUpField(column); field != nil && field.DBName != "" {
+			results[field.DBName] = true
+		} else {
+			results[column] = true
+		}
+	}
+
+	// omit columns
+	for _, omit := range stmt.Omits {
+		if stmt.Schema != nil {
+			results[omit] = false
+		} else if omit == clause.Associations {
+			for _, rel := range stmt.Schema.Relationships.Relations {
+				results[rel.Name] = false
+			}
+		} else if field := stmt.Schema.LookUpField(omit); field != nil && field.DBName != "" {
+			results[field.DBName] = false
+		} else {
+			results[omit] = false
+		}
+	}
+
+	if stmt.Schema != nil {
+		for _, field := range stmt.Schema.FieldsByName {
+			name := field.DBName
+			if name == "" {
+				name = field.Name
+			}
+
+			if requiredCreate && !field.Creatable {
+				results[name] = false
+			} else if requiredUpdate && !field.Updatable {
+				results[name] = false
+			}
+		}
+	}
+
+	return results, !notRestricted && len(stmt.Selects) > 0
 }

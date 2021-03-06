@@ -19,7 +19,7 @@ import (
 
 // Migrator returns migrator
 func (db *DB) Migrator() Migrator {
-	return db.Dialector.Migrator(db.Session(&Session{}))
+	return db.Dialect.Migrator(db.Session(&Session{}))
 }
 
 // AutoMigrate run auto migration for given models
@@ -38,7 +38,7 @@ type ColumnType interface {
 	Name() string
 	DatabaseTypeName() string
 	Length() (length int64, ok bool)
-	DecimalSize(precision int64, scale int64, ok bool)
+	DecimalSize() (precision int64, scale int64, ok bool)
 	Nullable() (nullable bool, ok bool)
 }
 
@@ -53,13 +53,13 @@ type Migrator interface {
 	// Tables
 	CreateTable(dst ...interface{}) error
 	DropTable(dst ...interface{}) error
-	HasTable(dst ...interface{}) error
+	HasTable(dst interface{}) bool
 	RenameTable(oldName, newName interface{}) error
 
 	// Columns
 	AddColumn(dst interface{}, field string) error
 	DropColumn(dst interface{}, field string) error
-	AfterColumn(dst interface{}, field string) error
+	AlterColumn(dst interface{}, field string) error
 	MigrateColumn(dst interface{}, field *schema.Field, columnType ColumnType) error
 	HasColumn(dst interface{}, field string) bool
 	RenameColumn(dst interface{}, oldName, field string) error
@@ -77,6 +77,6 @@ type Migrator interface {
 	// Indexes
 	CreateIndex(dst interface{}, name string) error
 	DropIndex(dst interface{}, name string) error
-	HasIndex(dst interface{}, name string) error
+	HasIndex(dst interface{}, name string) bool
 	RenameIndex(dst interface{}, oldName, newName string) error
 }

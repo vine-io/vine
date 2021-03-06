@@ -31,9 +31,9 @@ type NegationExpressionBuilder interface {
 
 // Expr raw expression
 type Expr struct {
-	SQL             string
-	Vars            []interface{}
-	WithParentheses bool
+	SQL                string
+	Vars               []interface{}
+	WithoutParentheses bool
 }
 
 // Build build raw expression
@@ -45,7 +45,7 @@ func (expr Expr) Build(builder Builder) {
 
 	for _, v := range []byte(expr.SQL) {
 		if v == '?' && len(expr.Vars) > idx {
-			if afterParenthesis || expr.WithParentheses {
+			if afterParenthesis || expr.WithoutParentheses {
 				if _, ok := expr.Vars[idx].(driver.Valuer); ok {
 					builder.AddVar(builder, expr.Vars[idx])
 				} else {
@@ -138,7 +138,6 @@ func (expr NamedExpr) Build(builder Builder) {
 					builder.AddVar(builder, nv)
 				} else {
 					builder.WriteByte('@')
-
 					builder.WriteString(string(name))
 				}
 				inName = false
@@ -171,7 +170,7 @@ func (in IN) Build(builder Builder) {
 
 	switch len(in.Values) {
 	case 0:
-		builder.WriteString(" IN (NULL) ")
+		builder.WriteString(" IN (NULL)")
 	case 1:
 		if _, ok := in.Values[0].([]interface{}); !ok {
 			builder.WriteString(" = ")
@@ -217,7 +216,7 @@ func (eq Eq) Build(builder Builder) {
 	builder.WriteQuoted(eq.Column)
 
 	if eqNil(eq.Value) {
-		builder.WriteString(" IS NULL ")
+		builder.WriteString(" IS NULL")
 	} else {
 		builder.WriteString(" = ")
 		builder.AddVar(builder, eq.Value)
@@ -322,6 +321,6 @@ func eqNil(value interface{}) bool {
 }
 
 func eqNilReflect(value interface{}) bool {
-	rv := reflect.ValueOf(value)
-	return rv.Kind() == reflect.Ptr && rv.IsNil()
+	reflectValue := reflect.ValueOf(value)
+	return reflectValue.Kind() == reflect.Ptr && reflectValue.IsNil()
 }

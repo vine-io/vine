@@ -45,7 +45,7 @@ type Options struct {
 	Client    *client.Client
 	Server    *server.Server
 	Runtime   *runtime.Runtime
-	Dao       *dao.Dao
+	Dialect   *dao.Dialect
 	Store     *store.Store
 	Tracer    *trace.Tracer
 	Auth      *auth.Auth
@@ -59,7 +59,7 @@ type Options struct {
 	Servers    map[string]func(...server.Option) server.Server
 	Transports map[string]func(...transport.Option) transport.Transport
 	Runtimes   map[string]func(...runtime.Option) runtime.Runtime
-	Daos       map[string]func(...dao.Option) dao.Dao
+	Dialects   map[string]func(...dao.Option) dao.Dialect
 	Stores     map[string]func(...store.Option) store.Store
 	Tracers    map[string]func(...trace.Option) trace.Tracer
 	Auths      map[string]func(...auth.Option) auth.Auth
@@ -141,9 +141,9 @@ func Server(s *server.Server) Option {
 	}
 }
 
-func Dao(d *dao.Dao) Option {
+func Dialect(d *dao.Dialect) Option {
 	return func(o *Options) {
-		o.Dao = d
+		o.Dialect = d
 	}
 }
 
@@ -235,8 +235,8 @@ func NewAuth(name string, t func(...auth.Option) auth.Auth) Option {
 }
 
 // New dao func
-func NewDao(name string, t func(...dao.Option) dao.Dao) Option {
+func NewDialect(name string, t func(...dao.Option) dao.Dialect) Option {
 	return func(o *Options) {
-		o.Daos[name] = t
+		o.Dialects[name] = t
 	}
 }

@@ -14,69 +14,82 @@
 
 package dao
 
-//
-//type Options struct {
-//	// Dialect holds the value of database dialect
-//	Dialect string
-//	// DSN holds the value of database driver name
-//	DSN string
-//	// MaxIdleConns holds the maximum number of connections in the idle connection pool.
-//	MaxIdleConns int32
-//	// MaxOpenConns holds the maximum number of open connections to the database.
-//	MaxOpenConns int32
-//	// ConnMaxLifeTime holds the maximum amount of time a connection may be reused.
-//	ConnMaxLifeTime time.Duration
-//	// Other options for implementations of the interface
-//	// can be stored in a context
-//	Context context.Context
-//}
-//
-//func NewOptions(opts ...Option) Options {
-//	options := Options{
-//		MaxIdleConns:    DefaultMaxIdleConns,
-//		MaxOpenConns:    DefaultMaxOpenConns,
-//		ConnMaxLifeTime: DefaultConnMaxLifetime,
-//	}
-//
-//	for _, opt := range opts {
-//		opt(&options)
-//	}
-//	return options
-//}
-//
-//type Option func(*Options)
-//
-//// WithDialect sets database dialect, like MySQL, Postgres, SQLite, etc
-//func WithDialect(dialect string) Option {
-//	return func(o *Options) {
-//		o.Dialect = dialect
-//	}
-//}
-//
-//// WithDSN sets DSN
-//func WithDSN(dsn string) Option {
-//	return func(o *Options) {
-//		o.DSN = dsn
-//	}
-//}
-//
-//// WithMaxIdleConns sets the maximum number of connections in the idle connection pool.
-//func WithMaxIdleConns(conns int32) Option {
-//	return func(o *Options) {
-//		o.MaxIdleConns = conns
-//	}
-//}
-//
-//// WithMaxOpenConns sets the maximum number of open connections to the database.
-//func WithMaxOpenConns(conns int32) Option {
-//	return func(o *Options) {
-//		o.MaxOpenConns = conns
-//	}
-//}
-//
-//// WithConnMaxLifeTime sets the maximum amount of time a connection may be reused.
-//func WithConnMaxLifeTime(duration time.Duration) Option {
-//	return func(o *Options) {
-//		o.ConnMaxLifeTime = duration
-//	}
-//}
+import (
+	"sync"
+	"time"
+
+	"github.com/lack-io/vine/service/dao/clause"
+	"github.com/lack-io/vine/service/dao/schema"
+)
+
+// Options DAO configuration
+type Options struct {
+	DSN string
+	// You can disable it by setting `SkipDefaultTransaction` to true
+	SkipDefaultTransaction bool
+	// NamingStrategy tables, columns naming strategy
+	NamingStrategy schema.Namer
+	// FullSaveAssociations full save associations
+	FullSaveAssociations bool
+	// NowFunc the function to be used when creating a new timestamp
+	NowFunc func() time.Time
+	// DryRun generate sql without execute
+	DryRun bool
+	// PrepareStmt executes the given query in cached statement
+	PrepareStmt bool
+	// DisableAutomaticPing
+	DisableAutomaticPing bool
+	// DisableForeignKeyConstraintWhenMigrating
+	DisableForeignKeyConstraintWhenMigrating bool
+	// DisableNestedTransaction disable nested transaction
+	DisableNestedTransaction bool
+	// AllowGlobalUpdate allow global update
+	AllowGlobalUpdate bool
+	// QueryFields executes the SQL query with all fields of the table
+	QueryFields bool
+	// CreateBatchSize default create batch size
+	CreateBatchSize int
+
+	// ClauseBuilders clause builder
+	ClauseBuilders map[string]clause.ClauseBuilder
+	// ConnPool db conn pool
+	ConnPool   ConnPool
+	callbacks  *callbacks
+	cacheStore *sync.Map
+}
+
+func NewOptions(opts ...Option) Options {
+	var options Options
+
+	for _, opt := range opts {
+		opt(&options)
+	}
+
+	if options.NamingStrategy == nil {
+		options.NamingStrategy = schema.NamingStrategy{}
+	}
+
+	if options.NowFunc == nil {
+		options.NowFunc = func() time.Time { return time.Now().Local() }
+	}
+
+	if options.cacheStore == nil {
+		options.cacheStore = &sync.Map{}
+	}
+
+	return options
+}
+
+type Option func(*Options)
+
+func DSN(dsn string) Option {
+	return func(o *Options) {
+		o.DSN = dsn
+	}
+}
+
+func Namer(namer schema.Namer) Option {
+	return func(o *Options) {
+		o.NamingStrategy = namer
+	}
+}

@@ -98,7 +98,7 @@ func parseFieldIndexes(field *Field) (indexes []Index) {
 	for _, value := range strings.Split(field.Tag.Get("dao"), ";") {
 		if value != "" {
 			v := strings.Split(value, ":")
-			k := strings.TrimSpace(strings.ToLower(v[0]))
+			k := strings.TrimSpace(strings.ToUpper(v[0]))
 			if k == "INDEX" || k == "UNIQUEINDEX" {
 				var (
 					name      string
@@ -120,8 +120,8 @@ func parseFieldIndexes(field *Field) (indexes []Index) {
 					name = field.Schema.namer.IndexName(field.Schema.Table, field.Name)
 				}
 
-				if (k == "UNIQUEINDEX") || settings["UNQIUE"] != "" {
-					settings["CLASS"] = "UNQIUE"
+				if (k == "UNIQUEINDEX") || settings["UNIQUE"] != "" {
+					settings["CLASS"] = "UNIQUE"
 				}
 
 				priority, err := strconv.Atoi(settings["PRIORITY"])
@@ -130,11 +130,12 @@ func parseFieldIndexes(field *Field) (indexes []Index) {
 				}
 
 				indexes = append(indexes, Index{
-					Name:   name,
-					Class:  settings["CLASS"],
-					Type:   settings["TYPE"],
-					Where:  settings["COMMENT"],
-					Option: settings["OPTION"],
+					Name:    name,
+					Class:   settings["CLASS"],
+					Type:    settings["TYPE"],
+					Where:   settings["WHERE"],
+					Comment: settings["COMMENT"],
+					Option:  settings["OPTION"],
 					Fields: []IndexOption{{
 						Field:      field,
 						Expression: settings["EXPRESSION"],

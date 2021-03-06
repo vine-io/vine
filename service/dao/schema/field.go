@@ -34,9 +34,9 @@ type TimeType int64
 var TimeReflectType = reflect.TypeOf(time.Time{})
 
 const (
-	UnixSecond TimeType = iota + 1
-	UnixMillisecond
-	UnixNanosecond
+	UnixSecond      TimeType = 1
+	UnixMillisecond TimeType = 2
+	UnixNanosecond  TimeType = 3
 )
 
 const (
@@ -83,7 +83,7 @@ type Field struct {
 	ReflectValueOf         func(reflect.Value) reflect.Value
 	ValueOf                func(reflect.Value) (value interface{}, zero bool)
 	Set                    func(reflect.Value, interface{}) error
-	IgnoreMigrate          bool
+	IgnoreMigration        bool
 }
 
 func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
@@ -165,7 +165,7 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 		field.HasDefaultValue = true
 	}
 
-	if num, ok := field.TagSettings["AUTUINCREMNTINCREMENT"]; ok {
+	if num, ok := field.TagSettings["AUTOINCREMENTINCREMENT"]; ok {
 		field.AutoIncrementIncrement, _ = strconv.ParseInt(num, 10, 64)
 	}
 
@@ -194,6 +194,10 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 		field.NotNull = true
 	}
 
+	if val, ok := field.TagSettings["UNIQUE"]; ok && utils.CheckTruth(val) {
+		field.Unique = true
+	}
+
 	if val, ok := field.TagSettings["COMMENT"]; ok {
 		field.Comment = val
 	}
@@ -204,6 +208,7 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 		strings.Contains(field.DefaultValue, ")") || strings.ToLower(field.DefaultValue) == "null" || field.DefaultValue == ""
 	switch reflect.Indirect(fieldValue).Kind() {
 	case reflect.Bool:
+		field.DataType = Bool
 		if field.HasDefaultValue && !skipParseDefaultValue {
 			if field.DefaultValueInterface, err = strconv.ParseBool(field.DefaultValue); err != nil {
 				schema.err = fmt.Errorf("failed to parse %v as default value for bool, got error: %v", field.DefaultValue, err)
@@ -261,7 +266,7 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 		field.DataType = DataType(dataTyper.DaoDataType())
 	}
 
-	if v, ok := field.TagSettings["AUTOCREATETIME"]; ok || (field.Name == "CreateAt" && (field.DataType == Time || field.DataType == Int || field.DataType == Uint)) {
+	if v, ok := field.TagSettings["AUTOCREATETIME"]; ok || (field.Name == "CreatedAt" && (field.DataType == Time || field.DataType == Int || field.DataType == Uint)) {
 		if strings.ToUpper(v) == "NANO" {
 			field.AutoCreateTime = UnixNanosecond
 		} else if strings.ToUpper(v) == "MILLI" {
@@ -271,13 +276,13 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 		}
 	}
 
-	if v, ok := field.TagSettings["AUTOUPDATETIME"]; ok || (field.Name == "UpdateAt" && (field.DataType == Time || field.DataType == Int || field.DataType == Uint)) {
+	if v, ok := field.TagSettings["AUTOUPDATETIME"]; ok || (field.Name == "UpdatedAt" && (field.DataType == Time || field.DataType == Int || field.DataType == Uint)) {
 		if strings.ToUpper(v) == "NANO" {
 			field.AutoUpdateTime = UnixNanosecond
 		} else if strings.ToUpper(v) == "MILLI" {
 			field.AutoUpdateTime = UnixMillisecond
 		} else {
-			field.AutoUpdateTime = UnixMillisecond
+			field.AutoUpdateTime = UnixSecond
 		}
 	}
 
@@ -321,9 +326,9 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 			field.Updatable = false
 			field.Readable = false
 			field.DataType = ""
-			field.IgnoreMigrate = true
+			field.IgnoreMigration = true
 		case "migration":
-			field.IgnoreMigrate = true
+			field.IgnoreMigration = true
 		}
 	}
 
@@ -349,7 +354,6 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 			if !strings.Contains(v, "update") {
 				field.Updatable = false
 			}
-
 		}
 	}
 
@@ -374,7 +378,7 @@ func (schema *Schema) ParseField(fieldStruct reflect.StructField) *Field {
 				if field.FieldType.Kind() == reflect.Struct {
 					ef.StructField.Index = append([]int{fieldStruct.Index[0]}, ef.StructField.Index...)
 				} else {
-					ef.StructField.Index = append([]int{fieldStruct.Index[0] - 1}, ef.StructField.Index...)
+					ef.StructField.Index = append([]int{-fieldStruct.Index[0] - 1}, ef.StructField.Index...)
 				}
 
 				if prefix, ok := field.TagSettings["EMBEDDEDPREFIX"]; ok && ef.DBName != "" {
@@ -430,7 +434,7 @@ func (field *Field) setupValuerAndSetter() {
 			v := reflect.Indirect(value)
 
 			for _, idx := range field.StructField.Index {
-				if idx > 0 {
+				if idx >= 0 {
 					v = v.Field(idx)
 				} else {
 					v = v.Field(-idx - 1)
@@ -446,7 +450,6 @@ func (field *Field) setupValuerAndSetter() {
 					}
 				}
 			}
-
 			return v.Interface(), v.IsZero()
 		}
 	}
@@ -481,7 +484,7 @@ func (field *Field) setupValuerAndSetter() {
 				if v.Kind() == reflect.Ptr {
 					if v.Type().Elem().Kind() == reflect.Struct {
 						if v.IsNil() {
-							v.Set(reflect.New(v.Type()).Elem())
+							v.Set(reflect.New(v.Type().Elem()))
 						}
 					}
 
@@ -490,7 +493,6 @@ func (field *Field) setupValuerAndSetter() {
 					}
 				}
 			}
-
 			return v
 		}
 	}
@@ -506,6 +508,7 @@ func (field *Field) setupValuerAndSetter() {
 				return
 			} else if reflectV.Type().ConvertibleTo(field.FieldType) {
 				field.ReflectValueOf(value).Set(reflectV.Convert(field.FieldType))
+				return
 			} else if field.FieldType.Kind() == reflect.Ptr {
 				fieldValue := field.ReflectValueOf(value)
 
@@ -534,11 +537,11 @@ func (field *Field) setupValuerAndSetter() {
 					err = setter(value, reflectV.Elem().Interface())
 				}
 			} else if valuer, ok := v.(driver.Valuer); ok {
-				if v, err := valuer.Value(); err == nil {
+				if v, err = valuer.Value(); err == nil {
 					err = setter(value, v)
 				}
 			} else {
-				return fmt.Errorf("failed to set value %v to field %v", v, field.Name)
+				return fmt.Errorf("failed to set value %+v to field %v", v, field.Name)
 			}
 		}
 
