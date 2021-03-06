@@ -277,8 +277,9 @@ type FileDescriptor struct {
 	// This is used for supporting public imports.
 	exported map[Object][]symbol
 
-	importPath  GoImportPath  // Import path of this file's package.
-	packageName GoPackageName // Name of this file's Go package.
+	importPath   GoImportPath  // Import path of this file's package.
+	PackageName  GoPackageName // Name of this file's Go package.
+	PackageAlias GoPackageName
 
 	proto3 bool // whether to generate proto3 code for this file
 }
@@ -447,6 +448,7 @@ type Generator struct {
 	indent           string
 	pathType         pathType // How to generate output filenames.
 	writeOutput      bool
+	OutPut           *FileOutPut // What's file generate output
 }
 
 type pathType int
@@ -693,26 +695,26 @@ func (g *Generator) SetPackageNames() {
 	for _, f := range g.genFiles {
 		if _, p, ok := f.goPackageOption(); ok {
 			// Source file: option go_package = "quux/bar";
-			f.packageName = p
+			f.PackageName = p
 		} else if p, ok := defaultPackageNames[f.importPath]; ok {
 			// A go_package option in another file in the same package.
 			//
 			// This is a poor choice in general, since every source file should
 			// contain a go_package option. Supported mainly for historical
 			// compatibility.
-			f.packageName = p
+			f.PackageName = p
 		} else if p := g.defaultGoPackage(); p != "" {
 			// Command-line: import_path=quux/bar.
 			//
 			// The import_path flag sets a package name for files which don't
 			// contain a go_package option.
-			f.packageName = p
+			f.PackageName = p
 		} else if p := f.GetPackage(); p != "" {
 			// Source file: package quux.bar;
-			f.packageName = cleanPackageName(p)
+			f.PackageName = cleanPackageName(p)
 		} else {
 			// Source filename.
-			f.packageName = cleanPackageName(baseName(f.GetName()))
+			f.PackageName = cleanPackageName(baseName(f.GetName()))
 		}
 	}
 
@@ -721,7 +723,7 @@ func (g *Generator) SetPackageNames() {
 		if a, b := g.genFiles[0].importPath, f.importPath; a != b {
 			g.Fail(fmt.Sprintf("inconsistent package import paths: %v, %v", a, b))
 		}
-		if a, b := g.genFiles[0].packageName, f.packageName; a != b {
+		if a, b := g.genFiles[0].PackageName, f.PackageName; a != b {
 			g.Fail(fmt.Sprintf("inconsistent package names: %v, %v", a, b))
 		}
 	}
@@ -782,6 +784,7 @@ func (g *Generator) WrapTypes() {
 		fd.ext = wrapExtensions(fd)
 		extractComments(fd)
 		extractFileDescriptor(fd)
+		g.OutPut = extractFileOutFile(fd)
 		g.allFiles = append(g.allFiles, fd)
 		g.allFilesByName[f.GetName()] = fd
 
@@ -1105,6 +1108,46 @@ func (g *Generator) GenerateAllFiles() {
 	}
 }
 
+// GenerateAllFilesWithOutPut generates the output for all the files we're outputting and changes output path and package name.
+func (g *Generator) GenerateAllFilesWithOutPut(put *FileOutPut) {
+	if put == nil {
+		g.GenerateAllFiles()
+		return
+	}
+	// Initialize the plugins
+	for _, p := range plugins {
+		p.Init(g)
+	}
+	// Generate the output. The generator runs for every file, even the files
+	// that we don't generate output for, so that we can collate the full list
+	// of exported symbols to support public imports.
+	genFileMap := make(map[*FileDescriptor]bool, len(g.genFiles))
+	for _, file := range g.genFiles {
+		genFileMap[file] = true
+	}
+	for _, file := range g.allFiles {
+		g.Reset()
+		if put.Package != "" {
+			file.PackageAlias = GoPackageName(put.Package)
+		}
+		g.writeOutput = genFileMap[file]
+		g.generate(file)
+		if !g.writeOutput {
+			continue
+		}
+		fname := file.goFileName(g.name, g.pathType)
+		if put.Out != "" {
+			if idx := strings.LastIndex(fname, "/"); idx > 1 {
+				fname = path.Join(put.Out, fname[idx+1:])
+			}
+		}
+		g.Response.File = append(g.Response.File, &plugin.CodeGeneratorResponse_File{
+			Name:    proto.String(fname),
+			Content: proto.String(g.String()),
+		})
+	}
+}
+
 // Run all the plugins associated with the file.
 func (g *Generator) runPlugins(file *FileDescriptor) {
 	for _, p := range plugins {
@@ -1184,7 +1227,11 @@ func (g *Generator) generateHeader() {
 	g.P()
 	g.PrintComments(strconv.Itoa(packagePath))
 	g.P()
-	g.P("package ", g.file.packageName)
+	if g.file.PackageAlias != "" {
+		g.P("package ", g.file.PackageName)
+	} else {
+		g.P("package ", g.file.PackageName)
+	}
 	g.P()
 }
 

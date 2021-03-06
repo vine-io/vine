@@ -170,3 +170,32 @@ func parseTagComment(comment *descriptor.SourceCodeInfo_Location) []*Comment {
 	}
 	return comments
 }
+
+type FileOutPut struct {
+	Package string
+	Out     string
+}
+
+func extractFileOutFile(file *FileDescriptor) (output *FileOutPut) {
+	for path, comment := range file.comments {
+		parts := strings.Split(path, ",")
+		if len(parts) == 0 {
+			continue
+		}
+		first, _ := strconv.Atoi(parts[0])
+		switch first {
+		case PackageType:
+			for _, comment := range parseTagComment(comment) {
+				if comment.Tag == "output" {
+					text := comment.Text
+					if idx := strings.Index(text, ";"); idx > 0 {
+						output = &FileOutPut{Out: text[:idx], Package: text[idx+1:]}
+					} else {
+						output = &FileOutPut{Out: comment.Text}
+					}
+				}
+			}
+		}
+	}
+	return
+}
