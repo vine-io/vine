@@ -20,9 +20,9 @@ import (
 	"strings"
 
 	"github.com/lack-io/vine/service/dao/clause"
+	"github.com/lack-io/vine/service/dao/logger"
 	"github.com/lack-io/vine/service/dao/schema"
 	"github.com/lack-io/vine/service/dao/utils"
-	log "github.com/lack-io/vine/service/logger"
 )
 
 // Create insert the value into database
@@ -448,7 +448,7 @@ func (db *DB) Row() *sql.Row {
 	tx.callbacks.Row().Execute(tx)
 	row, ok := tx.Statement.Dest.(*sql.Row)
 	if !ok && tx.DryRun {
-		log.Error(ErrDryRunModeUnsupported.Error())
+		db.Logger.Error(tx.Statement.Context, ErrDryRunModeUnsupported.Error())
 	}
 	return row
 }
@@ -465,9 +465,12 @@ func (db *DB) Rows() (*sql.Rows, error) {
 
 // Scan scan value to a struct
 func (db *DB) Scan(dest interface{}) (tx *DB) {
+	options := db.Options
+	currentLogger, newLogger := options.Logger, logger.Recorder.New()
+	options.Logger = newLogger
 
 	tx = db.getInstance()
-	//tx.Options = db.Options
+	tx.Options = options
 
 	if rows, err := tx.Rows(); err != nil {
 		tx.AddError(err)
@@ -480,6 +483,10 @@ func (db *DB) Scan(dest interface{}) (tx *DB) {
 		}
 	}
 
+	currentLogger.Trace(tx.Statement.Context, newLogger.BeginAt, func() (string, int64) {
+		return newLogger.SQL, tx.RowsAffected
+	}, tx.Error)
+	tx.Logger = currentLogger
 	return
 }
 

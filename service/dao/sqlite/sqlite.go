@@ -20,7 +20,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/lack-io/vine/service/dao"
+	"github.com/lack-io/vine/service/dao/callbacks"
 	"github.com/lack-io/vine/service/dao/clause"
+	"github.com/lack-io/vine/service/dao/logger"
 	"github.com/lack-io/vine/service/dao/migrator"
 	"github.com/lack-io/vine/service/dao/schema"
 )
@@ -43,8 +45,8 @@ func newSQLiteDialect(opts ...dao.Option) dao.Dialect {
 	}
 
 	dialect := &Dialect{
-		Opts:       options,
-		Conn:       options.ConnPool,
+		Opts: options,
+		Conn: options.ConnPool,
 	}
 
 	if name, ok := options.Context.Value(driverNameKey{}).(string); ok {
@@ -74,6 +76,10 @@ func (d *Dialect) Init(opts ...dao.Option) (err error) {
 		}
 	}
 
+	callbacks.RegisterDefaultCallbacks(d.DB, &callbacks.Options{
+		LastInsertIDReversed: true,
+	})
+
 	if d.Conn != nil {
 		d.DB.ConnPool = d.Conn
 	} else {
@@ -82,6 +88,8 @@ func (d *Dialect) Init(opts ...dao.Option) (err error) {
 			return err
 		}
 	}
+
+	d.DB.Statement.ConnPool = d.DB.ConnPool
 
 	for k, v := range d.ClauseBuilders() {
 		d.DB.ClauseBuilders[k] = v
@@ -159,7 +167,7 @@ func (d *Dialect) QuoteTo(writer clause.Writer, str string) {
 }
 
 func (d *Dialect) Explain(sql string, vars ...interface{}) string {
-	return ""
+	return logger.ExplainSQL(sql, nil, `"`, vars...)
 }
 
 func (d *Dialect) SavePoint(tx *dao.DB, name string) error {

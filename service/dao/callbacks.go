@@ -13,14 +13,15 @@
 package dao
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
 	"sort"
+	"time"
 
 	"github.com/lack-io/vine/service/dao/schema"
 	"github.com/lack-io/vine/service/dao/utils"
-	log "github.com/lack-io/vine/service/logger"
 )
 
 func initializeCallbacks(db *DB) *callbacks {
@@ -83,7 +84,11 @@ func (cs *callbacks) Raw() *processor {
 }
 
 func (p *processor) Execute(db *DB) {
-	stmt := db.Statement
+	var (
+		curTime = time.Now()
+		stmt    = db.Statement
+	)
+
 	if stmt.Model == nil {
 		stmt.Model = stmt.Dest
 	} else if stmt.Dest == nil {
@@ -125,9 +130,9 @@ func (p *processor) Execute(db *DB) {
 		f(db)
 	}
 
-	//db.Logger.Trace(stmt.Context, curTime, func() (string, int64) {
-	//	return db.Dialector.Explain(stmt.SQL.String(), stmt.Vars...), db.RowsAffected
-	//}, db.Error)
+	db.Logger.Trace(stmt.Context, curTime, func() (string, int64) {
+		return db.Dialect.Explain(stmt.SQL.String(), stmt.Vars...), db.RowsAffected
+	}, db.Error)
 
 	if !stmt.DB.DryRun {
 		stmt.SQL.Reset()
@@ -178,7 +183,7 @@ func (p *processor) compile() (err error) {
 	p.callbacks = callbacks
 
 	if p.fns, err = sortCallbacks(p.callbacks); err != nil {
-		log.Errorf("[DAO] Got error when compile callbacks, got %v", err)
+		p.db.Logger.Error(context.Background(), "Got error when compile callbacks, got %v", err)
 	}
 	return
 }
@@ -201,7 +206,7 @@ func (c *callback) Register(name string, fn func(*DB)) error {
 }
 
 func (c *callback) Remove(name string) error {
-	log.Warnf("[DAO] removing callback `%v` from %v", name, utils.FileWithLineNum())
+	c.processor.db.Logger.Warn(context.Background(), "removing callback `%v` from %v\n", name, utils.FileWithLineNum())
 	c.name = name
 	c.remove = true
 	c.processor.callbacks = append(c.processor.callbacks, c)
@@ -209,7 +214,7 @@ func (c *callback) Remove(name string) error {
 }
 
 func (c *callback) Replace(name string, fn func(*DB)) error {
-	log.Infof("replacing callback `%v` from %v", name, utils.FileWithLineNum())
+	c.processor.db.Logger.Info(context.Background(), "replacing callback `%v` from %v\n", name, utils.FileWithLineNum())
 	c.name = name
 	c.handler = fn
 	c.replace = true
@@ -239,7 +244,7 @@ func sortCallbacks(cs []*callback) (fns []func(*DB), err error) {
 	for _, c := range cs {
 		// show warning message the callback name already exists
 		if idx := getRIndex(names, c.name); idx > -1 && !c.replace && !c.remove && !cs[idx].remove {
-			log.Warnf("duplicated callback `%v` from %v", c.name, utils.FileWithLineNum())
+			c.processor.db.Logger.Warn(context.Background(), "duplicated callback `%v` from %v\n", c.name, utils.FileWithLineNum())
 		}
 		names = append(names, c.name)
 	}

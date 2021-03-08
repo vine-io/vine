@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/service/dao/clause"
+	"github.com/lack-io/vine/service/dao/logger"
 	"github.com/lack-io/vine/service/dao/schema"
 )
 
@@ -32,6 +33,8 @@ type Options struct {
 	NamingStrategy schema.Namer
 	// FullSaveAssociations full save associations
 	FullSaveAssociations bool
+	// Logger
+	Logger logger.Interface
 	// NowFunc the function to be used when creating a new timestamp
 	NowFunc func() time.Time
 	// DryRun generate sql without execute
@@ -72,6 +75,11 @@ func NewOptions(opts ...Option) Options {
 		options.NamingStrategy = schema.NamingStrategy{}
 	}
 
+	if options.Logger == nil {
+		options.Logger = logger.Default
+	}
+
+
 	if options.NowFunc == nil {
 		options.NowFunc = func() time.Time { return time.Now().Local() }
 	}
@@ -96,5 +104,11 @@ func DSN(dsn string) Option {
 func Namer(namer schema.Namer) Option {
 	return func(o *Options) {
 		o.NamingStrategy = namer
+	}
+}
+
+func Logger(l logger.Interface) Option {
+	return func(o *Options) {
+		o.Logger = l
 	}
 }

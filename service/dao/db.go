@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/service/dao/clause"
+	"github.com/lack-io/vine/service/dao/logger"
 	"github.com/lack-io/vine/service/dao/schema"
 )
 
@@ -95,9 +96,10 @@ type Session struct {
 	SkipDefaultTransaction   bool
 	DisableNestedTransaction bool
 	AllowGlobalUpdate        bool
-	FullSaveAssociation      bool
+	FullSaveAssociations     bool
 	QueryFields              bool
 	Context                  context.Context
+	Logger                   logger.Interface
 	NowFunc                  func() time.Time
 	CreateBatchSize          int
 }
@@ -124,7 +126,7 @@ func (db *DB) Session(config *Session) *DB {
 		tx.AllowGlobalUpdate = true
 	}
 
-	if config.FullSaveAssociation {
+	if config.FullSaveAssociations {
 		tx.FullSaveAssociations = true
 	}
 
