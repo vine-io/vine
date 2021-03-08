@@ -22,8 +22,11 @@ type noopDialect struct {
 	opts dao.Options
 }
 
-func (d noopDialect) Init(options dao.Options) error {
-	d.opts = options
+func (d noopDialect) Init(opts ...dao.Option) error {
+	d.opts = dao.Options{}
+	for _, opt := range opts {
+		opt(&d.opts)
+	}
 	return nil
 }
 
@@ -31,15 +34,15 @@ func (d noopDialect) Options() dao.Options {
 	return d.opts
 }
 
-func (d noopDialect) NewDB() (*dao.DB, error) {
-	return &dao.DB{}, nil
+func (d noopDialect) NewTx() *dao.DB {
+	return &dao.DB{}
 }
 
 func (noopDialect) DefaultValueOf(field *schema.Field) clause.Expression {
 	return clause.Expr{SQL: "DEFAULT"}
 }
 
-func (noopDialect) Migrator(*dao.DB) dao.Migrator {
+func (noopDialect) Migrator() dao.Migrator {
 	return nil
 }
 
@@ -57,14 +60,15 @@ func (noopDialect) Explain(sql string, vars ...interface{}) string {
 	return ""
 }
 
-func (noopDialect) String() string {
-	return "dummy"
-}
-
 func (noopDialect) DataTypeOf(*schema.Field) string {
 	return ""
 }
 
+func (noopDialect) String() string {
+	return "noop"
+}
+
 func NewDialect(opts ...dao.Option) dao.Dialect {
-	return &noopDialect{}
+	options := dao.NewOptions(opts...)
+	return &noopDialect{opts: options}
 }

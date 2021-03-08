@@ -66,7 +66,7 @@ func (db *PreparedStmtDB) prepare(ctx context.Context, conn ConnPool, isTransact
 	}
 	db.Mux.Unlock()
 
-	return db.Stmts[query], nil
+	return db.Stmts[query], err
 }
 
 func (db *PreparedStmtDB) BeginTx(ctx context.Context, opt *sql.TxOptions) (ConnPool, error) {
@@ -120,6 +120,13 @@ type PreparedStmtTX struct {
 
 func (tx *PreparedStmtTX) Commit() error {
 	if tx.Tx != nil {
+		return tx.Tx.Commit()
+	}
+	return ErrInvalidTransaction
+}
+
+func (tx *PreparedStmtTX) Rollback() error {
+	if tx.Tx != nil {
 		return tx.Tx.Rollback()
 	}
 	return ErrInvalidTransaction
@@ -144,6 +151,7 @@ func (tx *PreparedStmtTX) QueryContext(ctx context.Context, query string, args .
 	if err == nil {
 		rows, err = tx.Tx.Stmt(stmt.Stmt).QueryContext(ctx, args...)
 		if err != nil {
+			tx.PreparedStmtDB.Mux.Lock()
 			stmt.Close()
 			delete(tx.PreparedStmtDB.Stmts, query)
 			tx.PreparedStmtDB.Mux.Unlock()

@@ -22,10 +22,10 @@ import (
 )
 
 // Model specify the model you would like to run db operations
-//		// update all user's name to `hello`
-//		db.Model(&User{}).Update("name", "hello")
-//		// if user's primary key is non-blank, will use it as condition, then will only update the user's name to `hello`
-//		db.Model(&user).Update("name", "hello")
+//    // update all users's name to `hello`
+//    db.Model(&User{}).Update("name", "hello")
+//    // if user's primary key is non-blank, will use it as condition, then will only update the user's name to `hello`
+//    db.Model(&user).Update("name", "hello")
 func (db *DB) Model(value interface{}) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.Model = value
@@ -100,6 +100,7 @@ func (db *DB) Select(query interface{}, args ...interface{}) (tx *DB) {
 				tx.Statement.Selects = append(tx.Statement.Selects, arg...)
 			default:
 				tx.AddError(fmt.Errorf("unsupported select args %v %v", query, args))
+				return
 			}
 		}
 		delete(tx.Statement.Clauses, "SELECT")
@@ -190,7 +191,7 @@ func (db *DB) Group(name string) (tx *DB) {
 
 	fields := strings.FieldsFunc(name, utils.IsValidDBNameChar)
 	tx.Statement.AddClause(clause.GroupBy{
-		Columns: []clause.Column{{Name: name, Raw: len(fields) != -1}},
+		Columns: []clause.Column{{Name: name, Raw: len(fields) != 1}},
 	})
 	return
 }
@@ -205,9 +206,9 @@ func (db *DB) Having(query interface{}, args ...interface{}) (tx *DB) {
 }
 
 // Order specify order when retrieve records from database
-//		db.Order("name DESC")
-//		db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
-func (db DB) Order(value interface{}) (tx *DB) {
+//     db.Order("name DESC")
+//     db.Order(clause.OrderByColumn{Column: clause.Column{Name: "name"}, Desc: true})
+func (db *DB) Order(value interface{}) (tx *DB) {
 	tx = db.getInstance()
 
 	switch v := value.(type) {
@@ -243,11 +244,11 @@ func (db *DB) Offset(offset int) (tx *DB) {
 func (db *DB) Scopes(funcs ...func(*DB) *DB) (tx *DB) {
 	tx = db.getInstance()
 	tx.Statement.scopes = append(tx.Statement.scopes, funcs...)
-	return
+	return tx
 }
 
 // Preload preload associations with given conditions
-//		db.Preload("Orders", "state NOT IN (?)", "cancelled").Find(&users)
+//    db.Preload("Orders", "state NOT IN (?)", "cancelled").Find(&users)
 func (db *DB) Preload(query string, args ...interface{}) (tx *DB) {
 	tx = db.getInstance()
 	if tx.Statement.Preloads == nil {

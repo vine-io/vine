@@ -19,7 +19,7 @@ import (
 
 // Migrator returns migrator
 func (db *DB) Migrator() Migrator {
-	return db.Dialect.Migrator(db.Session(&Session{}))
+	return db.Dialect.Migrator()
 }
 
 // AutoMigrate run auto migration for given models

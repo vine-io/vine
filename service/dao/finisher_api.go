@@ -467,7 +467,7 @@ func (db *DB) Rows() (*sql.Rows, error) {
 func (db *DB) Scan(dest interface{}) (tx *DB) {
 
 	tx = db.getInstance()
-	tx.Options = db.Options
+	//tx.Options = db.Options
 
 	if rows, err := tx.Rows(); err != nil {
 		tx.AddError(err)

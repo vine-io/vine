@@ -15,6 +15,7 @@
 package dao
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -56,6 +57,8 @@ type Options struct {
 	ConnPool   ConnPool
 	callbacks  *callbacks
 	cacheStore *sync.Map
+
+	Context context.Context
 }
 
 func NewOptions(opts ...Option) Options {
@@ -76,6 +79,8 @@ func NewOptions(opts ...Option) Options {
 	if options.cacheStore == nil {
 		options.cacheStore = &sync.Map{}
 	}
+
+	options.Context = context.Background()
 
 	return options
 }

@@ -39,8 +39,8 @@ type Statement struct {
 	ReflectValue         reflect.Value
 	Clauses              map[string]clause.Clause
 	Distinct             bool
-	Selects              []string
-	Omits                []string
+	Selects              []string // selected columns
+	Omits                []string // omit columns
 	Joins                []join
 	Preloads             map[string][]interface{}
 	Settings             sync.Map
@@ -188,7 +188,7 @@ func (stmt *Statement) AddVar(writer clause.Writer, vars ...interface{}) {
 			if len(v) > 0 {
 				writer.WriteByte('(')
 				stmt.AddVar(writer, v...)
-				stmt.WriteByte(')')
+				writer.WriteByte(')')
 			} else {
 				writer.WriteString("(NULL)")
 			}
@@ -272,7 +272,7 @@ func (stmt *Statement) BuildCondition(query interface{}, args ...interface{}) []
 		if _, err := strconv.Atoi(s); err != nil {
 			if s == "" && len(args) == 0 {
 				return nil
-			} else if len(args) == 0 || len(args) > 0 && strings.Contains(s, "?") {
+			} else if len(args) == 0 || (len(args) > 0 && strings.Contains(s, "?")) {
 				// looks like a where condition
 				return []clause.Expression{clause.Expr{SQL: s, Vars: args}}
 			} else if len(args) > 0 && strings.Contains(s, "@") {
@@ -381,9 +381,11 @@ func (stmt *Statement) BuildCondition(query interface{}, args ...interface{}) []
 							selected := selectedColumns[field.DBName] || selectedColumns[field.Name]
 							if selected || (!restricted && field.Readable) {
 								if v, isZero := field.ValueOf(reflectValue.Index(i)); !isZero || selected {
-									conds = append(conds, clause.Eq{Column: clause.Column{Table: clause.CurrentTable, Name: field.DBName}, Value: v})
-								} else if field.DataType != "" {
-									conds = append(conds, clause.Eq{Column: clause.Column{Table: clause.CurrentTable, Name: field.Name}, Value: v})
+									if field.DBName != "" {
+										conds = append(conds, clause.Eq{Column: clause.Column{Table: clause.CurrentTable, Name: field.DBName}, Value: v})
+									} else if field.DataType != "" {
+										conds = append(conds, clause.Eq{Column: clause.Column{Table: clause.CurrentTable, Name: field.Name}, Value: v})
+									}
 								}
 							}
 						}
@@ -466,6 +468,7 @@ func (stmt *Statement) clone() *Statement {
 		Omits:                stmt.Omits,
 		Preloads:             map[string][]interface{}{},
 		ConnPool:             stmt.ConnPool,
+		Schema:               stmt.Schema,
 		Context:              stmt.Context,
 		RaiseErrorOnNotFound: stmt.RaiseErrorOnNotFound,
 		SkipHooks:            stmt.SkipHooks,
@@ -477,8 +480,8 @@ func (stmt *Statement) clone() *Statement {
 		newStmt.Vars = append(newStmt.Vars, stmt.Vars...)
 	}
 
-	for k, v := range stmt.Clauses {
-		newStmt.Clauses[k] = v
+	for k, c := range stmt.Clauses {
+		newStmt.Clauses[k] = c
 	}
 
 	for k, p := range stmt.Preloads {
@@ -608,7 +611,7 @@ func (stmt *Statement) Changed(fields ...string) bool {
 }
 
 // SelectAndOmitColumns get select and omit columns, select -> true, omit -> false
-func (stmt *Statement) SelectAndOmitColumns(requiredCreate, requiredUpdate bool) (map[string]bool, bool) {
+func (stmt *Statement) SelectAndOmitColumns(requireCreate, requireUpdate bool) (map[string]bool, bool) {
 	results := map[string]bool{}
 	notRestricted := false
 
@@ -634,7 +637,7 @@ func (stmt *Statement) SelectAndOmitColumns(requiredCreate, requiredUpdate bool)
 
 	// omit columns
 	for _, omit := range stmt.Omits {
-		if stmt.Schema != nil {
+		if stmt.Schema == nil {
 			results[omit] = false
 		} else if omit == clause.Associations {
 			for _, rel := range stmt.Schema.Relationships.Relations {
@@ -654,9 +657,9 @@ func (stmt *Statement) SelectAndOmitColumns(requiredCreate, requiredUpdate bool)
 				name = field.Name
 			}
 
-			if requiredCreate && !field.Creatable {
+			if requireCreate && !field.Creatable {
 				results[name] = false
-			} else if requiredUpdate && !field.Updatable {
+			} else if requireUpdate && !field.Updatable {
 				results[name] = false
 			}
 		}

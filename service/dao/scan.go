@@ -157,7 +157,7 @@ func Scan(rows *sql.Rows, db *DB, initialized bool) {
 			if len(fields) == 1 {
 				if _, ok := reflect.New(reflectValueType).Interface().(sql.Scanner); ok || // is scanner
 					reflectValueType.Kind() != reflect.Struct || // is not struct
-					(Schema != nil && Schema.ModelType.ConvertibleTo(schema.TimeReflectType)) { // is time
+					Schema.ModelType.ConvertibleTo(schema.TimeReflectType) { // is time
 					isPluck = true
 				}
 			}

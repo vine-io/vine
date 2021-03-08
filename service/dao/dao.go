@@ -24,10 +24,10 @@ import (
 
 // Dialect DAO database dialect
 type Dialect interface {
-	Init(Options) error
+	Init(...Option) error
 	Options() Options
-	NewDB() (*DB, error)
-	Migrator(db *DB) Migrator
+	NewTx() *DB
+	Migrator() Migrator
 	DataTypeOf(*schema.Field) string
 	DefaultValueOf(*schema.Field) clause.Expression
 	BindVarTo(writer clause.Writer, stmt *Statement, v interface{})

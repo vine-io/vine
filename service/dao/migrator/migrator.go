@@ -1,3 +1,15 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package migrator
 
 import (
@@ -14,14 +26,14 @@ import (
 
 // Migrator m struct
 type Migrator struct {
-	Config
+	Options
 }
 
 // Config schema config
-type Config struct {
+type Options struct {
 	CreateIndexAfterCreateTable bool
 	DB                          *dao.DB
-	dao.Dialector
+	dao.Dialect
 }
 
 type DaoDataTypeInterface interface {
@@ -52,7 +64,7 @@ func (m Migrator) DataTypeOf(field *schema.Field) string {
 		}
 	}
 
-	return m.Dialector.DataTypeOf(field)
+	return m.Dialect.DataTypeOf(field)
 }
 
 func (m Migrator) FullDataTypeOf(field *schema.Field) (expr clause.Expr) {
@@ -69,8 +81,8 @@ func (m Migrator) FullDataTypeOf(field *schema.Field) (expr clause.Expr) {
 	if field.HasDefaultValue && (field.DefaultValueInterface != nil || field.DefaultValue != "") {
 		if field.DefaultValueInterface != nil {
 			defaultStmt := &dao.Statement{Vars: []interface{}{field.DefaultValueInterface}}
-			m.Dialector.BindVarTo(defaultStmt, defaultStmt, field.DefaultValueInterface)
-			expr.SQL += " DEFAULT " + m.Dialector.Explain(defaultStmt.SQL.String(), field.DefaultValueInterface)
+			m.Dialect.BindVarTo(defaultStmt, defaultStmt, field.DefaultValueInterface)
+			expr.SQL += " DEFAULT " + m.Dialect.Explain(defaultStmt.SQL.String(), field.DefaultValueInterface)
 		} else if field.DefaultValue != "(-)" {
 			expr.SQL += " DEFAULT " + field.DefaultValue
 		}
@@ -88,7 +100,7 @@ func (m Migrator) AutoMigrate(values ...interface{}) error {
 				return err
 			}
 		} else {
-			if err := m.RunWithValue(value, func(stmt *dao.Statement) (errr error) {
+			if err := m.RunWithValue(value, func(stmt *dao.Statement) (err error) {
 				columnTypes, _ := m.DB.Migrator().ColumnTypes(value)
 
 				for _, field := range stmt.Schema.FieldsByDBName {
@@ -113,7 +125,7 @@ func (m Migrator) AutoMigrate(values ...interface{}) error {
 				}
 
 				for _, rel := range stmt.Schema.Relationships.Relations {
-					if !m.DB.Config.DisableForeignKeyConstraintWhenMigrating {
+					if !m.DB.DisableForeignKeyConstraintWhenMigrating {
 						if constraint := rel.ParseConstraint(); constraint != nil {
 							if constraint.Schema == stmt.Schema {
 								if !tx.Migrator().HasConstraint(value, constraint.Name) {
