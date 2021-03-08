@@ -161,11 +161,6 @@ func (m *memoryStore) list(prefix string, limit, offset uint) []string {
 	return allKeys
 }
 
-func (m *memoryStore) Close() error {
-	m.store.Flush()
-	return nil
-}
-
 func (m *memoryStore) Init(opts ...store.Option) error {
 	for _, o := range opts {
 		o(&m.options)
@@ -173,8 +168,8 @@ func (m *memoryStore) Init(opts ...store.Option) error {
 	return nil
 }
 
-func (m *memoryStore) String() string {
-	return "memory"
+func (m *memoryStore) Options() store.Options {
+	return m.options
 }
 
 func (m *memoryStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
@@ -268,10 +263,6 @@ func (m *memoryStore) Delete(key string, opts ...store.DeleteOption) error {
 	return nil
 }
 
-func (m *memoryStore) Options() store.Options {
-	return m.options
-}
-
 func (m *memoryStore) List(opts ...store.ListOption) ([]string, error) {
 	listOptions := store.ListOptions{}
 
@@ -303,4 +294,13 @@ func (m *memoryStore) List(opts ...store.ListOption) ([]string, error) {
 	}
 
 	return keys, nil
+}
+
+func (m *memoryStore) Close() error {
+	m.store.Flush()
+	return nil
+}
+
+func (m *memoryStore) String() string {
+	return "memory"
 }
