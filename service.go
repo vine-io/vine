@@ -116,7 +116,7 @@ func (s *service) Init(opts ...Option) {
 			cmd.Client(&s.opts.Client),
 			cmd.Config(&s.opts.Config),
 			cmd.Server(&s.opts.Server),
-			cmd.Dao(&s.opts.Dao),
+			cmd.Dialect(&s.opts.Dialect),
 			cmd.Store(&s.opts.Store),
 			cmd.Profile(&s.opts.Profile),
 		); err != nil {

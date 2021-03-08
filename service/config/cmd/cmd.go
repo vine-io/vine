@@ -397,8 +397,8 @@ var (
 		"service": svcRuntime.NewRuntime,
 	}
 
-	DefaultDaos = map[string]func(...dao.Option) dao.Dialector{
-		"nop": daoNop.NewDialector,
+	DefaultDialects = map[string]func(...dao.Option) dao.Dialect{
+		"nop": daoNop.NewDialect,
 	}
 
 	DefaultStores = map[string]func(...store.Option) store.Store{
@@ -454,7 +454,7 @@ func newCmd(opts ...Option) Cmd {
 		Servers:    DefaultServers,
 		Transports: DefaultTransports,
 		Runtimes:   DefaultRuntimes,
-		Daos:       DefaultDaos,
+		Dialects:   DefaultDialects,
 		Stores:     DefaultStores,
 		Tracers:    DefaultTracers,
 		Auths:      DefaultAuths,

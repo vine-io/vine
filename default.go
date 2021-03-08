@@ -43,7 +43,7 @@ func init() {
 	// default server
 	server.DefaultServer = serverGrpc.NewServer()
 	// default dao
-	dao.DefaultDao = daoNop.NewDao()
+	dao.DefaultDialect = daoNop.NewDialect()
 	// default store
 	store.DefaultStore = storeMem.NewStore()
 	// default trace

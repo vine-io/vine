@@ -67,3 +67,7 @@ type TxCommitter interface {
 type Valuer interface {
 	DaoValue(context.Context, *DB) clause.Expr
 }
+
+var (
+	DefaultDialect Dialect
+)

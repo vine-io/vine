@@ -42,7 +42,7 @@ type Options struct {
 	Client    client.Client
 	Config    config.Config
 	Server    server.Server
-	Dao       dao.Dao
+	Dialect   dao.Dialect
 	Store     store.Store
 	Registry  registry.Registry
 	Runtime   runtime.Runtime
@@ -70,7 +70,7 @@ func newOptions(opts ...Option) Options {
 		Config:    config.DefaultConfig,
 		Client:    client.DefaultClient,
 		Server:    server.DefaultServer,
-		Dao:       dao.DefaultDao,
+		Dialect:   dao.DefaultDialect,
 		Store:     store.DefaultStore,
 		Registry:  registry.DefaultRegistry,
 		Runtime:   runtime.DefaultRuntime,
@@ -140,10 +140,10 @@ func Server(s server.Server) Option {
 	}
 }
 
-// Dao sets the dao to use
-func Dao(d dao.Dao) Option {
+// Dialect sets the dialect to use
+func Dialect(d dao.Dialect) Option {
 	return func(o *Options) {
-		o.Dao = d
+		o.Dialect = d
 	}
 }
 
