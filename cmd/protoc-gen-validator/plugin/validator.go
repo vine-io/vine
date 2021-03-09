@@ -160,10 +160,10 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 		return
 	}
 	g.P("func (m *", msg.Proto.Name, ") Validate() error {")
-	g.P(`return m.validate("")`)
+	g.P(`return m.ValidateHasPrefix("")`)
 	g.P("}")
 	g.P()
-	g.P("func (m *", msg.Proto.Name, ") validate(prefix string) error {")
+	g.P("func (m *", msg.Proto.Name, ") ValidateHasPrefix(prefix string) error {")
 	if g.ignoredMessage(msg) {
 		g.P("return nil")
 	} else {
@@ -434,7 +434,7 @@ func (g *validator) generateMessageField(field *generator.FieldDescriptor) {
 		g.P("if m.", fieldName, " == nil {")
 		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
 		g.P("} else {")
-		g.P(fmt.Sprintf("errs = append(errs, m.%s.validate(prefix+\"%s.\"))", fieldName, *field.Proto.JsonName))
+		g.P(fmt.Sprintf("errs = append(errs, m.%s.ValidateHasPrefix(prefix+\"%s.\"))", fieldName, *field.Proto.JsonName))
 		g.P("}")
 	}
 }
