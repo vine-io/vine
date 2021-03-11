@@ -222,7 +222,7 @@ func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 		case _enum, _in:
 			value := strings.TrimPrefix(tag.Value, "[")
 			value = strings.TrimSuffix(value, "]")
-			g.P(fmt.Sprintf("if !%s.In([]interface{}{%s}, m.%s) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.In([]float64{%s}, float64(m.%s)) {", isPkg, value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
 		case _notIn:
@@ -285,7 +285,7 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 		switch tag.Key {
 		case _enum, _in:
 			value := fullStringSlice(tag.Value)
-			g.P(fmt.Sprintf("if !%s.In([]string{%s}, m.%s) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.In([]string{%s}, string(m.%s)) {", isPkg, value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '[%s]'\", prefix))", *field.Proto.JsonName, strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
 		case _notIn:

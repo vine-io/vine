@@ -19,6 +19,7 @@ func TestIn(t *testing.T) {
 		{name: "test_in_2", args: args{arr: []int{1, 2, 3}, item: 4}, want: false},
 		{name: "test_in_3", args: args{arr: []string{"a", "b", "c"}, item: 2}, want: false},
 		{name: "test_in_4", args: args{arr: []float32{1.1, 2.3, 1.3}, item: 2}, want: false},
+		{name: "test_in_5", args: args{arr: []int64{1, 2, 3}, item: int64(1)}, want: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
