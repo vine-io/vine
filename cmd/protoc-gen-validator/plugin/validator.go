@@ -228,7 +228,7 @@ func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 		case _notIn:
 			value := strings.TrimPrefix(tag.Value, "[")
 			value = strings.TrimSuffix(value, "]")
-			g.P(fmt.Sprintf("if !%s.NotIn([]interface{}{%s}, m.%s) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.NotIn([]float64{%s}, float64(m.%s)) {", isPkg, value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
 		case _eq:
@@ -290,7 +290,7 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 			g.P("}")
 		case _notIn:
 			value := fullStringSlice(tag.Value)
-			g.P(fmt.Sprintf("if !%s.NotIn([]string{%s}, m.%s) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.NotIn([]string{%s}, string(m.%s)) {", isPkg, value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '[%s]'\", prefix))", *field.Proto.JsonName, strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
 		case _minLen:
