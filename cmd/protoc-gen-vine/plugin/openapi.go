@@ -630,9 +630,10 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 			descriptor.FieldDescriptorProto_TYPE_INT64,
 			descriptor.FieldDescriptorProto_TYPE_INT32,
 			descriptor.FieldDescriptorProto_TYPE_FIXED64,
-			descriptor.FieldDescriptorProto_TYPE_FIXED32,
-			descriptor.FieldDescriptorProto_TYPE_STRING:
+			descriptor.FieldDescriptorProto_TYPE_FIXED32:
 			g.P(fmt.Sprintf(`Items: &%s.Schema{Type: "integer"},`, openApiPkg))
+		case descriptor.FieldDescriptorProto_TYPE_STRING:
+			g.P(fmt.Sprintf(`Items: &%s.Schema{Type: "string"},`, openApiPkg))
 		case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 			msg := g.extractMessage(field.Proto.GetTypeName())
 			if msg == nil {
