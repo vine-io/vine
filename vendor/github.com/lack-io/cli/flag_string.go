@@ -14,7 +14,9 @@
 
 package cli
 
-import "flag"
+import (
+	"flag"
+)
 
 // StringFlag is a flag with type string
 type StringFlag struct {

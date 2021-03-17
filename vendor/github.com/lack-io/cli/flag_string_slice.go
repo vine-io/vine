@@ -45,7 +45,6 @@ func newStringSlice(value []string, p *[]string) *StringSlice {
 // Set appends the string value to the list of values
 func (s *StringSlice) Set(value string) error {
 	if !s.hasBeenSet {
-		s.value = &[]string{}
 		s.hasBeenSet = true
 	}
 

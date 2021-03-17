@@ -13,6 +13,8 @@ import (
 	"github.com/lack-io/vine/service/dao/utils/tests"
 )
 
+var db *dao.DB
+
 func TestExpr(t *testing.T) {
 	results := []struct {
 		SQL    string

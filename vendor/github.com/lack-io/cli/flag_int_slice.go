@@ -57,7 +57,6 @@ func (i *IntSlice) SetInt(value int) {
 // Set parses the value into an integer and appends it to the list of values
 func (i *IntSlice) Set(value string) error {
 	if !i.hasBeenSet {
-		i.value = &[]int{}
 		i.hasBeenSet = true
 	}
 

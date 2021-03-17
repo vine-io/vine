@@ -46,7 +46,6 @@ func newInt64Slice(value []int64, p *[]int64) *Int64Slice {
 // Set parses the value into an integer and appends it to the list of values
 func (i *Int64Slice) Set(value string) error {
 	if !i.hasBeenSet {
-		i.value = &[]int64{}
 		i.hasBeenSet = true
 	}
 

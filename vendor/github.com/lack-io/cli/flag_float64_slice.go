@@ -46,7 +46,6 @@ func newFloat64Slice(val []float64, p *[]float64) *Float64Slice {
 // Set parses the value into a float64 and appends it to the list of values
 func (f *Float64Slice) Set(value string) error {
 	if !f.hasBeenSet {
-		*f.val = []float64{}
 		f.hasBeenSet = true
 	}
 
