@@ -10,17 +10,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package logger
+package clause_test
 
-import "context"
+import (
+	"testing"
 
-type loggerKey struct{}
+	"github.com/lack-io/vine/service/dao/clause"
+)
 
-func FromContext(ctx context.Context) (Logger, bool) {
-	l, ok := ctx.Value(loggerKey{}).(Logger)
-	return l, ok
-}
+func checkBuildClauses(t *testing.T, clauses []clause.Interface, result string, vars []interface{}) {
 
-func NewContext(ctx context.Context, l Logger) context.Context {
-	return context.WithValue(ctx, loggerKey{}, l)
 }

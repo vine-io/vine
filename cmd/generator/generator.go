@@ -784,6 +784,7 @@ func (g *Generator) WrapTypes() {
 		fd.ext = wrapExtensions(fd)
 		extractComments(fd)
 		extractFileDescriptor(fd)
+		// setting generator output file
 		g.OutPut = extractFileOutFile(fd)
 		g.allFiles = append(g.allFiles, fd)
 		g.allFilesByName[f.GetName()] = fd

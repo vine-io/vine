@@ -28,7 +28,7 @@ var (
 	noncePool = bpool.NewBytePool(100, 12)
 )
 
-// hash hahes the data into 32 bytes key and returns it
+// hash hashes the data into 32 bytes key and returns it
 // hash uses sha256 underneath to hash the supplied key
 func hash(key []byte) []byte {
 	sum := sha256.Sum256(key)

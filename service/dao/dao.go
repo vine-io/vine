@@ -33,6 +33,8 @@ type Dialect interface {
 	BindVarTo(writer clause.Writer, stmt *Statement, v interface{})
 	QuoteTo(clause.Writer, string)
 	Explain(sql string, vars ...interface{}) string
+	JSONBuild(column string) JSONQuery
+	JSONDataType() string
 	String() string
 }
 
@@ -66,6 +68,13 @@ type TxCommitter interface {
 // Valuer dao valuer interface
 type Valuer interface {
 	DaoValue(context.Context, *DB) clause.Expr
+}
+
+// JSONQuery query column as json
+type JSONQuery interface {
+	HasKeys(keys ...string) JSONQuery
+	Equals(value interface{}, keys ...string) JSONQuery
+	Build(builder clause.Builder)
 }
 
 var (

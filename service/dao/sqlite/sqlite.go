@@ -228,6 +228,14 @@ func (d *Dialect) ClauseBuilders() map[string]clause.ClauseBuilder {
 	}
 }
 
+func (d *Dialect) JSONDataType() string {
+	return "JSON"
+}
+
+func (d *Dialect) JSONBuild(column string) dao.JSONQuery {
+	return JSONQuery(column)
+}
+
 func (d *Dialect) String() string {
 	return "sqlite3"
 }

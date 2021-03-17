@@ -64,8 +64,31 @@ func (noopDialect) DataTypeOf(*schema.Field) string {
 	return ""
 }
 
+func (d noopDialect) JSONDataType() string {
+	return "JSON"
+}
+
+func (d noopDialect) JSONBuild(column string) dao.JSONQuery {
+	return jsonQueryExpression{}
+}
+
 func (noopDialect) String() string {
 	return "noop"
+}
+
+type jsonQueryExpression struct {
+}
+
+func (j jsonQueryExpression) HasKeys(keys ...string) dao.JSONQuery {
+	return j
+}
+
+func (j jsonQueryExpression) Equals(value interface{}, keys ...string) dao.JSONQuery {
+	return j
+}
+
+func (j jsonQueryExpression) Build(builder clause.Builder) {
+	return
 }
 
 func NewDialect(opts ...dao.Option) dao.Dialect {
