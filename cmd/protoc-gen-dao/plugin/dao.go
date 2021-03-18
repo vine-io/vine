@@ -258,13 +258,17 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 			g.P(fmt.Sprintf("type %s %s.%s", alias, v, subMsg.Proto.GetName()))
 		}
 	}
-
 	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) DaoDataType() string {`, alias))
+	g.P(`return "json"`)
+	g.P("}")
+	g.P()
+
 	g.P("// Value return json value, implement driver.Valuer interface")
 	g.P(fmt.Sprintf(`func (m *%s) Value() (driver.Value, error) {`, alias))
 	g.P(fmt.Sprintf(`return %s.Marshal(m)`, jsonPkg))
 	g.P("}")
-
 	g.P()
 
 	g.P("// Scan scan value into Jsonb, implements sql.Scanner interface")
@@ -312,6 +316,11 @@ func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schem
 }
 
 func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Schema) {
+	g.P(fmt.Sprintf(`func Registry%s(in *%s) error {`, schema.Desc.Proto.GetName(), g.wrapPkg(schema.Desc.Proto.GetName())))
+	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(From%s(in))`, schema.Desc.Proto.GetName()))
+	g.P("}")
+	g.P()
+
 	g.P(fmt.Sprintf(`func From%s(in *%s) *%s {`, schema.Desc.Proto.GetName(), g.wrapPkg(schema.Desc.Proto.GetName()), schema.Name))
 	g.P(fmt.Sprintf(`out := new(%s)`, schema.Name))
 	for _, field := range schema.Fields {
