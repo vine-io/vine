@@ -260,14 +260,20 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 	}
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) DaoDataType() string {`, alias))
-	g.P(`return "json"`)
-	g.P("}")
-	g.P()
-
 	g.P("// Value return json value, implement driver.Valuer interface")
-	g.P(fmt.Sprintf(`func (m *%s) Value() (driver.Value, error) {`, alias))
-	g.P(fmt.Sprintf(`return %s.Marshal(m)`, jsonPkg))
+	if field.Type == _slice || field.Type == _map {
+		g.P(fmt.Sprintf(`func (m %s) Value() (driver.Value, error) {`, alias))
+		g.P("if len(m) == 0 {")
+		g.P("return nil, nil")
+		g.P("}")
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) Value() (driver.Value, error) {`, alias))
+		g.P("if m == nil {")
+		g.P("return nil, nil")
+		g.P("}")
+	}
+	g.P(fmt.Sprintf(`b, err := %s.Marshal(m)`, jsonPkg))
+	g.P(`return string(b), err`)
 	g.P("}")
 	g.P()
 
@@ -282,7 +288,13 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 	g.P("default:")
 	g.P(fmt.Sprintf(`return %s.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))`, errPkg))
 	g.P("}")
+	g.P()
 	g.P(fmt.Sprintf(`return %s.Unmarshal(bytes, &m)`, jsonPkg))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) DaoDataType() string {`, alias))
+	g.P(`return "json"`)
 	g.P("}")
 	g.P()
 }
@@ -392,7 +404,7 @@ func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P("func (m *", schema.Name, ") PrimaryKey() (string, interface{}, bool) {")
+	g.P("func (m ", schema.Name, ") PrimaryKey() (string, interface{}, bool) {")
 	if schema.PK.Type == _string {
 		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == ""`, toColumnName(schema.PK.Name), schema.PK.Name, schema.PK.Name))
 	} else {
@@ -489,7 +501,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Updates(ctx context.Context, values ...interface{}) (*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) Updates(ctx context.Context) (*%s, error) {`, source, g.wrapPkg(target)))
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(`return nil, errors.New("missing primary key")`)
@@ -497,35 +509,40 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`)
 	g.P()
+	g.P(`values := make(map[string]interface{}, 0)`)
 	for _, field := range schema.Fields {
 		column := toColumnName(field.Name)
+		if field == schema.PK {
+			continue
+		}
 		switch field.Type {
 		case _point, _map:
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
-			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
 			g.P("}")
 		case _slice:
 			g.P(fmt.Sprintf(`if len(m.%s) != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
 			g.P("}")
 		case _string:
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
-			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
 			g.P("}")
 		default:
 			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
 			g.P("}")
 		}
 	}
-	g.P(`for _, v := range values {`)
-	g.P("tx.Updates(v)")
-	g.P("}")
 	g.P()
-	g.P(`if err := tx.Error; err != nil {`)
+	g.P(`if err := tx.Updates(values).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
+	g.P(`err := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`)
+	g.P("if err != nil {")
+	g.P(`return nil, err`)
+	g.P("}")
 	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
 	g.P("}")
 	g.P()
@@ -550,7 +567,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
 	g.P()
-	g.P(`return tx.Delete(pk+" = ?", pkv).Error`)
+	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Delete(&%s{}).Error`, source))
 	g.P("}")
 	g.P()
 }
