@@ -13,58 +13,25 @@
 package plugin
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
 	"github.com/lack-io/vine/cmd/generator"
+	"github.com/lack-io/vine/service/dao/schema"
 )
 
-var TagString = "gen"
+var TagString = "dao"
 
 const (
-	// message tag
-	_ignore = "ignore"
-
-	// field common tag
-	_required = "required"
-	_default  = "default"
-	_in       = "in"
-	_enum     = "enum"
-	_notIn    = "not_in"
-
-	// string tag
-	_minLen   = "min_len"
-	_maxLen   = "max_len"
-	_prefix   = "prefix"
-	_suffix   = "suffix"
-	_contains = "contains"
-	_number   = "number"
-	_email    = "email"
-	_ip       = "ip"
-	_ipv4     = "ipv4"
-	_ipv6     = "ipv6"
-	_crontab  = "crontab"
-	_uuid     = "uuid"
-	_uri      = "uri"
-	_domain   = "domain"
-	_pattern  = "pattern"
-
-	// int32, int64, uint32, uint64, float32, float64 tag
-	_ne  = "ne"
-	_eq  = "eq"
-	_lt  = "lt"
-	_lte = "lte"
-	_gt  = "gt"
-	_gte = "gte"
-
-	// bytes tag
-	_maxBytes = "max_bytes"
-	_minBytes = "min_bytes"
-
-	// repeated tag: required, min_len, max_len
-	// message tag: required
+	// dao generate flag
+	_generate = "generate"
+	// dao primary key
+	_pk = "PK"
+	// dao soft delete field
+	_sd = "SD"
 )
 
 type Tag struct {
@@ -75,18 +42,32 @@ type Tag struct {
 // Paths for packages used by code generated in this file,
 // relative to the import_prefix of the generator.Generator.
 const (
-	isPkgPath      = "github.com/lack-io/vine/util/is"
-	stringsPkgPath = "strings"
+	ctxPkgPath    = "context"
+	timePkgPath   = "time"
+	stringPkgPath = "strings"
+	errPkgPath    = "errors"
+	driverPkgPath = "database/sql/driver"
+	jsonPkgPath   = "github.com/json-iterator/go"
+	daoPkgPath    = "github.com/lack-io/vine/service/dao"
+	clausePkgPath = "github.com/lack-io/vine/service/dao/clause"
 )
 
 // dao is an implementation of the Go protocol buffer compiler's
 // plugin architecture. It generates bindings for dao support.
 type dao struct {
 	gen *generator.Generator
+
+	schemas     []*Schema
+	aliasTypes  map[string]string
+	aliasFields map[string]*Field
 }
 
 func New() *dao {
-	return &dao{}
+	return &dao{
+		schemas:     []*Schema{},
+		aliasTypes:  map[string]string{},
+		aliasFields: map[string]*Field{},
+	}
 }
 
 // Name returns the name of this plugin, "dao".
@@ -98,8 +79,15 @@ func (g *dao) Name() string {
 // They may vary from the final path component of the import path
 // if the name is used by other packages.
 var (
-	isPkg      string
-	stringsPkg string
+	ctxPkg     string
+	timePkg    string
+	stringPkg  string
+	errPkg     string
+	DriverPkg  string
+	jsonPkg    string
+	daoPkg     string
+	clausePkg  string
+	sourcePkg  string
 	pkgImports map[generator.GoPackageName]bool
 )
 
@@ -123,24 +111,6 @@ func (g *dao) typeName(str string) string {
 // P forwards to g.gen.P.
 func (g *dao) P(args ...interface{}) { g.gen.P(args...) }
 
-// Generate generates code for the services in the given file.
-func (g *dao) Generate(file *generator.FileDescriptor) {
-	if len(file.Comments()) == 0 {
-		return
-	}
-
-	isPkg = string(g.gen.AddImport(isPkgPath))
-	stringsPkg = string(g.gen.AddImport(stringsPkgPath))
-
-	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ ", isPkg, ".Empty")
-	g.P("var _ ", stringsPkg, ".Builder")
-	g.P()
-	for i, msg := range file.Messages() {
-		g.generateMessage(file, msg, i)
-	}
-}
-
 // GenerateImports generates the import declaration for this file.
 func (g *dao) GenerateImports(file *generator.FileDescriptor, imports map[generator.GoImportPath]generator.GoPackageName) {
 	if len(file.Comments()) == 0 {
@@ -155,325 +125,550 @@ func (g *dao) GenerateImports(file *generator.FileDescriptor, imports map[genera
 	}
 }
 
-func (g *dao) generateMessage(file *generator.FileDescriptor, msg *generator.MessageDescriptor, index int) {
-	if msg.Proto.Options != nil && *(msg.Proto.Options.MapEntry) {
+// Generate generates code for the services in the given file.
+func (g *dao) Generate(file *generator.FileDescriptor) {
+	if len(file.Comments()) == 0 {
 		return
 	}
-	g.P("func (m *", msg.Proto.Name, ") Validate() error {")
-	g.P(`return m.validate("")`)
+
+	ctxPkg = string(g.gen.AddImport(ctxPkgPath))
+	timePkg = string(g.gen.AddImport(timePkgPath))
+	stringPkg = string(g.gen.AddImport(stringPkgPath))
+	DriverPkg = string(g.gen.AddImport(driverPkgPath))
+	errPkg = string(g.gen.AddImport(errPkgPath))
+	jsonPkg = string(g.gen.AddImport(jsonPkgPath))
+	daoPkg = string(g.gen.AddImport(daoPkgPath))
+	clausePkg = string(g.gen.AddImport(clausePkgPath))
+	if g.gen.OutPut != nil {
+		sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
+	}
+
+	g.P("// Reference imports to suppress errors if they are not otherwise used.")
+	g.P("var _ ", ctxPkg, ".Context")
+	g.P("var _ ", timePkg, ".Timer")
+	g.P("var _ =", stringPkg, ".Fields(\"\")")
+	g.P("var _ ", DriverPkg, ".Valuer")
+	g.P("var _ =", errPkg, ".New(\"\")")
+	g.P("var _ ", jsonPkg, ".Any")
+	g.P("var _ ", daoPkg, ".Dialect")
+	g.P("var _ ", clausePkg, ".Clause")
+	g.P()
+
+	for i, msg := range file.Messages() {
+		g.wrapSchemas(file, msg, i)
+	}
+
+	for key, value := range g.aliasFields {
+		g.generateAliasField(file, key, value)
+	}
+
+	for _, item := range g.schemas {
+		g.generateSchema(file, item)
+	}
+}
+
+func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.MessageDescriptor, index int) {
+	if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
+		return
+	}
+	if !g.checkedMessage(msg) {
+		return
+	}
+
+	s := &Schema{Name: msg.Proto.GetName() + "Schema", Desc: msg}
+	for _, item := range msg.Fields {
+		field := &Field{Name: generator.CamelCase(item.Proto.GetName()), Desc: item}
+		if item.Proto.IsRepeated() {
+			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), item.Proto.GetName()})
+			if strings.HasSuffix(item.Proto.GetTypeName(), "Entry") {
+				field.Type = _map
+				for _, nest := range msg.Proto.GetNestedType() {
+					if strings.HasSuffix(item.Proto.GetTypeName(), nest.GetName()) {
+						field.Map = &MapFields{}
+						field.Map.Key, field.Map.Value = nest.GetMapFields()
+						break
+					}
+				}
+			} else {
+				field.Type = _slice
+				field.IsRepeated = true
+			}
+			field.Alias = alias
+			field.Tags = g.buildFieldTags(item, false)
+			g.aliasFields[alias] = field
+			s.Fields = append(s.Fields, field)
+			continue
+		}
+		typ, tags, err := g.buildFieldTypeAndTags(item)
+		if err != nil {
+			continue
+		}
+		field.Type = typ
+		field.Tags = tags
+		if item.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), strings.ReplaceAll(item.Proto.GetTypeName(), ".", "")})
+			field.Alias = alias
+			g.aliasFields[alias] = field
+		}
+		s.Fields = append(s.Fields, field)
+		fieldTags := g.extractTags(item.Comments)
+		if _, ok := fieldTags[_pk]; ok {
+			s.PK = field
+		}
+		if s.PK == nil && (strings.ToLower(field.Name) == "id" || strings.ToLower(field.Name) == "uuid") {
+			s.PK = field
+		}
+	}
+	if s.PK == nil {
+		g.gen.Fail(fmt.Sprintf(`Message:%s missing primary key`, msg.Proto.GetName()))
+	}
+
+	// append deleteTimestamp field
+	g.schemas = append(g.schemas, s)
+}
+
+func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, field *Field) {
+	if field.IsRepeated {
+		// slice, array type
+		typ, err := g.buildFieldGoType(file, field.Desc.Proto)
+		if err != nil {
+			return
+		}
+		g.P(fmt.Sprintf(`type %s []%s`, alias, typ))
+
+	} else if field.Type == _map {
+		if field.Map == nil {
+			return
+		}
+
+		key, value := field.Map.Key, field.Map.Value
+		keyString, _ := g.buildFieldGoType(file, key)
+		valueString, _ := g.buildFieldGoType(file, value)
+		g.P(fmt.Sprintf(`type %s map[%s]%s`, alias, keyString, valueString))
+	} else {
+		subMsg := g.extractMessage(field.Desc.Proto.GetTypeName())
+		if subMsg.Proto.File() == file {
+			g.P(fmt.Sprintf("type %s %s", alias, g.wrapPkg(subMsg.Proto.GetName())))
+		} else {
+			obj := g.gen.ObjectNamed(field.Desc.Proto.GetTypeName())
+			v, ok := g.gen.ImportMap[obj.GoImportPath().String()]
+			if !ok {
+				v = string(g.gen.AddImport(obj.GoImportPath()))
+			}
+			g.P(fmt.Sprintf("type %s %s.%s", alias, v, subMsg.Proto.GetName()))
+		}
+	}
+
+	g.P()
+	g.P("// Value return json value, implement driver.Valuer interface")
+	g.P(fmt.Sprintf(`func (m *%s) Value() (driver.Value, error) {`, alias))
+	g.P(fmt.Sprintf(`return %s.Marshal(m)`, jsonPkg))
+	g.P("}")
+
+	g.P()
+
+	g.P("// Scan scan value into Jsonb, implements sql.Scanner interface")
+	g.P(fmt.Sprintf(`func (m *%s) Scan(value interface{}) error {`, alias))
+	g.P("var bytes []byte")
+	g.P("switch v := value.(type) {")
+	g.P("case []byte:")
+	g.P("bytes = v")
+	g.P("case string:")
+	g.P("bytes = []byte(v)")
+	g.P("default:")
+	g.P(fmt.Sprintf(`return %s.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))`, errPkg))
+	g.P("}")
+	g.P(fmt.Sprintf(`return %s.Unmarshal(bytes, &m)`, jsonPkg))
 	g.P("}")
 	g.P()
-	g.P("func (m *", msg.Proto.Name, ") validate(prefix string) error {")
-	if g.ignoredMessage(msg) {
-		g.P("return nil")
-	} else {
-		g.P("errs := make([]error, 0)")
-		for _, field := range msg.Fields {
-			if field.Proto.IsRepeated() {
-				g.generateRepeatedField(field)
-				continue
-			}
-			if field.Proto.IsMessage() {
-				g.generateMessageField(field)
-				continue
-			}
-			switch *field.Proto.Type {
-			case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
-				descriptor.FieldDescriptorProto_TYPE_FLOAT,
-				descriptor.FieldDescriptorProto_TYPE_FIXED32,
-				descriptor.FieldDescriptorProto_TYPE_FIXED64,
-				descriptor.FieldDescriptorProto_TYPE_INT32,
-				descriptor.FieldDescriptorProto_TYPE_INT64:
-				g.generateNumberField(field)
-			case descriptor.FieldDescriptorProto_TYPE_STRING:
-				g.generateStringField(field)
-			case descriptor.FieldDescriptorProto_TYPE_BYTES:
-				g.generateBytesField(field)
-			}
+}
+
+func (g *dao) generateSchema(file *generator.FileDescriptor, schema *Schema) {
+
+	g.generateSchemaFields(file, schema)
+
+	g.generateSchemaIOMethods(file, schema)
+
+	g.generateSchemaUtilMethods(file, schema)
+
+	g.generateSchemaCURDMethods(file, schema)
+}
+
+func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schema) {
+	g.P("type ", schema.Name, " struct {")
+	for _, field := range schema.Fields {
+		switch field.Type {
+		case _point:
+			g.P(fmt.Sprintf(`%s *%s %s`, field.Name, field.Alias, field.Tags))
+		case _slice, _map:
+			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Alias, field.Tags))
+		default:
+			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Type, field.Tags))
 		}
-		g.P(fmt.Sprintf("return %s.MargeErr(errs...)", isPkg))
+	}
+	g.P(fmt.Sprintf(`DeletionTimestamp int64 %s`, toQuoted(`json:"deletionTimestamp" dao:"column:deletion_timestamp"`)))
+	g.P("}")
+	g.P()
+}
+
+func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Schema) {
+	g.P(fmt.Sprintf(`func From%s(in *%s) *%s {`, schema.Desc.Proto.GetName(), g.wrapPkg(schema.Desc.Proto.GetName()), schema.Name))
+	g.P(fmt.Sprintf(`out := new(%s)`, schema.Name))
+	for _, field := range schema.Fields {
+		switch field.Type {
+		case _float32, _float64, _int32, _int64, _uint32, _uint64:
+			g.P(fmt.Sprintf(`if in.%s != 0 {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
+			g.P("}")
+		case _map:
+			g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
+			g.P("}")
+		case _string:
+			if field.Desc.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_BYTES {
+				g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
+				g.P(fmt.Sprintf(`out.%s = string(in.%s)`, field.Name, field.Name))
+			} else {
+				g.P(fmt.Sprintf(`if in.%s != "" {`, field.Name))
+				g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
+			}
+			g.P("}")
+		case _slice:
+			g.P(fmt.Sprintf(`if len(in.%s) != 0 {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
+			g.P("}")
+		case _point:
+			g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s = (*%s)(in.%s)`, field.Name, field.Alias, field.Name))
+			g.P("}")
+		}
+	}
+	g.P("return out")
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) To%s() *%s {`, schema.Name, schema.Desc.Proto.GetName(), g.wrapPkg(schema.Desc.Proto.GetName())))
+	g.P(fmt.Sprintf(`out := new(%s)`, g.wrapPkg(schema.Desc.Proto.GetName())))
+	for _, field := range schema.Fields {
+		switch field.Type {
+		case _point:
+			var typPkg string
+			obj := g.objectNamed(field.Desc.Proto.GetTypeName())
+			submsg := g.extractMessage(field.Desc.Proto.GetTypeName())
+			typPkg = submsg.Proto.GetName()
+			if obj.File() != file {
+				typPkg = string(g.gen.AddImport(obj.GoImportPath())) + "." + submsg.Proto.GetName()
+			} else {
+				typPkg = g.wrapPkg(submsg.Proto.GetName())
+			}
+			g.P(fmt.Sprintf("out.%s = (*%s)(m.%s)", field.Name, typPkg, field.Name))
+		case _string:
+			if field.Desc.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_BYTES {
+				g.P(fmt.Sprintf(`out.%s = []byte(m.%s)`, field.Name, field.Name))
+			} else {
+				g.P(fmt.Sprintf(`out.%s = m.%s`, field.Name, field.Name))
+			}
+		default:
+			g.P(fmt.Sprintf(`out.%s = m.%s`, field.Name, field.Name))
+		}
+	}
+	g.P("return out")
+	g.P("}")
+	g.P()
+}
+
+func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *Schema) {
+	g.P("func (", schema.Name, ") TableName() string {")
+	g.P("return \"", toTableName(schema.Desc.Proto.GetName()), "\"")
+	g.P("}")
+	g.P()
+
+	g.P("func (m *", schema.Name, ") PrimaryKey() (string, interface{}, bool) {")
+	if schema.PK.Type == _string {
+		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == ""`, toColumnName(schema.PK.Name), schema.PK.Name, schema.PK.Name))
+	} else {
+		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == 0`, toColumnName(schema.PK.Name), schema.PK.Name, schema.PK.Name))
 	}
 	g.P("}")
 	g.P()
 }
 
-func (g *dao) generateNumberField(field *generator.FieldDescriptor) {
-	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := g.extractTags(field.Comments)
-	if len(tags) == 0 {
-		return
-	}
-	if _, ok := tags[_required]; ok {
-		g.P("if int64(m.", fieldName, ") == 0 {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
-		if len(tags) > 1 {
-			g.P("} else {")
-		}
-	} else {
-		if tag, ok := tags[_default]; ok {
-			g.P("if int64(m.", fieldName, ") == 0 {")
-			g.P("m.", fieldName, " = ", tag.Value)
-			g.P("}")
-		}
-		g.P("if int64(m.", fieldName, ") != 0 {")
-	}
-	for _, tag := range tags {
-		switch tag.Key {
-		case _enum, _in:
-			value := strings.TrimPrefix(tag.Value, "[")
-			value = strings.TrimSuffix(value, "]")
-			g.P(fmt.Sprintf("if %s.In([]interface{}{%s}, m.%s) {", isPkg, value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _notIn:
-			value := strings.TrimPrefix(tag.Value, "[")
-			value = strings.TrimSuffix(value, "]")
-			g.P(fmt.Sprintf("if %s.NotIn([]interface{}{%s}, m.%s) {", isPkg, value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _eq:
-			g.P("if !(m.", fieldName, " == ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must equal to '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _ne:
-			g.P("if !(m.", fieldName, " != ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not equal to '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _lt:
-			g.P("if !(m.", fieldName, " < ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must less than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _lte:
-			g.P("if !(m.", fieldName, " <= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must less than or equal to '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _gt:
-			g.P("if !(m.", fieldName, " > ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must great than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _gte:
-			g.P("if !(m.", fieldName, " >= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must great than or equal to '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		}
-	}
+func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *Schema) {
+	source, target := schema.Name, schema.Desc.Proto.GetName()
+	g.P(fmt.Sprintf(`func (m *%s) FindPagination(ctx context.Context, page, size int, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`return m.FindAll(ctx, append(exprs, clause.Limit{Offset: (page - 1) * size, Limit: size})...)`))
 	g.P("}")
-}
+	g.P()
 
-func (g *dao) generateStringField(field *generator.FieldDescriptor) {
-	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := g.extractTags(field.Comments)
-	if len(tags) == 0 {
-		return
-	}
-	if _, ok := tags[_required]; ok {
-		g.P("if len(m.", fieldName, ") == 0 {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
-		if len(tags) > 1 {
-			g.P("} else {")
-		}
-	} else {
-		if tag, ok := tags[_default]; ok {
-			g.P("if len(m.", fieldName, ") == 0 {")
-			g.P("m.", fieldName, " = ", tag.Value)
+	g.P(fmt.Sprintf(`func (m *%s) extractClauses() []clause.Expression {`, source))
+	g.P(`exprs := make([]clause.Expression, 0)`)
+	for _, field := range schema.Fields {
+		column := toColumnName(field.Name)
+		switch field.Type {
+		case _map:
+			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
+			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
+			if field.Map.Key.GetType() == descriptor.FieldDescriptorProto_TYPE_STRING {
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Equals(v, k))`, column))
+			}
 			g.P("}")
-		}
-		g.P("if len(m.", fieldName, ") != 0 {")
-	}
-	for _, tag := range tags {
-		fieldName := generator.CamelCase(*field.Proto.Name)
-		switch tag.Key {
-		case _enum, _in:
-			value := fullStringSlice(tag.Value)
-			g.P(fmt.Sprintf("if %s.In([]string{%s}, m.%s) {", isPkg, value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '[%s]'\", prefix))", *field.Proto.JsonName, strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
-		case _notIn:
-			value := fullStringSlice(tag.Value)
-			g.P(fmt.Sprintf("if %s.NotIn([]string{%s}, m.%s) {", isPkg, value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '[%s]'\", prefix))", *field.Proto.JsonName, strings.ReplaceAll(value, "\"", "")))
+		case _point:
+			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
+			g.P(fmt.Sprintf(`for k, v := range dao.FieldPatch(m.%s) {`, field.Name))
+			g.P(`if v == nil {`)
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").HasKeys(strings.Split(k, ",")...))`, column))
+			g.P(`} else {`)
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Equals(v, strings.Split(k, ",")...))`, column))
 			g.P("}")
-		case _minLen:
-			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must less than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
-		case _maxLen:
-			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must great than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
-		case _prefix:
-			value := TrimString(tag.Value, "\"")
-			g.P("if !strings.HasPrefix(m.", fieldName, ", \"", value, "\") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must start with '%s'\", prefix))", *field.Proto.JsonName, value))
+		case _string:
+			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
+			g.P(fmt.Sprintf(`exprs = append(exprs, clause.Eq{Column: clause.Column{Name: "%s"}, Value: m.%s})`, column, field.Name))
 			g.P("}")
-		case _suffix:
-			value := TrimString(tag.Value, "\"")
-			g.P("if !strings.HasSuffix(m.", fieldName, ", \"", value, "\") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must end with '%s'\", prefix))", *field.Proto.JsonName, value))
-			g.P("}")
-		case _contains:
-			value := TrimString(tag.Value, "\"")
-			g.P("if !strings.Contains(m.", fieldName, ", \"", value, "\") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must contain '%s'\", prefix))", *field.Proto.JsonName, value))
-			g.P("}")
-		case _number:
-			g.P(fmt.Sprintf("if !%s.Number(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid number\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _email:
-			g.P(fmt.Sprintf("if !%s.Email(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid email\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _ip:
-			g.P(fmt.Sprintf("if !%s.IP(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ip\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _ipv4:
-			g.P(fmt.Sprintf("if !%s.IPv4(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv4\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _ipv6:
-			g.P(fmt.Sprintf("if !%s.IPv6(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv6\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _crontab:
-			g.P(fmt.Sprintf("if !%s.Crontab(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid crontab\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _uuid:
-			g.P(fmt.Sprintf("if !%s.Uuid(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid uuid\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _uri:
-			g.P(fmt.Sprintf("if !%s.URL(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid url\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _domain:
-			g.P(fmt.Sprintf("if !%s.Domain(m.%s) {", isPkg, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid domain\", prefix))", *field.Proto.JsonName))
-			g.P("}")
-		case _pattern:
-			value := TrimString(tag.Value, "`")
-			g.P(fmt.Sprintf("if !%s.Re(`%s`, m.%s) {", isPkg, value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(`field '%%s%s' is not a valid pattern '%s'`, prefix))", *field.Proto.JsonName, value))
+		case _slice:
+		default:
+			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
+			g.P(fmt.Sprintf(`exprs = append(exprs, clause.Eq{Column: clause.Column{Name: "%s"}, Value: m.%s})`, column, field.Name))
 			g.P("}")
 		}
 	}
+	g.P()
+	g.P(`exprs = append(exprs, clause.Eq{Column: clause.Column{Name: "deletion_timestamp"}, Value: 0})`)
+	g.P()
+	g.P(`return exprs`)
 	g.P("}")
-}
+	g.P()
 
-func (g *dao) generateBytesField(field *generator.FieldDescriptor) {
-	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := g.extractTags(field.Comments)
-	if len(tags) == 0 {
-		return
-	}
-	if _, ok := tags[_required]; ok {
-		g.P("if len(m.", fieldName, ") == 0 {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
-		if len(tags) > 1 {
-			g.P("} else {")
-		}
-	} else {
-		g.P("if len(m.", fieldName, ") != 0 {")
-	}
-	for _, tag := range tags {
-		fieldName := generator.CamelCase(*field.Proto.Name)
-		switch tag.Key {
-		case _minBytes:
-			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must less than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _maxBytes:
-			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must great than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		}
-	}
+	g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx context.Context, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
+	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P()
+	g.P(`if err := tx.Clauses(m.extractClauses()...).Clauses(exprs...).Find(&dest).Error; err != nil {`)
+	g.P("return nil, err")
 	g.P("}")
-}
-
-func (g *dao) generateRepeatedField(field *generator.FieldDescriptor) {
-	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := g.extractTags(field.Comments)
-	if len(tags) == 0 {
-		return
-	}
-	if _, ok := tags[_required]; ok {
-		g.P("if len(m.", fieldName, ") == 0 {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
-		if len(tags) > 1 {
-			g.P("} else {")
-		}
-	} else {
-		g.P("if len(m.", fieldName, ") != 0 {")
-	}
-	for _, tag := range tags {
-		fieldName := generator.CamelCase(*field.Proto.Name)
-		switch tag.Key {
-		case _minLen:
-			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must less than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		case _maxLen:
-			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must great than '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
-			g.P("}")
-		}
-	}
+	g.P()
+	g.P(fmt.Sprintf(`outs := make([]*%s, len(dest))`, g.wrapPkg(target)))
+	g.P(`for i := range dest {`)
+	g.P(fmt.Sprintf(`outs[i] = dest[i].To%s()`, target))
 	g.P("}")
+	g.P()
+	g.P(fmt.Sprintf(`return outs, nil`))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx context.Context, exprs ...clause.Expression) (*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P()
+	g.P(`if err := tx.Clauses(m.extractClauses()...).Clauses(exprs...).First(&m).Error; err != nil {`)
+	g.P("return nil, err")
+	g.P("}")
+	g.P()
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) Create(ctx context.Context) (*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P()
+	g.P(`if err := tx.Create(m).Error; err != nil {`)
+	g.P("return nil, err")
+	g.P("}")
+	g.P()
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) Updates(ctx context.Context, values ...interface{}) (*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
+	g.P(`if isNil {`)
+	g.P(`return nil, errors.New("missing primary key")`)
+	g.P("}")
+	g.P()
+	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`)
+	g.P()
+	for _, field := range schema.Fields {
+		column := toColumnName(field.Name)
+		switch field.Type {
+		case _point, _map:
+			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
+			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P("}")
+		case _slice:
+			g.P(fmt.Sprintf(`if len(m.%s) != 0 {`, field.Name))
+			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P("}")
+		case _string:
+			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
+			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P("}")
+		default:
+			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
+			g.P(fmt.Sprintf(`tx.UpdateColumn("%s", m.%s)`, column, field.Name))
+			g.P("}")
+		}
+	}
+	g.P(`for _, v := range values {`)
+	g.P("tx.Updates(v)")
+	g.P("}")
+	g.P()
+	g.P(`if err := tx.Error; err != nil {`)
+	g.P("return nil, err")
+	g.P("}")
+	g.P()
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) SoftDelete(ctx context.Context) error {`, source))
+	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
+	g.P(`if isNil {`)
+	g.P(`return errors.New("missing primary key")`)
+	g.P("}")
+	g.P()
+	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P()
+	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{"deletion_timestamp": %s.Now().UnixNano()}).Error`, timePkg))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) Delete(ctx context.Context) error {`, source))
+	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
+	g.P(`if isNil {`)
+	g.P(`return errors.New("missing primary key")`)
+	g.P("}")
+	g.P()
+	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P()
+	g.P(`return tx.Delete(pk+" = ?", pkv).Error`)
+	g.P("}")
+	g.P()
 }
 
-func (g *dao) generateMessageField(field *generator.FieldDescriptor) {
-	fieldName := generator.CamelCase(*field.Proto.Name)
-	tags := g.extractTags(field.Comments)
-	if len(tags) == 0 {
-		return
-	}
-	if _, ok := tags[_required]; ok {
-		g.P("if m.", fieldName, " == nil {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
-		g.P("} else {")
-		g.P(fmt.Sprintf("errs = append(errs, m.%s.validate(prefix+\"%s.\"))", fieldName, *field.Proto.JsonName))
-		g.P("}")
-	}
-}
-
-func (g *dao) ignoredMessage(msg *generator.MessageDescriptor) bool {
+func (g *dao) checkedMessage(msg *generator.MessageDescriptor) bool {
 	tags := g.extractTags(msg.Comments)
 	for _, c := range tags {
-		if c.Key == _ignore {
+		if c.Key == _generate {
 			return true
 		}
 	}
 	return false
 }
 
-func TrimString(s string, c string) string {
-	s = strings.TrimPrefix(s, c)
-	s = strings.TrimSuffix(s, c)
-	return s
+func (g *dao) buildFieldTypeAndTags(field *generator.FieldDescriptor) (fieldType, string, error) {
+	switch field.Proto.GetType() {
+	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
+		return _float64, g.buildFieldTags(field, false), nil
+	case descriptor.FieldDescriptorProto_TYPE_FLOAT:
+		return _float32, g.buildFieldTags(field, false), nil
+	case descriptor.FieldDescriptorProto_TYPE_SFIXED32,
+		descriptor.FieldDescriptorProto_TYPE_INT32,
+		descriptor.FieldDescriptorProto_TYPE_ENUM:
+		return _int32, g.buildFieldTags(field, true), nil
+	case descriptor.FieldDescriptorProto_TYPE_SFIXED64,
+		descriptor.FieldDescriptorProto_TYPE_INT64:
+		return _int64, g.buildFieldTags(field, true), nil
+	case descriptor.FieldDescriptorProto_TYPE_FIXED32,
+		descriptor.FieldDescriptorProto_TYPE_UINT32:
+		return _uint32, g.buildFieldTags(field, true), nil
+	case descriptor.FieldDescriptorProto_TYPE_FIXED64,
+		descriptor.FieldDescriptorProto_TYPE_UINT64:
+		return _uint64, g.buildFieldTags(field, true), nil
+	case descriptor.FieldDescriptorProto_TYPE_STRING,
+		descriptor.FieldDescriptorProto_TYPE_BYTES:
+		return _string, g.buildFieldTags(field, false), nil
+	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+		return _point, g.buildFieldTags(field, false), nil
+	default:
+		return "", "", errors.New("invalid field type")
+	}
 }
 
-func fullStringSlice(s string) string {
-	s = strings.TrimPrefix(s, "[")
-	s = strings.TrimSuffix(s, "]")
-	parts := strings.Split(s, ",")
-	out := make([]string, 0)
-	for _, a := range parts {
-		a = strings.TrimSpace(a)
-		if len(a) == 0 {
-			continue
+func (g *dao) buildFieldGoType(file *generator.FileDescriptor, field *descriptor.FieldDescriptorProto) (string, error) {
+	switch field.GetType() {
+	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
+		return "float64", nil
+	case descriptor.FieldDescriptorProto_TYPE_FLOAT:
+		return "float32", nil
+	case descriptor.FieldDescriptorProto_TYPE_SFIXED32,
+		descriptor.FieldDescriptorProto_TYPE_INT32,
+		descriptor.FieldDescriptorProto_TYPE_ENUM:
+		return "int32", nil
+	case descriptor.FieldDescriptorProto_TYPE_SFIXED64,
+		descriptor.FieldDescriptorProto_TYPE_INT64:
+		return "int64", nil
+	case descriptor.FieldDescriptorProto_TYPE_FIXED32,
+		descriptor.FieldDescriptorProto_TYPE_UINT32:
+		return "uint32", nil
+	case descriptor.FieldDescriptorProto_TYPE_FIXED64,
+		descriptor.FieldDescriptorProto_TYPE_UINT64:
+		return "uint64", nil
+	case descriptor.FieldDescriptorProto_TYPE_STRING:
+		return "string", nil
+	case descriptor.FieldDescriptorProto_TYPE_BYTES:
+		return "[]byte", nil
+	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+		subMsg := g.extractMessage(field.GetTypeName())
+		if subMsg.Proto.File() == file {
+			return "*" + g.wrapPkg(subMsg.Proto.GetName()), nil
 		}
-		if !strings.HasPrefix(a, "\"") {
-			a = "\"" + a
+		obj := g.gen.ObjectNamed(field.GetTypeName())
+		v, ok := g.gen.ImportMap[obj.GoImportPath().String()]
+		if !ok {
+			v = string(g.gen.AddImport(obj.GoImportPath()))
 		}
-		if !strings.HasSuffix(a, "\"") {
-			a = a + "\""
-		}
-		out = append(out, a)
+		return "*" + v + "." + subMsg.Proto.GetName(), nil
+	default:
+		return "", errors.New("invalid field type")
 	}
-	return strings.Join(out, ",")
+}
+
+func (g *dao) wrapPkg(pkg string) string {
+	if g.gen.OutPut != nil {
+		return sourcePkg + "." + pkg
+	}
+	return pkg
+}
+
+func (g *dao) buildFieldTags(field *generator.FieldDescriptor, autoIncr bool) string {
+	var (
+		out       = make([]string, 0)
+		fieldName = generator.CamelCase(field.Proto.GetName())
+		tags      = g.extractTags(field.Comments)
+	)
+	out = append(out, fmt.Sprintf(`json:"%s,omitempty"`, field.Proto.GetJsonName()))
+	daoTag := fmt.Sprintf(`dao:"column:%s"`, toColumnName(fieldName))
+	for _, tag := range tags {
+		// TODO: parse dao tags
+		switch tag.Key {
+		case _pk:
+			daoTag += ";primaryKey"
+			if autoIncr {
+				daoTag += ";autoIncrement"
+			}
+		}
+	}
+	out = append(out, daoTag)
+
+	return toQuoted(strings.Join(out, " "))
+}
+
+// extractMessage extract MessageDescriptor by name
+func (g *dao) extractMessage(name string) *generator.MessageDescriptor {
+	obj := g.gen.ObjectNamed(name)
+	for _, f := range g.gen.AllFiles() {
+		for _, m := range f.Messages() {
+			if m.Proto.GoImportPath() == obj.GoImportPath() {
+				for _, item := range obj.TypeName() {
+					if item == m.Proto.GetName() {
+						return m
+					}
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func (g *dao) extractTags(comments []*generator.Comment) map[string]*Tag {
@@ -483,27 +678,6 @@ func (g *dao) extractTags(comments []*generator.Comment) map[string]*Tag {
 	tags := make(map[string]*Tag, 0)
 	for _, c := range comments {
 		if c.Tag != TagString || len(c.Text) == 0 {
-			continue
-		}
-		if strings.HasPrefix(c.Text, _pattern) {
-			if i := strings.Index(c.Text, "="); i == -1 {
-				g.gen.Fail("invalid pattern format")
-			} else {
-				pa := string(c.Text[i+1])
-				pe := string(c.Text[len(c.Text)-1])
-				if pa != "`" || pe != "`" {
-					g.gen.Fail(fmt.Sprintf("invalid pattern value, pa=%s, pe=%s", pa, pe))
-				}
-				key := strings.TrimSpace(c.Text[:i])
-				value := strings.TrimSpace(c.Text[i+1:])
-				if len(value) == 0 {
-					g.gen.Fail(fmt.Sprintf("tag '%s' missing value", key))
-				}
-				tags[key] = &Tag{
-					Key:   key,
-					Value: value,
-				}
-			}
 			continue
 		}
 		parts := strings.Split(c.Text, ";")
@@ -525,4 +699,16 @@ func (g *dao) extractTags(comments []*generator.Comment) map[string]*Tag {
 	}
 
 	return tags
+}
+
+func toTableName(text string) string {
+	return schema.NamingStrategy{}.TableName(text)
+}
+
+func toColumnName(text string) string {
+	return schema.NamingStrategy{}.ColumnName("", text)
+}
+
+func toQuoted(text string) string {
+	return "`" + text + "`"
 }

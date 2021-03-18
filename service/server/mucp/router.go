@@ -193,17 +193,17 @@ func prepareMethod(method reflect.Method) *methodType {
 	return &methodType{method: method, ArgType: argType, ReplyType: replyType, ContextType: contextType, stream: stream}
 }
 
-func (r *router) sendResponse(sending sync.Locker, req *request, reply interface{}, cc codec.Writer, last bool) error {
+func (router *router) sendResponse(sending sync.Locker, req *request, reply interface{}, cc codec.Writer, last bool) error {
 	msg := new(codec.Message)
 	msg.Type = codec.Response
-	resp := r.getResponse()
+	resp := router.getResponse()
 	resp.msg = msg
 
 	resp.msg.Id = req.msg.Id
 	sending.Lock()
 	err := cc.Write(resp.msg, reply)
 	sending.Unlock()
-	r.freeResponse(resp)
+	router.freeResponse(resp)
 	return err
 }
 

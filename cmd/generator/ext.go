@@ -172,8 +172,9 @@ func parseTagComment(comment *descriptor.SourceCodeInfo_Location) []*Comment {
 }
 
 type FileOutPut struct {
-	Package string
-	Out     string
+	Package       string
+	Out           string
+	SourcePkgPath string
 }
 
 func extractFileOutFile(file *FileDescriptor) (output *FileOutPut) {
@@ -193,6 +194,7 @@ func extractFileOutFile(file *FileDescriptor) (output *FileOutPut) {
 					} else {
 						output = &FileOutPut{Out: comment.Text}
 					}
+					output.SourcePkgPath = strings.ReplaceAll(file.importPath.String(), "\"", "")
 				}
 			}
 		}

@@ -257,3 +257,66 @@ func Scan(rows *sql.Rows, db *DB, initialized bool) {
 		db.AddError(ErrRecordNotFound)
 	}
 }
+
+func patch(obj reflect.Value, outs map[string]interface{}, prefix string) {
+	to := obj.Type()
+	if to.Kind() == reflect.Ptr {
+		to = to.Elem()
+	}
+	vo := obj
+	if obj.Kind() == reflect.Ptr {
+		vo = vo.Elem()
+	}
+	for i := 0; i < to.NumField(); i++ {
+		fd := to.Field(i)
+		fdv := vo.Field(i)
+		jsonName := strings.Split(fd.Tag.Get("json"), ",")[0]
+		key := prefix
+		if key == "" {
+			key = jsonName
+		} else {
+			key += "." + jsonName
+		}
+		switch fd.Type.Kind() {
+		case reflect.String:
+			vv := fdv.String()
+			if vv != "" {
+				outs[key] = vv
+			}
+		case reflect.Float32, reflect.Float64:
+			vv := fdv.Float()
+			if vv != 0 {
+				outs[key] = vv
+			}
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			vv := fdv.Int()
+			if vv != 0 {
+				outs[key] = vv
+			}
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			vv := fdv.Uint()
+			if vv != 0 {
+				outs[key] = vv
+			}
+		case reflect.Struct:
+			if fdv.IsZero() {
+				outs[key] = nil
+				return
+			}
+			patch(fdv, outs, key)
+		case reflect.Ptr:
+			fdv = fdv.Elem()
+			if fdv.IsZero() {
+				outs[key] = nil
+				return
+			}
+			patch(fdv, outs, key)
+		}
+	}
+}
+
+func FieldPatch(v interface{}) map[string]interface{} {
+	outs := make(map[string]interface{})
+	patch(reflect.ValueOf(v), outs, "")
+	return outs
+}

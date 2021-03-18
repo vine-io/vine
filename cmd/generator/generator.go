@@ -1228,10 +1228,14 @@ func (g *Generator) generateHeader() {
 	g.P()
 	g.PrintComments(strconv.Itoa(packagePath))
 	g.P()
-	if g.file.PackageAlias != "" {
-		g.P("package ", g.file.PackageName)
+	if g.OutPut != nil && g.OutPut.Package != "" {
+		g.P("package ", g.OutPut.Package)
 	} else {
-		g.P("package ", g.file.PackageName)
+		if g.file.PackageAlias != "" {
+			g.P("package ", g.file.PackageAlias)
+		} else {
+			g.P("package ", g.file.PackageName)
+		}
 	}
 	g.P()
 }

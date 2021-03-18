@@ -13,7 +13,7 @@
 package grpc
 
 import (
-	b "bytes"
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -24,7 +24,7 @@ import (
 	"google.golang.org/grpc/encoding"
 
 	"github.com/lack-io/vine/service/codec"
-	"github.com/lack-io/vine/service/codec/bytes"
+	codecBytes "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/util/jsonpb"
 )
 
@@ -62,7 +62,7 @@ func (w wrapCodec) String() string {
 }
 
 func (w wrapCodec) Marshal(v interface{}) ([]byte, error) {
-	b, ok := v.(*bytes.Frame)
+	b, ok := v.(*codecBytes.Frame)
 	if ok {
 		return b.Data, nil
 	}
@@ -70,7 +70,7 @@ func (w wrapCodec) Marshal(v interface{}) ([]byte, error) {
 }
 
 func (w wrapCodec) Unmarshal(data []byte, v interface{}) error {
-	b, ok := v.(*bytes.Frame)
+	b, ok := v.(*codecBytes.Frame)
 	if ok {
 		b.Data = data
 		return nil
@@ -80,7 +80,7 @@ func (w wrapCodec) Unmarshal(data []byte, v interface{}) error {
 
 func (protoCodec) Marshal(v interface{}) ([]byte, error) {
 	switch m := v.(type) {
-	case *bytes.Frame:
+	case *codecBytes.Frame:
 		return m.Data, nil
 	case proto.Message:
 		return proto.Marshal(m)
@@ -122,7 +122,7 @@ func (bytesCodec) Name() string {
 }
 
 func (jsonCodec) Marshal(v interface{}) ([]byte, error) {
-	if b, ok := v.(*bytes.Frame); ok {
+	if b, ok := v.(*codecBytes.Frame); ok {
 		return b.Data, nil
 	}
 
@@ -142,15 +142,15 @@ func (jsonCodec) Unmarshal(data []byte, v interface{}) error {
 	if len(data) == 0 {
 		return nil
 	}
-	if b, ok := v.(*bytes.Frame); ok {
+	if b, ok := v.(*codecBytes.Frame); ok {
 		b.Data = data
 		return nil
 	}
 	if pb, ok := v.(proto.Message); ok {
-		return jsonpb.Unmarshal(b.NewReader(data), pb)
+		return jsonpb.Unmarshal(bytes.NewReader(data), pb)
 	}
 
-	dec := json.NewDecoder(b.NewReader(data))
+	dec := json.NewDecoder(bytes.NewReader(data))
 	if useNumber {
 		dec.UseNumber()
 	}
@@ -194,7 +194,7 @@ func (g *grpcCodec) ReadHeader(m *codec.Message, mt codec.MessageType) error {
 }
 
 func (g *grpcCodec) ReadBody(v interface{}) error {
-	if f, ok := v.(*bytes.Frame); ok {
+	if f, ok := v.(*codecBytes.Frame); ok {
 		return g.s.RecvMsg(f)
 	}
 	return g.s.RecvMsg(v)
@@ -206,7 +206,7 @@ func (g *grpcCodec) Write(m *codec.Message, v interface{}) error {
 		return g.s.SendMsg(v)
 	}
 	// write the body using the framing codec
-	return g.s.SendMsg(&bytes.Frame{Data: m.Body})
+	return g.s.SendMsg(&codecBytes.Frame{Data: m.Body})
 }
 
 func (g *grpcCodec) Close() error {
