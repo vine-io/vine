@@ -181,7 +181,7 @@ func (db *DB) Or(query interface{}, args ...interface{}) (tx *DB) {
 //		db.Joins("JOIN emails ON emails.user_id = users.id AND emails.email = ?", "aa@example.com").Find(&user)
 func (db *DB) Joins(query string, args ...interface{}) (tx *DB) {
 	tx = db.getInstance()
-	tx.Statement.Joins = append(tx.Statement.Joins, join{Name: query, Conds: args})
+	tx.Statement.Join(query, args...)
 	return
 }
 

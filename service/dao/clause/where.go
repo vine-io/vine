@@ -12,7 +12,9 @@
 
 package clause
 
-import "strings"
+import (
+	"strings"
+)
 
 // Where where clause
 type Where struct {

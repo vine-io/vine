@@ -172,7 +172,6 @@ func BuildQuerySQL(db *dao.DB) {
 		}
 
 		db.Statement.AddClauseIfNotExists(clauseSelect)
-
 		db.Statement.Build("SELECT", "FROM", "WHERE", "GROUP BY", "ORDER BY", "LIMIT", "FOR")
 	}
 }

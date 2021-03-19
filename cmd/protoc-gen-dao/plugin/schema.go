@@ -41,6 +41,7 @@ type Field struct {
 	IsRepeated bool
 	Desc       *generator.FieldDescriptor
 	Map        *MapFields
+	Slice      *descriptor.FieldDescriptorProto
 }
 
 type MapFields struct {

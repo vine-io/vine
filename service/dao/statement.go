@@ -67,6 +67,15 @@ type StatementModifier interface {
 	ModifyStatement(*Statement)
 }
 
+func (stmt *Statement) Join(query string, args ...interface{}) {
+	for _, item := range stmt.Joins {
+		if item.Name == query {
+			return
+		}
+	}
+	stmt.Joins = append(stmt.Joins, join{Name: query, Conds: args})
+}
+
 // Write write string
 func (stmt *Statement) WriteString(str string) (int, error) {
 	return stmt.SQL.WriteString(str)

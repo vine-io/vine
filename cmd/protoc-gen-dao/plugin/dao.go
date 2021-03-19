@@ -191,6 +191,7 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 				}
 			} else {
 				field.Type = _slice
+				field.Slice = field.Desc.Proto
 				field.IsRepeated = true
 			}
 			field.Alias = alias
@@ -416,12 +417,12 @@ func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *
 
 func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *Schema) {
 	source, target := schema.Name, schema.Desc.Proto.GetName()
-	g.P(fmt.Sprintf(`func (m *%s) FindPagination(ctx context.Context, page, size int, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx context.Context, page, size int, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
 	g.P(fmt.Sprintf(`return m.FindAll(ctx, append(exprs, clause.Limit{Offset: (page - 1) * size, Limit: size})...)`))
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) extractClauses() []clause.Expression {`, source))
+	g.P(fmt.Sprintf(`func (m *%s) extractClauses(tx *%s.DB) []clause.Expression {`, source, daoPkg))
 	g.P(`exprs := make([]clause.Expression, 0)`)
 	for _, field := range schema.Fields {
 		column := toColumnName(field.Name)
@@ -430,7 +431,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
 			if field.Map.Key.GetType() == descriptor.FieldDescriptorProto_TYPE_STRING {
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Equals(v, k))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Equals(v, k))`, column))
 			}
 			g.P("}")
 			g.P("}")
@@ -438,17 +439,42 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range dao.FieldPatch(m.%s) {`, field.Name))
 			g.P(`if v == nil {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").HasKeys(strings.Split(k, ",")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").HasKeys(strings.Split(k, ",")...))`, column))
 			g.P(`} else {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Equals(v, strings.Split(k, ",")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Equals(v, strings.Split(k, ",")...))`, column))
 			g.P("}")
+			g.P("}")
+			g.P("}")
+		case _slice:
+			g.P(fmt.Sprintf(`if len(m.%s) != 0 {`, field.Name))
+			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
+			//sjname := field.Slice.GetJsonName()
+			//sname := field.Slice.GetName()
+			switch field.Slice.GetType() {
+			case descriptor.FieldDescriptorProto_TYPE_STRING:
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(item))`, column))
+			case descriptor.FieldDescriptorProto_TYPE_UINT32,
+				descriptor.FieldDescriptorProto_TYPE_UINT64,
+				descriptor.FieldDescriptorProto_TYPE_INT32,
+				descriptor.FieldDescriptorProto_TYPE_INT64,
+				descriptor.FieldDescriptorProto_TYPE_SFIXED32,
+				descriptor.FieldDescriptorProto_TYPE_SFIXED64,
+				descriptor.FieldDescriptorProto_TYPE_FIXED32,
+				descriptor.FieldDescriptorProto_TYPE_FIXED64:
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(item))`, column))
+			case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+				g.P(`for k, v := range dao.FieldPatch(item) {`)
+				g.P(`if v != nil {`)
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(v, strings.Split(k, ",")...))`, column))
+					g.P(`}`)
+				g.P("}")
+			}
 			g.P("}")
 			g.P("}")
 		case _string:
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
 			g.P(fmt.Sprintf(`exprs = append(exprs, clause.Eq{Column: clause.Column{Name: "%s"}, Value: m.%s})`, column, field.Name))
 			g.P("}")
-		case _slice:
 		default:
 			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
 			g.P(fmt.Sprintf(`exprs = append(exprs, clause.Eq{Column: clause.Column{Name: "%s"}, Value: m.%s})`, column, field.Name))
@@ -466,7 +492,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
 	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
 	g.P()
-	g.P(`if err := tx.Clauses(m.extractClauses()...).Clauses(exprs...).Find(&dest).Error; err != nil {`)
+	g.P(fmt.Sprintf(`tx = tx.Clauses(m.extractClauses(tx)...).Clauses(exprs...)`))
+	g.P()
+	g.P(`if err := tx.Find(&dest).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
@@ -482,7 +510,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx context.Context, exprs ...clause.Expression) (*%s, error) {`, source, g.wrapPkg(target)))
 	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
 	g.P()
-	g.P(`if err := tx.Clauses(m.extractClauses()...).Clauses(exprs...).First(&m).Error; err != nil {`)
+	g.P(fmt.Sprintf(`tx = tx.Clauses(m.extractClauses(tx)...).Clauses(exprs...)`))
+	g.P()
+	g.P(`if err := tx.First(&m).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
