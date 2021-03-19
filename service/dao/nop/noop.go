@@ -68,7 +68,7 @@ func (d noopDialect) JSONDataType() string {
 	return "JSON"
 }
 
-func (d noopDialect) JSONBuild(column string) dao.JSONQuery {
+func (d noopDialect) JSONBuild(tx *dao.DB, column string) dao.JSONQuery {
 	return jsonQueryExpression{}
 }
 
@@ -77,6 +77,10 @@ func (noopDialect) String() string {
 }
 
 type jsonQueryExpression struct {
+}
+
+func (j jsonQueryExpression) Contains(value interface{}, keys ...string) dao.JSONQuery {
+	return j
 }
 
 func (j jsonQueryExpression) HasKeys(keys ...string) dao.JSONQuery {
