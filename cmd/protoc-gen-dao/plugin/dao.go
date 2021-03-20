@@ -464,8 +464,6 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 		case _slice:
 			g.P(fmt.Sprintf(`if len(m.%s) != 0 {`, field.Name))
 			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
-			//sjname := field.Slice.GetJsonName()
-			//sname := field.Slice.GetName()
 			switch field.Slice.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
 				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(item))`, column))
