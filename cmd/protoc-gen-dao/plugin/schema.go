@@ -13,6 +13,9 @@
 package plugin
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
 	"github.com/lack-io/vine/cmd/generator"
@@ -36,7 +39,7 @@ const (
 type Field struct {
 	Name       string
 	Type       fieldType
-	Tags       string
+	Tags       []*FieldTag
 	Alias      string
 	IsRepeated bool
 	Desc       *generator.FieldDescriptor
@@ -55,4 +58,23 @@ type Schema struct {
 	Fields  []*Field
 	SDField *Field
 	Desc    *generator.MessageDescriptor
+}
+
+type FieldTag struct {
+	Key    string
+	Values []string
+	Seq    string
+}
+
+
+func (t *FieldTag) String() string {
+	return fmt.Sprintf(`%s:"%s"`, t.Key, strings.Join(t.Values, t.Seq))
+}
+
+func MargeTags(tags ...*FieldTag) string {
+	outs := make([]string, len(tags))
+	for i := range tags {
+		outs[i] = tags[i].String()
+	}
+	return toQuoted(strings.Join(outs, " "))
 }
