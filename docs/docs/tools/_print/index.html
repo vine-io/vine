@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.76.5" /><link rel="canonical" type="text/html" href="https://lack-io.github.io/vine/docs/tools/">
+<meta name="generator" content="Hugo 0.79.1" /><link rel="canonical" type="text/html" href="https://lack-io.github.io/vine/docs/tools/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://lack-io.github.io/vine/docs/tools/index.xml">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
@@ -23,7 +23,7 @@
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/tools/" />
-<meta property="og:updated_time" content="2020-12-29T15:04:24+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-03-19T17:38:20+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="工具">
 <meta itemprop="description" content="Vine 文档">
 <meta name="twitter:card" content="summary"/>
@@ -31,24 +31,11 @@
 <meta name="twitter:description" content="Vine 文档"/>
 
 
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-00000000-0', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
-
-
-
-<link rel="preload" href="/vine/scss/main.min.9156453689c2a62860578c0dd5be0d8047f7ff28c3529bf4b8b3279efe82e52a.css" as="style">
-<link href="/vine/scss/main.min.9156453689c2a62860578c0dd5be0d8047f7ff28c3529bf4b8b3279efe82e52a.css" rel="stylesheet" integrity="">
+<link rel="preload" href="/vine/scss/main.min.7822b7c057b4a810809dabf336eddb9515f800a3275417dc6ae2da2d35a0d1d1.css" as="style">
+<link href="/vine/scss/main.min.7822b7c057b4a810809dabf336eddb9515f800a3275417dc6ae2da2d35a0d1d1.css" rel="stylesheet" integrity="">
 
 
 <script
@@ -673,217 +660,275 @@ This the multi-page printable view of this section.
 	<h1 id="pg-08c0ea86519d163a577ecad43c1190e9">3 - Dao</h1>
     <div class="lead"><em>Dao</em> 通过 <code>protoc-gen-dao</code> 生成数据库CURD代码。</div>
 	<h2 id="概述">概述</h2>
-<p><strong>Vine</strong> 提供 <code>protoc-gen-dao</code> 工具通过识别<code>*.proto</code>文件的注释</p>
+<p><code>Dao</code> 是 <strong>Vine</strong> 框架的数据库交互模块，而<code>protoc-gen-dao</code>工具则可以通过识别<code>*.proto</code>来生成对应的数据库交互代码。减少大量重复代码的编写，提高用户效率。</p>
 <h2 id="使用">使用</h2>
-<h3 id="1先编写-validatorproto-文件">1.先编写 validator.proto 文件</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Person</span> {
-  <span style="color:#6272a4">// +gen:min_len=4
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:max_len=10
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+<h3 id="1先编写-userproto-文件">1.先编写 user.proto 文件</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
 
-  <span style="color:#6272a4">// +gen:required;gt=10;lt=100
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+<span style="color:#ff79c6">package</span> v1;
 
-  <span style="color:#6272a4">// +gen:required;min_bytes=3;max_bytes=4;
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">bytes</span> any <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+<span style="color:#6272a4">// +dao:generate
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">User</span> {
+  <span style="color:#6272a4">// +dao:PK
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
 
-  <span style="color:#6272a4">// +gen:email
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> email <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+
+  <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> following <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+
+  map&lt;<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd">string</span>&gt; tags <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+
+  Other other <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">5</span>;
 }
-</code></pre></div><h3 id="2安装-protoc-gen-validator">2.安装 protoc-gen-validator</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/protoc-gen-validator
-</code></pre></div><h3 id="3生成-validate-方法">3.生成 Validate() 方法</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:.  --validator_out<span style="color:#ff79c6">=</span>:. proto/validator.proto
-</code></pre></div><p>执行完成后生成以下代码:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">Validate</span>() <span style="color:#8be9fd">error</span> {
-	errs <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>([]<span style="color:#8be9fd">error</span>, <span style="color:#bd93f9">0</span>)
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">4</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;name&#39; length must less than &#39;4&#39;&#34;</span>))
-		}
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">10</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;name&#39; length must great than &#39;10&#39;&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">int64</span>(m.Age) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; is required&#34;</span>))
-	} <span style="color:#ff79c6">else</span> {
-		<span style="color:#ff79c6">if</span> !(m.Age &lt; <span style="color:#bd93f9">100</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; must less than &#39;100&#39;&#34;</span>))
-		}
-		<span style="color:#ff79c6">if</span> !(m.Age &gt; <span style="color:#bd93f9">10</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; must great than &#39;10&#39;&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; is required&#34;</span>))
-	} <span style="color:#ff79c6">else</span> {
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">3</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; length must less than &#39;3&#39;&#34;</span>))
-		}
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">4</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; length must great than &#39;4&#39;&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Email) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
-		<span style="color:#ff79c6">if</span> !is.<span style="color:#50fa7b">Email</span>(m.Email) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;email&#39; is not a valid email&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">return</span> is.<span style="color:#50fa7b">MargeErr</span>(errs<span style="color:#ff79c6">...</span>)
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Other</span> {
+  <span style="color:#8be9fd">string</span> k <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+  <span style="color:#8be9fd">string</span> v <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
 }
-</code></pre></div><h3 id="4验证">4.验证</h3>
+</code></pre></div><h3 id="2安装-protoc-gen-dao">2.安装 protoc-gen-dao</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/protoc-gen-dao
+</code></pre></div><h3 id="3生成curd代码">3.生成CURD代码</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:.  --dao_out<span style="color:#ff79c6">=</span>:. proto/dao.proto
+</code></pre></div><p>执行完成后生成以下文件:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-rw-r--r--  <span style="color:#bd93f9">1</span> lack  staff   7.8K Mar <span style="color:#bd93f9">19</span> 22:26 user.pb.dao.go
+-rw-r--r--  <span style="color:#bd93f9">1</span> lack  staff    20K Mar <span style="color:#bd93f9">19</span> 22:26 user.pb.go
+-rw-r--r--  <span style="color:#bd93f9">1</span> lack  staff   255B Mar <span style="color:#bd93f9">18</span> 23:00 user.proto
+</code></pre></div><p><code>*.pb.dao.go</code> 中保存着CURD代码。</p>
+<h3 id="4curd-实例">4.CURD 实例</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
- 	p <span style="color:#ff79c6">:=</span> pb.Person{}
-	p.Age = <span style="color:#bd93f9">1</span>
-	p.Email = <span style="color:#f1fa8c">&#34;11&#34;</span>
- 	err <span style="color:#ff79c6">:=</span> p.<span style="color:#50fa7b">Validate</span>()
- 	log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%v\n&#34;</span>, err)
+	dao.DefaultDialect = sqlite.<span style="color:#50fa7b">NewDialect</span>(dao.<span style="color:#50fa7b">DSN</span>(<span style="color:#f1fa8c">&#34;user.db&#34;</span>), dao.<span style="color:#50fa7b">Logger</span>(logger.Default.<span style="color:#50fa7b">LogMode</span>(logger.Info)))
+	dao.DefaultDialect.<span style="color:#50fa7b">Init</span>()
+
+    <span style="color:#6272a4">// 注册 Schema, 会在数据库中创建对应的表
+</span><span style="color:#6272a4"></span>	v1.<span style="color:#50fa7b">RegistryUser</span>(<span style="color:#ff79c6">&amp;</span>v1.User{})
+
+	ctx <span style="color:#ff79c6">:=</span> context.<span style="color:#50fa7b">TODO</span>()
+	u <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>v1.User{
+		Id: <span style="color:#f1fa8c">&#34;1&#34;</span>,
+		Name: <span style="color:#f1fa8c">&#34;Lack&#34;</span>,
+		Following: []<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;JJ&#34;</span>, <span style="color:#f1fa8c">&#34;OO&#34;</span>},
+		Tags: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;label&#34;</span>: <span style="color:#f1fa8c">&#34;vv&#34;</span>},
+		Other:     <span style="color:#ff79c6">&amp;</span>v1.Other{
+			K: <span style="color:#f1fa8c">&#34;k1&#34;</span>,
+			V: <span style="color:#f1fa8c">&#34;v1&#34;</span>,
+		},
+	}
+
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;Create ==============&gt;&#34;</span>)
+	out, err <span style="color:#ff79c6">:=</span> v1.<span style="color:#50fa7b">FromUser</span>(u).<span style="color:#50fa7b">Create</span>(ctx)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Println</span>(out)
+
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;Updates ==============&gt;&#34;</span>)
+	out, err = v1.<span style="color:#50fa7b">FromUser</span>(<span style="color:#ff79c6">&amp;</span>v1.User{Id: <span style="color:#f1fa8c">&#34;1&#34;</span>, Tags: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;aa&#34;</span>: <span style="color:#f1fa8c">&#34;vv&#34;</span>}}).<span style="color:#50fa7b">Updates</span>(ctx)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Println</span>(out)
+
+
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;FindAll ==============&gt;&#34;</span>)
+	outs, err <span style="color:#ff79c6">:=</span> v1.<span style="color:#50fa7b">FromUser</span>(<span style="color:#ff79c6">&amp;</span>v1.User{Tags: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;aa&#34;</span>: <span style="color:#f1fa8c">&#34;vv&#34;</span>}}).<span style="color:#50fa7b">FindAll</span>(ctx)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Println</span>(outs)
+
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;FindOne ==============&gt;&#34;</span>)
+	out, err = v1.<span style="color:#50fa7b">FromUser</span>(<span style="color:#ff79c6">&amp;</span>v1.User{Id: <span style="color:#f1fa8c">&#34;1&#34;</span>}).<span style="color:#50fa7b">FindOne</span>(ctx)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Println</span>(outs)
+
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;SoftDelete ==============&gt;&#34;</span>)
+	err = v1.<span style="color:#50fa7b">FromUser</span>(<span style="color:#ff79c6">&amp;</span>v1.User{Id: <span style="color:#f1fa8c">&#34;1&#34;</span>}).<span style="color:#50fa7b">SoftDelete</span>(ctx)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;Delete ==============&gt;&#34;</span>)
+	err = v1.<span style="color:#50fa7b">FromUser</span>(<span style="color:#ff79c6">&amp;</span>v1.User{Id: <span style="color:#f1fa8c">&#34;1&#34;</span>}).<span style="color:#50fa7b">Delete</span>(ctx)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		<span style="color:#6272a4">//log.Fatal(err)
+</span><span style="color:#6272a4"></span>	}
 }
-<span style="color:#6272a4">// output:  field &#39;age&#39; must great than &#39;10&#39;;field &#39;any&#39; is required;field &#39;email&#39; is not a valid email
-</span></code></pre></div><p>多个错误时，使用 <code>;</code> 隔开</p>
-<h2 id="语法解析">语法解析</h2>
-<p><code>protoc-gen-validator</code> 通过解析 <code>protobuf</code> 中的注释来生成 <code>Validate()</code> 规则。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:ignore
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Struct</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> field1 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-    
-    <span style="color:#6272a4">// +gen:required;email
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> field2 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</code></pre></div><h2 id="语法解析">语法解析</h2>
+<p><code>protoc-gen-dao</code> 通过解析 <code>protobuf</code> 中的注释来生成代码。repeated, map, message 字段会生成新的结构体，在数据库中存储格式为 json。
+每个带<code>+dao:generate</code>注释的 message 会生成 *Schema 结构体，并生成对应的 CURD 方法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#6272a4">// 注册 User 相应的数据库表
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">RegistryUser</span>(in <span style="color:#ff79c6">*</span>User) <span style="color:#8be9fd">error</span> 
+<span style="color:#6272a4">// User =&gt; UserSchema, 忽略空值字段
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">FromUser</span>(in <span style="color:#ff79c6">*</span>User) <span style="color:#ff79c6">*</span>UserSchema 
+<span style="color:#6272a4">// UserSchema =&gt; User
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">ToUser</span>() <span style="color:#ff79c6">*</span>User
+<span style="color:#6272a4">// User 结构体在数据库中的表名
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (UserSchema) <span style="color:#50fa7b">TableName</span>() <span style="color:#8be9fd">string</span> 
+<span style="color:#6272a4">// 主键信息，返回主键名称、值、是否为零值
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m UserSchema) <span style="color:#50fa7b">PrimaryKey</span>() (<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd;font-style:italic">interface</span>{}, <span style="color:#8be9fd">bool</span>)
+<span style="color:#6272a4">// 分页查询
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindPage</span>(ctx context.Context, page, size <span style="color:#8be9fd">int</span>, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
+<span style="color:#6272a4">// 查询所有符合的记录
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindAll</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
+<span style="color:#6272a4">// 查询首条符合的记录
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindOne</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) (<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>)
+<span style="color:#6272a4">// 插入一条记录
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Create</span>(ctx context.Context) (<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
+<span style="color:#6272a4">// 更新记录
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Updates</span>(ctx context.Context) (<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>)
+<span style="color:#6272a4">// 软删除
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">SoftDelete</span>(ctx context.Context) <span style="color:#8be9fd">error</span> 
+<span style="color:#6272a4">// 直接删除记录
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Delete</span>(ctx context.Context) <span style="color:#8be9fd">error</span> 
+</code></pre></div><h3 id="类型转化">类型转化</h3>
+<p>slice、map、message 自动生成实现 driver.Valuer 接口的类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> following <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+</code></pre></div><p>生成</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">type</span> UserFollowing []<span style="color:#8be9fd">string</span>
+
+<span style="color:#6272a4">// Value return json value, implement driver.Valuer interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m UserFollowing) <span style="color:#50fa7b">Value</span>() (driver.Value, <span style="color:#8be9fd">error</span>) {
+	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>, <span style="color:#ff79c6">nil</span>
+	}
+	b, err <span style="color:#ff79c6">:=</span> _go.<span style="color:#50fa7b">Marshal</span>(m)
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">string</span>(b), err
 }
-</code></pre></div><h3 id="语法规则">语法规则</h3>
+
+<span style="color:#6272a4">// Scan scan value into Jsonb, implements sql.Scanner interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserFollowing) <span style="color:#50fa7b">Scan</span>(value <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+	<span style="color:#8be9fd;font-style:italic">var</span> bytes []<span style="color:#8be9fd">byte</span>
+	<span style="color:#ff79c6">switch</span> v <span style="color:#ff79c6">:=</span> value.(<span style="color:#8be9fd;font-style:italic">type</span>) {
+	<span style="color:#ff79c6">case</span> []<span style="color:#8be9fd">byte</span>:
+		bytes = v
+	<span style="color:#ff79c6">case</span> <span style="color:#8be9fd">string</span>:
+		bytes = []<span style="color:#8be9fd;font-style:italic">byte</span>(v)
+	<span style="color:#ff79c6">default</span>:
+		<span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">New</span>(fmt.<span style="color:#50fa7b">Sprint</span>(<span style="color:#f1fa8c">&#34;Failed to unmarshal JSONB value:&#34;</span>, value))
+	}
+
+	<span style="color:#ff79c6">return</span> _go.<span style="color:#50fa7b">Unmarshal</span>(bytes, <span style="color:#ff79c6">&amp;</span>m)
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserFollowing) <span style="color:#50fa7b">DaoDataType</span>() <span style="color:#8be9fd">string</span> {
+	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;json&#34;</span>
+}
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">map&lt;<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd">string</span>&gt; tags <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+</code></pre></div><p>生成</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">type</span> UserTags <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>
+
+<span style="color:#6272a4">// Value return json value, implement driver.Valuer interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m UserTags) <span style="color:#50fa7b">Value</span>() (driver.Value, <span style="color:#8be9fd">error</span>) {
+	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>, <span style="color:#ff79c6">nil</span>
+	}
+	b, err <span style="color:#ff79c6">:=</span> _go.<span style="color:#50fa7b">Marshal</span>(m)
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">string</span>(b), err
+}
+
+<span style="color:#6272a4">// Scan scan value into Jsonb, implements sql.Scanner interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserTags) <span style="color:#50fa7b">Scan</span>(value <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+	<span style="color:#8be9fd;font-style:italic">var</span> bytes []<span style="color:#8be9fd">byte</span>
+	<span style="color:#ff79c6">switch</span> v <span style="color:#ff79c6">:=</span> value.(<span style="color:#8be9fd;font-style:italic">type</span>) {
+	<span style="color:#ff79c6">case</span> []<span style="color:#8be9fd">byte</span>:
+		bytes = v
+	<span style="color:#ff79c6">case</span> <span style="color:#8be9fd">string</span>:
+		bytes = []<span style="color:#8be9fd;font-style:italic">byte</span>(v)
+	<span style="color:#ff79c6">default</span>:
+		<span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">New</span>(fmt.<span style="color:#50fa7b">Sprint</span>(<span style="color:#f1fa8c">&#34;Failed to unmarshal JSONB value:&#34;</span>, value))
+	}
+
+	<span style="color:#ff79c6">return</span> _go.<span style="color:#50fa7b">Unmarshal</span>(bytes, <span style="color:#ff79c6">&amp;</span>m)
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserTags) <span style="color:#50fa7b">DaoDataType</span>() <span style="color:#8be9fd">string</span> {
+	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;json&#34;</span>
+}
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">Other other <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">5</span>;
+</code></pre></div><p>生成</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">type</span> UserOther Other
+
+<span style="color:#6272a4">// Value return json value, implement driver.Valuer interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserOther) <span style="color:#50fa7b">Value</span>() (driver.Value, <span style="color:#8be9fd">error</span>) {
+	<span style="color:#ff79c6">if</span> m <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">nil</span> {
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>, <span style="color:#ff79c6">nil</span>
+	}
+	b, err <span style="color:#ff79c6">:=</span> _go.<span style="color:#50fa7b">Marshal</span>(m)
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">string</span>(b), err
+}
+
+<span style="color:#6272a4">// Scan scan value into Jsonb, implements sql.Scanner interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserOther) <span style="color:#50fa7b">Scan</span>(value <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+	<span style="color:#8be9fd;font-style:italic">var</span> bytes []<span style="color:#8be9fd">byte</span>
+	<span style="color:#ff79c6">switch</span> v <span style="color:#ff79c6">:=</span> value.(<span style="color:#8be9fd;font-style:italic">type</span>) {
+	<span style="color:#ff79c6">case</span> []<span style="color:#8be9fd">byte</span>:
+		bytes = v
+	<span style="color:#ff79c6">case</span> <span style="color:#8be9fd">string</span>:
+		bytes = []<span style="color:#8be9fd;font-style:italic">byte</span>(v)
+	<span style="color:#ff79c6">default</span>:
+		<span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">New</span>(fmt.<span style="color:#50fa7b">Sprint</span>(<span style="color:#f1fa8c">&#34;Failed to unmarshal JSONB value:&#34;</span>, value))
+	}
+
+	<span style="color:#ff79c6">return</span> _go.<span style="color:#50fa7b">Unmarshal</span>(bytes, <span style="color:#ff79c6">&amp;</span>m)
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserOther) <span style="color:#50fa7b">DaoDataType</span>() <span style="color:#8be9fd">string</span> {
+	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;json&#34;</span>
+}
+</code></pre></div><h3 id="json-支持">JSON 支持</h3>
+<p><code>protoc-gen-dao</code> 将 slice、map 和 message 类型的字段转化为JSON格式并存储到数据库中，同时 Dao 支持通过 JSON 来作为查询条件。以下是JSON格式查询的条件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">    <span style="color:#6272a4">// slice 格式，查询slice包含指定项的记录
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Following) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
+		<span style="color:#ff79c6">for</span> _, item <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> m.Following {
+			exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;following&#34;</span>).<span style="color:#50fa7b">Contains</span>(item))
+		}
+	}
+    <span style="color:#6272a4">// map 格式，查询kv符合条件的记录，key 类型必须为 string
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> m.Tags <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		<span style="color:#ff79c6">for</span> k, v <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> m.Tags {
+			exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;tags&#34;</span>).<span style="color:#50fa7b">Equals</span>(v, k))
+		}
+	}
+    <span style="color:#6272a4">// struct 格式，精确查询 JSON 
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// 支持两种方式:
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">//  * 当传入 key 的值为空，查询对应 JSON key 是否存在
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">//  * 当传入 key 为确定值时，查询对应 JSON key 是否等于对应的值
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> m.Other <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		<span style="color:#ff79c6">for</span> k, v <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> dao.<span style="color:#50fa7b">FieldPatch</span>(m.Other) {
+			<span style="color:#ff79c6">if</span> v <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">nil</span> {
+				exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;other&#34;</span>).<span style="color:#50fa7b">HasKeys</span>(strings.<span style="color:#50fa7b">Split</span>(k, <span style="color:#f1fa8c">&#34;,&#34;</span>)<span style="color:#ff79c6">...</span>))
+			} <span style="color:#ff79c6">else</span> {
+				exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;other&#34;</span>).<span style="color:#50fa7b">Equals</span>(v, strings.<span style="color:#50fa7b">Split</span>(k, <span style="color:#f1fa8c">&#34;,&#34;</span>)<span style="color:#ff79c6">...</span>))
+			}
+		}
+	}
+</code></pre></div><blockquote>
+<p>注: 如果默认数据库选择 Sqlite3 时，默认不支持 json_each, json_extract 方法，需要添加 -tags 选项。 <code>go build -tags JSON1 main.go</code></p>
+</blockquote>
+<h3 id="语法规则">语法规则</h3>
 <p>有效的注释有以下的规则:</p>
 <ul>
-<li>注释必须以 <code>+gen</code> 作为开头</li>
+<li>注释必须以 <code>+dao</code> 作为开头</li>
 <li>注释的内容必须紧贴对应的字段，中间不能有空行</li>
 <li>支持多行注释，也可以将多行合并成一行，并用 <code>;</code> 作为分隔符</li>
+<li>只有带 <code>+dao:generate</code> 注释的 message 才会生成 CURD 代码</li>
 </ul>
-<h3 id="类型支持">类型支持</h3>
-<p><code>message</code> 类型规则:</p>
-<ul>
-<li>ignore: 忽略该 message ，不生成 <code>Validate()</code> 方法</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:ignore
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
-
-}
-</code></pre></div><p><code>message</code> 作为内嵌字段时支持的规则:</p>
-<ul>
-<li>required: 判断该字段是否为 nil。</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    Sub sub <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Sub</span> {
-
-}
-</code></pre></div><blockquote>
-<p>注: 在引用外部的 message 时，请确认 message 存在 Validate() 方法</p>
-</blockquote>
-<p><code>string</code> 类型支持的规则</p>
-<ul>
-<li>required: 判断是否为空</li>
-<li>default: 字段为空时指定的默认值，(不可用 required 同时使用)</li>
-<li>in, enum: 判断字段的值是否存在于指定的列表中</li>
-<li>not_in: 判断字段的值是否在指定的列表之外</li>
-<li>min_len: 指定字段的最小长度</li>
-<li>max_len: 指定字段的最大长度</li>
-<li>prefix: 判断字段是否以给定的值为开头</li>
-<li>suffix: 判断字段是否以给定的值为结尾</li>
-<li>contains: 判断字段是否包含给定的值</li>
-<li>pattern: 判断该字段是否为有效的正则表达式</li>
-<li>number: 判断该字段是否为有效数字</li>
-<li>email: 判断该字段是否为有效的邮箱地址</li>
-<li>ip: 判断该字段是否为有效的 ip 地址</li>
-<li>ipv4: 判断该字段是否为有效的 ipv4</li>
-<li>ipv6: 判断该字段是否为有效的 ipv6</li>
-<li>crontab: 判断该字段是否为有效的 crontab 表达式</li>
-<li>uuid: 判断该字段是否为有效的 uuid v4</li>
-<li>uri: 判断该字段是否为有效的 uri</li>
-<li>domain: 判断该字段是否为有效的域名</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:in=[&#34;1&#34;, &#34;2&#34;, &#34;3&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[&#34;d&#34;, &#34;s&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_max=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:prefix=&#34;http&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:suffix=&#34;.com&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:contains=&#34;www&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:pattern=`\d+(\w+){3,5}`
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:number
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ip
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv6
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:crontab
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uuid
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uri
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:domain
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><blockquote>
-<p>注: string pattern 最好单独一行，以免和其他规则冲突</p>
-</blockquote>
-<p>数字类型的支持，包含 int32, int64, fixed32, fix64, float, double</p>
-<ul>
-<li>required: 判断是否为 0</li>
-<li>default: 字段为空时指定的默认值，(不可用 required 同时使用)</li>
-<li>in, enum: 判断字段的值是否存在于指定的列表中</li>
-<li>not_in: 判断字段的值是否在指定的列表之外</li>
-<li>lt: 指定字段小于指定值</li>
-<li>lte: 指定字段的小于等于指定值</li>
-<li>gt: 指定字段大于指定值</li>
-<li>gte: 指定字段大于等于指定值</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">float</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-
-    <span style="color:#6272a4">// +gen:default=3.14
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">double</span> pi <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
-
-    <span style="color:#6272a4">// +gen:in=[1,2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
-
-    <span style="color:#6272a4">// +gen:ge=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
-}
-</code></pre></div><p><code>bytes</code> 类型的支持:</p>
-<ul>
-<li>required: 判断字段的长度是否为0</li>
-<li>min_bytes: 判断字段的最小字节数是否大于给定值</li>
-<li>max_bytes: 判断字段的最大字节数是否小于给定值</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_bytes=10
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_bytes=1024
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">bytes</span> any <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><p>repeated 类型的支持：repeated 类型的字段在 golang 中会被解析成切片。</p>
-<ul>
-<li>required: 判断切片的长度是否为0</li>
-<li>min_len: 判断切片的最小长度是否大于给定值</li>
-<li>max_len: 判断切片的最大长度是否小于给定值</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:max_len=5
-</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
+<h3 id="语法支持">语法支持</h3>
+<h4 id="代码输出路径">代码输出路径</h4>
+<p><code>protoc-gen-dao</code> 支持将CURD代码输出到指定路径</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +output:github.com/lack-io/vine/testdata/db/dao;dao
+</span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
+<span style="color:#ff79c6">...</span>
+</code></pre></div><p>使用 <code>+output</code>为开头，写在 protobuf 文件开头，指定生成的路径(对应$GOPATH)和生成 package 名称。</p>
+<h4 id="message-支持">message 支持</h4>
+<p>message 支持以下注释:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:generate  =&gt; 只有标识该注释的 message 才会生成 CURD 代码
+</span></code></pre></div><h4 id="field-支持">field 支持</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:PK   =&gt; 指定字段为主键(必须), 可以是 string 和 数字, 当 int 类型时自增 
+</span><span style="color:#6272a4">//              当多个 PK 字段存在时，默认选择第一个。
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">...</span>
 </code></pre></div>
 </div>
 

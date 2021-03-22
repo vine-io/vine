@@ -64,6 +64,10 @@ type Comment struct {
 func extractFileDescriptor(file *FileDescriptor) {
 	file.messages = make([]*MessageDescriptor, 0)
 	for _, item := range file.desc {
+		// ignore MapEntry message
+		if strings.HasSuffix(item.GetName(), "Entry") {
+			continue
+		}
 		md := &MessageDescriptor{
 			Proto:    item,
 			Fields:   []*FieldDescriptor{},

@@ -177,7 +177,11 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 
 	s := &Schema{Name: msg.Proto.GetName() + "Schema", Desc: msg}
 	for _, item := range msg.Fields {
-		field := &Field{Name: generator.CamelCase(item.Proto.GetName()), Desc: item}
+		field := &Field{
+			Name: generator.CamelCase(item.Proto.GetName()),
+			Tags: []*FieldTag{},
+			Desc: item,
+		}
 		if item.Proto.IsRepeated() {
 			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), item.Proto.GetName()})
 			if strings.HasSuffix(item.Proto.GetTypeName(), "Entry") {
@@ -195,11 +199,12 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 				field.IsRepeated = true
 			}
 			field.Alias = alias
-			field.Tags = g.buildFieldTags(item, false)
+			field.Tags = append(field.Tags, g.buildJSONTags(item), g.buildDaoTags(item, false))
 			g.aliasFields[alias] = field
 			s.Fields = append(s.Fields, field)
 			continue
 		}
+
 		typ, tags, err := g.buildFieldTypeAndTags(item)
 		if err != nil {
 			continue
@@ -207,18 +212,23 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 		field.Type = typ
 		field.Tags = tags
 		if item.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), strings.ReplaceAll(item.Proto.GetTypeName(), ".", "")})
+			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), item.Proto.GetName()})
 			field.Alias = alias
 			g.aliasFields[alias] = field
 		}
-		s.Fields = append(s.Fields, field)
+
 		fieldTags := g.extractTags(item.Comments)
-		if _, ok := fieldTags[_pk]; ok {
+		_, pkExists := fieldTags[_pk]
+		if pkExists && s.PK == nil && (strings.ToLower(field.Name) == "id" || strings.ToLower(field.Name) == "uuid") {
 			s.PK = field
+			for _, tag := range field.Tags {
+				if tag.Key == "dao" {
+					tag.Values = append(tag.Values, "primaryKey")
+				}
+			}
 		}
-		if s.PK == nil && (strings.ToLower(field.Name) == "id" || strings.ToLower(field.Name) == "uuid") {
-			s.PK = field
-		}
+
+		s.Fields = append(s.Fields, field)
 	}
 	if s.PK == nil {
 		g.gen.Fail(fmt.Sprintf(`Message:%s missing primary key`, msg.Proto.GetName()))
@@ -262,12 +272,18 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 	g.P()
 
 	g.P("// Value return json value, implement driver.Valuer interface")
-	if field.Type == _slice || field.Type == _map {
+	switch field.Type {
+	case _slice:
 		g.P(fmt.Sprintf(`func (m %s) Value() (driver.Value, error) {`, alias))
 		g.P("if len(m) == 0 {")
 		g.P("return nil, nil")
 		g.P("}")
-	} else {
+	case _map:
+		g.P(fmt.Sprintf(`func (m %s) Value() (driver.Value, error) {`, alias))
+		g.P("if m == nil {")
+		g.P("return nil, nil")
+		g.P("}")
+	default:
 		g.P(fmt.Sprintf(`func (m *%s) Value() (driver.Value, error) {`, alias))
 		g.P("if m == nil {")
 		g.P("return nil, nil")
@@ -316,14 +332,14 @@ func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schem
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _point:
-			g.P(fmt.Sprintf(`%s *%s %s`, field.Name, field.Alias, field.Tags))
+			g.P(fmt.Sprintf(`%s *%s %s`, field.Name, field.Alias, MargeTags(field.Tags...)))
 		case _slice, _map:
-			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Alias, field.Tags))
+			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Alias, MargeTags(field.Tags...)))
 		default:
-			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Type, field.Tags))
+			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Type, MargeTags(field.Tags...)))
 		}
 	}
-	g.P(fmt.Sprintf(`DeletionTimestamp int64 %s`, toQuoted(`json:"deletionTimestamp" dao:"column:deletion_timestamp"`)))
+	g.P(fmt.Sprintf(`DeletionTimestamp int64 %s`, toQuoted(`json:"deletionTimestamp,omitempty" dao:"column:deletion_timestamp"`)))
 	g.P("}")
 	g.P()
 }
@@ -448,8 +464,6 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 		case _slice:
 			g.P(fmt.Sprintf(`if len(m.%s) != 0 {`, field.Name))
 			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
-			//sjname := field.Slice.GetJsonName()
-			//sname := field.Slice.GetName()
 			switch field.Slice.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
 				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(item))`, column))
@@ -466,7 +480,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 				g.P(`for k, v := range dao.FieldPatch(item) {`)
 				g.P(`if v != nil {`)
 				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(v, strings.Split(k, ",")...))`, column))
-					g.P(`}`)
+				g.P(`}`)
 				g.P("}")
 			}
 			g.P("}")
@@ -612,33 +626,64 @@ func (g *dao) checkedMessage(msg *generator.MessageDescriptor) bool {
 	return false
 }
 
-func (g *dao) buildFieldTypeAndTags(field *generator.FieldDescriptor) (fieldType, string, error) {
+func (g *dao) buildFieldTypeAndTags(field *generator.FieldDescriptor) (fieldType, []*FieldTag, error) {
+	var (
+		typ   fieldType
+		incre bool
+		tags  = make([]*FieldTag, 0)
+	)
+	tags = append(tags, g.buildJSONTags(field))
 	switch field.Proto.GetType() {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
-		return _float64, g.buildFieldTags(field, false), nil
+		typ, incre = _float64, false
 	case descriptor.FieldDescriptorProto_TYPE_FLOAT:
-		return _float32, g.buildFieldTags(field, false), nil
+		typ, incre = _float32, false
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED32,
 		descriptor.FieldDescriptorProto_TYPE_INT32,
 		descriptor.FieldDescriptorProto_TYPE_ENUM:
-		return _int32, g.buildFieldTags(field, true), nil
+		typ, incre = _int32, true
 	case descriptor.FieldDescriptorProto_TYPE_SFIXED64,
 		descriptor.FieldDescriptorProto_TYPE_INT64:
-		return _int64, g.buildFieldTags(field, true), nil
+		typ, incre = _int64, true
 	case descriptor.FieldDescriptorProto_TYPE_FIXED32,
 		descriptor.FieldDescriptorProto_TYPE_UINT32:
-		return _uint32, g.buildFieldTags(field, true), nil
+		typ, incre = _uint32, true
 	case descriptor.FieldDescriptorProto_TYPE_FIXED64,
 		descriptor.FieldDescriptorProto_TYPE_UINT64:
-		return _uint64, g.buildFieldTags(field, true), nil
+		typ, incre = _uint64, true
 	case descriptor.FieldDescriptorProto_TYPE_STRING,
 		descriptor.FieldDescriptorProto_TYPE_BYTES:
-		return _string, g.buildFieldTags(field, false), nil
+		typ, incre = _string, false
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
-		return _point, g.buildFieldTags(field, false), nil
+		typ, incre = _point, false
 	default:
-		return "", "", errors.New("invalid field type")
+		return "", nil, errors.New("invalid field type")
 	}
+
+	tags = append(tags, g.buildDaoTags(field, incre))
+	return typ, tags, nil
+}
+
+func (g *dao) buildJSONTags(field *generator.FieldDescriptor) *FieldTag {
+	fTag := &FieldTag{Key: "json", Values: []string{}, Seq: ","}
+	fTag.Values = append(fTag.Values, field.Proto.GetJsonName(), "omitempty")
+	return fTag
+}
+
+func (g *dao) buildDaoTags(field *generator.FieldDescriptor, autoIncr bool) *FieldTag {
+	fTag := &FieldTag{Key: "dao", Values: []string{}, Seq: ";"}
+	fTag.Values = append(fTag.Values, fmt.Sprintf(`column:%s`, toColumnName(field.Proto.GetName())))
+	for _, tag := range g.extractTags(field.Comments) {
+		// TODO: parse dao tags
+		switch tag.Key {
+		case _pk:
+			if autoIncr {
+				fTag.Values = append(fTag.Values, "autoIncrement")
+			}
+		}
+	}
+
+	return fTag
 }
 
 func (g *dao) buildFieldGoType(file *generator.FileDescriptor, field *descriptor.FieldDescriptorProto) (string, error) {
@@ -685,29 +730,6 @@ func (g *dao) wrapPkg(pkg string) string {
 		return sourcePkg + "." + pkg
 	}
 	return pkg
-}
-
-func (g *dao) buildFieldTags(field *generator.FieldDescriptor, autoIncr bool) string {
-	var (
-		out       = make([]string, 0)
-		fieldName = generator.CamelCase(field.Proto.GetName())
-		tags      = g.extractTags(field.Comments)
-	)
-	out = append(out, fmt.Sprintf(`json:"%s,omitempty"`, field.Proto.GetJsonName()))
-	daoTag := fmt.Sprintf(`dao:"column:%s"`, toColumnName(fieldName))
-	for _, tag := range tags {
-		// TODO: parse dao tags
-		switch tag.Key {
-		case _pk:
-			daoTag += ";primaryKey"
-			if autoIncr {
-				daoTag += ";autoIncrement"
-			}
-		}
-	}
-	out = append(out, daoTag)
-
-	return toQuoted(strings.Join(out, " "))
 }
 
 // extractMessage extract MessageDescriptor by name
