@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.79.1" /><link rel="alternate" type="application/rss&#43;xml" href="https://lack-io.github.io/vine/docs/tools/dao/index.xml">
+<meta name="generator" content="Hugo 0.76.5" /><link rel="alternate" type="application/rss&#43;xml" href="https://lack-io.github.io/vine/docs/tools/dao/index.xml">
 <link rel="alternate" type="text/html" href="https://lack-io.github.io/vine/docs/tools/dao/_print/">
-<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+<META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
 
 <link rel="shortcut icon" href="/vine/favicons/favicon.ico" >
@@ -24,7 +24,7 @@
 " />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/tools/dao/" />
-<meta property="og:updated_time" content="2021-03-19T17:38:20+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-03-20T10:48:05+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="Dao">
 <meta itemprop="description" content="*Dao* 通过 `protoc-gen-dao` 生成数据库CURD代码。
 ">
@@ -34,11 +34,24 @@
 "/>
 
 
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-00000000-0', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 
-<link rel="preload" href="/vine/scss/main.min.7822b7c057b4a810809dabf336eddb9515f800a3275417dc6ae2da2d35a0d1d1.css" as="style">
-<link href="/vine/scss/main.min.7822b7c057b4a810809dabf336eddb9515f800a3275417dc6ae2da2d35a0d1d1.css" rel="stylesheet" integrity="">
+
+
+
+<link rel="preload" href="/vine/scss/main.min.9156453689c2a62860578c0dd5be0d8047f7ff28c3529bf4b8b3279efe82e52a.css" as="style">
+<link href="/vine/scss/main.min.9156453689c2a62860578c0dd5be0d8047f7ff28c3529bf4b8b3279efe82e52a.css" rel="stylesheet" integrity="">
 
 
 <script
@@ -942,6 +955,8 @@
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindPage</span>(ctx context.Context, page, size <span style="color:#8be9fd">int</span>, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
 <span style="color:#6272a4">// 查询所有符合的记录
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindAll</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
+<span style="color:#6272a4">// 查询所有软删除的记录
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindDeleted</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
 <span style="color:#6272a4">// 查询首条符合的记录
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindOne</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) (<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>)
 <span style="color:#6272a4">// 插入一条记录
@@ -1161,7 +1176,7 @@
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 19, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/96268159e09243985cb54787bca7f07874cca545">rebuilding site 2021年 3月19日 星期五 17时38分20秒 CST (9626815)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 20, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/0eb7db781086f564f4a3f42d45f5324d6b24946d">modify (0eb7db7)</a>
 </div>
 </div>
 
