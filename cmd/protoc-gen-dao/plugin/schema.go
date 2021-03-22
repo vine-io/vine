@@ -45,6 +45,7 @@ type Field struct {
 	Desc       *generator.FieldDescriptor
 	Map        *MapFields
 	Slice      *descriptor.FieldDescriptorProto
+	File       *generator.FileDescriptor
 }
 
 type MapFields struct {
@@ -65,7 +66,6 @@ type FieldTag struct {
 	Values []string
 	Seq    string
 }
-
 
 func (t *FieldTag) String() string {
 	return fmt.Sprintf(`%s:"%s"`, t.Key, strings.Join(t.Values, t.Seq))

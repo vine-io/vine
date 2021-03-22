@@ -159,10 +159,16 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	}
 
 	for key, value := range g.aliasFields {
+		if value.File.GetName() != file.GetName() {
+			continue
+		}
 		g.generateAliasField(file, key, value)
 	}
 
 	for _, item := range g.schemas {
+		if item.Desc.Proto.File().GetName() != file.GetName() {
+			continue
+		}
 		g.generateSchema(file, item)
 	}
 }
@@ -181,6 +187,7 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 			Name: generator.CamelCase(item.Proto.GetName()),
 			Tags: []*FieldTag{},
 			Desc: item,
+			File: file,
 		}
 		if item.Proto.IsRepeated() {
 			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), item.Proto.GetName()})
