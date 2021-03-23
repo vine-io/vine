@@ -781,12 +781,14 @@ This the multi-page printable view of this section.
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (UserSchema) <span style="color:#50fa7b">TableName</span>() <span style="color:#8be9fd">string</span> 
 <span style="color:#6272a4">// 主键信息，返回主键名称、值、是否为零值
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m UserSchema) <span style="color:#50fa7b">PrimaryKey</span>() (<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd;font-style:italic">interface</span>{}, <span style="color:#8be9fd">bool</span>)
-<span style="color:#6272a4">// 分页查询
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindPage</span>(ctx context.Context, page, size <span style="color:#8be9fd">int</span>, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
+<span style="color:#6272a4">// 分页查询，等同 FindAll 和 Count
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindPage</span>(ctx context.Context, page, size <span style="color:#8be9fd">int</span>, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">int64</span>, <span style="color:#8be9fd">error</span>) 
 <span style="color:#6272a4">// 查询所有符合的记录
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindAll</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
 <span style="color:#6272a4">// 查询所有软删除的记录
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindDeleted</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
+<span style="color:#6272a4">// 查询符合的记录总量
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Count</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) (<span style="color:#8be9fd">int64</span>, <span style="color:#8be9fd">error</span>)
 <span style="color:#6272a4">// 查询首条符合的记录
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindOne</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) (<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>)
 <span style="color:#6272a4">// 插入一条记录
