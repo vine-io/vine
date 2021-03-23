@@ -17,12 +17,21 @@ vendor:
 build:
 	go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o $(NAME) cmd/vine/main.go
 
+build-windows-tool:
+	mkdir -p _output
+	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-gogofaster.exe cmd/protoc-gen-gogofaster/main.go
+	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-vine.exe cmd/protoc-gen-vine/main.go
+	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-dao.exe cmd/protoc-gen-dao/main.go
+	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-validator.exe cmd/protoc-gen-validator/main.go
+	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/vine.exe cmd/vine/main.go
+
 install:
 	go get github.com/rakyll/statik
 	go get github.com/gogo/protobuf
 	go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
 	go get github.com/lack-io/vine/cmd/protoc-gen-vine
 	go get github.com/lack-io/vine/cmd/protoc-gen-validator
+	go get github.com/lack-io/vine/cmd/protoc-gen-dao
 
 protoc:
 	cd $(GOPATH)/src && \
@@ -75,5 +84,6 @@ test: vet
 
 clean:
 	rm -rf ./vine
+	rm -fr ./_output
 
-.PHONY: build clean vet test docker install protoc openapi
+.PHONY: build build-windows-tool clean vet test docker install protoc openapi

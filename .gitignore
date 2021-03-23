@@ -5,3 +5,5 @@
 testdata
 
 *.db
+
+_output
