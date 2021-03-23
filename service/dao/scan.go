@@ -295,7 +295,7 @@ func patch(obj reflect.Value, outs map[string]interface{}, key string) {
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				kk = key + "." + fmt.Sprintf("%d", mkv.Uint())
 			default:
-				break
+				continue
 			}
 			mvv := vo.MapIndex(mkv)
 			switch mvv.Type().Kind() {
@@ -314,11 +314,11 @@ func patch(obj reflect.Value, outs map[string]interface{}, key string) {
 				fallthrough
 			case reflect.Struct:
 				if !mvv.IsValid() {
-					break
+					continue
 				}
 				if mvv.IsZero() {
 					outs[kk] = nil
-					break
+					continue
 				}
 
 				for i := 0; i < mvv.NumField(); i++ {
@@ -336,7 +336,7 @@ func patch(obj reflect.Value, outs map[string]interface{}, key string) {
 		}
 		if vo.IsZero() {
 			outs[key] = nil
-			break
+			return
 		}
 		for i := 0; i < vo.Type().NumField(); i++ {
 			kk := ""
@@ -344,7 +344,11 @@ func patch(obj reflect.Value, outs map[string]interface{}, key string) {
 			fdv := vo.Field(i)
 
 			if !fdv.IsValid() {
-				break
+				continue
+			}
+
+			if fdv.IsZero() {
+				continue
 			}
 
 			jsonName := strings.Split(fd.Tag.Get("json"), ",")[0]
@@ -352,10 +356,6 @@ func patch(obj reflect.Value, outs map[string]interface{}, key string) {
 				kk = jsonName
 			} else {
 				kk = key + "." + jsonName
-			}
-
-			if fdv.IsZero() {
-				break
 			}
 
 			patch(fdv, outs, kk)

@@ -11,19 +11,19 @@ func TestFieldPatch(t *testing.T) {
 	}
 
 	type S1 struct {
+		M2   *M2                          `json:"m2"`
 		Name string                       `json:"name"`
-		Age  *int64                        `json:"age"`
 		M1   map[int]*M2                  `json:"m1"`
 		MM   map[string]map[string]string `json:"mm"`
-		M2   *M2                          `json:"m2"`
+		Age  *int64                       `json:"age"`
 	}
 
 	s1Ins := &S1{
 		Name: "s1",
-		Age:  new(int64),
-		M1:   map[int]*M2{1: &M2{AA: "11"}},
-		MM:   map[string]map[string]string{"22": {"aa": "22"}},
-		M2:   &M2{},
+		M1: map[int]*M2{1: &M2{AA: "11"}},
+		MM: map[string]map[string]string{"22": {"aa": "22"}},
+		//Age:  new(int64),
+		//M2:   &M2{},
 	}
 	//*s1Ins.Age = 22
 
