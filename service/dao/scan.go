@@ -15,6 +15,7 @@ package dao
 import (
 	"database/sql"
 	"database/sql/driver"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -258,61 +259,117 @@ func Scan(rows *sql.Rows, db *DB, initialized bool) {
 	}
 }
 
-func patch(obj reflect.Value, outs map[string]interface{}, prefix string) {
-	to := obj.Type()
-	if to.Kind() == reflect.Ptr {
-		to = to.Elem()
-	}
-	vo := obj
-	if obj.Kind() == reflect.Ptr {
-		vo = vo.Elem()
-	}
-	for i := 0; i < to.NumField(); i++ {
-		fd := to.Field(i)
-		fdv := vo.Field(i)
-		jsonName := strings.Split(fd.Tag.Get("json"), ",")[0]
-		key := prefix
-		if key == "" {
-			key = jsonName
-		} else {
-			key += "." + jsonName
+func patch(obj reflect.Value, outs map[string]interface{}, key string) {
+	vo := reflectDirect(obj)
+	switch vo.Kind() {
+	case reflect.String:
+		vv := vo.String()
+		if vv != "" {
+			outs[key] = vv
 		}
-		switch fd.Type.Kind() {
-		case reflect.String:
-			vv := fdv.String()
-			if vv != "" {
-				outs[key] = vv
+	case reflect.Float32, reflect.Float64:
+		vv := vo.Float()
+		if vv != 0 {
+			outs[key] = vv
+		}
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		vv := vo.Int()
+		if vv != 0 {
+			outs[key] = vv
+		}
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		vv := vo.Uint()
+		if vv != 0 {
+			outs[key] = vv
+		}
+	case reflect.Map:
+		for _, mkv := range vo.MapKeys() {
+			var kk string
+			switch mkv.Type().Kind() {
+			case reflect.String:
+				kk = key + "." + mkv.String()
+			case reflect.Float32, reflect.Float64:
+				kk = key + "." + fmt.Sprintf("%f", mkv.Float())
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				kk = key + "." + fmt.Sprintf("%d", mkv.Int())
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				kk = key + "." + fmt.Sprintf("%d", mkv.Uint())
+			default:
+				break
 			}
-		case reflect.Float32, reflect.Float64:
-			vv := fdv.Float()
-			if vv != 0 {
-				outs[key] = vv
+			mvv := vo.MapIndex(mkv)
+			switch mvv.Type().Kind() {
+			case reflect.String:
+				outs[kk] = mvv.String()
+			case reflect.Float32, reflect.Float64:
+				outs[kk] = mvv.Float()
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				outs[kk] = mvv.Int()
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				outs[kk] = mvv.Uint()
+			case reflect.Map:
+				patch(mvv, outs, kk)
+			case reflect.Ptr:
+				mvv = reflectDirect(mvv)
+				fallthrough
+			case reflect.Struct:
+				if !mvv.IsValid() {
+					break
+				}
+				if mvv.IsZero() {
+					outs[kk] = nil
+					break
+				}
+
+				for i := 0; i < mvv.NumField(); i++ {
+					mvvd := mvv.Type().Field(i)
+					mvfdv := mvv.Field(i)
+					jsonName := strings.Split(mvvd.Tag.Get("json"), ",")[0]
+					patch(mvfdv, outs, kk+"."+jsonName)
+				}
 			}
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			vv := fdv.Int()
-			if vv != 0 {
-				outs[key] = vv
+
+		}
+	case reflect.Struct:
+		if !vo.IsValid() {
+			return
+		}
+		if vo.IsZero() {
+			outs[key] = nil
+			break
+		}
+		for i := 0; i < vo.Type().NumField(); i++ {
+			kk := ""
+			fd := vo.Type().Field(i)
+			fdv := vo.Field(i)
+
+			if !fdv.IsValid() {
+				break
 			}
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			vv := fdv.Uint()
-			if vv != 0 {
-				outs[key] = vv
+
+			jsonName := strings.Split(fd.Tag.Get("json"), ",")[0]
+			if key == "" {
+				kk = jsonName
+			} else {
+				kk = key + "." + jsonName
 			}
-		case reflect.Struct:
+
 			if fdv.IsZero() {
-				outs[key] = nil
-				return
+				break
 			}
-			patch(fdv, outs, key)
-		case reflect.Ptr:
-			fdv = fdv.Elem()
-			if fdv.IsZero() {
-				outs[key] = nil
-				return
-			}
-			patch(fdv, outs, key)
+
+			patch(fdv, outs, kk)
 		}
 	}
+}
+
+func reflectDirect(v reflect.Value) reflect.Value {
+	if v.Type().Kind() == reflect.Ptr {
+		for v.Type().Kind() == reflect.Ptr {
+			v = v.Elem()
+		}
+	}
+	return v
 }
 
 func FieldPatch(v interface{}) map[string]interface{} {
