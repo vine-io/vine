@@ -179,9 +179,11 @@ type FileOutPut struct {
 	Package       string
 	Out           string
 	SourcePkgPath string
+	Load          bool
 }
 
-func extractFileOutFile(file *FileDescriptor) (output *FileOutPut) {
+func (g *Generator) extractFileOutFile(file *FileDescriptor) (output *FileOutPut) {
+	output = &FileOutPut{}
 	for path, comment := range file.comments {
 		parts := strings.Split(path, ",")
 		if len(parts) == 0 {
@@ -191,14 +193,22 @@ func extractFileOutFile(file *FileDescriptor) (output *FileOutPut) {
 		switch first {
 		case PackageType:
 			for _, comment := range parseTagComment(comment) {
-				if comment.Tag == "output" {
-					text := comment.Text
-					if idx := strings.Index(text, ";"); idx > 0 {
-						output = &FileOutPut{Out: text[:idx], Package: text[idx+1:]}
-					} else {
-						output = &FileOutPut{Out: comment.Text}
+				if comment.Tag != g.name {
+					continue
+				}
+				text := comment.Text
+				parts := strings.Split(text, "=")
+				if len(parts) > 1 {
+					if parts[0] == "output" {
+						tt := parts[1]
+						if idx := strings.Index(parts[1], ";"); idx > 0 {
+							output.Out, output.Package = tt[:idx], tt[idx+1:]
+						} else {
+							output.Out = comment.Text
+						}
+						output.Load = true
+						output.SourcePkgPath = strings.ReplaceAll(file.importPath.String(), "\"", "")
 					}
-					output.SourcePkgPath = strings.ReplaceAll(file.importPath.String(), "\"", "")
 				}
 			}
 		}

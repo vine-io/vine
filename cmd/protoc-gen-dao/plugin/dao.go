@@ -139,7 +139,7 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	jsonPkg = string(g.gen.AddImport(jsonPkgPath))
 	daoPkg = string(g.gen.AddImport(daoPkgPath))
 	clausePkg = string(g.gen.AddImport(clausePkgPath))
-	if g.gen.OutPut != nil {
+	if g.gen.OutPut.Load {
 		sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
 	}
 
@@ -771,7 +771,7 @@ func (g *dao) buildFieldGoType(file *generator.FileDescriptor, field *descriptor
 }
 
 func (g *dao) wrapPkg(pkg string) string {
-	if g.gen.OutPut != nil {
+	if g.gen.OutPut.Load {
 		return sourcePkg + "." + pkg
 	}
 	return pkg

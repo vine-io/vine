@@ -156,7 +156,10 @@ func (g *validator) GenerateImports(file *generator.FileDescriptor, imports map[
 }
 
 func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generator.MessageDescriptor, index int) {
-	if msg.Proto.Options != nil && *(msg.Proto.Options.MapEntry) {
+	if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
+		return
+	}
+	if msg.Proto.File() != file {
 		return
 	}
 	g.P("func (m *", msg.Proto.Name, ") Validate() error {")

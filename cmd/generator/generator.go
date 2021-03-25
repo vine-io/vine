@@ -785,7 +785,7 @@ func (g *Generator) WrapTypes() {
 		extractComments(fd)
 		extractFileDescriptor(fd)
 		// setting generator output file
-		g.OutPut = extractFileOutFile(fd)
+		g.OutPut = g.extractFileOutFile(fd)
 		g.allFiles = append(g.allFiles, fd)
 		g.allFilesByName[f.GetName()] = fd
 
@@ -1228,7 +1228,7 @@ func (g *Generator) generateHeader() {
 	g.P()
 	g.PrintComments(strconv.Itoa(packagePath))
 	g.P()
-	if g.OutPut != nil && g.OutPut.Package != "" {
+	if g.OutPut.Load && g.OutPut.Package != "" {
 		g.P("package ", g.OutPut.Package)
 	} else {
 		if g.file.PackageAlias != "" {
