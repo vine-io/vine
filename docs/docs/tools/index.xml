@@ -762,7 +762,7 @@
 &lt;h3 id=&#34;语法支持&#34;&gt;语法支持&lt;/h3&gt;
 &lt;h4 id=&#34;代码输出路径&#34;&gt;代码输出路径&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;protoc-gen-dao&lt;/code&gt; 支持将CURD代码输出到指定路径&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +output:github.com/lack-io/vine/testdata/db/dao;dao
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:output=github.com/lack-io/vine/testdata/db/dao;dao
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;protoc&amp;#34;&lt;/span&gt;
 &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;+output&lt;/code&gt;为开头，写在 protobuf 文件开头，指定生成的路径(对应$GOPATH)和生成 package 名称。&lt;/p&gt;

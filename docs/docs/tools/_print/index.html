@@ -935,7 +935,7 @@ This the multi-page printable view of this section.
 <h3 id="语法支持">语法支持</h3>
 <h4 id="代码输出路径">代码输出路径</h4>
 <p><code>protoc-gen-dao</code> 支持将CURD代码输出到指定路径</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +output:github.com/lack-io/vine/testdata/db/dao;dao
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/lack-io/vine/testdata/db/dao;dao
 </span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
 <span style="color:#ff79c6">...</span>
 </code></pre></div><p>使用 <code>+output</code>为开头，写在 protobuf 文件开头，指定生成的路径(对应$GOPATH)和生成 package 名称。</p>
