@@ -181,7 +181,7 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 		return
 	}
 
-	s := &Schema{Name: msg.Proto.GetName() + "Schema", Desc: msg}
+	s := &Schema{Name: msg.Proto.GetName() + "S", Desc: msg}
 	for _, item := range msg.Fields {
 		field := &Field{
 			Name: generator.CamelCase(item.Proto.GetName()),
@@ -252,9 +252,11 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 		if err != nil {
 			return
 		}
+		g.P(fmt.Sprintf(`// %s the alias of []%s`, alias, typ))
 		g.P(fmt.Sprintf(`type %s []%s`, alias, typ))
 
-	} else if field.Type == _map {
+	}
+	if field.Type == _map {
 		if field.Map == nil {
 			return
 		}
@@ -262,19 +264,24 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 		key, value := field.Map.Key, field.Map.Value
 		keyString, _ := g.buildFieldGoType(file, key)
 		valueString, _ := g.buildFieldGoType(file, value)
+		g.P(fmt.Sprintf(`// %s the alias of map[%s]%s`, alias, keyString, valueString))
 		g.P(fmt.Sprintf(`type %s map[%s]%s`, alias, keyString, valueString))
-	} else {
+	}
+	if field.Type == _point {
+		var typ string
 		subMsg := g.extractMessage(field.Desc.Proto.GetTypeName())
 		if subMsg.Proto.File() == file {
-			g.P(fmt.Sprintf("type %s %s", alias, g.wrapPkg(subMsg.Proto.GetName())))
+			typ = g.wrapPkg(subMsg.Proto.GetName())
 		} else {
 			obj := g.gen.ObjectNamed(field.Desc.Proto.GetTypeName())
 			v, ok := g.gen.ImportMap[obj.GoImportPath().String()]
 			if !ok {
 				v = string(g.gen.AddImport(obj.GoImportPath()))
 			}
-			g.P(fmt.Sprintf("type %s %s.%s", alias, v, subMsg.Proto.GetName()))
+			typ = fmt.Sprintf("%s.%s", v, subMsg.Proto.GetName())
 		}
+		g.P(fmt.Sprintf(`// %s the alias of %s`, alias, typ))
+		g.P(fmt.Sprintf("type %s %s", alias, typ))
 	}
 	g.P()
 
@@ -335,6 +342,7 @@ func (g *dao) generateSchema(file *generator.FileDescriptor, schema *Schema) {
 }
 
 func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schema) {
+	g.P(fmt.Sprintf(`// %s the Schema for %s`, schema.Name, schema.Desc.Proto.GetName()))
 	g.P("type ", schema.Name, " struct {")
 	for _, field := range schema.Fields {
 		switch field.Type {
@@ -352,13 +360,113 @@ func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schem
 }
 
 func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Schema) {
-	g.P(fmt.Sprintf(`func Registry%s(in *%s) error {`, schema.Desc.Proto.GetName(), g.wrapPkg(schema.Desc.Proto.GetName())))
-	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(From%s(in))`, schema.Desc.Proto.GetName()))
+	sname := schema.Name
+	pname := schema.Desc.Proto.GetName()
+
+	g.P(fmt.Sprintf(`func Registry%s(in *%s) error {`, pname, g.wrapPkg(pname)))
+	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(From%s(in))`, pname))
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func From%s(in *%s) *%s {`, schema.Desc.Proto.GetName(), g.wrapPkg(schema.Desc.Proto.GetName()), schema.Name))
-	g.P(fmt.Sprintf(`out := new(%s)`, schema.Name))
+	g.P(fmt.Sprintf(`func %sBuilder() *%s {`, sname, sname))
+	g.P(fmt.Sprintf(`return &%s{}`, sname))
+	g.P("}")
+	g.P()
+
+	for _, field := range schema.Fields {
+		switch field.Type {
+		case _float32, _float64, _int32, _int64, _uint32, _uint64, _string:
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in %s) *%s {`, sname, field.Name, field.Type, sname))
+			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+		case _map:
+			key, value := field.Map.Key, field.Map.Value
+			keyString, _ := g.buildFieldGoType(file, key)
+			valueString, _ := g.buildFieldGoType(file, value)
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in map[%s]%s) *%s {`, sname, field.Name, keyString, valueString, sname))
+			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+			g.P(fmt.Sprintf(`func (m *%s) Put%s(k %s, v %s) *%s {`, sname, field.Name, keyString, valueString, sname))
+			g.P(fmt.Sprintf(`if len(m.%s) == 0 {`, field.Name))
+			g.P(fmt.Sprintf(`m.%s = map[%s]%s{}`, field.Name, keyString, valueString))
+			g.P(`}`)
+			g.P(fmt.Sprintf(`m.%s[k] = v`, field.Name))
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+			g.P(fmt.Sprintf(`func (m *%s) Remove%s(k %s) *%s {`, sname, field.Name, keyString, sname))
+			g.P(fmt.Sprintf(`if len(m.%s) == 0 {`, field.Name))
+			g.P(`return m`)
+			g.P(`}`)
+			g.P(fmt.Sprintf(`delete(m.%s, k)`, field.Name))
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+		case _slice:
+			typ, _ := g.buildFieldGoType(file, field.Slice)
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in []%s) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+			g.P(fmt.Sprintf(`func (m *%s) Add%s(in %s) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`if len(m.%s) == 0 {`, field.Name))
+			g.P(fmt.Sprintf(`m.%s = []%s{}`, field.Name, typ))
+			g.P(`}`)
+			g.P(fmt.Sprintf(`m.%s = append(m.%s, in)`, field.Name, field.Name))
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+			g.P(fmt.Sprintf(`func (m *%s) Filter%s(fn func(item %s) bool) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`out := make([]%s, 0)`, typ))
+			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
+			g.P(`if !fn(item) {`)
+			g.P(`out = append(out, item)`)
+			g.P(`}`)
+			g.P(`}`)
+			g.P(fmt.Sprintf(`m.%s = out`, field.Name))
+			g.P(`return m`)
+			g.P(`}`)
+			g.P()
+			g.P(fmt.Sprintf(`func (m *%s) Remove%s(index int) *%s {`, sname, field.Name, sname))
+			g.P(fmt.Sprintf(`if index < 0 || index >= len(m.%s) {`, field.Name))
+			g.P(`return m`)
+			g.P(`}`)
+			g.P(fmt.Sprintf(`if index == len(m.%s)-1 {`, field.Name))
+			g.P(fmt.Sprintf(`m.%s = m.%s[:index-1]`, field.Name, field.Name))
+			g.P(`} else {`)
+			g.P(fmt.Sprintf(`m.%s = append(m.%s[0:index], m.%s[index+1:]...)`, field.Name, field.Name, field.Name))
+			g.P(`}`)
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+		case _point:
+			var typ string
+			subMsg := g.extractMessage(field.Desc.Proto.GetTypeName())
+			if subMsg.Proto.File() == file {
+				typ = g.wrapPkg(subMsg.Proto.GetName())
+			} else {
+				obj := g.gen.ObjectNamed(field.Desc.Proto.GetTypeName())
+				v, ok := g.gen.ImportMap[obj.GoImportPath().String()]
+				if !ok {
+					v = string(g.gen.AddImport(obj.GoImportPath()))
+				}
+				typ = fmt.Sprintf(`%s.%s`, v, subMsg.Proto.GetName())
+			}
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in *%s) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`m.%s = (*%s)(in)`, field.Name, field.Alias))
+			g.P(`return m`)
+			g.P("}")
+			g.P()
+		}
+	}
+
+	g.P(fmt.Sprintf(`func From%s(in *%s) *%s {`, pname, g.wrapPkg(pname), sname))
+	g.P(fmt.Sprintf(`out := new(%s)`, sname))
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _float32, _float64, _int32, _int64, _uint32, _uint64:
@@ -392,8 +500,8 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) To%s() *%s {`, schema.Name, schema.Desc.Proto.GetName(), g.wrapPkg(schema.Desc.Proto.GetName())))
-	g.P(fmt.Sprintf(`out := new(%s)`, g.wrapPkg(schema.Desc.Proto.GetName())))
+	g.P(fmt.Sprintf(`func (m *%s) To%s() *%s {`, sname, pname, g.wrapPkg(pname)))
+	g.P(fmt.Sprintf(`out := new(%s)`, g.wrapPkg(pname)))
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _point:
@@ -534,9 +642,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range dao.FieldPatch(m.%s) {`, field.Name))
 			g.P(`if v == nil {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").HasKeys(strings.Split(k, ",")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").HasKeys(strings.Split(k, ".")...))`, column))
 			g.P(`} else {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Equals(v, strings.Split(k, ",")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Equals(v, strings.Split(k, ".")...))`, column))
 			g.P("}")
 			g.P("}")
 			g.P("}")
@@ -558,7 +666,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 				g.P(`for k, v := range dao.FieldPatch(item) {`)
 				g.P(`if v != nil {`)
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(v, strings.Split(k, ",")...))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(v, strings.Split(k, ".")...))`, column))
 				g.P(`}`)
 				g.P("}")
 			}
