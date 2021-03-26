@@ -344,6 +344,7 @@ func (g *dao) generateSchema(file *generator.FileDescriptor, schema *Schema) {
 func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schema) {
 	g.P(fmt.Sprintf(`// %s the Schema for %s`, schema.Name, schema.Desc.Proto.GetName()))
 	g.P("type ", schema.Name, " struct {")
+	g.P(fmt.Sprintf(`tx *dao.DB %s`, toQuoted(`json:"-" dao:"-"`)))
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _point:
@@ -369,7 +370,7 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 	g.P()
 
 	g.P(fmt.Sprintf(`func %sBuilder() *%s {`, sname, sname))
-	g.P(fmt.Sprintf(`return &%s{}`, sname))
+	g.P(fmt.Sprintf(`return &%s{tx: dao.DefaultDialect.NewTx()}`, sname))
 	g.P("}")
 	g.P()
 
@@ -467,6 +468,7 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 
 	g.P(fmt.Sprintf(`func From%s(in *%s) *%s {`, pname, g.wrapPkg(pname), sname))
 	g.P(fmt.Sprintf(`out := new(%s)`, sname))
+	g.P(`out.tx = dao.DefaultDialect.NewTx()`)
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _float32, _float64, _int32, _int64, _uint32, _uint64:
@@ -554,9 +556,10 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`exprs = append(exprs,`)
 	g.P(`clause.OrderBy{Columns: []clause.OrderByColumn{{Column: clause.Column{Table: m.TableName(), Name: pk}, Desc: true}}},`)
 	g.P(`clause.Limit{Offset: (page - 1) * size, Limit: size},`)
+	g.P(`clause.Eq{Column: clause.Column{Name: "deletion_timestamp"}, Value: 0},`)
 	g.P(`)`)
 	g.P()
-	g.P(`data, err := m.FindAll(ctx, exprs...)`)
+	g.P(`data, err := m.findAll(ctx, exprs...)`)
 	g.P(`if err != nil {`)
 	g.P(`return nil, 0, err`)
 	g.P("}")
@@ -567,26 +570,21 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx context.Context, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
-	g.P(`return m.findAll(ctx, true, exprs...)`)
+	g.P(`exprs = append(exprs, clause.Eq{Column: clause.Column{Name: "deletion_timestamp"}, Value: 0})`)
+	g.P(`return m.findAll(ctx, exprs...)`)
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) FindDeleted(ctx context.Context, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
-	g.P(`return m.findAll(ctx, false, exprs...)`)
+	g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx context.Context, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(`return m.findAll(ctx, exprs...)`)
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) findAll(ctx context.Context, deleted bool, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) findAll(ctx context.Context, exprs ...clause.Expression) ([]*%s, error) {`, source, g.wrapPkg(target)))
 	g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
-	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`clauses := append(m.extractClauses(tx), exprs...)`)
-	g.P(`if deleted {`)
-	g.P(`clauses = append(clauses, clause.Eq{Column: clause.Column{Name: "deletion_timestamp"}, Value: 0})`)
-	g.P(`} else {`)
-	g.P(`clauses = append(clauses, clause.Gt{Column: clause.Column{Name: "deletion_timestamp"}, Value: 0})`)
-	g.P(`}`)
-	g.P()
 	g.P(`if err := tx.Clauses(clauses...).Find(&dest).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
@@ -601,7 +599,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) Count(ctx context.Context, exprs ...clause.Expression) (total int64, err error) {`, source))
-	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`clauses := append(m.extractClauses(tx), clause.Eq{Column: clause.Column{Name: "deletion_timestamp"}, Value: 0})`)
 	g.P(`clauses = append(clauses, exprs...)`)
@@ -612,7 +610,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx context.Context, exprs ...clause.Expression) (*%s, error) {`, source, g.wrapPkg(target)))
-	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`clauses := append(m.extractClauses(tx), clause.Eq{Column: clause.Column{Name: "deletion_timestamp"}, Value: 0})`)
 	g.P(`clauses = append(clauses, exprs...)`)
@@ -634,7 +632,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
 			if field.Map.Key.GetType() == descriptor.FieldDescriptorProto_TYPE_STRING {
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Equals(v, k))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONEq, v, k))`, column))
 			}
 			g.P("}")
 			g.P("}")
@@ -642,9 +640,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range dao.FieldPatch(m.%s) {`, field.Name))
 			g.P(`if v == nil {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").HasKeys(strings.Split(k, ".")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).HasKeys(strings.Split(k, ".")...))`, column))
 			g.P(`} else {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Equals(v, strings.Split(k, ".")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONEq, v, strings.Split(k, ".")...))`, column))
 			g.P("}")
 			g.P("}")
 			g.P("}")
@@ -653,7 +651,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
 			switch field.Slice.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(item))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, item))`, column))
 			case descriptor.FieldDescriptorProto_TYPE_UINT32,
 				descriptor.FieldDescriptorProto_TYPE_UINT64,
 				descriptor.FieldDescriptorProto_TYPE_INT32,
@@ -662,11 +660,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 				descriptor.FieldDescriptorProto_TYPE_SFIXED64,
 				descriptor.FieldDescriptorProto_TYPE_FIXED32,
 				descriptor.FieldDescriptorProto_TYPE_FIXED64:
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(item))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, item))`, column))
 			case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 				g.P(`for k, v := range dao.FieldPatch(item) {`)
 				g.P(`if v != nil {`)
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild(tx, "%s").Contains(v, strings.Split(k, ".")...))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, v, strings.Split(k, ".")...))`, column))
 				g.P(`}`)
 				g.P("}")
 			}
@@ -688,7 +686,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) Create(ctx context.Context) (*%s, error) {`, source, g.wrapPkg(target)))
-	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`if err := tx.Create(m).Error; err != nil {`)
 	g.P("return nil, err")
@@ -704,7 +702,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`return nil, errors.New("missing primary key")`)
 	g.P("}")
 	g.P()
-	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`)
+	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`)
 	g.P()
 	g.P(`values := make(map[string]interface{}, 0)`)
 	for _, field := range schema.Fields {
@@ -736,7 +734,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(`err := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`)
+	g.P(`err := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`)
 	g.P("if err != nil {")
 	g.P(`return nil, err`)
 	g.P("}")
@@ -750,7 +748,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`return errors.New("missing primary key")`)
 	g.P("}")
 	g.P()
-	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{"deletion_timestamp": %s.Now().UnixNano()}).Error`, timePkg))
 	g.P("}")
@@ -762,9 +760,14 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`return errors.New("missing primary key")`)
 	g.P("}")
 	g.P()
-	g.P(`tx := dao.DefaultDialect.NewTx().Table(m.TableName()).WithContext(ctx)`)
+	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Delete(&%s{}).Error`, source))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (m *%s) Tx(ctx context.Context) *dao.DB {`, source))
+	g.P(`return m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P("}")
 	g.P()
 }

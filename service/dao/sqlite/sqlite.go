@@ -232,8 +232,8 @@ func (d *Dialect) JSONDataType() string {
 	return "JSON"
 }
 
-func (d *Dialect) JSONBuild(tx *dao.DB, column string) dao.JSONQuery {
-	return JSONQuery(tx, column)
+func (d *Dialect) JSONBuild(column string) dao.JSONQuery {
+	return JSONQuery(column)
 }
 
 func (d *Dialect) String() string {

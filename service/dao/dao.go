@@ -33,7 +33,7 @@ type Dialect interface {
 	BindVarTo(writer clause.Writer, stmt *Statement, v interface{})
 	QuoteTo(clause.Writer, string)
 	Explain(sql string, vars ...interface{}) string
-	JSONBuild(tx *DB, column string) JSONQuery
+	JSONBuild(column string) JSONQuery
 	JSONDataType() string
 	String() string
 }
@@ -70,11 +70,24 @@ type Valuer interface {
 	DaoValue(context.Context, *DB) clause.Expr
 }
 
+type JSONOp int32
+
+const (
+	JSONContains JSONOp = iota + 1 // array conains
+	JSONEq                         // ==
+	JSONNeq                        // <>
+	JSONGt                         // >
+	JSONGte                        // >=
+	JSONLt                         // <
+	JSONLte                        // <=
+	JSONLike                       // like
+)
+
 // JSONQuery query column as json
 type JSONQuery interface {
-	Contains(values interface{}, keys ...string) JSONQuery
+	Tx(tx *DB) JSONQuery
 	HasKeys(keys ...string) JSONQuery
-	Equals(value interface{}, keys ...string) JSONQuery
+	Op(op JSONOp, value interface{}, keys ...string) JSONQuery
 	Build(builder clause.Builder)
 }
 
