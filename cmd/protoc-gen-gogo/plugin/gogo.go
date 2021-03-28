@@ -10,7 +10,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package plugin
+package gogo
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ var TagString = "gen"
 
 const (
 	// message tag
-	_ignore = "ignore"
+	_inline = "inline"
 )
 
 type Tag struct {
@@ -36,49 +36,51 @@ type Tag struct {
 const (
 )
 
-// gogo is an implementation of the Go protocol buffer compiler's
+// validator is an implementation of the Go protocol buffer compiler's
 // plugin architecture. It generates bindings for validator support.
 type gogo struct {
-	gen *generator.Generator
+	*generator.Generator
+	generator.PluginImports
+	atleastOne  bool
+	localName   string
+	typesPkg    generator.Single
+	bitsPkg     generator.Single
+	errorsPkg   generator.Single
+	protoPkg    generator.Single
+	sortKeysPkg generator.Single
+	mathPkg     generator.Single
+	binaryPkg   generator.Single
+	ioPkg      generator.Single
 }
 
 func New() *gogo {
 	return &gogo{}
 }
 
-// Name returns the name of this plugin, "gogo".
+// Name returns the name of this plugin, "validator".
 func (g *gogo) Name() string {
 	return "gogo"
 }
 
-// The names for packages imported in the generated code.
-// They may vary from the final path component of the import path
-// if the name is used by other packages.
-var (
-	isPkg      string
-	stringsPkg string
-	pkgImports map[generator.GoPackageName]bool
-)
-
 // Init initializes the plugin.
 func (g *gogo) Init(gen *generator.Generator) {
-	g.gen = gen
+	g.Generator = gen
 }
 
 // Given a type name defined in a .proto, return its object.
 // Also record that we're using it, to guarantee the associated import.
 func (g *gogo) objectNamed(name string) generator.Object {
-	g.gen.RecordTypeUse(name)
-	return g.gen.ObjectNamed(name)
+	g.RecordTypeUse(name)
+	return g.ObjectNamed(name)
 }
 
 // Given a type name defined in a .proto, return its name as we will print it.
 func (g *gogo) typeName(str string) string {
-	return g.gen.TypeName(g.objectNamed(str))
+	return g.TypeName(g.objectNamed(str))
 }
 
 // P forwards to g.gen.P.
-func (g *gogo) P(args ...interface{}) { g.gen.P(args...) }
+//func (g *gogo) P(args ...interface{}) { g.P(args...) }
 
 // Generate generates code for the services in the given file.
 func (g *gogo) Generate(file *generator.FileDescriptor) {
@@ -86,16 +88,11 @@ func (g *gogo) Generate(file *generator.FileDescriptor) {
 		return
 	}
 
-	//isPkg = string(g.gen.AddImport(isPkgPath))
-	//stringsPkg = string(g.gen.AddImport(stringsPkgPath))
-
-	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ ", isPkg, ".Empty")
-	g.P("var _ ", stringsPkg, ".Builder")
-	g.P()
-	for _, msg := range file.Messages() {
-		g.generateMessage(file, msg)
-	}
+	g.GenerateFileDescriptor(file)
+	g.GenerateSize(file)
+	g.GenerateMarshal(file)
+	g.GenerateUnmarshal(file)
+	g.GenerateGRPC(file)
 }
 
 // GenerateImports generates the import declaration for this file.
@@ -103,18 +100,7 @@ func (g *gogo) GenerateImports(file *generator.FileDescriptor, imports map[gener
 	if len(file.Comments()) == 0 {
 		return
 	}
-
-	// We need to keep track of imported packages to make sure we don't produce
-	// a name collision when generating types.
-	pkgImports = make(map[generator.GoPackageName]bool)
-	for _, name := range imports {
-		pkgImports[name] = true
-	}
 }
-
-func (g *gogo) generateMessage(file *generator.FileDescriptor, msg *generator.MessageDescriptor) {
-}
-
 
 func (g *gogo) extractTags(comments []*generator.Comment) map[string]*Tag {
 	if comments == nil || len(comments) == 0 {
@@ -133,7 +119,7 @@ func (g *gogo) extractTags(comments []*generator.Comment) map[string]*Tag {
 				tag.Key = strings.TrimSpace(p[:i])
 				v := strings.TrimSpace(p[i+1:])
 				if v == "" {
-					g.gen.Fail(fmt.Sprintf("tag '%s' missing value", tag.Key))
+					g.Fail(fmt.Sprintf("tag '%s' missing value", tag.Key))
 				}
 				tag.Value = v
 			} else {

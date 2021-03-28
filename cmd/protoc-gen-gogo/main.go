@@ -14,12 +14,25 @@
 package main
 
 import (
-	"github.com/gogo/protobuf/vanity/command"
-
-	_ "github.com/gogo/protobuf/gogoproto"
-	_ "github.com/gogo/protobuf/proto"
+	gogo "github.com/lack-io/vine/cmd/protoc-gen-gogo/plugin"
+	"github.com/lack-io/vine/cmd/protoc-gen-gogo/vanity"
+	"github.com/lack-io/vine/cmd/protoc-gen-gogo/vanity/command"
 )
 
 func main() {
-	command.Write(command.Generate(command.Read()))
+	req := command.Read()
+	files := req.GetProtoFile()
+	files = vanity.FilterFiles(files, vanity.NotGoogleProtobufDescriptorProto)
+
+	vanity.ForEachFile(files, vanity.TurnOnMarshalerAll)
+	vanity.ForEachFile(files, vanity.TurnOnSizerAll)
+	vanity.ForEachFile(files, vanity.TurnOnUnmarshalerAll)
+
+	vanity.ForEachFieldInFilesExcludingExtensions(vanity.OnlyProto2(files), vanity.TurnOffNullableForNativeTypesWithoutDefaultsOnly)
+	vanity.ForEachFile(files, vanity.TurnOffGoUnrecognizedAll)
+	vanity.ForEachFile(files, vanity.TurnOffGoUnkeyedAll)
+	vanity.ForEachFile(files, vanity.TurnOffGoSizecacheAll)
+
+	resp := command.GeneratePlugin(req, gogo.New())
+	command.Write(resp)
 }

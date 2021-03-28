@@ -152,7 +152,7 @@ func parseTagComment(comment *descriptor.SourceCodeInfo_Location) []*Comment {
 	if comment.LeadingComments == nil {
 		return comments
 	}
-	for _, item := range strings.Split(*comment.LeadingComments, "\n") {
+	for _, item := range strings.Split(comment.GetLeadingComments(), "\n") {
 		var tag string
 		text := strings.TrimSpace(item)
 		if len(text) == 0 {

@@ -1,6 +1,6 @@
 // Protocol Buffers for Go with Gadgets
 //
-// Copyright (c) 2015, The GoGo Authors. All rights reserved.
+// Copyright (c) 2015, The GoGo Authors.  rights reserved.
 // http://github.com/gogo/protobuf
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,27 +26,53 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package main
+package vanity
 
 import (
-	"github.com/gogo/protobuf/vanity"
-	"github.com/gogo/protobuf/vanity/command"
+	"github.com/gogo/protobuf/gogoproto"
+	"github.com/gogo/protobuf/proto"
+	descriptor "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 )
 
-func main() {
-	req := command.Read()
-	files := req.GetProtoFile()
-	files = vanity.FilterFiles(files, vanity.NotGoogleProtobufDescriptorProto)
+func EnumHasBoolExtension(enum *descriptor.EnumDescriptorProto, extension *proto.ExtensionDesc) bool {
+	if enum.Options == nil {
+		return false
+	}
+	value, err := proto.GetExtension(enum.Options, extension)
+	if err != nil {
+		return false
+	}
+	if value == nil {
+		return false
+	}
+	if value.(*bool) == nil {
+		return false
+	}
+	return true
+}
 
-	vanity.ForEachFile(files, vanity.TurnOnMarshalerAll)
-	vanity.ForEachFile(files, vanity.TurnOnSizerAll)
-	vanity.ForEachFile(files, vanity.TurnOnUnmarshalerAll)
+func SetBoolEnumOption(extension *proto.ExtensionDesc, value bool) func(enum *descriptor.EnumDescriptorProto) {
+	return func(enum *descriptor.EnumDescriptorProto) {
+		if EnumHasBoolExtension(enum, extension) {
+			return
+		}
+		if enum.Options == nil {
+			enum.Options = &descriptor.EnumOptions{}
+		}
+		if err := proto.SetExtension(enum.Options, extension, &value); err != nil {
+			panic(err)
+		}
+	}
+}
 
-	vanity.ForEachFieldInFilesExcludingExtensions(vanity.OnlyProto2(files), vanity.TurnOffNullableForNativeTypesWithoutDefaultsOnly)
-	vanity.ForEachFile(files, vanity.TurnOffGoUnrecognizedAll)
-	vanity.ForEachFile(files, vanity.TurnOffGoUnkeyedAll)
-	vanity.ForEachFile(files, vanity.TurnOffGoSizecacheAll)
+func TurnOffGoEnumPrefix(enum *descriptor.EnumDescriptorProto) {
+	SetBoolEnumOption(gogoproto.E_GoprotoEnumPrefix, false)(enum)
+}
 
-	resp := command.Generate(req)
-	command.Write(resp)
+func TurnOffGoEnumStringer(enum *descriptor.EnumDescriptorProto) {
+	SetBoolEnumOption(gogoproto.E_GoprotoEnumStringer, false)(enum)
+}
+
+func TurnOnEnumStringer(enum *descriptor.EnumDescriptorProto) {
+	SetBoolEnumOption(gogoproto.E_EnumStringer, true)(enum)
 }

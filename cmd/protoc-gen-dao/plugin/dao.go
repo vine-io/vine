@@ -941,6 +941,7 @@ func (g *dao) wrapPkg(pkg string) string {
 // extractMessage extract MessageDescriptor by name
 func (g *dao) extractMessage(name string) *generator.MessageDescriptor {
 	obj := g.gen.ObjectNamed(name)
+
 	for _, f := range g.gen.AllFiles() {
 		for _, m := range f.Messages() {
 			if m.Proto.GoImportPath() == obj.GoImportPath() {
