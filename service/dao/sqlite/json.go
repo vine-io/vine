@@ -51,30 +51,13 @@ func (j *jsonQueryExpression) Op(op dao.JSONOp, value interface{}, keys ...strin
 	return j
 }
 
-// SELECT * FROM `users` WHERE JSON_EXTRACT(`attributes`, '$.role') IS NOT NULL
-func (j *jsonQueryExpression) HasKeys(keys ...string) dao.JSONQuery {
-	j.hasKeys = true
-	j.keys = keys
-	return j
-}
-
-// SELECT * FROM `users` WHERE JSON_EXTRACT(`attributes`, '$.role') IS NOT NULL
-//func (j *jsonQueryExpression) Op(value interface{}, keys ...string) dao.JSONQuery {
-//	j.op = eq
-//	j.keys = keys
-//	j.equalsValue = value
-//	return j
-//}
-
 func (j *jsonQueryExpression) Build(builder clause.Builder) {
 	if stmt, ok := builder.(*dao.Statement); ok {
-		if j.hasKeys {
+		switch j.op {
+		case dao.JSONHasKey:
 			if len(j.keys) > 0 {
 				builder.WriteString(fmt.Sprintf("JSON_EXTRACT(%s, '$.%s') IS NOT NULL", stmt.Quote(j.column), strings.Join(j.keys, ".")))
 			}
-			return
-		}
-		switch j.op {
 		case dao.JSONContains:
 			if len(j.keys) == 0 {
 				builder.WriteString("JSON_EACH.value = ")

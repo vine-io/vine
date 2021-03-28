@@ -73,7 +73,8 @@ type Valuer interface {
 type JSONOp int32
 
 const (
-	JSONContains JSONOp = iota + 1 // array conains
+	JSONContains JSONOp = iota + 1 // array contains
+	JSONHasKey                     // JSON Key
 	JSONEq                         // ==
 	JSONNeq                        // <>
 	JSONGt                         // >
@@ -85,9 +86,8 @@ const (
 
 // JSONQuery query column as json
 type JSONQuery interface {
-	Tx(tx *DB) JSONQuery
-	HasKeys(keys ...string) JSONQuery
 	Op(op JSONOp, value interface{}, keys ...string) JSONQuery
+	Tx(tx *DB) JSONQuery
 	Build(builder clause.Builder)
 }
 

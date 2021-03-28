@@ -46,7 +46,7 @@ func (noopDialect) Migrator() dao.Migrator {
 	return nil
 }
 
-func (noopDialect) BindVarTo(writer clause.Writer, stmt *dao.Statement, v interface{}) {
+func (noopDialect) BindVarTo(writer clause.Writer, _ *dao.Statement, v interface{}) {
 	writer.WriteByte('?')
 }
 
@@ -56,7 +56,7 @@ func (noopDialect) QuoteTo(writer clause.Writer, str string) {
 	writer.WriteByte('`')
 }
 
-func (noopDialect) Explain(sql string, vars ...interface{}) string {
+func (noopDialect) Explain(string, ...interface{}) string {
 	return ""
 }
 
@@ -68,7 +68,7 @@ func (d noopDialect) JSONDataType() string {
 	return "JSON"
 }
 
-func (d noopDialect) JSONBuild(column string) dao.JSONQuery {
+func (d noopDialect) JSONBuild(string) dao.JSONQuery {
 	return jsonQueryExpression{}
 }
 
@@ -79,19 +79,15 @@ func (noopDialect) String() string {
 type jsonQueryExpression struct {
 }
 
-func (j jsonQueryExpression) Tx(tx *dao.DB) dao.JSONQuery {
+func (j jsonQueryExpression) Tx(*dao.DB) dao.JSONQuery {
 	return j
 }
 
-func (j jsonQueryExpression) HasKeys(keys ...string) dao.JSONQuery {
+func (j jsonQueryExpression) Op(dao.JSONOp, interface{}, ...string) dao.JSONQuery {
 	return j
 }
 
-func (j jsonQueryExpression) Op(op dao.JSONOp, value interface{}, keys ...string) dao.JSONQuery {
-	return j
-}
-
-func (j jsonQueryExpression) Build(builder clause.Builder) {
+func (j jsonQueryExpression) Build(clause.Builder) {
 	return
 }
 
