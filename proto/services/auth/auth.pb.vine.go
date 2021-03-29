@@ -7,8 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	api "github.com/lack-io/vine/proto/apis/api"
-	api1 "github.com/lack-io/vine/service/api"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 	math "math"
@@ -25,16 +24,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Reference imports to suppress errors if they are not otherwise used.
-var _ api.Endpoint
-var _ api1.Option
-var _ context.Context
-var _ client.Option
-var _ server.Option
-
 // API Endpoints for Auth service
-func NewAuthEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
+func NewAuthEndpoints() []*apipb.Endpoint {
+	return []*apipb.Endpoint{}
 }
 
 // Client API for Auth service
@@ -123,8 +115,8 @@ func (h *authHandler) Token(ctx context.Context, in *TokenRequest, out *TokenRes
 }
 
 // API Endpoints for Accounts service
-func NewAccountsEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
+func NewAccountsEndpoints() []*apipb.Endpoint {
+	return []*apipb.Endpoint{}
 }
 
 // Client API for Accounts service
@@ -179,8 +171,8 @@ func (h *accountsHandler) List(ctx context.Context, in *ListAccountsRequest, out
 }
 
 // API Endpoints for Rules service
-func NewRulesEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
+func NewRulesEndpoints() []*apipb.Endpoint {
+	return []*apipb.Endpoint{}
 }
 
 // Client API for Rules service

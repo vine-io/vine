@@ -28,6 +28,7 @@ const (
 	_ignore = "ignore"
 
 	// field common tag
+	_inline   = "inline"
 	_required = "required"
 	_default  = "default"
 	_in       = "in"
@@ -72,17 +73,13 @@ type Tag struct {
 	Value string
 }
 
-// Paths for packages used by code generated in this file,
-// relative to the import_prefix of the generator.Generator.
-const (
-	isPkgPath      = "github.com/lack-io/vine/util/is"
-	stringsPkgPath = "strings"
-)
-
 // validator is an implementation of the Go protocol buffer compiler's
 // plugin architecture. It generates bindings for validator support.
 type validator struct {
-	gen *generator.Generator
+	generator.PluginImports
+	gen        *generator.Generator
+	isPkg      generator.Single
+	stringsPkg generator.Single
 }
 
 func New() *validator {
@@ -94,18 +91,10 @@ func (g *validator) Name() string {
 	return "validator"
 }
 
-// The names for packages imported in the generated code.
-// They may vary from the final path component of the import path
-// if the name is used by other packages.
-var (
-	isPkg      string
-	stringsPkg string
-	pkgImports map[generator.GoPackageName]bool
-)
-
 // Init initializes the plugin.
 func (g *validator) Init(gen *generator.Generator) {
 	g.gen = gen
+	g.PluginImports = generator.NewPluginImports(g.gen)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -129,29 +118,11 @@ func (g *validator) Generate(file *generator.FileDescriptor) {
 		return
 	}
 
-	isPkg = string(g.gen.AddImport(isPkgPath))
-	stringsPkg = string(g.gen.AddImport(stringsPkgPath))
+	g.isPkg = g.NewImport("github.com/lack-io/vine/util/is", "is")
+	g.stringsPkg = g.NewImport("strings", "")
 
-	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ ", isPkg, ".Empty")
-	g.P("var _ ", stringsPkg, ".Builder")
-	g.P()
 	for i, msg := range file.Messages() {
 		g.generateMessage(file, msg, i)
-	}
-}
-
-// GenerateImports generates the import declaration for this file.
-func (g *validator) GenerateImports(file *generator.FileDescriptor, imports map[generator.GoImportPath]generator.GoPackageName) {
-	if len(file.Comments()) == 0 {
-		return
-	}
-
-	// We need to keep track of imported packages to make sure we don't produce
-	// a name collision when generating types.
-	pkgImports = make(map[generator.GoPackageName]bool)
-	for _, name := range imports {
-		pkgImports[name] = true
 	}
 }
 
@@ -194,7 +165,7 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 				g.generateBytesField(field)
 			}
 		}
-		g.P(fmt.Sprintf("return %s.MargeErr(errs...)", isPkg))
+		g.P(fmt.Sprintf("return %s.MargeErr(errs...)", g.isPkg.Use()))
 	}
 	g.P("}")
 	g.P()
@@ -225,13 +196,13 @@ func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 		case _enum, _in:
 			value := strings.TrimPrefix(tag.Value, "[")
 			value = strings.TrimSuffix(value, "]")
-			g.P(fmt.Sprintf("if !%s.In([]float64{%s}, float64(m.%s)) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.In([]float64{%s}, float64(m.%s)) {", g.isPkg.Use(), value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
 		case _notIn:
 			value := strings.TrimPrefix(tag.Value, "[")
 			value = strings.TrimSuffix(value, "]")
-			g.P(fmt.Sprintf("if !%s.NotIn([]float64{%s}, float64(m.%s)) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.NotIn([]float64{%s}, float64(m.%s)) {", g.isPkg.Use(), value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '%s'\", prefix))", *field.Proto.JsonName, tag.Value))
 			g.P("}")
 		case _eq:
@@ -288,12 +259,12 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 		switch tag.Key {
 		case _enum, _in:
 			value := fullStringSlice(tag.Value)
-			g.P(fmt.Sprintf("if !%s.In([]string{%s}, string(m.%s)) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.In([]string{%s}, string(m.%s)) {", g.isPkg.Use(), value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '[%s]'\", prefix))", *field.Proto.JsonName, strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
 		case _notIn:
 			value := fullStringSlice(tag.Value)
-			g.P(fmt.Sprintf("if !%s.NotIn([]string{%s}, string(m.%s)) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.NotIn([]string{%s}, string(m.%s)) {", g.isPkg.Use(), value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '[%s]'\", prefix))", *field.Proto.JsonName, strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
 		case _minLen:
@@ -320,44 +291,44 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must contain '%s'\", prefix))", *field.Proto.JsonName, value))
 			g.P("}")
 		case _number:
-			g.P(fmt.Sprintf("if !%s.Number(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.Number(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid number\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _email:
-			g.P(fmt.Sprintf("if !%s.Email(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.Email(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid email\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _ip:
-			g.P(fmt.Sprintf("if !%s.IP(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.IP(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ip\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _ipv4:
-			g.P(fmt.Sprintf("if !%s.IPv4(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.IPv4(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv4\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _ipv6:
-			g.P(fmt.Sprintf("if !%s.IPv6(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.IPv6(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv6\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _crontab:
-			g.P(fmt.Sprintf("if !%s.Crontab(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.Crontab(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid crontab\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _uuid:
-			g.P(fmt.Sprintf("if !%s.Uuid(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.Uuid(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid uuid\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _uri:
-			g.P(fmt.Sprintf("if !%s.URL(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.URL(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid url\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _domain:
-			g.P(fmt.Sprintf("if !%s.Domain(m.%s) {", isPkg, fieldName))
+			g.P(fmt.Sprintf("if !%s.Domain(m.%s) {", g.isPkg.Use(), fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid domain\", prefix))", *field.Proto.JsonName))
 			g.P("}")
 		case _pattern:
 			value := TrimString(tag.Value, "`")
-			g.P(fmt.Sprintf("if !%s.Re(`%s`, m.%s) {", isPkg, value, fieldName))
+			g.P(fmt.Sprintf("if !%s.Re(`%s`, m.%s) {", g.isPkg.Use(), value, fieldName))
 			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(`field '%%s%s' is not a valid pattern '%s'`, prefix))", *field.Proto.JsonName, value))
 			g.P("}")
 		}
@@ -434,11 +405,38 @@ func (g *validator) generateMessageField(field *generator.FieldDescriptor) {
 		return
 	}
 	if _, ok := tags[_required]; ok {
-		g.P("if m.", fieldName, " == nil {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
-		g.P("} else {")
-		g.P(fmt.Sprintf("errs = append(errs, m.%s.ValidateHasPrefix(prefix+\"%s.\"))", fieldName, *field.Proto.JsonName))
-		g.P("}")
+		if _, ok := tags[_inline]; ok {
+			smsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
+			for _, field := range smsg.Fields {
+				if field.Proto.IsRepeated() {
+					g.generateRepeatedField(field)
+					continue
+				}
+				if field.Proto.IsMessage() {
+					g.generateMessageField(field)
+					continue
+				}
+				switch *field.Proto.Type {
+				case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
+					descriptor.FieldDescriptorProto_TYPE_FLOAT,
+					descriptor.FieldDescriptorProto_TYPE_FIXED32,
+					descriptor.FieldDescriptorProto_TYPE_FIXED64,
+					descriptor.FieldDescriptorProto_TYPE_INT32,
+					descriptor.FieldDescriptorProto_TYPE_INT64:
+					g.generateNumberField(field)
+				case descriptor.FieldDescriptorProto_TYPE_STRING:
+					g.generateStringField(field)
+				case descriptor.FieldDescriptorProto_TYPE_BYTES:
+					g.generateBytesField(field)
+				}
+			}
+		} else {
+			g.P("if m.", fieldName, " == nil {")
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", *field.Proto.JsonName))
+			g.P("} else {")
+			g.P(fmt.Sprintf("errs = append(errs, m.%s.ValidateHasPrefix(prefix+\"%s.\"))", fieldName, *field.Proto.JsonName))
+			g.P("}")
+		}
 	}
 }
 

@@ -21,24 +21,21 @@ import (
 	"github.com/lack-io/vine/cmd/generator"
 )
 
-// Paths for packages used by code generated in this file,
-// relative to the import_prefix of the generator.Generator.
-const (
-	contextPkgPath = "context"
-	apiPbPkgPath   = "github.com/lack-io/vine/proto/apis/api"
-	openApiPkgPath = "github.com/lack-io/vine/proto/apis/openapi"
-	apiPkgPath     = "github.com/lack-io/vine/service/api"
-	clientPkgPath  = "github.com/lack-io/vine/service/client"
-	serverPkgPath  = "github.com/lack-io/vine/service/server"
-)
-
 // vine is an implementation of the Go protocol buffer compiler's
 // plugin architecture.  It generates bindings for vine support.
 type vine struct {
+	generator.PluginImports
 	gen      *generator.Generator
 	security *LinkComponents
 	schemas  *LinkComponents
 	m        sync.Map
+
+	apiPbPkg   generator.Single
+	apiPkg     generator.Single
+	openApiPkg generator.Single
+	contextPkg generator.Single
+	clientPkg  generator.Single
+	serverPkg  generator.Single
 }
 
 func New() *vine {
@@ -50,24 +47,12 @@ func (g *vine) Name() string {
 	return "vine"
 }
 
-// The names for packages imported in the generated code.
-// They may vary from the final path component of the import path
-// if the name is used by other packages.
-var (
-	apiPbPkg   string
-	apiPkg     string
-	openApiPkg string
-	contextPkg string
-	clientPkg  string
-	serverPkg  string
-	pkgImports map[generator.GoPackageName]bool
-)
-
 // Init initializes the plugin.
 func (g *vine) Init(gen *generator.Generator) {
 	g.gen = gen
 	g.security = NewLinkComponents()
 	g.schemas = NewLinkComponents()
+	g.PluginImports = generator.NewPluginImports(g.gen)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -91,36 +76,15 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 		return
 	}
 
-	contextPkg = string(g.gen.AddImport(contextPkgPath))
-	apiPbPkg = string(g.gen.AddImport(apiPbPkgPath))
-	apiPkg = string(g.gen.AddImport(apiPkgPath))
-	clientPkg = string(g.gen.AddImport(clientPkgPath))
-	serverPkg = string(g.gen.AddImport(serverPkgPath))
-
-	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ ", apiPbPkg, ".Endpoint")
-	g.P("var _ ", apiPkg, ".Option")
-	g.P("var _ ", contextPkg, ".Context")
-	g.P("var _ ", clientPkg, ".Option")
-	g.P("var _ ", serverPkg, ".Option")
-	g.P()
+	g.contextPkg = g.NewImport("context", "context")
+	g.apiPbPkg = g.NewImport("github.com/lack-io/vine/proto/apis/api", "apipb")
+	g.openApiPkg = g.NewImport("github.com/lack-io/vine/proto/apis/openapi", "openapi")
+	g.apiPkg = g.NewImport("github.com/lack-io/vine/service/api", "api")
+	g.clientPkg = g.NewImport("github.com/lack-io/vine/service/client", "client")
+	g.serverPkg = g.NewImport("github.com/lack-io/vine/service/server", "server")
 
 	for i, service := range file.TagServices() {
 		g.generateService(file, service, i)
-	}
-}
-
-// GenerateImports generates the import declaration for this file.
-func (g *vine) GenerateImports(file *generator.FileDescriptor, imports map[generator.GoImportPath]generator.GoPackageName) {
-	if len(file.FileDescriptorProto.Service) == 0 {
-		return
-	}
-
-	// We need to keep track of imported packages to make sure we don't produce
-	// a name collision when generating types.
-	pkgImports = make(map[generator.GoPackageName]bool)
-	for _, name := range imports {
-		pkgImports[name] = true
 	}
 }
 
@@ -134,9 +98,6 @@ func unexport(s string) string {
 		return ""
 	}
 	name := strings.ToLower(s[:1]) + s[1:]
-	if pkgImports[generator.GoPackageName(name)] {
-		return name + "_"
-	}
 	return name
 }
 
@@ -159,8 +120,8 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 
 	g.P()
 	g.P("// API Endpoints for ", servName, " service")
-	g.P("func New", servName, "Endpoints () []*", apiPbPkg, ".Endpoint {")
-	g.P("return []*", apiPbPkg, ".Endpoint{")
+	g.P("func New", servName, "Endpoints () []*", g.apiPbPkg.Use(), ".Endpoint {")
+	g.P("return []*", g.apiPbPkg.Use(), ".Endpoint{")
 	for _, method := range service.Methods {
 		g.generateEndpoint(servName, method, false)
 	}
@@ -172,10 +133,9 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 
 	svcTags := g.extractTags(service.Comments)
 	if _, ok := svcTags[_openapi]; ok {
-		openApiPkg = string(g.gen.AddImport(openApiPkgPath))
 		g.P("// Swagger OpenAPI 3.0 for ", servName, " service")
-		g.P("func New", servName, "OpenAPI () *", openApiPkg, ".OpenAPI {")
-		g.P("return &", openApiPkg, ".OpenAPI{")
+		g.P("func New", servName, "OpenAPI () *", g.openApiPkg.Use(), ".OpenAPI {")
+		g.P("return &", g.openApiPkg.Use(), ".OpenAPI{")
 		g.generateOpenAPI(service, svcTags)
 		g.P("}")
 		g.P("}")
@@ -196,16 +156,16 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 
 	// Client structure.
 	g.P("type ", unexport(servAlias), " struct {")
-	g.P("c ", clientPkg, ".Client")
+	g.P("c ", g.clientPkg.Use(), ".Client")
 	g.P("name string")
 	g.P("}")
 	g.P()
 
 	// NewClient factory.
-	g.P("func New", servAlias, " (name string, c ", clientPkg, ".Client) ", servAlias, " {")
+	g.P("func New", servAlias, " (name string, c ", g.clientPkg.Use(), ".Client) ", servAlias, " {")
 	/*
 		g.P("if c == nil {")
-		g.P("c = ", clientPkg, ".NewClient()")
+		g.P("c = ", g.clientPkg.Use(), ".NewClient()")
 		g.P("}")
 		g.P("if len(name) == 0 {")
 		g.P(`name = "`, serviceName, `"`)
@@ -247,7 +207,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	g.P()
 
 	// Server registration.
-	g.P("func Register", servName, "Handler(s ", serverPkg, ".Server, hdlr ", serverType, ", opts ...", serverPkg, ".HandlerOption) error {")
+	g.P("func Register", servName, "Handler(s ", g.serverPkg.Use(), ".Server, hdlr ", serverType, ", opts ...", g.serverPkg.Use(), ".HandlerOption) error {")
 	g.P("type ", unexport(servName)+"Impl", " interface {")
 
 	// generate interface methods
@@ -257,10 +217,10 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 		outType := g.typeName(method.Proto.GetOutputType())
 
 		if !method.Proto.GetServerStreaming() && !method.Proto.GetClientStreaming() {
-			g.P(methName, "(ctx ", contextPkg, ".Context, in *", inType, ", out *", outType, ") error")
+			g.P(methName, "(ctx ", g.contextPkg.Use(), ".Context, in *", inType, ", out *", outType, ") error")
 			continue
 		}
-		g.P(methName, "(ctx ", contextPkg, ".Context, stream server.Stream) error")
+		g.P(methName, "(ctx ", g.contextPkg.Use(), ".Context, stream server.Stream) error")
 	}
 	g.P("}")
 	g.P("type ", servName, " struct {")
@@ -317,10 +277,10 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 		return
 	}
 	if with {
-		g.P("opts = append(opts, ", apiPkg, ".WithEndpoint(&", apiPbPkg, ".Endpoint{")
+		g.P("opts = append(opts, ", g.apiPkg.Use(), ".WithEndpoint(&", g.apiPbPkg.Use(), ".Endpoint{")
 		defer g.P("}))")
 	} else {
-		g.P("&", apiPbPkg, ".Endpoint{")
+		g.P("&", g.apiPbPkg.Use(), ".Endpoint{")
 		defer g.P("},")
 	}
 	g.P("Name:", fmt.Sprintf(`"%s.%s",`, servName, method.Proto.GetName()))
@@ -353,7 +313,7 @@ func (g *vine) generateClientSignature(servName string, method *generator.Method
 		respName = servName + "_" + generator.CamelCase(origMethName) + "Service"
 	}
 
-	return fmt.Sprintf("%s(ctx %s.Context%s, opts ...%s.CallOption) (%s, error)", methName, contextPkg, reqArg, clientPkg, respName)
+	return fmt.Sprintf("%s(ctx %s.Context%s, opts ...%s.CallOption) (%s, error)", methName, g.contextPkg.Use(), reqArg, g.clientPkg.Use(), respName)
 }
 
 func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, method *generator.MethodDescriptor, descExpr string) {
@@ -420,7 +380,7 @@ func (g *vine) generateClientMethod(reqServ, servName, serviceDescVar string, me
 	g.P()
 
 	g.P("type ", streamType, " struct {")
-	g.P("stream ", clientPkg, ".Stream")
+	g.P("stream ", g.clientPkg.Use(), ".Stream")
 	g.P("}")
 	g.P()
 
@@ -488,7 +448,7 @@ func (g *vine) generateServerSignature(servName string, method *generator.Method
 
 	var reqArgs []string
 	ret := "error"
-	reqArgs = append(reqArgs, contextPkg+".Context")
+	reqArgs = append(reqArgs, g.contextPkg.Use()+".Context")
 
 	if !method.Proto.GetClientStreaming() {
 		reqArgs = append(reqArgs, "*"+g.typeName(method.Proto.GetInputType()))
@@ -510,14 +470,14 @@ func (g *vine) generateServerMethod(servName string, method *generator.MethodDes
 	outType := g.typeName(method.Proto.GetOutputType())
 
 	if !method.Proto.GetServerStreaming() && !method.Proto.GetClientStreaming() {
-		g.P("func (h *", unexport(servName), "Handler) ", methName, "(ctx ", contextPkg, ".Context, in *", inType, ", out *", outType, ") error {")
+		g.P("func (h *", unexport(servName), "Handler) ", methName, "(ctx ", g.contextPkg.Use(), ".Context, in *", inType, ", out *", outType, ") error {")
 		g.P("return h.", serveType, ".", methName, "(ctx, in, out)")
 		g.P("}")
 		g.P()
 		return hname
 	}
 	streamType := unexport(servName) + methName + "Stream"
-	g.P("func (h *", unexport(servName), "Handler) ", methName, "(ctx ", contextPkg, ".Context, stream server.Stream) error {")
+	g.P("func (h *", unexport(servName), "Handler) ", methName, "(ctx ", g.contextPkg.Use(), ".Context, stream server.Stream) error {")
 	if !method.Proto.GetClientStreaming() {
 		g.P("m := new(", inType, ")")
 		g.P("if err := stream.Recv(m); err != nil { return err }")
@@ -556,7 +516,7 @@ func (g *vine) generateServerMethod(servName string, method *generator.MethodDes
 	g.P()
 
 	g.P("type ", streamType, " struct {")
-	g.P("stream ", serverPkg, ".Stream")
+	g.P("stream ", g.serverPkg.Use(), ".Stream")
 	g.P("}")
 	g.P()
 

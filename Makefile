@@ -28,39 +28,39 @@ build-windows-tool:
 install:
 	go get github.com/rakyll/statik
 	go get github.com/gogo/protobuf
-	go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
+	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 	go get github.com/lack-io/vine/cmd/protoc-gen-vine
 	go get github.com/lack-io/vine/cmd/protoc-gen-validator
 	go get github.com/lack-io/vine/cmd/protoc-gen-dao
 
 protoc:
 	cd $(GOPATH)/src && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/api/api.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/dao/dao.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/openapi/openapi.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/registry/registry.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/errors/errors.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. ${ROOT}/proto/apis/usage/usage.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/api/auth/auth.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/auth/auth.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/bot/bot.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/broker/broker.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/client/client.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/config/config.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/debug.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/dao/dao.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/log/log.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/stats/stats.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/debug/trace/trace.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/file/file.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/router/router.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/network/dns/dns.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/network/network.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/registry/registry.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/runtime/runtime.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/server/server.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/store/store.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogofaster_out=plugins=grpc:. --vine_out=. ${ROOT}/proto/services/transport/transport.proto
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/api/api.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/dao/dao.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/openapi/openapi.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/registry/registry.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/errors/errors.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/usage/usage.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/api/auth/auth.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/auth/auth.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/bot/bot.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/broker/broker.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/client/client.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/config/config.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/debug.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/dao/dao.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/log/log.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/stats/stats.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/trace/trace.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/file/file.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/router/router.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/network/dns/dns.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/network/network.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/registry/registry.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/runtime/runtime.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/server/server.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/store/store.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/transport/transport.proto
 
 
 	sed -i "" "s/ref,omitempty/$$\ref,omitempty/g" proto/apis/openapi/openapi.pb.go

@@ -1480,6 +1480,10 @@ func (g *Generator) generateImports() {
 		s1 := strings.Map(badToUnderscore, s)
 		g.PrintImport(GoPackageName(s1), GoImportPath(s))
 	}
+
+	for _, p := range plugins {
+		p.GenerateImports(g.file, map[GoImportPath]GoPackageName{})
+	}
 	// gogo plugin imports
 	// TODO: may need to worry about uniqueness across plugins and could change this
 	// to use the `addedImports` technique
@@ -2241,19 +2245,7 @@ type simpleField struct {
 
 // decl prints the declaration of the field in the struct (if any).
 func (f *simpleField) decl(g *Generator, mc *msgCtx) {
-	inline := false
-	for _, line := range strings.Split(f.comment, "\n") {
-		line = strings.TrimSpace(strings.ReplaceAll(line, "//", ""))
-		parts := strings.Split(line, ":")
-		if len(parts) > 1 {
-			if parts[0] == "+gen" && strings.Contains(parts[1], "inline") {
-				inline = true
-				break
-			}
-		}
-	}
-
-	if inline && f.protoType == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+	if isInline(f.comment) && f.protoType == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
 		tags := []string{}
 		parts := strings.Split(f.tags, " ")
 		for _, item := range parts {
@@ -2262,7 +2254,7 @@ func (f *simpleField) decl(g *Generator, mc *msgCtx) {
 			}
 			tags = append(tags, item)
 		}
-		g.P(f.comment, f.goType, "\t`", strings.Join(tags, " "), "`", f.deprecated)
+		g.P(f.comment, f.goType[1:], "\t`", strings.Join(tags, " "), "`", f.deprecated)
 	} else {
 		g.P(f.comment, Annotate(mc.message.file, f.fullPath, f.goName), "\t", f.goType, "\t`", f.tags, "`", f.deprecated)
 	}
@@ -2280,7 +2272,7 @@ func (f *simpleField) getter(g *Generator, mc *msgCtx) {
 	if f.deprecated != "" {
 		g.P(f.deprecated)
 	}
-	g.generateGet(mc, f.protoField, f.protoType, false, f.goName, f.goType, "", "", f.fullPath, f.getterName, f.getterDef)
+	g.generateGet(mc, f.protoField, f.protoType, false, f.comment, f.goName, f.goType, "", "", f.fullPath, f.getterName, f.getterDef)
 }
 
 // setter prints the setter method of the field.
@@ -2376,7 +2368,7 @@ func (f *oneofField) getter(g *Generator, mc *msgCtx) {
 		if sf.deprecated != "" {
 			g.P(sf.deprecated)
 		}
-		g.generateGet(mc, sf.protoField, sf.protoType, true, sf.goName, sf.goType, f.goName, sf.oneofTypeName, sf.fullPath, sf.getterName, sf.getterDef)
+		g.generateGet(mc, sf.protoField, sf.protoType, true, f.comment, sf.goName, sf.goType, f.goName, sf.oneofTypeName, sf.fullPath, sf.getterName, sf.getterDef)
 	}
 }
 
@@ -2506,7 +2498,7 @@ func (g *Generator) generateDefaultConstants(mc *msgCtx, topLevelFields []topLev
 // We did not want to duplicate the code since it is quite intricate so we came
 // up with this ugly method. At least the logic is in one place. This can be reworked.
 func (g *Generator) generateGet(mc *msgCtx, protoField *descriptor.FieldDescriptorProto, protoType descriptor.FieldDescriptorProto_Type,
-	oneof bool, fname, tname, uname, oneoftname, fullpath, gname, def string) {
+	oneof bool, comment, fname, tname, uname, oneoftname, fullpath, gname, def string) {
 	star := ""
 	if (protoType != descriptor.FieldDescriptorProto_TYPE_MESSAGE) &&
 		(protoType != descriptor.FieldDescriptorProto_TYPE_GROUP) &&
@@ -2530,7 +2522,11 @@ func (g *Generator) generateGet(mc *msgCtx, protoField *descriptor.FieldDescript
 		// as does a message or group field, or a repeated field.
 		g.P("if m != nil {")
 		g.In()
-		g.P("return m." + fname)
+		if isInline(comment) {
+			g.P("return &m." + fname)
+		} else {
+			g.P("return m." + fname)
+		}
 		g.Out()
 		g.P("}")
 		g.P("return nil")

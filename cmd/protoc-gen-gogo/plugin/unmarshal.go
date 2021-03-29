@@ -477,11 +477,13 @@ func (g *gogo) noStarOrSliceType(msg *generator.Descriptor, field *descriptor.Fi
 	return typ
 }
 
-func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, field *descriptor.FieldDescriptorProto, fieldname string, proto3 bool) {
+func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, f *generator.FieldDescriptor, fieldname string, proto3 bool) {
+	field := f.Proto
 	repeated := field.IsRepeated()
 	nullable := gogoproto.IsNullable(field)
 	typ := g.noStarOrSliceType(msg, field)
 	oneof := field.OneofIndex != nil
+	_, isInline := g.extractTags(f.Comments)[_inline]
 	switch *field.Type {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
 		g.P(`var v uint64`)
@@ -1006,37 +1008,39 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 			g.Out()
 			g.P(`}`)
 		} else if nullable {
-			g.P(`if m.`, fieldname, ` == nil {`)
-			g.In()
-			if gogoproto.IsStdTime(field) {
-				g.P(`m.`, fieldname, ` = new(time.Time)`)
-			} else if gogoproto.IsStdDuration(field) {
-				g.P(`m.`, fieldname, ` = new(time.Duration)`)
-			} else if gogoproto.IsStdDouble(field) {
-				g.P(`m.`, fieldname, ` = new(float64)`)
-			} else if gogoproto.IsStdFloat(field) {
-				g.P(`m.`, fieldname, ` = new(float32)`)
-			} else if gogoproto.IsStdInt64(field) {
-				g.P(`m.`, fieldname, ` = new(int64)`)
-			} else if gogoproto.IsStdUInt64(field) {
-				g.P(`m.`, fieldname, ` = new(uint64)`)
-			} else if gogoproto.IsStdInt32(field) {
-				g.P(`m.`, fieldname, ` = new(int32)`)
-			} else if gogoproto.IsStdUInt32(field) {
-				g.P(`m.`, fieldname, ` = new(uint32)`)
-			} else if gogoproto.IsStdBool(field) {
-				g.P(`m.`, fieldname, ` = new(bool)`)
-			} else if gogoproto.IsStdString(field) {
-				g.P(`m.`, fieldname, ` = new(string)`)
-			} else if gogoproto.IsStdBytes(field) {
-				g.P(`m.`, fieldname, ` = new([]byte)`)
-			} else {
-				goType, _ := g.GoType(nil, field)
-				// remove the star from the type
-				g.P(`m.`, fieldname, ` = &`, goType[1:], `{}`)
+			if !isInline {
+				g.P(`if m.`, fieldname, ` == nil {`, "")
+				g.In()
+				if gogoproto.IsStdTime(field) {
+					g.P(`m.`, fieldname, ` = new(time.Time)`)
+				} else if gogoproto.IsStdDuration(field) {
+					g.P(`m.`, fieldname, ` = new(time.Duration)`)
+				} else if gogoproto.IsStdDouble(field) {
+					g.P(`m.`, fieldname, ` = new(float64)`)
+				} else if gogoproto.IsStdFloat(field) {
+					g.P(`m.`, fieldname, ` = new(float32)`)
+				} else if gogoproto.IsStdInt64(field) {
+					g.P(`m.`, fieldname, ` = new(int64)`)
+				} else if gogoproto.IsStdUInt64(field) {
+					g.P(`m.`, fieldname, ` = new(uint64)`)
+				} else if gogoproto.IsStdInt32(field) {
+					g.P(`m.`, fieldname, ` = new(int32)`)
+				} else if gogoproto.IsStdUInt32(field) {
+					g.P(`m.`, fieldname, ` = new(uint32)`)
+				} else if gogoproto.IsStdBool(field) {
+					g.P(`m.`, fieldname, ` = new(bool)`)
+				} else if gogoproto.IsStdString(field) {
+					g.P(`m.`, fieldname, ` = new(string)`)
+				} else if gogoproto.IsStdBytes(field) {
+					g.P(`m.`, fieldname, ` = new([]byte)`)
+				} else {
+					goType, _ := g.GoType(nil, field)
+					// remove the star from the type
+					g.P(`m.`, fieldname, ` = &`, goType[1:], `{}`)
+				}
+				g.Out()
+				g.P(`}`)
 			}
-			g.Out()
-			g.P(`}`)
 			if gogoproto.IsStdTime(field) {
 				g.P(`if err := `, g.typesPkg.Use(), `.StdTimeUnmarshal(m.`, fieldname, `, dAtA[iNdEx:postIndex]); err != nil {`)
 			} else if gogoproto.IsStdDuration(field) {
@@ -1276,18 +1280,6 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 
 func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 	proto3 := gogoproto.IsProto3(file.FileDescriptorProto)
-	g.atleastOne = false
-	g.localName = generator.FileName(file)
-
-	g.ioPkg = g.NewImport("io")
-	g.mathPkg = g.NewImport("math")
-	g.typesPkg = g.NewImport("github.com/gogo/protobuf/types")
-	g.binaryPkg = g.NewImport("encoding/binary")
-	fmtPkg := g.NewImport("fmt")
-	protoPkg := g.NewImport("github.com/gogo/protobuf/proto")
-	if !gogoproto.ImportsGoGoProto(file.FileDescriptorProto) {
-		protoPkg = g.NewImport("github.com/golang/protobuf/proto")
-	}
 
 	for _, message := range file.Messages() {
 		ccTypeName := generator.CamelCaseSlice(message.Proto.TypeName())
@@ -1330,18 +1322,19 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 		if !message.Proto.IsGroup() {
 			g.P(`if wireType == `, strconv.Itoa(proto.WireEndGroup), ` {`)
 			g.In()
-			g.P(`return `, fmtPkg.Use(), `.Errorf("proto: `+message.Proto.GetName()+`: wiretype end group for non-group")`)
+			g.P(`return `, g.fmtPkg.Use(), `.Errorf("proto: `+message.Proto.GetName()+`: wiretype end group for non-group")`)
 			g.Out()
 			g.P(`}`)
 		}
 		g.P(`if fieldNum <= 0 {`)
 		g.In()
-		g.P(`return `, fmtPkg.Use(), `.Errorf("proto: `+message.Proto.GetName()+`: illegal tag %d (wire type %d)", fieldNum, wire)`)
+		g.P(`return `, g.fmtPkg.Use(), `.Errorf("proto: `+message.Proto.GetName()+`: illegal tag %d (wire type %d)", fieldNum, wire)`)
 		g.Out()
 		g.P(`}`)
 		g.P(`switch fieldNum {`)
 		g.In()
-		for _, field := range message.Proto.Field {
+		for _, f := range message.Fields {
+			field := f.Proto
 			fieldname := g.GetFieldName(message.Proto, field)
 			errFieldname := fieldname
 			if field.OneofIndex != nil {
@@ -1354,7 +1347,7 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 			if possiblyPacked {
 				g.P(`if wireType == `, strconv.Itoa(wireType), `{`)
 				g.In()
-				g.field(file, message.Proto, field, fieldname, false)
+				g.field(file, message.Proto, f, fieldname, false)
 				g.Out()
 				g.P(`} else if wireType == `, strconv.Itoa(proto.WireBytes), `{`)
 				g.In()
@@ -1406,22 +1399,22 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 
 				g.P(`for iNdEx < postIndex {`)
 				g.In()
-				g.field(file, message.Proto, field, fieldname, false)
+				g.field(file, message.Proto, f, fieldname, false)
 				g.Out()
 				g.P(`}`)
 				g.Out()
 				g.P(`} else {`)
 				g.In()
-				g.P(`return ` + fmtPkg.Use() + `.Errorf("proto: wrong wireType = %d for field ` + errFieldname + `", wireType)`)
+				g.P(`return ` + g.fmtPkg.Use() + `.Errorf("proto: wrong wireType = %d for field ` + errFieldname + `", wireType)`)
 				g.Out()
 				g.P(`}`)
 			} else {
 				g.P(`if wireType != `, strconv.Itoa(wireType), `{`)
 				g.In()
-				g.P(`return ` + fmtPkg.Use() + `.Errorf("proto: wrong wireType = %d for field ` + errFieldname + `", wireType)`)
+				g.P(`return ` + g.fmtPkg.Use() + `.Errorf("proto: wrong wireType = %d for field ` + errFieldname + `", wireType)`)
 				g.Out()
 				g.P(`}`)
-				g.field(file, message.Proto, field, fieldname, proto3)
+				g.field(file, message.Proto, f, fieldname, proto3)
 			}
 
 			if field.IsRequired() {
@@ -1471,7 +1464,7 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 			g.P(`return `, g.ioPkg.Use(), `.ErrUnexpectedEOF`)
 			g.Out()
 			g.P(`}`)
-			g.P(protoPkg.Use(), `.AppendExtension(m, int32(fieldNum), dAtA[iNdEx:iNdEx+skippy])`)
+			g.P(g.protoPkg.Use(), `.AppendExtension(m, int32(fieldNum), dAtA[iNdEx:iNdEx+skippy])`)
 			g.P(`iNdEx += skippy`)
 			g.Out()
 			g.P(`} else {`)
@@ -1521,9 +1514,9 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 			g.P(`if hasFields[`, strconv.Itoa(int(fieldBit/64)), `] & uint64(`, fmt.Sprintf("0x%08x", uint64(1)<<(fieldBit%64)), `) == 0 {`)
 			g.In()
 			if !gogoproto.ImportsGoGoProto(file.FileDescriptorProto) {
-				g.P(`return new(`, protoPkg.Use(), `.RequiredNotSetError)`)
+				g.P(`return new(`, g.protoPkg.Use(), `.RequiredNotSetError)`)
 			} else {
-				g.P(`return `, protoPkg.Use(), `.NewRequiredNotSetError("`, field.GetName(), `")`)
+				g.P(`return `, g.protoPkg.Use(), `.NewRequiredNotSetError("`, field.GetName(), `")`)
 			}
 			g.Out()
 			g.P(`}`)
@@ -1609,7 +1602,7 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 			case 5:
 				iNdEx += 4
 			default:
-				return 0, ` + fmtPkg.Use() + `.Errorf("proto: illegal wireType %d", wireType)
+				return 0, ` + g.fmtPkg.Use() + `.Errorf("proto: illegal wireType %d", wireType)
 			}
 			if iNdEx < 0 {
 				return 0, ErrInvalidLength` + g.localName + `
@@ -1622,9 +1615,9 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 	}
 
 	var (
-		ErrInvalidLength` + g.localName + ` = ` + fmtPkg.Use() + `.Errorf("proto: negative length found during unmarshaling")
-		ErrIntOverflow` + g.localName + ` = ` + fmtPkg.Use() + `.Errorf("proto: integer overflow")
-		ErrUnexpectedEndOfGroup` + g.localName + ` = ` + fmtPkg.Use() + `.Errorf("proto: unexpected end of group")
+		ErrInvalidLength` + g.localName + ` = ` + g.fmtPkg.Use() + `.Errorf("proto: negative length found during unmarshaling")
+		ErrIntOverflow` + g.localName + ` = ` + g.fmtPkg.Use() + `.Errorf("proto: integer overflow")
+		ErrUnexpectedEndOfGroup` + g.localName + ` = ` + g.fmtPkg.Use() + `.Errorf("proto: unexpected end of group")
 	)
 	`)
 }

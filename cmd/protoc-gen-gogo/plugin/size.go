@@ -136,12 +136,6 @@ import (
 	"github.com/lack-io/vine/cmd/protoc-gen-gogo/vanity"
 )
 
-type size struct {
-	*generator.Generator
-	generator.PluginImports
-	
-}
-
 func wireToType(wire string) int {
 	switch wire {
 	case "fixed64":
@@ -206,16 +200,23 @@ func (g *gogo) std(field *descriptor.FieldDescriptorProto, name string) (string,
 	return "", false
 }
 
-func ( g *gogo) generateField(proto3 bool, file *generator.FileDescriptor, message *generator.Descriptor, field *descriptor.FieldDescriptorProto, sizeName string) {
+func (g *gogo) generateField(proto3 bool, file *generator.FileDescriptor, msg *generator.MessageDescriptor, f *generator.FieldDescriptor, sizeName string) {
+	message := msg.Proto
+	field := f.Proto
 	fieldname := g.GetOneOfFieldName(message, field)
 	nullable := gogoproto.IsNullable(field)
 	repeated := field.IsRepeated()
+	_, isInline := g.extractTags(f.Comments)[_inline]
 	doNilCheck := gogoproto.NeedsNilCheck(proto3, field)
 	if repeated {
 		g.P(`if len(m.`, fieldname, `) > 0 {`)
 		g.In()
 	} else if doNilCheck {
-		g.P(`if m.`, fieldname, ` != nil {`)
+		if isInline {
+			g.P(`{`)
+		} else {
+			g.P(`if m.`, fieldname, ` != nil {`)
+		}
 		g.In()
 	}
 	packed := field.IsPacked() || (proto3 && field.IsPacked3())
@@ -553,17 +554,7 @@ func ( g *gogo) generateField(proto3 bool, file *generator.FileDescriptor, messa
 	}
 }
 
-
-func ( g *gogo) GenerateSize(file *generator.FileDescriptor) {
-	g.PluginImports = generator.NewPluginImports(g.Generator)
-	g.atleastOne = false
-	g.localName = generator.FileName(file)
-	g.typesPkg = g.NewImport("github.com/gogo/protobuf/types")
-	protoPkg := g.NewImport("github.com/gogo/protobuf/proto")
-	g.bitsPkg = g.NewImport("math/bits")
-	if !gogoproto.ImportsGoGoProto(file.FileDescriptorProto) {
-		protoPkg = g.NewImport("github.com/golang/protobuf/proto")
-	}
+func (g *gogo) GenerateSize(file *generator.FileDescriptor) {
 	for _, message := range file.Messages() {
 		sizeName := ""
 		if gogoproto.IsSizer(file.FileDescriptorProto, message.Proto.DescriptorProto) && gogoproto.IsProtoSizer(file.FileDescriptorProto, message.Proto.DescriptorProto) {
@@ -592,13 +583,13 @@ func ( g *gogo) GenerateSize(file *generator.FileDescriptor) {
 		g.P(`var l int`)
 		g.P(`_ = l`)
 		oneofs := make(map[string]struct{})
-		for _, field := range message.Proto.Field {
-			oneof := field.OneofIndex != nil
+		for _, field := range message.Fields {
+			oneof := field.Proto.OneofIndex != nil
 			if !oneof {
 				proto3 := gogoproto.IsProto3(file.FileDescriptorProto)
-				g.generateField(proto3, file, message.Proto, field, sizeName)
+				g.generateField(proto3, file, message, field, sizeName)
 			} else {
-				fieldname := g.GetFieldName(message.Proto, field)
+				fieldname := g.GetFieldName(message.Proto, field.Proto)
 				if _, ok := oneofs[fieldname]; ok {
 					continue
 				} else {
@@ -613,7 +604,7 @@ func ( g *gogo) GenerateSize(file *generator.FileDescriptor) {
 		}
 		if message.Proto.DescriptorProto.HasExtension() {
 			if gogoproto.HasExtensionsMap(file.FileDescriptorProto, message.Proto.DescriptorProto) {
-				g.P(`n += `, protoPkg.Use(), `.SizeOfInternalExtension(m)`)
+				g.P(`n += `, g.protoPkg.Use(), `.SizeOfInternalExtension(m)`)
 			} else {
 				g.P(`if m.XXX_extensions != nil {`)
 				g.In()
@@ -635,13 +626,13 @@ func ( g *gogo) GenerateSize(file *generator.FileDescriptor) {
 		g.P()
 
 		//Generate Size methods for oneof fields
-		m := proto.Clone(message.Proto.DescriptorProto).(*descriptor.DescriptorProto)
-		for _, f := range m.Field {
-			oneof := f.OneofIndex != nil
+		//m := proto.Clone(message).(*generator.MessageDescriptor)
+		for _, f := range message.Fields {
+			oneof := f.Proto.OneofIndex != nil
 			if !oneof {
 				continue
 			}
-			ccTypeName := g.OneOfTypeName(message.Proto, f)
+			ccTypeName := g.OneOfTypeName(message.Proto, f.Proto)
 			g.P(`func (m *`, ccTypeName, `) `, sizeName, `() (n int) {`)
 			g.In()
 			g.P(`if m == nil {`)
@@ -651,8 +642,8 @@ func ( g *gogo) GenerateSize(file *generator.FileDescriptor) {
 			g.P(`}`)
 			g.P(`var l int`)
 			g.P(`_ = l`)
-			vanity.TurnOffNullableForNativeTypes(f)
-			g.generateField(false, file, message.Proto, f, sizeName)
+			vanity.TurnOffNullableForNativeTypes(f.Proto)
+			g.generateField(false, file, message, f, sizeName)
 			g.P(`return n`)
 			g.Out()
 			g.P(`}`)
@@ -667,4 +658,3 @@ func ( g *gogo) GenerateSize(file *generator.FileDescriptor) {
 	g.sizeZigZag()
 
 }
-

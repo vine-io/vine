@@ -38,7 +38,7 @@ import (
 
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
-	descriptor "github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
+	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 )
 
@@ -92,8 +92,8 @@ func (g *Generator) OneOfTypeName(message *Descriptor, field *descriptor.FieldDe
 }
 
 type PluginImports interface {
-	NewImport(pkg string) Single
-	GenerateImports(file *FileDescriptor)
+	NewImport(pkg, alias string) Single
+	GenerateImports(file *FileDescriptor, imports map[GoImportPath]GoPackageName)
 }
 
 type pluginImports struct {
@@ -105,13 +105,13 @@ func NewPluginImports(generator *Generator) *pluginImports {
 	return &pluginImports{generator, make([]Single, 0)}
 }
 
-func (this *pluginImports) NewImport(pkg string) Single {
-	imp := newImportedPackage(this.generator.ImportPrefix, pkg)
+func (this *pluginImports) NewImport(pkg, alias string) Single {
+	imp := newImportedPackage(this.generator.ImportPrefix, pkg, alias)
 	this.singles = append(this.singles, imp)
 	return imp
 }
 
-func (this *pluginImports) GenerateImports(file *FileDescriptor) {
+func (this *pluginImports) GenerateImports(file *FileDescriptor, imports map[GoImportPath]GoPackageName) {
 	for _, s := range this.singles {
 		if s.IsUsed() {
 			this.generator.PrintImport(GoPackageName(s.Name()), GoImportPath(s.Location()))
@@ -130,19 +130,26 @@ type importedPackage struct {
 	used         bool
 	pkg          string
 	name         string
+	alias        string
 	importPrefix string
 }
 
-func newImportedPackage(importPrefix string, pkg string) *importedPackage {
+func newImportedPackage(importPrefix string, pkg, alias string) *importedPackage {
 	return &importedPackage{
 		pkg:          pkg,
 		importPrefix: importPrefix,
+		alias:        alias,
 	}
 }
 
 func (this *importedPackage) Use() string {
 	if !this.used {
-		this.name = string(cleanPackageName(this.pkg))
+		name := string(cleanPackageName(this.pkg))
+		if this.alias != "" {
+			this.name = this.alias
+		} else {
+			this.name = name
+		}
 		this.used = true
 	}
 	return this.name

@@ -4,12 +4,10 @@
 package dao
 
 import (
-	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	api "github.com/lack-io/vine/proto/apis/api"
+	apipb "github.com/lack-io/vine/proto/apis/api"
 	_ "github.com/lack-io/vine/proto/apis/dao"
-	api1 "github.com/lack-io/vine/service/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
 	math "math"
@@ -26,16 +24,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Reference imports to suppress errors if they are not otherwise used.
-var _ api.Endpoint
-var _ api1.Option
-var _ context.Context
-var _ client.Option
-var _ server.Option
-
 // API Endpoints for Dao service
-func NewDaoEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
+func NewDaoEndpoints() []*apipb.Endpoint {
+	return []*apipb.Endpoint{}
 }
 
 // Client API for Dao service

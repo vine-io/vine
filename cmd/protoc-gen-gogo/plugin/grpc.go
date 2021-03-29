@@ -44,49 +44,11 @@ import (
 	"github.com/lack-io/vine/cmd/generator"
 )
 
-// generatedCodeVersion indicates a version of the generated code.
-// It is incremented whenever an incompatibility between the generated code and
-// the grpc package is introduced; the generated code references
-// a constant, grpc.SupportPackageIsVersionN (where N is generatedCodeVersion).
-const generatedCodeVersion = 4
-
-// Paths for packages used by code generated in this file,
-// relative to the import_prefix of the generator.Generator.
-const (
-	contextPkgPath = "context"
-	grpcPkgPath    = "google.golang.org/grpc"
-	codePkgPath    = "google.golang.org/grpc/codes"
-	statusPkgPath  = "google.golang.org/grpc/status"
-)
-
-
-// The names for packages imported in the generated code.
-// They may vary from the final path component of the import path
-// if the name is used by other packages.
-var (
-	contextPkg string
-	grpcPkg    string
-)
-
 // Generate generates code for the services in the given file.
 func (g *gogo) GenerateGRPC(file *generator.FileDescriptor) {
 	if len(file.FileDescriptorProto.Service) == 0 {
 		return
 	}
-
-	contextPkg = string(g.AddImport(contextPkgPath))
-	grpcPkg = string(g.AddImport(grpcPkgPath))
-
-	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ ", contextPkg, ".Context")
-	g.P("var _ ", grpcPkg, ".ClientConn")
-	g.P()
-
-	// Assert version compatibility.
-	g.P("// This is a compile-time assertion to ensure that this generated file")
-	g.P("// is compatible with the grpc package it is being compiled against.")
-	g.P("const _ = ", grpcPkg, ".SupportPackageIsVersion", generatedCodeVersion)
-	g.P()
 
 	for i, service := range file.FileDescriptorProto.Service {
 		g.generateService(file, service, i)
@@ -136,7 +98,7 @@ func (g *gogo) generateService(file *generator.FileDescriptor, service *pb.Servi
 
 	// Client structure.
 	g.P("type ", unexport(servName), "Client struct {")
-	g.P("cc *", grpcPkg, ".ClientConn")
+	g.P("cc *", g.grpcPkg.Use(), ".ClientConn")
 	g.P("}")
 	g.P()
 
@@ -144,7 +106,7 @@ func (g *gogo) generateService(file *generator.FileDescriptor, service *pb.Servi
 	if deprecated {
 		g.P(deprecationComment)
 	}
-	g.P("func New", servName, "Client (cc *", grpcPkg, ".ClientConn) ", servName, "Client {")
+	g.P("func New", servName, "Client (cc *", g.grpcPkg.Use(), ".ClientConn) ", servName, "Client {")
 	g.P("return &", unexport(servName), "Client{cc}")
 	g.P("}")
 	g.P()
@@ -191,7 +153,7 @@ func (g *gogo) generateService(file *generator.FileDescriptor, service *pb.Servi
 	if deprecated {
 		g.P(deprecationComment)
 	}
-	g.P("func Register", servName, "Server(s *", grpcPkg, ".Server, srv ", serverType, ") {")
+	g.P("func Register", servName, "Server(s *", g.grpcPkg.Use(), ".Server, srv ", serverType, ") {")
 	g.P("s.RegisterService(&", serviceDescVar, `, srv)`)
 	g.P("}")
 	g.P()
@@ -204,10 +166,10 @@ func (g *gogo) generateService(file *generator.FileDescriptor, service *pb.Servi
 	}
 
 	// Service descriptor.
-	g.P("var ", serviceDescVar, " = ", grpcPkg, ".ServiceDesc {")
+	g.P("var ", serviceDescVar, " = ", g.grpcPkg.Use(), ".ServiceDesc {")
 	g.P("ServiceName: ", strconv.Quote(fullServName), ",")
 	g.P("HandlerType: (*", serverType, ")(nil),")
-	g.P("Methods: []", grpcPkg, ".MethodDesc{")
+	g.P("Methods: []", g.grpcPkg.Use(), ".MethodDesc{")
 	for i, method := range service.Method {
 		if method.GetServerStreaming() || method.GetClientStreaming() {
 			continue
@@ -218,7 +180,7 @@ func (g *gogo) generateService(file *generator.FileDescriptor, service *pb.Servi
 		g.P("},")
 	}
 	g.P("},")
-	g.P("Streams: []", grpcPkg, ".StreamDesc{")
+	g.P("Streams: []", g.grpcPkg.Use(), ".StreamDesc{")
 	for i, method := range service.Method {
 		if !method.GetServerStreaming() && !method.GetClientStreaming() {
 			continue
@@ -263,9 +225,7 @@ func (g *gogo) generateServerMethodConcrete(servName string, method *pb.MethodDe
 		nilArg = "nil, "
 	}
 	methName := generator.CamelCase(method.GetName())
-	statusPkg := string(g.AddImport(statusPkgPath))
-	codePkg := string(g.AddImport(codePkgPath))
-	g.P("return ", nilArg, statusPkg, `.Errorf(`, codePkg, `.Unimplemented, "method `, methName, ` not implemented")`)
+	g.P("return ", nilArg, g.statusPkg.Use(), `.Errorf(`, g.codePkg.Use(), `.Unimplemented, "method `, methName, ` not implemented")`)
 	g.P("}")
 }
 
@@ -284,7 +244,7 @@ func (g *gogo) generateClientSignature(servName string, method *pb.MethodDescrip
 	if method.GetServerStreaming() || method.GetClientStreaming() {
 		respName = servName + "_" + generator.CamelCase(origMethName) + "Client"
 	}
-	return fmt.Sprintf("%s(ctx %s.Context%s, opts ...%s.CallOption) (%s, error)", methName, contextPkg, reqArg, grpcPkg, respName)
+	return fmt.Sprintf("%s(ctx %s.Context%s, opts ...%s.CallOption) (%s, error)", methName, g.contextPkg.Use(), reqArg, g.grpcPkg.Use(), respName)
 }
 
 func (g *gogo) generateClientMethod(servName, fullServName, serviceDescVar string, method *pb.MethodDescriptorProto, descExpr string) {
@@ -334,12 +294,12 @@ func (g *gogo) generateClientMethod(servName, fullServName, serviceDescVar strin
 	if genCloseAndRecv {
 		g.P("CloseAndRecv() (*", outType, ", error)")
 	}
-	g.P(grpcPkg, ".ClientStream")
+	g.P(g.grpcPkg.Use(), ".ClientStream")
 	g.P("}")
 	g.P()
 
 	g.P("type ", streamType, " struct {")
-	g.P(grpcPkg, ".ClientStream")
+	g.P(g.grpcPkg.Use(), ".ClientStream")
 	g.P("}")
 	g.P()
 
@@ -379,7 +339,7 @@ func (g *gogo) generateServerSignatureWithParamNames(servName string, method *pb
 	var reqArgs []string
 	ret := "error"
 	if !method.GetServerStreaming() && !method.GetClientStreaming() {
-		reqArgs = append(reqArgs, "ctx "+contextPkg+".Context")
+		reqArgs = append(reqArgs, "ctx "+g.contextPkg.Use()+".Context")
 		ret = "(*" + g.typeName(method.GetOutputType()) + ", error)"
 	}
 	if !method.GetClientStreaming() {
@@ -403,7 +363,7 @@ func (g *gogo) generateServerSignature(servName string, method *pb.MethodDescrip
 	var reqArgs []string
 	ret := "error"
 	if !method.GetServerStreaming() && !method.GetClientStreaming() {
-		reqArgs = append(reqArgs, contextPkg+".Context")
+		reqArgs = append(reqArgs, g.contextPkg.Use()+".Context")
 		ret = "(*" + g.typeName(method.GetOutputType()) + ", error)"
 	}
 	if !method.GetClientStreaming() {
@@ -423,15 +383,15 @@ func (g *gogo) generateServerMethod(servName, fullServName string, method *pb.Me
 	outType := g.typeName(method.GetOutputType())
 
 	if !method.GetServerStreaming() && !method.GetClientStreaming() {
-		g.P("func ", hname, "(srv interface{}, ctx ", contextPkg, ".Context, dec func(interface{}) error, interceptor ", grpcPkg, ".UnaryServerInterceptor) (interface{}, error) {")
+		g.P("func ", hname, "(srv interface{}, ctx ", g.contextPkg.Use(), ".Context, dec func(interface{}) error, interceptor ", g.grpcPkg.Use(), ".UnaryServerInterceptor) (interface{}, error) {")
 		g.P("in := new(", inType, ")")
 		g.P("if err := dec(in); err != nil { return nil, err }")
 		g.P("if interceptor == nil { return srv.(", servName, "Server).", methName, "(ctx, in) }")
-		g.P("info := &", grpcPkg, ".UnaryServerInfo{")
+		g.P("info := &", g.grpcPkg.Use(), ".UnaryServerInfo{")
 		g.P("Server: srv,")
 		g.P("FullMethod: ", strconv.Quote(fmt.Sprintf("/%s/%s", fullServName, methName)), ",")
 		g.P("}")
-		g.P("handler := func(ctx ", contextPkg, ".Context, req interface{}) (interface{}, error) {")
+		g.P("handler := func(ctx ", g.contextPkg.Use(), ".Context, req interface{}) (interface{}, error) {")
 		g.P("return srv.(", servName, "Server).", methName, "(ctx, req.(*", inType, "))")
 		g.P("}")
 		g.P("return interceptor(ctx, in, info, handler)")
@@ -440,7 +400,7 @@ func (g *gogo) generateServerMethod(servName, fullServName string, method *pb.Me
 		return hname
 	}
 	streamType := unexport(servName) + methName + "Server"
-	g.P("func ", hname, "(srv interface{}, stream ", grpcPkg, ".ServerStream) error {")
+	g.P("func ", hname, "(srv interface{}, stream ", g.grpcPkg.Use(), ".ServerStream) error {")
 	if !method.GetClientStreaming() {
 		g.P("m := new(", inType, ")")
 		g.P("if err := stream.RecvMsg(m); err != nil { return err }")
@@ -466,12 +426,12 @@ func (g *gogo) generateServerMethod(servName, fullServName string, method *pb.Me
 	if genRecv {
 		g.P("Recv() (*", inType, ", error)")
 	}
-	g.P(grpcPkg, ".ServerStream")
+	g.P(g.grpcPkg.Use(), ".ServerStream")
 	g.P("}")
 	g.P()
 
 	g.P("type ", streamType, " struct {")
-	g.P(grpcPkg, ".ServerStream")
+	g.P(g.grpcPkg.Use(), ".ServerStream")
 	g.P("}")
 	g.P()
 

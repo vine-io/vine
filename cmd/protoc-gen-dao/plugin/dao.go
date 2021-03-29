@@ -23,11 +23,13 @@ import (
 	"github.com/lack-io/vine/service/dao/schema"
 )
 
-var TagString = "dao"
+var TagString = "gen"
 
 const (
 	// dao generate flag
-	_generate = "generate"
+	_dao = "dao"
+	// inline
+	_inline = "inline"
 	// dao primary key
 	_pk = "PK"
 	// dao soft delete field
@@ -39,27 +41,25 @@ type Tag struct {
 	Value string
 }
 
-// Paths for packages used by code generated in this file,
-// relative to the import_prefix of the generator.Generator.
-const (
-	ctxPkgPath    = "context"
-	timePkgPath   = "time"
-	stringPkgPath = "strings"
-	errPkgPath    = "errors"
-	driverPkgPath = "database/sql/driver"
-	jsonPkgPath   = "github.com/json-iterator/go"
-	daoPkgPath    = "github.com/lack-io/vine/service/dao"
-	clausePkgPath = "github.com/lack-io/vine/service/dao/clause"
-)
-
 // dao is an implementation of the Go protocol buffer compiler's
 // plugin architecture. It generates bindings for dao support.
 type dao struct {
+	generator.PluginImports
 	gen *generator.Generator
 
 	schemas     []*Schema
 	aliasTypes  map[string]string
 	aliasFields map[string]*Field
+
+	sourcePkg string
+	ctxPkg    generator.Single
+	timePkg   generator.Single
+	stringPkg generator.Single
+	errPkg    generator.Single
+	DriverPkg generator.Single
+	jsonPkg   generator.Single
+	daoPkg    generator.Single
+	clausePkg generator.Single
 }
 
 func New() *dao {
@@ -75,25 +75,10 @@ func (g *dao) Name() string {
 	return "dao"
 }
 
-// The names for packages imported in the generated code.
-// They may vary from the final path component of the import path
-// if the name is used by other packages.
-var (
-	ctxPkg     string
-	timePkg    string
-	stringPkg  string
-	errPkg     string
-	DriverPkg  string
-	jsonPkg    string
-	daoPkg     string
-	clausePkg  string
-	sourcePkg  string
-	pkgImports map[generator.GoPackageName]bool
-)
-
 // Init initializes the plugin.
 func (g *dao) Init(gen *generator.Generator) {
 	g.gen = gen
+	g.PluginImports = generator.NewPluginImports(g.gen)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -111,48 +96,23 @@ func (g *dao) typeName(str string) string {
 // P forwards to g.gen.P.
 func (g *dao) P(args ...interface{}) { g.gen.P(args...) }
 
-// GenerateImports generates the import declaration for this file.
-func (g *dao) GenerateImports(file *generator.FileDescriptor, imports map[generator.GoImportPath]generator.GoPackageName) {
-	if len(file.Comments()) == 0 {
-		return
-	}
-
-	// We need to keep track of imported packages to make sure we don't produce
-	// a name collision when generating types.
-	pkgImports = make(map[generator.GoPackageName]bool)
-	for _, name := range imports {
-		pkgImports[name] = true
-	}
-}
-
 // Generate generates code for the services in the given file.
 func (g *dao) Generate(file *generator.FileDescriptor) {
 	if len(file.Comments()) == 0 {
 		return
 	}
 
-	ctxPkg = string(g.gen.AddImport(ctxPkgPath))
-	timePkg = string(g.gen.AddImport(timePkgPath))
-	stringPkg = string(g.gen.AddImport(stringPkgPath))
-	DriverPkg = string(g.gen.AddImport(driverPkgPath))
-	errPkg = string(g.gen.AddImport(errPkgPath))
-	jsonPkg = string(g.gen.AddImport(jsonPkgPath))
-	daoPkg = string(g.gen.AddImport(daoPkgPath))
-	clausePkg = string(g.gen.AddImport(clausePkgPath))
+	g.ctxPkg = g.NewImport("context", "context")
+	g.timePkg = g.NewImport("time", "time")
+	g.stringPkg = g.NewImport("strings", "strings")
+	g.DriverPkg = g.NewImport("database/sql/driver", "driver")
+	g.jsonPkg = g.NewImport("github.com/json-iterator/go", "json")
+	g.errPkg = g.NewImport("errors", "errors")
+	g.daoPkg = g.NewImport("github.com/lack-io/vine/service/dao", "dao")
+	g.clausePkg = g.NewImport("github.com/lack-io/vine/service/dao/clause", "clause")
 	if g.gen.OutPut.Load {
-		sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
+		g.sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
 	}
-
-	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ ", ctxPkg, ".Context")
-	g.P("var _ ", timePkg, ".Timer")
-	g.P("var _ =", stringPkg, ".Fields(\"\")")
-	g.P("var _ ", DriverPkg, ".Valuer")
-	g.P("var _ =", errPkg, ".New(\"\")")
-	g.P("var _ ", jsonPkg, ".Any")
-	g.P("var _ ", daoPkg, ".Dialect")
-	g.P("var _ ", clausePkg, ".Clause")
-	g.P()
 
 	for i, msg := range file.Messages() {
 		g.wrapSchemas(file, msg, i)
@@ -303,7 +263,7 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 		g.P("return nil, nil")
 		g.P("}")
 	}
-	g.P(fmt.Sprintf(`b, err := %s.Marshal(m)`, jsonPkg))
+	g.P(fmt.Sprintf(`b, err := %s.Marshal(m)`, g.jsonPkg.Use()))
 	g.P(`return string(b), err`)
 	g.P("}")
 	g.P()
@@ -317,10 +277,10 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 	g.P("case string:")
 	g.P("bytes = []byte(v)")
 	g.P("default:")
-	g.P(fmt.Sprintf(`return %s.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))`, errPkg))
+	g.P(fmt.Sprintf(`return %s.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`return %s.Unmarshal(bytes, &m)`, jsonPkg))
+	g.P(fmt.Sprintf(`return %s.Unmarshal(bytes, &m)`, g.jsonPkg.Use()))
 	g.P("}")
 	g.P()
 
@@ -345,7 +305,7 @@ func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schem
 	g.P(fmt.Sprintf(`// %s the Schema for %s`, schema.Name, schema.Desc.Proto.GetName()))
 	g.P("type ", schema.Name, " struct {")
 	g.P(fmt.Sprintf(`tx *dao.DB %s`, toQuoted(`json:"-" dao:"-"`)))
-	g.P(fmt.Sprintf(`exprs []%s.Expression %s`, clausePkg, toQuoted(`json:"-" dao:"-"`)))
+	g.P(fmt.Sprintf(`exprs []%s.Expression %s`, g.clausePkg.Use(), toQuoted(`json:"-" dao:"-"`)))
 	g.P()
 	for _, field := range schema.Fields {
 		switch field.Type {
@@ -552,7 +512,7 @@ func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *
 
 func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *Schema) {
 	source, target := schema.Name, schema.Desc.Proto.GetName()
-	g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx context.Context, page, size int) ([]*%s, int64, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]*%s, int64, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(`pk, _, _ := m.PrimaryKey()`)
 	g.P()
 	g.P(`m.exprs = append(m.exprs,`)
@@ -571,18 +531,18 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx context.Context) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(`m.exprs = append(m.exprs, clause.Cond().Build("deletion_timestamp", 0))`)
 	g.P(`return m.findAll(ctx)`)
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx context.Context) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(`return m.findAll(ctx)`)
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) findAll(ctx context.Context) ([]*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
@@ -600,7 +560,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Count(ctx context.Context) (total int64, err error) {`, source))
+	g.P(fmt.Sprintf(`func (m *%s) Count(ctx %s.Context) (total int64, err error) {`, source, g.ctxPkg.Use()))
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`clauses := append(m.extractClauses(tx), clause.Cond().Build("deletion_timestamp", 0))`)
@@ -611,7 +571,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx context.Context) (*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`clauses := append(m.extractClauses(tx), clause.Cond().Build("deletion_timestamp", 0))`)
@@ -631,7 +591,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`}`)
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) extractClauses(tx *%s.DB) []clause.Expression {`, source, daoPkg))
+	g.P(fmt.Sprintf(`func (m *%s) extractClauses(tx *%s.DB) []clause.Expression {`, source, g.daoPkg.Use()))
 	g.P(`exprs := make([]clause.Expression, 0)`)
 	for _, field := range schema.Fields {
 		column := toColumnName(field.Name)
@@ -693,7 +653,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Create(ctx context.Context) (*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`if err := tx.Create(m).Error; err != nil {`)
@@ -704,7 +664,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) BatchUpdates(ctx context.Context) error {`, source))
+	g.P(fmt.Sprintf(`func (m *%s) BatchUpdates(ctx %s.Context) error {`, source, g.ctxPkg.Use()))
 	g.P(`if len(m.exprs) == 0 {`)
 	g.P(`return errors.New("missing conditions")`)
 	g.P("}")
@@ -741,7 +701,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Updates(ctx context.Context) (*%s, error) {`, source, g.wrapPkg(target)))
+	g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(`return nil, errors.New("missing primary key")`)
@@ -787,7 +747,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) BatchDelete(ctx context.Context, soft bool) error {`, source))
+	g.P(fmt.Sprintf(`func (m *%s) BatchDelete(ctx %s.Context, soft bool) error {`, source, g.ctxPkg.Use()))
 	g.P(`if len(m.exprs) == 0 {`)
 	g.P(`return errors.New("missing conditions")`)
 	g.P("}")
@@ -795,13 +755,13 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`if soft {`)
-	g.P(fmt.Sprintf(`return tx.Clauses(m.exprs...).Updates(map[string]interface{}{"deletion_timestamp": %s.Now().UnixNano()}).Error`, timePkg))
+	g.P(fmt.Sprintf(`return tx.Clauses(m.exprs...).Updates(map[string]interface{}{"deletion_timestamp": %s.Now().UnixNano()}).Error`, g.timePkg.Use()))
 	g.P(`}`)
 	g.P(fmt.Sprintf(`return tx.Clauses(m.exprs...).Delete(&%s{}).Error`, source))
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Delete(ctx context.Context, soft bool) error {`, source))
+	g.P(fmt.Sprintf(`func (m *%s) Delete(ctx %s.Context, soft bool) error {`, source, g.ctxPkg.Use()))
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(`return errors.New("missing primary key")`)
@@ -810,13 +770,13 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
 	g.P()
 	g.P(`if soft {`)
-	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{"deletion_timestamp": %s.Now().UnixNano()}).Error`, timePkg))
+	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{"deletion_timestamp": %s.Now().UnixNano()}).Error`, g.timePkg.Use()))
 	g.P(`}`)
 	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Delete(&%s{}).Error`, source))
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Tx(ctx context.Context) *dao.DB {`, source))
+	g.P(fmt.Sprintf(`func (m *%s) Tx(ctx %s.Context) *dao.DB {`, source, g.ctxPkg.Use()))
 	g.P(`return m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Clauses(m.exprs...)`)
 	g.P("}")
 	g.P()
@@ -825,7 +785,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 func (g *dao) checkedMessage(msg *generator.MessageDescriptor) bool {
 	tags := g.extractTags(msg.Comments)
 	for _, c := range tags {
-		if c.Key == _generate {
+		if c.Key == _dao {
 			return true
 		}
 	}
@@ -933,7 +893,7 @@ func (g *dao) buildFieldGoType(file *generator.FileDescriptor, field *descriptor
 
 func (g *dao) wrapPkg(pkg string) string {
 	if g.gen.OutPut.Load {
-		return sourcePkg + "." + pkg
+		return g.sourcePkg + "." + pkg
 	}
 	return pkg
 }

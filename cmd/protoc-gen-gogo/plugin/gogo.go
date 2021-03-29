@@ -16,6 +16,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gogo/protobuf/gogoproto"
+
 	"github.com/lack-io/vine/cmd/generator"
 )
 
@@ -31,10 +33,11 @@ type Tag struct {
 	Value string
 }
 
-// Paths for packages used by code generated in this file,
-// relative to the import_prefix of the generator.Generator.
-const (
-)
+// generatedCodeVersion indicates a version of the generated code.
+// It is incremented whenever an incompatibility between the generated code and
+// the grpc package is introduced; the generated code references
+// a constant, grpc.SupportPackageIsVersionN (where N is generatedCodeVersion).
+const generatedCodeVersion = 4
 
 // validator is an implementation of the Go protocol buffer compiler's
 // plugin architecture. It generates bindings for validator support.
@@ -43,6 +46,11 @@ type gogo struct {
 	generator.PluginImports
 	atleastOne  bool
 	localName   string
+	contextPkg  generator.Single
+	grpcPkg     generator.Single
+	codePkg     generator.Single
+	statusPkg   generator.Single
+	fmtPkg      generator.Single
 	typesPkg    generator.Single
 	bitsPkg     generator.Single
 	errorsPkg   generator.Single
@@ -50,7 +58,7 @@ type gogo struct {
 	sortKeysPkg generator.Single
 	mathPkg     generator.Single
 	binaryPkg   generator.Single
-	ioPkg      generator.Single
+	ioPkg       generator.Single
 }
 
 func New() *gogo {
@@ -65,6 +73,7 @@ func (g *gogo) Name() string {
 // Init initializes the plugin.
 func (g *gogo) Init(gen *generator.Generator) {
 	g.Generator = gen
+	g.PluginImports = generator.NewPluginImports(g.Generator)
 }
 
 // Given a type name defined in a .proto, return its object.
@@ -84,22 +93,41 @@ func (g *gogo) typeName(str string) string {
 
 // Generate generates code for the services in the given file.
 func (g *gogo) Generate(file *generator.FileDescriptor) {
-	if len(file.Comments()) == 0 {
-		return
+	g.contextPkg = g.NewImport("context", "context")
+	g.grpcPkg = g.NewImport("google.golang.org/grpc", "grpc")
+	g.codePkg = g.NewImport("google.golang.org/grpc/codes", "codes")
+	g.statusPkg = g.NewImport("google.golang.org/grpc/status", "status")
+
+	g.atleastOne = false
+	g.localName = generator.FileName(file)
+
+	g.mathPkg = g.NewImport("math", "")
+	g.sortKeysPkg = g.NewImport("github.com/gogo/protobuf/sortkeys", "sortkeys")
+	g.protoPkg = g.NewImport("github.com/gogo/protobuf/proto", "proto")
+	if !gogoproto.ImportsGoGoProto(file.FileDescriptorProto) {
+		g.protoPkg = g.NewImport("github.com/golang/protobuf/proto", "proto")
 	}
+	g.errorsPkg = g.NewImport("errors", "errors")
+	g.binaryPkg = g.NewImport("encoding/binary", "ebinary")
+	g.typesPkg = g.NewImport("github.com/gogo/protobuf/types", "types")
+
+	g.ioPkg = g.NewImport("io", "io")
+	g.bitsPkg = g.NewImport("math/bits", "bits")
+	g.fmtPkg = g.NewImport("fmt", "fmt")
+
+	g.P()
+
+	// Assert version compatibility.
+	g.P("// This is a compile-time assertion to ensure that this generated file")
+	g.P("// is compatible with the grpc package it is being compiled against.")
+	g.P("const _ = ", g.grpcPkg.Use(), ".SupportPackageIsVersion", generatedCodeVersion)
+	g.P()
 
 	g.GenerateFileDescriptor(file)
 	g.GenerateSize(file)
 	g.GenerateMarshal(file)
 	g.GenerateUnmarshal(file)
 	g.GenerateGRPC(file)
-}
-
-// GenerateImports generates the import declaration for this file.
-func (g *gogo) GenerateImports(file *generator.FileDescriptor, imports map[generator.GoImportPath]generator.GoPackageName) {
-	if len(file.Comments()) == 0 {
-		return
-	}
 }
 
 func (g *gogo) extractTags(comments []*generator.Comment) map[string]*Tag {

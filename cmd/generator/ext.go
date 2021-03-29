@@ -215,3 +215,36 @@ func (g *Generator) extractFileOutFile(file *FileDescriptor) (output *FileOutPut
 	}
 	return
 }
+
+// extractMessage extract MessageDescriptor by name
+func (g *Generator) ExtractMessage(name string) *MessageDescriptor {
+	obj := g.ObjectNamed(name)
+
+	for _, f := range g.AllFiles() {
+		for _, m := range f.Messages() {
+			if m.Proto.GoImportPath() == obj.GoImportPath() {
+				for _, item := range obj.TypeName() {
+					if item == m.Proto.GetName() {
+						return m
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func isInline(text string) bool {
+	inline := false
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(strings.ReplaceAll(line, "//", ""))
+		parts := strings.Split(line, ":")
+		if len(parts) > 1 {
+			if parts[0] == "+gen" && strings.Contains(parts[1], "inline") {
+				inline = true
+				break
+			}
+		}
+	}
+	return inline
+}

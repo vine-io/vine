@@ -272,26 +272,27 @@ func (g *gogo) mapField(numGen NumGen, field *descriptor.FieldDescriptorProto, k
 	}
 }
 
-type orderFields []*descriptor.FieldDescriptorProto
+type orderFields []*generator.FieldDescriptor
 
 func (this orderFields) Len() int {
 	return len(this)
 }
 
 func (this orderFields) Less(i, j int) bool {
-	return this[i].GetNumber() < this[j].GetNumber()
+	return this[i].Proto.GetNumber() < this[j].Proto.GetNumber()
 }
 
 func (this orderFields) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
 }
 
-func (g *gogo) generateMarshalField(proto3 bool, numGen NumGen, file *generator.FileDescriptor, message *generator.Descriptor, field *descriptor.FieldDescriptorProto) {
+func (g *gogo) generateMarshalField(proto3 bool, numGen NumGen, file *generator.FileDescriptor, message *generator.Descriptor, f *generator.FieldDescriptor) {
+	field := f.Proto
 	fieldname := g.GetOneOfFieldName(message, field)
 	nullable := gogoproto.IsNullable(field)
 	repeated := field.IsRepeated()
 	required := field.IsRequired()
-
+	_, isInline := g.extractTags(f.Comments)[_inline]
 	protoSizer := gogoproto.IsProtoSizer(file.FileDescriptorProto, message.DescriptorProto)
 	doNilCheck := gogoproto.NeedsNilCheck(proto3, field)
 	if required && nullable {
@@ -308,7 +309,11 @@ func (g *gogo) generateMarshalField(proto3 bool, numGen NumGen, file *generator.
 		g.P(`if len(m.`, fieldname, `) > 0 {`)
 		g.In()
 	} else if doNilCheck {
-		g.P(`if m.`, fieldname, ` != nil {`)
+		if isInline {
+			g.P(`{`)
+		} else {
+			g.P(`if m.`, fieldname, ` != nil {`)
+		}
 		g.In()
 	}
 	packed := field.IsPacked() || (proto3 && field.IsPacked3())
@@ -841,20 +846,6 @@ func (g *gogo) generateMarshalField(proto3 bool, numGen NumGen, file *generator.
 
 func (g *gogo) GenerateMarshal(file *generator.FileDescriptor) {
 	numGen := NewNumGen()
-	g.PluginImports = generator.NewPluginImports(g.Generator)
-
-	g.atleastOne = false
-	g.localName = generator.FileName(file)
-
-	g.mathPkg = g.NewImport("math")
-	g.sortKeysPkg = g.NewImport("github.com/gogo/protobuf/sortkeys")
-	g.protoPkg = g.NewImport("github.com/gogo/protobuf/proto")
-	if !gogoproto.ImportsGoGoProto(file.FileDescriptorProto) {
-		g.protoPkg = g.NewImport("github.com/golang/protobuf/proto")
-	}
-	g.errorsPkg = g.NewImport("errors")
-	g.binaryPkg = g.NewImport("encoding/binary")
-	g.typesPkg = g.NewImport("github.com/gogo/protobuf/types")
 
 	for _, message := range file.Messages() {
 		if message.Proto.DescriptorProto.GetOptions().GetMapEntry() {
@@ -930,17 +921,17 @@ func (g *gogo) GenerateMarshal(file *generator.FileDescriptor) {
 				g.P(`}`)
 			}
 		}
-		fields := orderFields(message.Proto.GetField())
+		fields := orderFields(message.Fields)
 		sort.Sort(fields)
 		oneofs := make(map[string]struct{})
-		for i := len(message.Proto.Field) - 1; i >= 0; i-- {
-			field := message.Proto.Field[i]
-			oneof := field.OneofIndex != nil
+		for i := len(message.Fields) - 1; i >= 0; i-- {
+			field := message.Fields[i]
+			oneof := field.Proto.OneofIndex != nil
 			if !oneof {
 				proto3 := gogoproto.IsProto3(file.FileDescriptorProto)
 				g.generateMarshalField(proto3, numGen, file, message.Proto, field)
 			} else {
-				fieldname := g.GetFieldName(message.Proto, field)
+				fieldname := g.GetFieldName(message.Proto, field.Proto)
 				if _, ok := oneofs[fieldname]; !ok {
 					oneofs[fieldname] = struct{}{}
 					g.P(`if m.`, fieldname, ` != nil {`)
@@ -957,13 +948,13 @@ func (g *gogo) GenerateMarshal(file *generator.FileDescriptor) {
 		g.P()
 
 		//Generate MarshalTo methods for oneof fields
-		m := proto.Clone(message.Proto.DescriptorProto).(*descriptor.DescriptorProto)
-		for _, field := range m.Field {
-			oneof := field.OneofIndex != nil
+		//m := proto.Clone(message.Proto.DescriptorProto).(*descriptor.DescriptorProto)
+		for _, field := range message.Fields {
+			oneof := field.Proto.OneofIndex != nil
 			if !oneof {
 				continue
 			}
-			ccTypeName := g.OneOfTypeName(message.Proto, field)
+			ccTypeName := g.OneOfTypeName(message.Proto, field.Proto)
 			g.P(`func (m *`, ccTypeName, `) MarshalTo(dAtA []byte) (int, error) {`)
 			g.In()
 			if gogoproto.IsProtoSizer(file.FileDescriptorProto, message.Proto.DescriptorProto) {
@@ -978,7 +969,7 @@ func (g *gogo) GenerateMarshal(file *generator.FileDescriptor) {
 			g.P(`func (m *`, ccTypeName, `) MarshalToSizedBuffer(dAtA []byte) (int, error) {`)
 			g.In()
 			g.P(`i := len(dAtA)`)
-			vanity.TurnOffNullableForNativeTypes(field)
+			vanity.TurnOffNullableForNativeTypes(field.Proto)
 			g.generateMarshalField(false, numGen, file, message.Proto, field)
 			g.P(`return len(dAtA) - i, nil`)
 			g.Out()
