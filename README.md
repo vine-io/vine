@@ -40,7 +40,7 @@ Vine 遵守 Apache 2.0 开源许可.
 
 ```bash
 go get github.com/gogo/protobuf
-go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
+go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
 go get github.com/lack-io/cmd/vine
 ```
@@ -73,7 +73,7 @@ message HelloWorldResponse {
 protoc -I=. \
   -I=$GOPATH/src \
   -I=$GOPATH/src/github.com/gogo/protobuf/protobuf \
-  --gogofaster_out=plugins=grpc:. --vine_out=. example/proto/test.proto
+  --gogo_out=:. --vine_out=. example/proto/test.proto
 ```
 
 ### 服务端
