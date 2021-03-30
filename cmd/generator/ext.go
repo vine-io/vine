@@ -234,6 +234,19 @@ func (g *Generator) ExtractMessage(name string) *MessageDescriptor {
 	return nil
 }
 
+// ExtractEnum extract EnumDescriptor by name
+func (g *Generator) ExtractEnum(name string) *EnumDescriptor {
+	obj := g.ObjectNamed(name)
+	for _, f := range g.AllFiles() {
+		for _, m := range f.Enums() {
+			if m.TypeName()[0] == obj.TypeName()[0] {
+				return m
+			}
+		}
+	}
+	return nil
+}
+
 func isInline(text string) bool {
 	inline := false
 	for _, line := range strings.Split(text, "\n") {

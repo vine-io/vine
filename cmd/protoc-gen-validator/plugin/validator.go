@@ -151,7 +151,7 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 				g.generateMessageField(field)
 				continue
 			}
-			switch *field.Proto.Type {
+			switch field.Proto.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
 				descriptor.FieldDescriptorProto_TYPE_FLOAT,
 				descriptor.FieldDescriptorProto_TYPE_FIXED32,
@@ -163,6 +163,8 @@ func (g *validator) generateMessage(file *generator.FileDescriptor, msg *generat
 				g.generateStringField(field)
 			case descriptor.FieldDescriptorProto_TYPE_BYTES:
 				g.generateBytesField(field)
+			case descriptor.FieldDescriptorProto_TYPE_ENUM:
+				g.generateEnumField(field)
 			}
 		}
 		g.P(fmt.Sprintf("return %s.MargeErr(errs...)", g.isPkg.Use()))
@@ -179,7 +181,7 @@ func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 	}
 	if _, ok := tags[_required]; ok {
 		g.P("if int64(m.", fieldName, ") == 0 {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))",field.Proto.GetJsonName()))
+		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", field.Proto.GetJsonName()))
 		if len(tags) > 1 {
 			g.P("} else {")
 		}
@@ -197,40 +199,69 @@ func (g *validator) generateNumberField(field *generator.FieldDescriptor) {
 			value := strings.TrimPrefix(tag.Value, "[")
 			value = strings.TrimSuffix(value, "]")
 			g.P(fmt.Sprintf("if !%s.In([]float64{%s}, float64(m.%s)) {", g.isPkg.Use(), value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _notIn:
 			value := strings.TrimPrefix(tag.Value, "[")
 			value = strings.TrimSuffix(value, "]")
 			g.P(fmt.Sprintf("if !%s.NotIn([]float64{%s}, float64(m.%s)) {", g.isPkg.Use(), value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _eq:
 			g.P("if !(m.", fieldName, " == ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must equal to '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must equal to '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _ne:
 			g.P("if !(m.", fieldName, " != ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not equal to '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not equal to '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _lt:
 			g.P("if !(m.", fieldName, " < ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must less than '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must less than '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _lte:
 			g.P("if !(m.", fieldName, " <= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must less than or equal to '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must less than or equal to '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _gt:
 			g.P("if !(m.", fieldName, " > ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must great than '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must great than '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _gte:
 			g.P("if !(m.", fieldName, " >= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must great than or equal to '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must great than or equal to '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		}
 	}
+	g.P("}")
+}
+
+func (g *validator) generateEnumField(field *generator.FieldDescriptor) {
+	enum := g.gen.ExtractEnum(field.Proto.GetTypeName())
+	fieldName := generator.CamelCase(field.Proto.GetName())
+	tags := g.extractTags(field.Comments)
+	if _, ok := tags[_required]; ok {
+		g.P("if int32(m.", fieldName, ") == 0 {")
+		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", field.Proto.GetJsonName()))
+		if len(tags) > 1 {
+			g.P("} else {")
+		}
+	} else {
+		if tag, ok := tags[_default]; ok {
+			g.P("if int32(m.", fieldName, ") == 0 {")
+			g.P("m.", fieldName, " = ", tag.Value)
+			g.P("}")
+		}
+		g.P("if int32(m.", fieldName, ") != 0 {")
+	}
+
+	val := make([]string, 0)
+	for _, item := range enum.Value {
+		val = append(val, fmt.Sprintf("%d", item.GetNumber()))
+	}
+	g.P(fmt.Sprintf("if !%s.In([]int32{%s}, int32(m.%s)) {", g.isPkg.Use(), strings.Join(val, ","), fieldName))
+	g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '[%s]'\", prefix))", field.Proto.GetJsonName(), strings.Join(val, ", ")))
+	g.P("}")
 	g.P("}")
 }
 
@@ -242,7 +273,7 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 	}
 	if _, ok := tags[_required]; ok {
 		g.P("if len(m.", fieldName, ") == 0 {")
-		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))",field.Proto.GetJsonName()))
+		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", field.Proto.GetJsonName()))
 		if len(tags) > 1 {
 			g.P("} else {")
 		}
@@ -260,76 +291,76 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 		case _enum, _in:
 			value := fullStringSlice(tag.Value)
 			g.P(fmt.Sprintf("if !%s.In([]string{%s}, string(m.%s)) {", g.isPkg.Use(), value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '[%s]'\", prefix))",field.Proto.GetJsonName(), strings.ReplaceAll(value, "\"", "")))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must in '[%s]'\", prefix))", field.Proto.GetJsonName(), strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
 		case _notIn:
 			value := fullStringSlice(tag.Value)
 			g.P(fmt.Sprintf("if !%s.NotIn([]string{%s}, string(m.%s)) {", g.isPkg.Use(), value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '[%s]'\", prefix))",field.Proto.GetJsonName(), strings.ReplaceAll(value, "\"", "")))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must not in '[%s]'\", prefix))", field.Proto.GetJsonName(), strings.ReplaceAll(value, "\"", "")))
 			g.P("}")
 		case _minLen:
 			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must less than '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must less than '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _maxLen:
 			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must great than '%s'\", prefix))",field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' length must great than '%s'\", prefix))", field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _prefix:
 			value := TrimString(tag.Value, "\"")
 			g.P("if !strings.HasPrefix(m.", fieldName, ", \"", value, "\") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must start with '%s'\", prefix))",field.Proto.GetJsonName(), value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must start with '%s'\", prefix))", field.Proto.GetJsonName(), value))
 			g.P("}")
 		case _suffix:
 			value := TrimString(tag.Value, "\"")
 			g.P("if !strings.HasSuffix(m.", fieldName, ", \"", value, "\") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must end with '%s'\", prefix))",field.Proto.GetJsonName(), value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must end with '%s'\", prefix))", field.Proto.GetJsonName(), value))
 			g.P("}")
 		case _contains:
 			value := TrimString(tag.Value, "\"")
 			g.P("if !strings.Contains(m.", fieldName, ", \"", value, "\") {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must contain '%s'\", prefix))",field.Proto.GetJsonName(), value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' must contain '%s'\", prefix))", field.Proto.GetJsonName(), value))
 			g.P("}")
 		case _number:
 			g.P(fmt.Sprintf("if !%s.Number(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid number\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid number\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _email:
 			g.P(fmt.Sprintf("if !%s.Email(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid email\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid email\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _ip:
 			g.P(fmt.Sprintf("if !%s.IP(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ip\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ip\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _ipv4:
 			g.P(fmt.Sprintf("if !%s.IPv4(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv4\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv4\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _ipv6:
 			g.P(fmt.Sprintf("if !%s.IPv6(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv6\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid ipv6\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _crontab:
 			g.P(fmt.Sprintf("if !%s.Crontab(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid crontab\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid crontab\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _uuid:
 			g.P(fmt.Sprintf("if !%s.Uuid(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid uuid\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid uuid\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _uri:
 			g.P(fmt.Sprintf("if !%s.URL(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid url\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid url\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _domain:
 			g.P(fmt.Sprintf("if !%s.Domain(m.%s) {", g.isPkg.Use(), fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid domain\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is not a valid domain\", prefix))", field.Proto.GetJsonName()))
 			g.P("}")
 		case _pattern:
 			value := TrimString(tag.Value, "`")
 			g.P(fmt.Sprintf("if !%s.Re(`%s`, m.%s) {", g.isPkg.Use(), value, fieldName))
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(`field '%%s%s' is not a valid pattern '%s'`, prefix))",field.Proto.GetJsonName(), value))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(`field '%%s%s' is not a valid pattern '%s'`, prefix))", field.Proto.GetJsonName(), value))
 			g.P("}")
 		}
 	}
@@ -432,9 +463,9 @@ func (g *validator) generateMessageField(field *generator.FieldDescriptor) {
 			}
 		} else {
 			g.P("if m.", fieldName, " == nil {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))",field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", field.Proto.GetJsonName()))
 			g.P("} else {")
-			g.P(fmt.Sprintf("errs = append(errs, m.%s.ValidateE(prefix+\"%s.\"))", fieldName,field.Proto.GetJsonName()))
+			g.P(fmt.Sprintf("errs = append(errs, m.%s.ValidateE(prefix+\"%s.\"))", fieldName, field.Proto.GetJsonName()))
 			g.P("}")
 		}
 	}

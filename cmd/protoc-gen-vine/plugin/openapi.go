@@ -696,6 +696,17 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 		g.P(`Type: "integer",`)
 		g.P(`Format: "int32",`)
 		generateNumber(g, field, tags)
+	case descriptor.FieldDescriptorProto_TYPE_ENUM:
+		g.P(`Type: "integer",`)
+		g.P(`Format: "int32",`)
+		enums := g.gen.ExtractEnum(field.Proto.GetTypeName())
+		val := []string{}
+		for _, item := range enums.Value {
+			val = append(val, fmt.Sprintf("%d", item.GetNumber()))
+		}
+		tt := tags
+		tt[_enum] = &Tag{Key: _enum, Value: "[" + strings.Join(val, ", ") + "]"}
+		generateNumber(g, field, tags)
 	case descriptor.FieldDescriptorProto_TYPE_FIXED64:
 		g.P(`Type: "integer",`)
 		g.P(`Format: "int32",`)

@@ -61,6 +61,7 @@ type Schema struct {
 	Fields  []*Field
 	SDField *Field
 	Desc    *generator.MessageDescriptor
+	Table   string
 }
 
 type FieldTag struct {

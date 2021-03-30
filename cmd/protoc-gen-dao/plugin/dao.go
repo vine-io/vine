@@ -27,8 +27,12 @@ import (
 var TagString = "gen"
 
 const (
+	// message tags
 	// dao generate flag
-	_dao = "dao"
+	_dao   = "dao"
+	_table = "table"
+
+	// field tags
 	// inline
 	_inline = "inline"
 	// dao primary key
@@ -141,14 +145,22 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 	if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
 		return
 	}
-	if !g.checkedMessage(msg) {
+
+	tags := g.extractTags(msg.Comments)
+	if _, ok := tags[_dao]; !ok {
 		return
+	}
+
+	table := toTableName(msg.Proto.GetName())
+	if v, ok := tags[_table]; ok {
+		table = v.Value
 	}
 
 	s := &Schema{
 		Name:    msg.Proto.GetName() + "S",
 		Desc:    msg,
 		MFields: map[string]*Field{},
+		Table:   table,
 	}
 	n := 0
 	g.buildFields(file, msg, s, &n)
@@ -201,28 +213,26 @@ func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDe
 			field.Alias = alias
 			field.Tags = append(field.Tags, g.buildJSONTags(item), g.buildDaoTags(item, false))
 			g.aliasFields[alias] = field
-			s.MFields[field.Name] = field
-			continue
-		}
+		} else {
+			typ, tags, err := g.buildFieldTypeAndTags(item)
+			if err != nil {
+				continue
+			}
+			field.Type = typ
+			field.Tags = tags
+			if item.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+				alias := generator.CamelCaseSlice([]string{m.Proto.GetName(), item.Proto.GetName()})
+				field.Alias = alias
+				g.aliasFields[alias] = field
+			}
 
-		typ, tags, err := g.buildFieldTypeAndTags(item)
-		if err != nil {
-			continue
-		}
-		field.Type = typ
-		field.Tags = tags
-		if item.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-			alias := generator.CamelCaseSlice([]string{m.Proto.GetName(), item.Proto.GetName()})
-			field.Alias = alias
-			g.aliasFields[alias] = field
-		}
-
-		_, pkExists := fTags[_pk]
-		if pkExists && s.PK == nil && (strings.ToLower(field.Name) == "id" || strings.ToLower(field.Name) == "uuid") {
-			s.PK = field
-			for _, tag := range field.Tags {
-				if tag.Key == "dao" {
-					tag.Values = append(tag.Values, "primaryKey")
+			_, pkExists := fTags[_pk]
+			if pkExists && s.PK == nil && (strings.ToLower(field.Name) == "id" || strings.ToLower(field.Name) == "uuid") {
+				s.PK = field
+				for _, tag := range field.Tags {
+					if tag.Key == "dao" {
+						tag.Values = append(tag.Values, "primaryKey")
+					}
 				}
 			}
 		}
@@ -463,7 +473,11 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 		switch field.Type {
 		case _float32, _float64, _int32, _int64, _uint32, _uint64:
 			g.P(fmt.Sprintf(`if in.%s != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
+			if field.Desc.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_ENUM {
+				g.P(fmt.Sprintf(`out.%s = int32(in.%s)`, field.Name, field.Name))
+			} else {
+				g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
+			}
 			g.P("}")
 		case _map:
 			g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
@@ -514,7 +528,12 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 				g.P(fmt.Sprintf(`out.%s = m.%s`, field.Name, field.Name))
 			}
 		default:
-			g.P(fmt.Sprintf(`out.%s = m.%s`, field.Name, field.Name))
+			if field.Desc.Proto.IsEnum() {
+				enum := g.gen.ExtractEnum(field.Desc.Proto.GetTypeName())
+				g.P(fmt.Sprintf(`out.%s = %s(m.%s)`, field.Name, g.wrapPkg(enum.GetName()), field.Name))
+			} else {
+				g.P(fmt.Sprintf(`out.%s = m.%s`, field.Name, field.Name))
+			}
 		}
 	}
 	g.P("return out")
@@ -524,7 +543,7 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 
 func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *Schema) {
 	g.P("func (", schema.Name, ") TableName() string {")
-	g.P("return \"", toTableName(schema.Desc.Proto.GetName()), "\"")
+	g.P(`return "`, schema.Table, `"`)
 	g.P("}")
 	g.P()
 
@@ -808,16 +827,6 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`return m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Clauses(m.exprs...)`)
 	g.P("}")
 	g.P()
-}
-
-func (g *dao) checkedMessage(msg *generator.MessageDescriptor) bool {
-	tags := g.extractTags(msg.Comments)
-	for _, c := range tags {
-		if c.Key == _dao {
-			return true
-		}
-	}
-	return false
 }
 
 func (g *dao) buildFieldTypeAndTags(field *generator.FieldDescriptor) (fieldType, []*FieldTag, error) {
