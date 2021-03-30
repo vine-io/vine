@@ -787,21 +787,24 @@ func (u *Unmarshaler) Unmarshal(r io.Reader, pb proto.Message) error {
 // This function is lenient and will decode any options permutations of the
 // related Marshaler.
 func UnmarshalNext(dec *json.Decoder, pb proto.Message) error {
-	return new(Unmarshaler).UnmarshalNext(dec, pb)
+	u := &Unmarshaler{AllowUnknownFields: true}
+	return u.UnmarshalNext(dec, pb)
 }
 
 // Unmarshal unmarshals a JSON object stream into a protocol
 // buffer. This function is lenient and will decode any options
 // permutations of the related Marshaler.
 func Unmarshal(r io.Reader, pb proto.Message) error {
-	return new(Unmarshaler).Unmarshal(r, pb)
+	u := &Unmarshaler{AllowUnknownFields: true}
+	return u.Unmarshal(r, pb)
 }
 
 // UnmarshalString will populate the fields of a protocol buffer based
 // on a JSON string. This function is lenient and will decode any options
 // permutations of the related Marshaler.
 func UnmarshalString(str string, pb proto.Message) error {
-	return new(Unmarshaler).Unmarshal(strings.NewReader(str), pb)
+	u := &Unmarshaler{AllowUnknownFields: true}
+	return u.Unmarshal(strings.NewReader(str), pb)
 }
 
 // unmarshalValue converts/copies a value into the target.

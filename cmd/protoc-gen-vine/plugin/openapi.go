@@ -274,6 +274,14 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 		return
 	}
 
+	ff := make([]*generator.FieldDescriptor, 0)
+	g.buildQueryField(msg, fields, &ff)
+	for _, field := range ff {
+		generateField(g, field, "query")
+	}
+}
+
+func (g *vine) buildQueryField(msg *generator.MessageDescriptor, ignores []string, out *[]*generator.FieldDescriptor) {
 	in := func(arr []string, text string) bool {
 		for _, item := range arr {
 			if text == item {
@@ -284,14 +292,20 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 	}
 
 	for _, field := range msg.Fields {
-		if in(fields, field.Proto.GetJsonName()) {
+		if in(ignores, field.Proto.GetJsonName()) {
 			continue
 		}
-		if field.Proto.IsMessage() || field.Proto.IsEnum() || field.Proto.IsBytes() {
-			g.gen.Fail("invalid field type: ", field.Proto.GetName())
-			return
+		if field.Proto.IsEnum() || field.Proto.IsBytes() {
+			continue
 		}
-		generateField(g, field, "query")
+		if !field.Proto.IsMessage() {
+			*out = append(*out, field)
+		}
+		//_, isInline := g.extractTags(field.Comments)[_inline]
+		//if field.Proto.IsMessage() && isInline {
+		//	subMsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
+		//	g.buildQueryField(subMsg, ignores, out)
+		//}
 	}
 }
 
@@ -442,6 +456,17 @@ func (g *vine) generateComponents(svcName string) {
 				},`, "TMP", g.openApiPkg.Use(), -1))
 				return
 			}
+			cField := make([]*generator.FieldDescriptor, 0)
+			for _, item := range c.Proto.Fields {
+				tags := g.extractTags(item.Comments)
+				if _, isInline := tags[_inline]; isInline {
+					for _, f := range g.gen.ExtractMessage(item.Proto.GetTypeName()).Fields {
+						cField = append(cField, f)
+					}
+				} else {
+					cField = append(cField, item)
+				}
+			}
 			switch c.Kind {
 			case Request:
 				g.P(fmt.Sprintf(`"%s": &%s.Model{`, c.Name, g.openApiPkg.Use()))
@@ -466,7 +491,7 @@ func (g *vine) generateComponents(svcName string) {
 				g.P(fmt.Sprintf(`"%s": &%s.Model{`, c.Name, g.openApiPkg.Use()))
 				g.P(`Type: "object",`)
 				g.P(fmt.Sprintf(`Properties: map[string]*%s.Schema{`, g.openApiPkg.Use()))
-				for _, field := range c.Proto.Fields {
+				for _, field := range cField {
 					tags := g.extractTags(field.Comments)
 					g.P(fmt.Sprintf(`"%s": &%s.Schema{`, field.Proto.GetJsonName(), g.openApiPkg.Use()))
 					g.generateSchema(svcName, field, tags, false)
@@ -722,10 +747,18 @@ func (g *vine) extractMessageField(svcName, fname string, msg *generator.Message
 		name = fname[:index]
 	}
 	for _, field := range msg.Fields {
+		//_, isInline := g.extractTags(field.Comments)[_inline]
 		switch {
-		case *field.Proto.JsonName == fname && !field.Proto.IsMessage():
+		//case isInline && field.Proto.IsMessage():
+		//	submsg := g.extractMessage(field.Proto.GetTypeName())
+		//	for _, f := range submsg.Fields {
+		//		if f.Proto.GetJsonName() == name {
+		//			return f
+		//		}
+		//	}
+		case field.Proto.GetJsonName() == name && !field.Proto.IsMessage() && !field.Proto.IsRepeated():
 			return field
-		case *field.Proto.JsonName == name && index > 0 && field.Proto.IsMessage():
+		case field.Proto.GetJsonName() == name && index > 0 && field.Proto.IsMessage():
 			submsg := g.extractMessage(field.Proto.GetTypeName())
 			if submsg == nil {
 				g.gen.Fail("couldn't found message:", field.Proto.GetTypeName())
@@ -738,7 +771,7 @@ func (g *vine) extractMessageField(svcName, fname string, msg *generator.Message
 				Service: svcName,
 				Proto:   submsg,
 			})
-			return g.extractMessageField(svcName, fname[index+1:], submsg)
+			return g.extractMessageField(svcName, name[index+1:], submsg)
 		}
 	}
 	g.gen.Fail(fname, "not found")

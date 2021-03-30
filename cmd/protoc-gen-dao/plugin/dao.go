@@ -15,6 +15,7 @@ package plugin
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
@@ -31,9 +32,7 @@ const (
 	// inline
 	_inline = "inline"
 	// dao primary key
-	_pk = "PK"
-	// dao soft delete field
-	_sd = "SD"
+	_pk = "dao_pk"
 )
 
 type Tag struct {
@@ -114,15 +113,20 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 		g.sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
 	}
 
-	for i, msg := range file.Messages() {
-		g.wrapSchemas(file, msg, i)
+	for _, msg := range file.Messages() {
+		g.wrapSchemas(file, msg)
 	}
 
-	for key, value := range g.aliasFields {
+	aFields := make([]*Field, 0)
+	for _, value := range g.aliasFields {
 		if value.File.GetName() != file.GetName() {
 			continue
 		}
-		g.generateAliasField(file, key, value)
+		aFields = append(aFields, value)
+	}
+	sort.Slice(aFields, func(i, j int) bool { return aFields[i].Num < aFields[j].Num })
+	for _, value := range aFields {
+		g.generateAliasField(file, value)
 	}
 
 	for _, item := range g.schemas {
@@ -133,7 +137,7 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	}
 }
 
-func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.MessageDescriptor, index int) {
+func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.MessageDescriptor) {
 	if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
 		return
 	}
@@ -141,19 +145,48 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 		return
 	}
 
-	s := &Schema{Name: msg.Proto.GetName() + "S", Desc: msg}
-	for _, item := range msg.Fields {
+	s := &Schema{
+		Name:    msg.Proto.GetName() + "S",
+		Desc:    msg,
+		MFields: map[string]*Field{},
+	}
+	n := 0
+	g.buildFields(file, msg, s, &n)
+	if s.PK == nil {
+		g.gen.Fail(fmt.Sprintf(`Message:%s missing primary key`, msg.Proto.GetName()))
+	}
+
+	s.Fields = make([]*Field, 0)
+	for _, item := range s.MFields {
+		s.Fields = append(s.Fields, item)
+	}
+	sort.Slice(s.Fields, func(i, j int) bool { return s.Fields[i].Num < s.Fields[j].Num })
+	g.schemas = append(g.schemas, s)
+}
+
+func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDescriptor, s *Schema, n *int) {
+	for _, item := range m.Fields {
+		fTags := g.extractTags(item.Comments)
+
+		_, isInline := fTags[_inline]
+		if isInline && item.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+			subMsg := g.gen.ExtractMessage(item.Proto.GetTypeName())
+			g.buildFields(file, subMsg, s, n)
+			continue
+		}
+
 		field := &Field{
 			Name: generator.CamelCase(item.Proto.GetName()),
 			Tags: []*FieldTag{},
 			Desc: item,
 			File: file,
+			Num:  *n,
 		}
 		if item.Proto.IsRepeated() {
-			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), item.Proto.GetName()})
+			alias := generator.CamelCaseSlice([]string{m.Proto.GetName(), item.Proto.GetName()})
 			if strings.HasSuffix(item.Proto.GetTypeName(), "Entry") {
 				field.Type = _map
-				for _, nest := range msg.Proto.GetNestedType() {
+				for _, nest := range m.Proto.GetNestedType() {
 					if strings.HasSuffix(item.Proto.GetTypeName(), nest.GetName()) {
 						field.Map = &MapFields{}
 						field.Map.Key, field.Map.Value = nest.GetMapFields()
@@ -168,7 +201,7 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 			field.Alias = alias
 			field.Tags = append(field.Tags, g.buildJSONTags(item), g.buildDaoTags(item, false))
 			g.aliasFields[alias] = field
-			s.Fields = append(s.Fields, field)
+			s.MFields[field.Name] = field
 			continue
 		}
 
@@ -179,13 +212,12 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 		field.Type = typ
 		field.Tags = tags
 		if item.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
-			alias := generator.CamelCaseSlice([]string{msg.Proto.GetName(), item.Proto.GetName()})
+			alias := generator.CamelCaseSlice([]string{m.Proto.GetName(), item.Proto.GetName()})
 			field.Alias = alias
 			g.aliasFields[alias] = field
 		}
 
-		fieldTags := g.extractTags(item.Comments)
-		_, pkExists := fieldTags[_pk]
+		_, pkExists := fTags[_pk]
 		if pkExists && s.PK == nil && (strings.ToLower(field.Name) == "id" || strings.ToLower(field.Name) == "uuid") {
 			s.PK = field
 			for _, tag := range field.Tags {
@@ -195,17 +227,13 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 			}
 		}
 
-		s.Fields = append(s.Fields, field)
+		*n += 1
+		s.MFields[field.Name] = field
 	}
-	if s.PK == nil {
-		g.gen.Fail(fmt.Sprintf(`Message:%s missing primary key`, msg.Proto.GetName()))
-	}
-
-	// append deleteTimestamp field
-	g.schemas = append(g.schemas, s)
 }
 
-func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, field *Field) {
+func (g *dao) generateAliasField(file *generator.FileDescriptor, field *Field) {
+	alias := field.Alias
 	if field.IsRepeated {
 		// slice, array type
 		typ, err := g.buildFieldGoType(file, field.Desc.Proto)
@@ -248,17 +276,17 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, alias string, f
 	g.P("// Value return json value, implement driver.Valuer interface")
 	switch field.Type {
 	case _slice:
-		g.P(fmt.Sprintf(`func (m %s) Value() (driver.Value, error) {`, alias))
+		g.P(fmt.Sprintf(`func (m %s) Value() (%s.Value, error) {`, alias, g.DriverPkg.Use()))
 		g.P("if len(m) == 0 {")
 		g.P("return nil, nil")
 		g.P("}")
 	case _map:
-		g.P(fmt.Sprintf(`func (m %s) Value() (driver.Value, error) {`, alias))
+		g.P(fmt.Sprintf(`func (m %s) Value() (%s.Value, error) {`, alias, g.DriverPkg.Use()))
 		g.P("if m == nil {")
 		g.P("return nil, nil")
 		g.P("}")
 	default:
-		g.P(fmt.Sprintf(`func (m *%s) Value() (driver.Value, error) {`, alias))
+		g.P(fmt.Sprintf(`func (m *%s) Value() (%s.Value, error) {`, alias, g.DriverPkg.Use()))
 		g.P("if m == nil {")
 		g.P("return nil, nil")
 		g.P("}")
@@ -608,9 +636,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range dao.FieldPatch(m.%s) {`, field.Name))
 			g.P(`if v == nil {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONHasKey, "", strings.Split(k, ".")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONHasKey, "", %s.Split(k, ".")...))`, column, g.stringPkg.Use()))
 			g.P(`} else {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONEq, v, strings.Split(k, ".")...))`, column))
+			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONEq, v, %s.Split(k, ".")...))`, column, g.stringPkg.Use()))
 			g.P("}")
 			g.P("}")
 			g.P("}")
@@ -632,7 +660,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 				g.P(`for k, v := range dao.FieldPatch(item) {`)
 				g.P(`if v != nil {`)
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, v, strings.Split(k, ".")...))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, v, %s.Split(k, ".")...))`, column, g.stringPkg.Use()))
 				g.P(`}`)
 				g.P("}")
 			}
@@ -666,7 +694,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 
 	g.P(fmt.Sprintf(`func (m *%s) BatchUpdates(ctx %s.Context) error {`, source, g.ctxPkg.Use()))
 	g.P(`if len(m.exprs) == 0 {`)
-	g.P(`return errors.New("missing conditions")`)
+	g.P(fmt.Sprintf(`return %s.New("missing conditions")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
@@ -704,7 +732,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
-	g.P(`return nil, errors.New("missing primary key")`)
+	g.P(fmt.Sprintf(`return nil, %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`)
@@ -749,7 +777,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 
 	g.P(fmt.Sprintf(`func (m *%s) BatchDelete(ctx %s.Context, soft bool) error {`, source, g.ctxPkg.Use()))
 	g.P(`if len(m.exprs) == 0 {`)
-	g.P(`return errors.New("missing conditions")`)
+	g.P(fmt.Sprintf(`return %s.New("missing conditions")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
@@ -764,7 +792,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(fmt.Sprintf(`func (m *%s) Delete(ctx %s.Context, soft bool) error {`, source, g.ctxPkg.Use()))
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
-	g.P(`return errors.New("missing primary key")`)
+	g.P(fmt.Sprintf(`return %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
 	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)

@@ -41,6 +41,7 @@ type Field struct {
 	Type       fieldType
 	Tags       []*FieldTag
 	Alias      string
+	Num        int
 	IsRepeated bool
 	Desc       *generator.FieldDescriptor
 	Map        *MapFields
@@ -56,6 +57,7 @@ type MapFields struct {
 type Schema struct {
 	Name    string
 	PK      *Field
+	MFields map[string]*Field
 	Fields  []*Field
 	SDField *Field
 	Desc    *generator.MessageDescriptor

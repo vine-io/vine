@@ -45,6 +45,7 @@ const (
 	_result   = "result"
 
 	// field common tag
+	_inline    = "inline"
 	_required  = "required"
 	_default   = "default"
 	_example   = "example"
