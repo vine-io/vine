@@ -24,7 +24,7 @@
 " />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/guides/function/" />
-<meta property="og:updated_time" content="2021-01-28T19:22:52+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-03-30T14:18:11+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="Function">
 <meta itemprop="description" content="这是一份关于如何编写 Function 服务的指南。Function 是指只执行一次的服务。
 ">
@@ -211,11 +211,11 @@ greeter.proto</p>
 }
 </code></pre></div><p>这里我们定义一个 Greeter 服务，提供 Hello 方法。Request 和 Response 是 Hello 方法的入参和返回值。</p>
 <h2 id="3生成-api-接口">3.生成 API 接口</h2>
-<p>使用 protoc、protoc-gen-gogofaster、protoc-gen-vine 来生成 protobuf code</p>
+<p>使用 protoc、protoc-gen-gogo、protoc-gen-vine 来生成 protobuf code</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
+go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>. greeter.proto
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>. greeter.proto
 </code></pre></div><p>它会生成以下代码:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Request <span style="color:#8be9fd;font-style:italic">struct</span> {
 	Name <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`protobuf:&#34;bytes,1,opt,name=name&#34; json:&#34;name,omitempty&#34;`</span>

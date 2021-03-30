@@ -24,7 +24,7 @@
 " />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/tools/validate/" />
-<meta property="og:updated_time" content="2021-03-19T17:38:20+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-03-30T14:18:11+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="Validate">
 <meta itemprop="description" content="*Validate* 通过 `protoc-gen-validator` 生成 `Validate()` 接口，减少非业务代码的编写。
 ">
@@ -789,6 +789,7 @@ if (!doNotTrack) {
       <ul>
         <li><a href="#语法规则">语法规则</a></li>
         <li><a href="#类型支持">类型支持</a></li>
+        <li><a href="#内嵌-message">内嵌 message</a></li>
       </ul>
     </li>
   </ul>
@@ -861,9 +862,13 @@ if (!doNotTrack) {
 </code></pre></div><h3 id="2安装-protoc-gen-validator">2.安装 protoc-gen-validator</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/protoc-gen-validator
 </code></pre></div><h3 id="3生成-validate-方法">3.生成 Validate() 方法</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:.  --validator_out<span style="color:#ff79c6">=</span>:. proto/validator.proto
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:.  --validator_out<span style="color:#ff79c6">=</span>:. proto/validator.proto
 </code></pre></div><p>执行完成后生成以下代码:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">Validate</span>() <span style="color:#8be9fd">error</span> {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">Valdiate</span>() <span style="color:#8be9fd">error</span> {
+    <span style="color:#ff79c6">return</span> m.<span style="color:#50fa7b">ValidateE</span>(<span style="color:#f1fa8c">&#34;&#34;</span>)
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">ValidateE</span>() <span style="color:#8be9fd">error</span> {
 	errs <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>([]<span style="color:#8be9fd">error</span>, <span style="color:#bd93f9">0</span>)
 	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
 		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">4</span>) {
@@ -1052,6 +1057,61 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:max_len=5
 </span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
 }
+</code></pre></div><h3 id="内嵌-message">内嵌 message</h3>
+<p><code>protoc-gen-validator</code> 支持解析内嵌 message, 使用 <code>+gen:inline</code> 可以将子 message 中的字段嵌入该 message。实例如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Meta</span> {
+  <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+  <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int64</span> id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
+  <span style="color:#6272a4">// +gen:inline
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>  Meta meta <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+  <span style="color:#8be9fd">string</span> data <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+}
+</code></pre></div><p>解析出来的内容如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">
+func (m *Meta) Validate() error {
+	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
+}
+
+func (m *Meta) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
+	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
+	if len(m.Name) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sname&#39; is required&#34;</span>, prefix))
+	}
+	if <span style="color:#8be9fd">int64</span>(m.Id) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sid&#39; is required&#34;</span>, prefix))
+	}
+	return is.MargeErr(errs...)
+}
+
+func (m *Request) Validate() error {
+	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
+}
+
+func (m *Request) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
+	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
+	if len(m.Name) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sname&#39; is required&#34;</span>, prefix))
+	}
+	if <span style="color:#8be9fd">int64</span>(m.Id) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sid&#39; is required&#34;</span>, prefix))
+	}
+	return is.MargeErr(errs...)
+}
+
+func (m *Response) Validate() error {
+	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
+}
+
+func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
+	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
+	return is.MargeErr(errs...)
+}
 </code></pre></div>
         <div class="section-index">
     
@@ -1114,7 +1174,7 @@ if (!doNotTrack) {
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 19, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/96268159e09243985cb54787bca7f07874cca545">rebuilding site 2021年 3月19日 星期五 17时38分20秒 CST (9626815)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 30, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/c85b3a833570c4ad1f49f390bb3d2931161aaa8b">rebuilding site 2021年 3月30日 星期二 14时18分11秒 CST (c85b3a8)</a>
 </div>
 </div>
 

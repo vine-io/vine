@@ -24,7 +24,7 @@
 " />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/tools/dao/" />
-<meta property="og:updated_time" content="2021-03-23T15:06:55+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-03-25T16:21:01+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="Dao">
 <meta itemprop="description" content="*Dao* 通过 `protoc-gen-dao` 生成数据库CURD代码。
 ">
@@ -850,9 +850,9 @@ if (!doNotTrack) {
 
 <span style="color:#ff79c6">package</span> v1;
 
-<span style="color:#6272a4">// +dao:generate
+<span style="color:#6272a4">// +gen:dao
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">User</span> {
-  <span style="color:#6272a4">// +dao:PK
+  <span style="color:#6272a4">// +gen:pk
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
 
   <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
@@ -955,8 +955,6 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindPage</span>(ctx context.Context, page, size <span style="color:#8be9fd">int</span>, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">int64</span>, <span style="color:#8be9fd">error</span>) 
 <span style="color:#6272a4">// 查询所有符合的记录
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindAll</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
-<span style="color:#6272a4">// 查询所有软删除的记录
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">FindDeleted</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) ([]<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>) 
 <span style="color:#6272a4">// 查询符合的记录总量
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Count</span>(ctx context.Context, exprs <span style="color:#ff79c6">...</span>clause.Expression) (<span style="color:#8be9fd">int64</span>, <span style="color:#8be9fd">error</span>)
 <span style="color:#6272a4">// 查询首条符合的记录
@@ -966,9 +964,7 @@ if (!doNotTrack) {
 <span style="color:#6272a4">// 更新记录
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Updates</span>(ctx context.Context) (<span style="color:#ff79c6">*</span>User, <span style="color:#8be9fd">error</span>)
 <span style="color:#6272a4">// 软删除
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">SoftDelete</span>(ctx context.Context) <span style="color:#8be9fd">error</span> 
-<span style="color:#6272a4">// 直接删除记录
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Delete</span>(ctx context.Context) <span style="color:#8be9fd">error</span> 
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>UserSchema) <span style="color:#50fa7b">Delete</span>(ctx context.Context, soft) <span style="color:#8be9fd">error</span> 
 </code></pre></div><h3 id="类型转化">类型转化</h3>
 <p>slice、map、message 自动生成实现 driver.Valuer 接口的类型</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> following <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
@@ -1069,13 +1065,13 @@ if (!doNotTrack) {
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">    <span style="color:#6272a4">// slice 格式，查询slice包含指定项的记录
 </span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Following) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
 		<span style="color:#ff79c6">for</span> _, item <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> m.Following {
-			exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;following&#34;</span>).<span style="color:#50fa7b">Contains</span>(item))
+			exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(<span style="color:#f1fa8c">&#34;following&#34;</span>).<span style="color:#50fa7b">Tx</span>(tx).<span style="color:#50fa7b">Contains</span>(item))
 		}
 	}
     <span style="color:#6272a4">// map 格式，查询kv符合条件的记录，key 类型必须为 string
 </span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> m.Tags <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 		<span style="color:#ff79c6">for</span> k, v <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> m.Tags {
-			exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;tags&#34;</span>).<span style="color:#50fa7b">Equals</span>(v, k))
+			exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(<span style="color:#f1fa8c">&#34;tags&#34;</span>).<span style="color:#50fa7b">Tx</span>(tx).<span style="color:#50fa7b">Equals</span>(v, k))
 		}
 	}
     <span style="color:#6272a4">// struct 格式，精确查询 JSON 
@@ -1085,9 +1081,9 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> m.Other <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 		<span style="color:#ff79c6">for</span> k, v <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> dao.<span style="color:#50fa7b">FieldPatch</span>(m.Other) {
 			<span style="color:#ff79c6">if</span> v <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">nil</span> {
-				exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;other&#34;</span>).<span style="color:#50fa7b">HasKeys</span>(strings.<span style="color:#50fa7b">Split</span>(k, <span style="color:#f1fa8c">&#34;,&#34;</span>)<span style="color:#ff79c6">...</span>))
+				exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(<span style="color:#f1fa8c">&#34;other&#34;</span>).<span style="color:#50fa7b">Tx</span>(tx).<span style="color:#50fa7b">HasKeys</span>(strings.<span style="color:#50fa7b">Split</span>(k, <span style="color:#f1fa8c">&#34;,&#34;</span>)<span style="color:#ff79c6">...</span>))
 			} <span style="color:#ff79c6">else</span> {
-				exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(tx, <span style="color:#f1fa8c">&#34;other&#34;</span>).<span style="color:#50fa7b">Equals</span>(v, strings.<span style="color:#50fa7b">Split</span>(k, <span style="color:#f1fa8c">&#34;,&#34;</span>)<span style="color:#ff79c6">...</span>))
+				exprs = <span style="color:#8be9fd;font-style:italic">append</span>(exprs, dao.DefaultDialect.<span style="color:#50fa7b">JSONBuild</span>(<span style="color:#f1fa8c">&#34;other&#34;</span>).<span style="color:#50fa7b">Tx</span>(tx).<span style="color:#50fa7b">Equals</span>(v, strings.<span style="color:#50fa7b">Split</span>(k, <span style="color:#f1fa8c">&#34;,&#34;</span>)<span style="color:#ff79c6">...</span>))
 			}
 		}
 	}
@@ -1097,10 +1093,10 @@ if (!doNotTrack) {
 <h3 id="语法规则">语法规则</h3>
 <p>有效的注释有以下的规则:</p>
 <ul>
-<li>注释必须以 <code>+dao</code> 作为开头</li>
+<li>注释必须以 <code>+gen</code> 作为开头</li>
 <li>注释的内容必须紧贴对应的字段，中间不能有空行</li>
 <li>支持多行注释，也可以将多行合并成一行，并用 <code>;</code> 作为分隔符</li>
-<li>只有带 <code>+dao:generate</code> 注释的 message 才会生成 CURD 代码</li>
+<li>只有带 <code>+gen:dao</code> 注释的 message 才会生成 CURD 代码</li>
 </ul>
 <h3 id="语法支持">语法支持</h3>
 <h4 id="代码输出路径">代码输出路径</h4>
@@ -1108,13 +1104,14 @@ if (!doNotTrack) {
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/lack-io/vine/testdata/db/dao;dao
 </span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
 <span style="color:#ff79c6">...</span>
-</code></pre></div><p>使用 <code>+output</code>为开头，写在 protobuf 文件开头，指定生成的路径(对应$GOPATH)和生成 package 名称。</p>
+</code></pre></div><p>使用 <code>+dao:output=</code>为开头，写在 protobuf 文件头部，指定生成的路径(对应$GOPATH)和生成 package 名称。</p>
 <h4 id="message-支持">message 支持</h4>
 <p>message 支持以下注释:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:generate  =&gt; 只有标识该注释的 message 才会生成 CURD 代码
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:dao  =&gt; 只有标识该注释的 message 才会生成 CURD 代码
 </span></code></pre></div><h4 id="field-支持">field 支持</h4>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:PK   =&gt; 指定字段为主键(必须), 可以是 string 和 数字, 当 int 类型时自增 
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:pk   =&gt; 指定字段为主键(必须), 可以是 string 和 数字, 当 int 类型时自增 
 </span><span style="color:#6272a4">//              当多个 PK 字段存在时，默认选择第一个。
+</span><span style="color:#6272a4">// +gen:inline =&gt; 只能用在 message field 中，将 message 的字段直接解析为父 message 的字段
 </span><span style="color:#6272a4"></span><span style="color:#ff79c6">...</span>
 </code></pre></div>
         <div class="section-index">
@@ -1178,7 +1175,7 @@ if (!doNotTrack) {
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 23, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/d02d4cc388b0fb39f45918ecc5f8c0070300acbb">rebuilding site 2021年 3月23日 星期二 15时06分55秒 CST (d02d4cc)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 25, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/642098360176829719ef30947acfca3f1fdeff11">rebuilding site 2021年 3月25日 星期四 16时21分01秒 CST (6420983)</a>
 </div>
 </div>
 

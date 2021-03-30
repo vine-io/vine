@@ -44,9 +44,13 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2安装-protoc-gen-validator&#34;&gt;2.安装 protoc-gen-validator&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/lack-io/vine/cmd/protoc-gen-validator
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3生成-validate-方法&#34;&gt;3.生成 Validate() 方法&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:.  --validator_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/validator.proto
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src --gogo_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:.  --validator_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/validator.proto
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下代码:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;Validate&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;Valdiate&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; m.&lt;span style=&#34;color:#50fa7b&#34;&gt;ValidateE&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;ValidateE&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
 	errs &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;make&lt;/span&gt;([]&lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt;)
 	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Name) &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
 		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; !(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Name) &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;) {
@@ -234,6 +238,61 @@
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:min_len=3
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:max_len=5
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#ff79c6&#34;&gt;repeated&lt;/span&gt; &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;内嵌-message&#34;&gt;内嵌 message&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;protoc-gen-validator&lt;/code&gt; 支持解析内嵌 message, 使用 &lt;code&gt;+gen:inline&lt;/code&gt; 可以将子 message 中的字段嵌入该 message。实例如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Meta&lt;/span&gt; {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt; id &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Request&lt;/span&gt; {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:inline
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  Meta meta &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; data &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;解析出来的内容如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;
+func (m *Meta) Validate() error {
+	return m.ValidateE(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+}
+
+func (m *Meta) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) error {
+	errs &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; make([]error, &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt;)
+	if len(m.Name) &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		errs &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; append(errs, fmt.Errorf(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;%sname&amp;#39; is required&amp;#34;&lt;/span&gt;, prefix))
+	}
+	if &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt;(m.Id) &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		errs &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; append(errs, fmt.Errorf(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;%sid&amp;#39; is required&amp;#34;&lt;/span&gt;, prefix))
+	}
+	return is.MargeErr(errs...)
+}
+
+func (m *Request) Validate() error {
+	return m.ValidateE(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+}
+
+func (m *Request) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) error {
+	errs &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; make([]error, &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt;)
+	if len(m.Name) &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		errs &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; append(errs, fmt.Errorf(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;%sname&amp;#39; is required&amp;#34;&lt;/span&gt;, prefix))
+	}
+	if &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt;(m.Id) &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
+		errs &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; append(errs, fmt.Errorf(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;field &amp;#39;%sid&amp;#39; is required&amp;#34;&lt;/span&gt;, prefix))
+	}
+	return is.MargeErr(errs...)
+}
+
+func (m *Response) Validate() error {
+	return m.ValidateE(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;)
+}
+
+func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) error {
+	errs &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; make([]error, &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt;)
+	return is.MargeErr(errs...)
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
@@ -507,9 +566,9 @@
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; v1;
 
-&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:generate
+&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:dao
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;User&lt;/span&gt; {
-  &lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:PK
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:pk
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; id &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
 
   &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
@@ -612,8 +671,6 @@
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;FindPage&lt;/span&gt;(ctx context.Context, page, size &lt;span style=&#34;color:#8be9fd&#34;&gt;int&lt;/span&gt;, exprs &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;clause.Expression) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;User, &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) 
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询所有符合的记录
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;FindAll&lt;/span&gt;(ctx context.Context, exprs &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;clause.Expression) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;User, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) 
-&lt;span style=&#34;color:#6272a4&#34;&gt;// 查询所有软删除的记录
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;FindDeleted&lt;/span&gt;(ctx context.Context, exprs &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;clause.Expression) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;User, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) 
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询符合的记录总量
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;Count&lt;/span&gt;(ctx context.Context, exprs &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;clause.Expression) (&lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询首条符合的记录
@@ -623,9 +680,7 @@
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 更新记录
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;Updates&lt;/span&gt;(ctx context.Context) (&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;User, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 软删除
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;SoftDelete&lt;/span&gt;(ctx context.Context) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; 
-&lt;span style=&#34;color:#6272a4&#34;&gt;// 直接删除记录
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;Delete&lt;/span&gt;(ctx context.Context) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; 
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;UserSchema) &lt;span style=&#34;color:#50fa7b&#34;&gt;Delete&lt;/span&gt;(ctx context.Context, soft) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;类型转化&#34;&gt;类型转化&lt;/h3&gt;
 &lt;p&gt;slice、map、message 自动生成实现 driver.Valuer 接口的类型&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;repeated&lt;/span&gt; &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; following &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;;
@@ -726,13 +781,13 @@
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// slice 格式，查询slice包含指定项的记录
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(m.Following) &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt; {
 		&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; _, item &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;range&lt;/span&gt; m.Following {
-			exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(tx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;following&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Contains&lt;/span&gt;(item))
+			exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;following&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Tx&lt;/span&gt;(tx).&lt;span style=&#34;color:#50fa7b&#34;&gt;Contains&lt;/span&gt;(item))
 		}
 	}
     &lt;span style=&#34;color:#6272a4&#34;&gt;// map 格式，查询kv符合条件的记录，key 类型必须为 string
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; m.Tags &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 		&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; k, v &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;range&lt;/span&gt; m.Tags {
-			exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(tx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Equals&lt;/span&gt;(v, k))
+			exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Tx&lt;/span&gt;(tx).&lt;span style=&#34;color:#50fa7b&#34;&gt;Equals&lt;/span&gt;(v, k))
 		}
 	}
     &lt;span style=&#34;color:#6272a4&#34;&gt;// struct 格式，精确查询 JSON 
@@ -742,9 +797,9 @@
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; m.Other &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 		&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; k, v &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;range&lt;/span&gt; dao.&lt;span style=&#34;color:#50fa7b&#34;&gt;FieldPatch&lt;/span&gt;(m.Other) {
 			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; v &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-				exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(tx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;other&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;HasKeys&lt;/span&gt;(strings.&lt;span style=&#34;color:#50fa7b&#34;&gt;Split&lt;/span&gt;(k, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;,&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;))
+				exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;other&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Tx&lt;/span&gt;(tx).&lt;span style=&#34;color:#50fa7b&#34;&gt;HasKeys&lt;/span&gt;(strings.&lt;span style=&#34;color:#50fa7b&#34;&gt;Split&lt;/span&gt;(k, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;,&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;))
 			} &lt;span style=&#34;color:#ff79c6&#34;&gt;else&lt;/span&gt; {
-				exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(tx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;other&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Equals&lt;/span&gt;(v, strings.&lt;span style=&#34;color:#50fa7b&#34;&gt;Split&lt;/span&gt;(k, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;,&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;))
+				exprs = &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;append&lt;/span&gt;(exprs, dao.DefaultDialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;other&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Tx&lt;/span&gt;(tx).&lt;span style=&#34;color:#50fa7b&#34;&gt;Equals&lt;/span&gt;(v, strings.&lt;span style=&#34;color:#50fa7b&#34;&gt;Split&lt;/span&gt;(k, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;,&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;))
 			}
 		}
 	}
@@ -754,10 +809,10 @@
 &lt;h3 id=&#34;语法规则&#34;&gt;语法规则&lt;/h3&gt;
 &lt;p&gt;有效的注释有以下的规则:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;注释必须以 &lt;code&gt;+dao&lt;/code&gt; 作为开头&lt;/li&gt;
+&lt;li&gt;注释必须以 &lt;code&gt;+gen&lt;/code&gt; 作为开头&lt;/li&gt;
 &lt;li&gt;注释的内容必须紧贴对应的字段，中间不能有空行&lt;/li&gt;
 &lt;li&gt;支持多行注释，也可以将多行合并成一行，并用 &lt;code&gt;;&lt;/code&gt; 作为分隔符&lt;/li&gt;
-&lt;li&gt;只有带 &lt;code&gt;+dao:generate&lt;/code&gt; 注释的 message 才会生成 CURD 代码&lt;/li&gt;
+&lt;li&gt;只有带 &lt;code&gt;+gen:dao&lt;/code&gt; 注释的 message 才会生成 CURD 代码&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;语法支持&#34;&gt;语法支持&lt;/h3&gt;
 &lt;h4 id=&#34;代码输出路径&#34;&gt;代码输出路径&lt;/h4&gt;
@@ -765,13 +820,14 @@
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:output=github.com/lack-io/vine/testdata/db/dao;dao
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;protoc&amp;#34;&lt;/span&gt;
 &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;+output&lt;/code&gt;为开头，写在 protobuf 文件开头，指定生成的路径(对应$GOPATH)和生成 package 名称。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;+dao:output=&lt;/code&gt;为开头，写在 protobuf 文件头部，指定生成的路径(对应$GOPATH)和生成 package 名称。&lt;/p&gt;
 &lt;h4 id=&#34;message-支持&#34;&gt;message 支持&lt;/h4&gt;
 &lt;p&gt;message 支持以下注释:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:generate  =&amp;gt; 只有标识该注释的 message 才会生成 CURD 代码
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:dao  =&amp;gt; 只有标识该注释的 message 才会生成 CURD 代码
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;field-支持&#34;&gt;field 支持&lt;/h4&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:PK   =&amp;gt; 指定字段为主键(必须), 可以是 string 和 数字, 当 int 类型时自增 
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:pk   =&amp;gt; 指定字段为主键(必须), 可以是 string 和 数字, 当 int 类型时自增 
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;//              当多个 PK 字段存在时，默认选择第一个。
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:inline =&amp;gt; 只能用在 message field 中，将 message 的字段直接解析为父 message 的字段
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>

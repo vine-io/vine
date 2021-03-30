@@ -23,7 +23,7 @@
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/" />
-<meta property="og:updated_time" content="2021-01-29T15:10:51+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-03-30T14:18:11+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="欢迎来到 Vine 文档">
 <meta itemprop="description" content="Vine 文档">
 <meta name="twitter:card" content="summary"/>
@@ -858,7 +858,7 @@ if (!doNotTrack) {
 <h2 id="起步">起步</h2>
 <h3 id="安装">安装</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/lack-io/vine/cmd/protoc-gen-gogofaster
+go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
 go get github.com/lack-io/cmd/vine
 </code></pre></div><h3 id="proto-文件">proto 文件</h3>
@@ -884,7 +884,7 @@ go get github.com/lack-io/cmd/vine
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span>. <span style="color:#f1fa8c">\
 </span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src <span style="color:#f1fa8c">\
 </span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>. example/proto/test.proto
+</span><span style="color:#f1fa8c"></span>  --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>. example/proto/test.proto
 </code></pre></div><h3 id="服务端">服务端</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
@@ -1027,7 +1027,7 @@ go get github.com/lack-io/cmd/vine
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 January 29, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/65db7f40f96db686d869ec9d3a8628318412bd6c">rebuilding site 2021年 1月29日 星期五 15时10分51秒 CST (65db7f4)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 30, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/c85b3a833570c4ad1f49f390bb3d2931161aaa8b">rebuilding site 2021年 3月30日 星期二 14时18分11秒 CST (c85b3a8)</a>
 </div>
 </div>
 

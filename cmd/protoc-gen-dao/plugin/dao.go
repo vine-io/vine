@@ -32,7 +32,7 @@ const (
 	// inline
 	_inline = "inline"
 	// dao primary key
-	_pk = "dao_pk"
+	_pk = "pk"
 )
 
 type Tag struct {
