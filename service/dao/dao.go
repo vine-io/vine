@@ -17,6 +17,7 @@ package dao
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/lack-io/vine/service/dao/clause"
 	"github.com/lack-io/vine/service/dao/schema"
@@ -73,20 +74,43 @@ type Valuer interface {
 type JSONOp int32
 
 const (
-	JSONContains JSONOp = iota + 1 // array contains
-	JSONHasKey                     // JSON Key
-	JSONEq                         // ==
-	JSONNeq                        // <>
-	JSONGt                         // >
-	JSONGte                        // >=
-	JSONLt                         // <
-	JSONLte                        // <=
-	JSONLike                       // like
+	JSONHasKey JSONOp = iota + 1 // JSON Key
+	JSONEq                       // ==
+	JSONNeq                      // <>
+	JSONGt                       // >
+	JSONGte                      // >=
+	JSONLt                       // <
+	JSONLte                      // <=
+	JSONLike                     // like
 )
+
+func (j JSONOp) String() string {
+	switch j {
+	case JSONHasKey:
+		return " IS NOT NULL"
+	case JSONEq:
+		return "="
+	case JSONNeq:
+		return "<>"
+	case JSONGte:
+		return ">="
+	case JSONGt:
+		return ">"
+	case JSONLte:
+		return "<="
+	case JSONLt:
+		return "<"
+	case JSONLike:
+		return "LIKE"
+	default:
+		return fmt.Sprintf("%d", j)
+	}
+}
 
 // JSONQuery query column as json
 type JSONQuery interface {
 	Op(op JSONOp, value interface{}, keys ...string) JSONQuery
+	Contains(op JSONOp, values interface{}, keys ...string) JSONQuery
 	Tx(tx *DB) JSONQuery
 	Build(builder clause.Builder)
 }

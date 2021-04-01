@@ -563,9 +563,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(`pk, _, _ := m.PrimaryKey()`)
 	g.P()
 	g.P(`m.exprs = append(m.exprs,`)
-	g.P(`clause.OrderBy{Columns: []clause.OrderByColumn{{Column: clause.Column{Table: m.TableName(), Name: pk}, Desc: true}}},`)
-	g.P(`clause.Limit{Offset: (page - 1) * size, Limit: size},`)
-	g.P(`clause.Cond().Build("deletion_timestamp", 0),`)
+	g.P(fmt.Sprintf(`%s.OrderBy{Columns: []%s.OrderByColumn{{Column: %s.Column{Table: m.TableName(), Name: pk}, Desc: true}}},`, g.clausePkg.Use(), g.clausePkg.Use(), g.clausePkg.Use()))
+	g.P(fmt.Sprintf(`%s.Limit{Offset: (page - 1) * size, Limit: size},`, g.clausePkg.Use()))
+	g.P(fmt.Sprintf(`%s.Cond().Build("deletion_timestamp", 0),`, g.clausePkg.Use()))
 	g.P(`)`)
 	g.P()
 	g.P(`data, err := m.findAll(ctx)`)
@@ -579,7 +579,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	g.P(`m.exprs = append(m.exprs, clause.Cond().Build("deletion_timestamp", 0))`)
+	g.P(fmt.Sprintf(`m.exprs = append(m.exprs, %s.Cond().Build("deletion_timestamp", 0))`, g.clausePkg.Use()))
 	g.P(`return m.findAll(ctx)`)
 	g.P("}")
 	g.P()
@@ -591,7 +591,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 
 	g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
 	g.P(`clauses := append(m.extractClauses(tx), m.exprs...)`)
 	g.P(`if err := tx.Clauses(clauses...).Find(&dest).Error; err != nil {`)
@@ -608,9 +608,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) Count(ctx %s.Context) (total int64, err error) {`, source, g.ctxPkg.Use()))
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
-	g.P(`clauses := append(m.extractClauses(tx), clause.Cond().Build("deletion_timestamp", 0))`)
+	g.P(fmt.Sprintf(`clauses := append(m.extractClauses(tx), %s.Cond().Build("deletion_timestamp", 0))`, g.clausePkg.Use()))
 	g.P(`clauses = append(clauses, m.exprs...)`)
 	g.P()
 	g.P(`err = tx.Clauses(clauses...).Count(&total).Error`)
@@ -619,9 +619,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
-	g.P(`clauses := append(m.extractClauses(tx), clause.Cond().Build("deletion_timestamp", 0))`)
+	g.P(fmt.Sprintf(`clauses := append(m.extractClauses(tx), %s.Cond().Build("deletion_timestamp", 0))`, g.clausePkg.Use()))
 	g.P(`clauses = append(clauses, m.exprs...)`)
 	g.P()
 	g.P(`if err := tx.Clauses(clauses...).First(&m).Error; err != nil {`)
@@ -632,13 +632,13 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...clause.Expression) *%s {`, source, source))
+	g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) *%s {`, source, g.clausePkg.Use(), source))
 	g.P(`m.exprs = append(m.exprs, exprs...)`)
 	g.P(`return m`)
 	g.P(`}`)
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) extractClauses(tx *%s.DB) []clause.Expression {`, source, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`func (m *%s) extractClauses(tx *%s.DB) []%s.Expression {`, source, g.daoPkg.Use(), g.clausePkg.Use()))
 	g.P(`exprs := make([]clause.Expression, 0)`)
 	for _, field := range schema.Fields {
 		column := toColumnName(field.Name)
@@ -647,7 +647,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
 			if field.Map.Key.GetType() == descriptor.FieldDescriptorProto_TYPE_STRING {
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONEq, v, k))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, k))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
 			}
 			g.P("}")
 			g.P("}")
@@ -655,9 +655,9 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range dao.FieldPatch(m.%s) {`, field.Name))
 			g.P(`if v == nil {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONHasKey, "", %s.Split(k, ".")...))`, column, g.stringPkg.Use()))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONHasKey, "", %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
 			g.P(`} else {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONEq, v, %s.Split(k, ".")...))`, column, g.stringPkg.Use()))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
 			g.P("}")
 			g.P("}")
 			g.P("}")
@@ -666,7 +666,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
 			switch field.Slice.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, item))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Contains(%s.JSONEq, item))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
 			case descriptor.FieldDescriptorProto_TYPE_UINT32,
 				descriptor.FieldDescriptorProto_TYPE_UINT64,
 				descriptor.FieldDescriptorProto_TYPE_INT32,
@@ -675,11 +675,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 				descriptor.FieldDescriptorProto_TYPE_SFIXED64,
 				descriptor.FieldDescriptorProto_TYPE_FIXED32,
 				descriptor.FieldDescriptorProto_TYPE_FIXED64:
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, item))`, column))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Contains(%s.JSONEq, item))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
 			case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 				g.P(`for k, v := range dao.FieldPatch(item) {`)
 				g.P(`if v != nil {`)
-				g.P(fmt.Sprintf(`exprs = append(exprs, dao.DefaultDialect.JSONBuild("%s").Tx(tx).Op(dao.JSONContains, v, %s.Split(k, ".")...))`, column, g.stringPkg.Use()))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Contains(%s.JSONEq, v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
 				g.P(`}`)
 				g.P("}")
 			}
@@ -687,11 +687,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P("}")
 		case _string:
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
-			g.P(fmt.Sprintf(`exprs = append(exprs, clause.Cond().Build("%s", m.%s))`, column, field.Name))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.Cond().Build("%s", m.%s))`, g.clausePkg.Use(), column, field.Name))
 			g.P("}")
 		default:
 			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`exprs = append(exprs,  clause.Cond().Build("%s", m.%s))`, column, field.Name))
+			g.P(fmt.Sprintf(`exprs = append(exprs,  %s.Cond().Build("%s", m.%s))`, g.clausePkg.Use(), column, field.Name))
 			g.P("}")
 		}
 	}
@@ -701,7 +701,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
 	g.P(`if err := tx.Create(m).Error; err != nil {`)
 	g.P("return nil, err")
@@ -716,7 +716,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(fmt.Sprintf(`return %s.New("missing conditions")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
 	g.P(`values := make(map[string]interface{}, 0)`)
 	for _, field := range schema.Fields {
@@ -754,7 +754,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(fmt.Sprintf(`return nil, %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`)
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`, g.daoPkg.Use()))
 	g.P()
 	g.P(`values := make(map[string]interface{}, 0)`)
 	for _, field := range schema.Fields {
@@ -786,7 +786,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(`err := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`)
+	g.P(fmt.Sprintf(`err := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`, g.daoPkg.Use()))
 	g.P("if err != nil {")
 	g.P(`return nil, err`)
 	g.P("}")
@@ -814,7 +814,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P(fmt.Sprintf(`return %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
 	g.P(`if soft {`)
 	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{"deletion_timestamp": %s.Now().UnixNano()}).Error`, g.timePkg.Use()))
@@ -824,7 +824,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) Tx(ctx %s.Context) *dao.DB {`, source, g.ctxPkg.Use()))
-	g.P(`return m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx).Clauses(m.exprs...)`)
+	g.P(fmt.Sprintf(`return m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Clauses(m.exprs...)`, g.daoPkg.Use()))
 	g.P("}")
 	g.P()
 }

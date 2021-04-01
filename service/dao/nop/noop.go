@@ -87,6 +87,10 @@ func (j jsonQueryExpression) Op(dao.JSONOp, interface{}, ...string) dao.JSONQuer
 	return j
 }
 
+func (j jsonQueryExpression) Contains(op dao.JSONOp, values interface{}, keys ...string) dao.JSONQuery {
+	return j
+}
+
 func (j jsonQueryExpression) Build(clause.Builder) {
 	return
 }
