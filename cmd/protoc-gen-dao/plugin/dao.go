@@ -323,7 +323,7 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, field *Field) {
 	g.P()
 
 	g.P(fmt.Sprintf(`func (m *%s) DaoDataType() string {`, alias))
-	g.P(`return "json"`)
+	g.P(fmt.Sprintf(`return %s.DefaultDialect.JSONDataType()`, g.daoPkg.Use()))
 	g.P("}")
 	g.P()
 }
@@ -364,8 +364,8 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 	sname := schema.Name
 	pname := schema.Desc.Proto.GetName()
 
-	g.P(fmt.Sprintf(`func Registry%s(in *%s) error {`, pname, g.wrapPkg(pname)))
-	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(From%s(in))`, pname))
+	g.P(fmt.Sprintf(`func Registry%s() error {`, pname))
+	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(&%s{})`, sname))
 	g.P("}")
 	g.P()
 
