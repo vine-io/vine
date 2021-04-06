@@ -23,6 +23,7 @@ build-windows-tool:
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-vine.exe cmd/protoc-gen-vine/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-dao.exe cmd/protoc-gen-dao/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-validator.exe cmd/protoc-gen-validator/main.go
+	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-deepcopy.exe cmd/protoc-gen-deepcopy/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/vine.exe cmd/vine/main.go
 
 install:
@@ -31,6 +32,7 @@ install:
 	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 	go get github.com/lack-io/vine/cmd/protoc-gen-vine
 	go get github.com/lack-io/vine/cmd/protoc-gen-validator
+	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
 	go get github.com/lack-io/vine/cmd/protoc-gen-dao
 
 protoc:
@@ -40,25 +42,25 @@ protoc:
 	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/registry/registry.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/errors/errors.proto && \
 	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/usage/usage.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/api/auth/auth.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/auth/auth.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/bot/bot.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/broker/broker.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/client/client.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/config/config.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/debug.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/log/log.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/stats/stats.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/debug/trace/trace.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/file/file.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/router/router.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/network/dns/dns.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/network/network.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/registry/registry.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/runtime/runtime.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/server/server.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/store/store.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=. ${ROOT}/proto/services/transport/transport.proto
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/api/auth/auth.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/auth/auth.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/bot/bot.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/broker/broker.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/client/client.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/config/config.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/debug/debug.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/debug/log/log.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/debug/stats/stats.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/debug/trace/trace.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/file/file.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/router/router.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/network/dns/dns.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/network/network.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/registry/registry.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/runtime/runtime.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/server/server.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/store/store.proto && \
+	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/transport/transport.proto
 
 
 	sed -i "" "s/ref,omitempty/$$\ref,omitempty/g" proto/apis/openapi/openapi.pb.go
