@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 // session is our pseudo session for transport.Socket

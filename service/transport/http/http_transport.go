@@ -28,7 +28,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 	maddr "github.com/lack-io/vine/util/addr"
 	"github.com/lack-io/vine/util/client/buf"
 	mnet "github.com/lack-io/vine/util/net"

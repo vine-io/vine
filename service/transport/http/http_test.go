@@ -16,7 +16,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 func call(b *testing.B, c int) {

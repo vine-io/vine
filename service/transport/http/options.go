@@ -12,9 +12,26 @@
 
 package http
 
-import "github.com/lack-io/vine/service/network/transport"
+import (
+	"context"
+	"net/http"
 
-// NewTransport returns a new transport using net/http and supporting http2
-func NewTransport(opts ...transport.Option) transport.Transport {
-	return newHTTPTransport(opts...)
+	"github.com/lack-io/vine/service/transport"
+)
+
+type httpHandlers struct{}
+
+// Handle registers the handler for the given pattern.
+func Handle(pattern string, handler http.Handler) transport.Option {
+	return func(o *transport.Options) {
+		if o.Context == nil {
+			o.Context = context.Background()
+		}
+		handlers, ok := o.Context.Value(httpHandlers{}).(map[string]http.Handler)
+		if !ok {
+			handlers = make(map[string]http.Handler)
+		}
+		handlers[pattern] = handler
+		o.Context = context.WithValue(o.Context, httpHandlers{}, handlers)
+	}
 }

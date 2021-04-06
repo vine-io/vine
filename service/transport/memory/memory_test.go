@@ -16,7 +16,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 func TestMemoryTransport(t *testing.T) {

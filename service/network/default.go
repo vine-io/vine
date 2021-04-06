@@ -32,7 +32,6 @@ import (
 	rtr "github.com/lack-io/vine/service/client/selector/router"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/network/resolver/dns"
-	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/network/tunnel"
 	bun "github.com/lack-io/vine/service/network/tunnel/broker"
 	tun "github.com/lack-io/vine/service/network/tunnel/transport"
@@ -40,6 +39,7 @@ import (
 	"github.com/lack-io/vine/service/router"
 	"github.com/lack-io/vine/service/server"
 	smucp "github.com/lack-io/vine/service/server/mucp"
+	"github.com/lack-io/vine/service/transport"
 	"github.com/lack-io/vine/util/backoff"
 	pbUtil "github.com/lack-io/vine/util/proto"
 )

@@ -21,7 +21,7 @@ import (
 
 	quic "github.com/lucas-clemente/quic-go"
 
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 	utls "github.com/lack-io/vine/util/tls"
 )
 

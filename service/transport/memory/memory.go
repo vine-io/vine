@@ -22,7 +22,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 	maddr "github.com/lack-io/vine/util/addr"
 	mnet "github.com/lack-io/vine/util/net"
 )

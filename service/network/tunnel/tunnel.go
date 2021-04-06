@@ -17,7 +17,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 const (

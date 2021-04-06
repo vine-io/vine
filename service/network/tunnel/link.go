@@ -22,7 +22,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 type link struct {

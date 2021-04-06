@@ -17,8 +17,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/service/network/transport"
-	"github.com/lack-io/vine/service/network/transport/quic"
+	"github.com/lack-io/vine/service/transport"
+	"github.com/lack-io/vine/service/transport/quic"
 )
 
 var (

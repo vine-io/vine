@@ -20,10 +20,10 @@ import (
 	bmemory "github.com/lack-io/vine/service/broker/memory"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/mucp"
-	tmemory "github.com/lack-io/vine/service/network/transport/memory"
 	rmemory "github.com/lack-io/vine/service/registry/memory"
 	"github.com/lack-io/vine/service/server"
 	serverMucp "github.com/lack-io/vine/service/server/mucp"
+	tmemory "github.com/lack-io/vine/service/transport/memory"
 	"github.com/lack-io/vine/util/wrapper"
 )
 

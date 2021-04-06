@@ -26,7 +26,7 @@ import (
 	"github.com/lack-io/vine/service/codec/jsonrpc"
 	"github.com/lack-io/vine/service/codec/proto"
 	"github.com/lack-io/vine/service/codec/protorpc"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 type rpcCodec struct {

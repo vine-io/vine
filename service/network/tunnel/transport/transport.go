@@ -16,8 +16,8 @@ package transport
 import (
 	"context"
 
-	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/network/tunnel"
+	"github.com/lack-io/vine/service/transport"
 )
 
 type tunTransport struct {

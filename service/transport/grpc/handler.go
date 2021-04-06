@@ -20,7 +20,7 @@ import (
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/transport"
 	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 // vineTransport satisfies the pb.TransportServer interface

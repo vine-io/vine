@@ -16,7 +16,7 @@ import (
 	"bytes"
 
 	"github.com/lack-io/vine/service/codec"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 	"github.com/lack-io/vine/util/client/buf"
 )
 

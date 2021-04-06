@@ -33,11 +33,11 @@ import (
 	"github.com/lack-io/vine/service/debug/profile/pprof"
 	"github.com/lack-io/vine/service/debug/trace"
 	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/service/transport"
 	authutil "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/wrapper"
 
@@ -72,8 +72,8 @@ import (
 	"github.com/lack-io/vine/service/client/selector/static"
 
 	// transports
-	thttp "github.com/lack-io/vine/service/network/transport/http"
-	tmem "github.com/lack-io/vine/service/network/transport/memory"
+	thttp "github.com/lack-io/vine/service/transport/http"
+	tmem "github.com/lack-io/vine/service/transport/memory"
 
 	daoNop "github.com/lack-io/vine/service/dao/nop"
 

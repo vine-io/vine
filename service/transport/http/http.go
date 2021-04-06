@@ -10,33 +10,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package transport
+package http
 
-import (
-	"github.com/lack-io/vine/service/network/tunnel"
-	"github.com/lack-io/vine/service/transport"
-)
+import "github.com/lack-io/vine/service/transport"
 
-type tunListener struct {
-	l tunnel.Listener
-}
-
-func (t *tunListener) Addr() string {
-	return t.l.Channel()
-}
-
-func (t *tunListener) Close() error {
-	return t.l.Close()
-}
-
-func (t *tunListener) Accept(fn func(socket transport.Socket)) error {
-	for {
-		// accept connection
-		c, err := t.l.Accept()
-		if err != nil {
-			return err
-		}
-		// execute the function
-		go fn(c)
-	}
+// NewTransport returns a new transport using net/http and supporting http2
+func NewTransport(opts ...transport.Option) transport.Transport {
+	return newHTTPTransport(opts...)
 }

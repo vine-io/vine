@@ -27,11 +27,11 @@ import (
 	"github.com/lack-io/vine/service/dao"
 	"github.com/lack-io/vine/service/debug/profile"
 	"github.com/lack-io/vine/service/debug/trace"
-	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/runtime"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/service/transport"
 )
 
 // Options for vine service

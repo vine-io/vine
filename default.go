@@ -21,14 +21,14 @@ import (
 	daoNop "github.com/lack-io/vine/service/dao/nop"
 	"github.com/lack-io/vine/service/debug/trace"
 	traceMem "github.com/lack-io/vine/service/debug/trace/memory"
-	"github.com/lack-io/vine/service/network/transport"
-	transportHTTP "github.com/lack-io/vine/service/network/transport/http"
 	"github.com/lack-io/vine/service/registry"
 	registryMdns "github.com/lack-io/vine/service/registry/mdns"
 	"github.com/lack-io/vine/service/server"
 	serverGrpc "github.com/lack-io/vine/service/server/grpc"
 	"github.com/lack-io/vine/service/store"
 	storeMem "github.com/lack-io/vine/service/store/memory"
+	"github.com/lack-io/vine/service/transport"
+	transportHTTP "github.com/lack-io/vine/service/transport/http"
 )
 
 func init() {

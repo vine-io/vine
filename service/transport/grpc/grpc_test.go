@@ -16,7 +16,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 func expectedPort(t *testing.T, expected string, lsn transport.Listener) {

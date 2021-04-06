@@ -14,7 +14,7 @@ package mucp
 
 import (
 	"github.com/lack-io/vine/service/broker"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 // event is a broker event we handle on the server transport

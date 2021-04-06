@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc"
 
 	pb "github.com/lack-io/vine/proto/services/transport"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 )
 
 type grpcTransportClient struct {

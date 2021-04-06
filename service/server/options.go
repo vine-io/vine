@@ -22,8 +22,8 @@ import (
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/codec"
 	"github.com/lack-io/vine/service/debug/trace"
-	"github.com/lack-io/vine/service/network/transport"
 	"github.com/lack-io/vine/service/registry"
+	"github.com/lack-io/vine/service/transport"
 )
 
 type Options struct {

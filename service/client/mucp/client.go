@@ -27,7 +27,7 @@ import (
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/codec"
 	raw "github.com/lack-io/vine/service/codec/bytes"
-	"github.com/lack-io/vine/service/network/transport"
+	"github.com/lack-io/vine/service/transport"
 	"github.com/lack-io/vine/util/client/buf"
 	"github.com/lack-io/vine/util/client/pool"
 	"github.com/lack-io/vine/util/context/metadata"
