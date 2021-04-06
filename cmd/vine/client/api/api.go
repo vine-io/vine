@@ -29,7 +29,6 @@ import (
 	"github.com/lack-io/vine/cmd/vine/client/api/auth"
 	"github.com/lack-io/vine/cmd/vine/client/api/handler"
 	rrvine "github.com/lack-io/vine/cmd/vine/client/resolver/api"
-	"github.com/lack-io/vine/plugin"
 	ahandler "github.com/lack-io/vine/service/api/handler"
 	aapi "github.com/lack-io/vine/service/api/handler/api"
 	"github.com/lack-io/vine/service/api/handler/event"
@@ -115,11 +114,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// initialise service
 	svc := vine.NewService(svcOpts...)
-
-	// Init plugins
-	for _, p := range Plugins() {
-		p.Init(ctx)
-	}
 
 	// Init API
 	var opts []server.Option
@@ -322,12 +316,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		r.PathPrefix(APIPath).Handler(handler.Meta(svc, rt, nsResolver.ResolveWithType))
 	}
 
-	// reverse wrap handler
-	plugins := append(Plugins(), plugin.Plugins()...)
-	for i := len(plugins); i > 0; i-- {
-		h = plugins[i-1].Handler()(h)
-	}
-
 	// create the auth wrapper and the server
 	authWrapper := auth.Wrapper(rr, nsResolver)
 	api := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
@@ -402,16 +390,6 @@ func Commands(options ...vine.Option) []*cli.Command {
 				Value:   true,
 			},
 		},
-	}
-
-	for _, p := range Plugins() {
-		if cmds := p.Commands(); len(cmds) > 0 {
-			command.Subcommands = append(command.Subcommands, cmds...)
-		}
-
-		if flags := p.Flags(); len(flags) > 0 {
-			command.Flags = append(command.Flags, flags...)
-		}
 	}
 
 	return []*cli.Command{command}

@@ -36,7 +36,6 @@ import (
 	apiAuth "github.com/lack-io/vine/cmd/vine/client/api/auth"
 	"github.com/lack-io/vine/cmd/vine/client/api/handler"
 	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
-	"github.com/lack-io/vine/plugin"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	res "github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/server"
@@ -481,11 +480,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		Namespace = strings.TrimSuffix(ctx.String("namespace"), "."+Type)
 	}
 
-	// Init plugins
-	for _, p := range Plugins() {
-		p.Init(ctx)
-	}
-
 	// service opts
 	svcOpts = append(svcOpts, vine.Name(Name))
 
@@ -599,12 +593,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		opts = append(opts, server.TLSConfig(config))
 	}
 
-	// reverse wrap handler
-	plugins := append(Plugins(), plugin.Plugins()...)
-	for i := len(plugins); i > 0; i-- {
-		h = plugins[i-1].Handler()(h)
-	}
-
 	// create the namespace resolver and the auth wrapper
 	s.nsResolver = namespace.NewResolver(Type, Namespace)
 	authWrapper := apiAuth.Wrapper(s.resolver, s.nsResolver)
@@ -666,16 +654,6 @@ func Commands(options ...vine.Option) []*cli.Command {
 				Usage:   "The relative URL where a user can login",
 			},
 		},
-	}
-
-	for _, p := range Plugins() {
-		if cmds := p.Commands(); len(cmds) > 0 {
-			command.Subcommands = append(command.Subcommands, cmds...)
-		}
-
-		if flags := p.Flags(); len(flags) > 0 {
-			command.Flags = append(command.Flags, flags...)
-		}
 	}
 
 	return []*cli.Command{command}

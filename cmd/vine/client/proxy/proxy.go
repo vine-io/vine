@@ -84,11 +84,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		ACMEProvider = ctx.String("acme-provider")
 	}
 
-	// Init plugins
-	for _, p := range Plugins() {
-		p.Init(ctx)
-	}
-
 	// service opts
 	svcOpts = append(svcOpts, vine.Name(Name))
 
@@ -322,16 +317,6 @@ func Commands(options ...vine.Option) []*cli.Command {
 			Run(ctx, options...)
 			return nil
 		},
-	}
-
-	for _, p := range Plugins() {
-		if cmds := p.Commands(); len(cmds) > 0 {
-			command.Subcommands = append(command.Subcommands, cmds...)
-		}
-
-		if flags := p.Flags(); len(flags) > 0 {
-			command.Flags = append(command.Flags, flags...)
-		}
 	}
 
 	return []*cli.Command{command}

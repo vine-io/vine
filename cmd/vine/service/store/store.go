@@ -35,11 +35,6 @@ var (
 // Run runs the vine server
 func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
-	// Init plugins
-	for _, p := range Plugins() {
-		p.Init(ctx)
-	}
-
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
 	}
@@ -120,16 +115,6 @@ func Commands(options ...vine.Option) []*cli.Command {
 			return nil
 		},
 		Subcommands: mcli.StoreCommands(),
-	}
-
-	for _, p := range Plugins() {
-		if cmds := p.Commands(); len(cmds) > 0 {
-			command.Subcommands = append(command.Subcommands, cmds...)
-		}
-
-		if flags := p.Flags(); len(flags) > 0 {
-			command.Flags = append(command.Flags, flags...)
-		}
 	}
 
 	return []*cli.Command{command}

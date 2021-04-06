@@ -41,13 +41,10 @@ import (
 	"github.com/lack-io/vine/cmd/vine/service/server"
 	"github.com/lack-io/vine/cmd/vine/service/store"
 	"github.com/lack-io/vine/cmd/vine/service/tunnel"
-	"github.com/lack-io/vine/plugin"
-	"github.com/lack-io/vine/plugin/build"
 	"github.com/lack-io/vine/service/config/cmd"
 	gostore "github.com/lack-io/vine/service/store"
 	inauth "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/helper"
-	"github.com/lack-io/vine/util/platform"
 	"github.com/lack-io/vine/util/update"
 )
 
@@ -67,11 +64,6 @@ var (
 )
 
 func init() {
-	// setup the build plugin
-	plugin.Register(build.Flags())
-
-	// set platform build date
-	platform.Version = BuildDate
 }
 
 func setup(app *ccli.App) {
@@ -211,18 +203,6 @@ func setup(app *ccli.App) {
 		},
 	)
 
-	plugins := plugin.Plugins()
-
-	for _, p := range plugins {
-		if flags := p.Flags(); len(flags) > 0 {
-			app.Flags = append(app.Flags, flags...)
-		}
-
-		if cmds := p.Commands(); len(cmds) > 0 {
-			app.Commands = append(app.Commands, cmds...)
-		}
-	}
-
 	before := app.Before
 
 	app.Before = func(ctx *ccli.Context) error {
@@ -256,12 +236,6 @@ func setup(app *ccli.App) {
 		}
 		if len(ctx.String("web-host")) > 0 {
 			web.Host = ctx.String("web-host")
-		}
-
-		for _, p := range plugins {
-			if err := p.Init(ctx); err != nil {
-				return err
-			}
 		}
 
 		util.SetupCommand(ctx)
@@ -384,7 +358,6 @@ func Setup(app *ccli.App, options ...vine.Option) {
 	app.Commands = append(app.Commands, Commands(options...)...)
 	app.Commands = append(app.Commands, web.Commands(options...)...)
 	app.Commands = append(app.Commands, cliNew.Commands()...)
-	app.Commands = append(app.Commands, build.Commands()...)
 	app.Commands = append(app.Commands, auth.Commands()...)
 	app.Commands = append(app.Commands, bot.Commands()...)
 	app.Commands = append(app.Commands, cli.Commands()...)
@@ -394,7 +367,6 @@ func Setup(app *ccli.App, options ...vine.Option) {
 		Name:  "init",
 		Usage: "Run the vine operator",
 		Action: func(c *ccli.Context) error {
-			platform.Init(c)
 			return nil
 		},
 		Flags: []ccli.Flag{},

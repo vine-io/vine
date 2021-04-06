@@ -110,11 +110,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		svcOpts = append(svcOpts, vine.Address(Address))
 	}
 
-	// Init plugins
-	for _, p := range Plugins() {
-		p.Init(ctx)
-	}
-
 	// setup the handlers
 	ruleH := &rulesHandler.Rules{}
 	authH := &authHandler.Auth{}
@@ -339,18 +334,6 @@ func Commands(svcOpts ...vine.Option) []*cli.Command {
 				return nil
 			},
 		},
-	}
-
-	for _, c := range commands {
-		for _, p := range Plugins() {
-			if cmds := p.Commands(); len(cmds) > 0 {
-				c.Subcommands = append(c.Subcommands, cmds...)
-			}
-
-			if flags := p.Flags(); len(flags) > 0 {
-				c.Flags = append(c.Flags, flags...)
-			}
-		}
 	}
 
 	return commands

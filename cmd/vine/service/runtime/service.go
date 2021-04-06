@@ -95,11 +95,6 @@ func dirExists(path string) (bool, error) {
 }
 
 func runService(ctx *cli.Context, svcOpts ...vine.Option) {
-	// Init plugins
-	for _, p := range Plugins() {
-		p.Init(ctx)
-	}
-
 	// we need some args to run
 	if ctx.Args().Len() == 0 {
 		fmt.Println(RunUsage)
