@@ -16,7 +16,6 @@ import (
 	"os"
 	"os/signal"
 	gruntime "runtime"
-	"strings"
 	"sync"
 
 	"github.com/lack-io/vine/service/auth"
@@ -26,21 +25,20 @@ import (
 	"github.com/lack-io/vine/service/debug/stats"
 	"github.com/lack-io/vine/service/debug/trace"
 	"github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/plugin"
 	"github.com/lack-io/vine/service/server"
 	"github.com/lack-io/vine/service/store"
 	signalutil "github.com/lack-io/vine/util/signal"
 	"github.com/lack-io/vine/util/wrapper"
 )
 
-type service struct {
+type ServiceImpl struct {
 	opts Options
 
 	once sync.Once
 }
 
 func newService(opts ...Option) Service {
-	service := new(service)
+	sv := new(ServiceImpl)
 	options := newOptions(opts...)
 
 	// service name
@@ -64,43 +62,25 @@ func newService(opts ...Option) Service {
 	)
 
 	// set opts
-	service.opts = options
+	sv.opts = options
 
-	return service
+	return sv
 }
 
-func (s *service) Name() string {
+func (s *ServiceImpl) Name() string {
 	return s.opts.Server.Options().Name
 }
 
 // Init initialises options. Additionally it calls cmd.Init
 // which parses command line flags. cmd.Init is only called
 // on first Init.
-func (s *service) Init(opts ...Option) {
+func (s *ServiceImpl) Init(opts ...Option) {
 	// process options
 	for _, o := range opts {
 		o(&s.opts)
 	}
 
 	s.once.Do(func() {
-		// setup the plugins
-		for _, p := range strings.Split(os.Getenv("VINE_PLUGIN"), ",") {
-			if len(p) == 0 {
-				continue
-			}
-
-			// load the plugin
-			c, err := plugin.Load(p)
-			if err != nil {
-				logger.Fatal(err)
-			}
-
-			// initialise the plugin
-			if err := plugin.Init(c); err != nil {
-				logger.Fatal(err)
-			}
-		}
-
 		// set cmd name
 		if len(s.opts.Cmd.App().Name) == 0 {
 			s.opts.Cmd.App().Name = s.Server().Options().Name
@@ -129,23 +109,23 @@ func (s *service) Init(opts ...Option) {
 	})
 }
 
-func (s *service) Options() Options {
+func (s *ServiceImpl) Options() Options {
 	return s.opts
 }
 
-func (s *service) Client() client.Client {
+func (s *ServiceImpl) Client() client.Client {
 	return s.opts.Client
 }
 
-func (s *service) Server() server.Server {
+func (s *ServiceImpl) Server() server.Server {
 	return s.opts.Server
 }
 
-func (s *service) String() string {
+func (s *ServiceImpl) String() string {
 	return "vine"
 }
 
-func (s *service) Start() error {
+func (s *ServiceImpl) Start() error {
 	for _, fn := range s.opts.BeforeStart {
 		if err := fn(); err != nil {
 			return err
@@ -165,7 +145,7 @@ func (s *service) Start() error {
 	return nil
 }
 
-func (s *service) Stop() error {
+func (s *ServiceImpl) Stop() error {
 	var gerr error
 
 	for _, fn := range s.opts.BeforeStop {
@@ -187,7 +167,7 @@ func (s *service) Stop() error {
 	return gerr
 }
 
-func (s *service) Run() error {
+func (s *ServiceImpl) Run() error {
 	// register the debug handler
 	s.opts.Server.Handle(
 		s.opts.Server.NewHandler(
