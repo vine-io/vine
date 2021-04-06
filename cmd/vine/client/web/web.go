@@ -26,7 +26,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
 	"github.com/gorilla/mux"
 	"github.com/lack-io/cli"
 	"github.com/serenize/snaker"
@@ -39,9 +38,6 @@ import (
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	res "github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/server"
-	"github.com/lack-io/vine/service/api/server/acme"
-	"github.com/lack-io/vine/service/api/server/acme/autocert"
-	"github.com/lack-io/vine/service/api/server/acme/certmagic"
 	"github.com/lack-io/vine/service/api/server/cors"
 	httpapi "github.com/lack-io/vine/service/api/server/http"
 	"github.com/lack-io/vine/service/auth"
@@ -49,7 +45,6 @@ import (
 	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/service/sync/memory"
 	inauth "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/namespace"
@@ -75,9 +70,6 @@ var (
 	BasePathHeader        = "X-Vine-Web-Base-Path"
 	statsURL              string
 	loginURL              string
-	ACMEProvider          = "autocert"
-	ACMEChallengeProvider = "cloudflare"
-	ACMECA                = acme.LetsEncryptProductionCA
 
 	// Host name the web dashboard is served on
 	Host, _ = os.Hostname()
@@ -533,56 +525,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	var opts []server.Option
 
-	if len(ctx.String("acme-provider")) > 0 {
-		ACMEProvider = ctx.String("acme-provider")
-	}
-	if ctx.Bool("enable-acme") {
-		hosts := helper.ACMEHosts(ctx)
-		opts = append(opts, server.EnableACME(true))
-		opts = append(opts, server.ACMEHosts(hosts...))
-		switch ACMEProvider {
-		case "autocert":
-			opts = append(opts, server.ACMEProvider(autocert.NewProvider()))
-		case "certmagic":
-			// TODO: support multiple providers in internal/acme as a map
-			if ACMEChallengeProvider != "cloudflare" {
-				log.Fatal("The only implemented DNS challenge provider is cloudflare")
-			}
-
-			apiToken := os.Getenv("CF_API_TOKEN")
-			if len(apiToken) == 0 {
-				log.Fatal("env variables CF_API_TOKEN and CF_ACCOUNT_ID must be set")
-			}
-
-			// create the store
-			storage := certmagic.NewStorage(
-				memory.NewSync(),
-				svc.Options().Store,
-			)
-
-			config := cloudflare.NewDefaultConfig()
-			config.AuthToken = apiToken
-			config.ZoneToken = apiToken
-			challengeProvider, err := cloudflare.NewDNSProviderConfig(config)
-			if err != nil {
-				log.Fatal(err.Error())
-			}
-
-			opts = append(opts,
-				server.ACMEProvider(
-					certmagic.NewProvider(
-						acme.AcceptToS(true),
-						acme.CA(ACMECA),
-						acme.Cache(storage),
-						acme.ChallengeProvider(challengeProvider),
-						acme.OnDemand(false),
-					),
-				),
-			)
-		default:
-			log.Fatalf("%s is not a valid ACME provider\n", ACMEProvider)
-		}
-	} else if ctx.Bool("enable-tls") {
+	if ctx.Bool("enable-tls") {
 		config, err := helper.TLSConfig(ctx)
 		if err != nil {
 			log.Errorf(err.Error())

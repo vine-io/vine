@@ -17,17 +17,13 @@ import (
 	"net/http"
 
 	"github.com/lack-io/vine/service/api/resolver"
-	"github.com/lack-io/vine/service/api/server/acme"
 )
 
 type Option func(o *Options)
 
 type Options struct {
-	EnableACME   bool
 	EnableCORS   bool
-	ACMEProvider acme.Provider
 	EnableTLS    bool
-	ACMEHosts    []string
 	TLSConfig    *tls.Config
 	Resolver     resolver.Resolver
 	Wrappers     []Wrapper
@@ -44,24 +40,6 @@ func WrapHandler(w Wrapper) Option {
 func EnableCORS(b bool) Option {
 	return func(o *Options) {
 		o.EnableCORS = b
-	}
-}
-
-func EnableACME(b bool) Option {
-	return func(o *Options) {
-		o.EnableACME = b
-	}
-}
-
-func ACMEHosts(hosts ...string) Option {
-	return func(o *Options) {
-		o.ACMEHosts = hosts
-	}
-}
-
-func ACMEProvider(p acme.Provider) Option {
-	return func(o *Options) {
-		o.ACMEProvider = p
 	}
 }
 

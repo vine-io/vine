@@ -6,7 +6,6 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bwmarrin/discordgo v0.22.1
-	github.com/caddyserver/certmagic v0.10.6
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/cloudflare/cloudflare-go v0.10.2
 	github.com/coreos/etcd v3.3.25+incompatible
@@ -20,7 +19,6 @@ require (
 	github.com/forestgiant/sliceutil v0.0.0-20160425183142-94783f95db6c
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/fsouza/go-dockerclient v1.7.0
-	github.com/go-acme/lego/v3 v3.9.0
 	github.com/go-git/go-git/v5 v5.2.0
 	github.com/gobwas/httphead v0.1.0
 	github.com/gobwas/pool v0.2.1 // indirect
@@ -54,7 +52,7 @@ require (
 	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
-	golang.org/x/tools v0.1.0
+	golang.org/x/tools v0.1.0 // indirect
 	google.golang.org/grpc v1.35.0
 	gopkg.in/telegram-bot-api.v4 v4.6.4
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b

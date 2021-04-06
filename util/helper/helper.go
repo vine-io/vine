@@ -28,16 +28,6 @@ import (
 	"github.com/lack-io/vine/util/context/metadata"
 )
 
-func ACMEHosts(ctx *cli.Context) []string {
-	var hosts []string
-	for _, host := range strings.Split(ctx.String("acme-hosts"), ",") {
-		if len(host) > 0 {
-			hosts = append(hosts, host)
-		}
-	}
-	return hosts
-}
-
 func RequestToContext(r *http.Request) context.Context {
 	ctx := context.Background()
 	md := make(metadata.Metadata)

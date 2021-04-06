@@ -45,7 +45,6 @@ import (
 	gostore "github.com/lack-io/vine/service/store"
 	inauth "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/helper"
-	"github.com/lack-io/vine/util/update"
 )
 
 var (
@@ -71,21 +70,6 @@ func setup(app *ccli.App) {
 		&ccli.BoolFlag{
 			Name:  "local",
 			Usage: "Enable local only development: Defaults to true.",
-		},
-		&ccli.BoolFlag{
-			Name:    "enable-acme",
-			Usage:   "Enables ACME support via Let's Encrypt. ACME hosts should also be specified.",
-			EnvVars: []string{"VINE_ENABLE_ACME"},
-		},
-		&ccli.StringFlag{
-			Name:    "acme-hosts",
-			Usage:   "Comma separated list of hostnames to manage ACME certs for",
-			EnvVars: []string{"VINE_ACME_HOSTS"},
-		},
-		&ccli.StringFlag{
-			Name:    "acme-provider",
-			Usage:   "The provider that will be used to communicate with Let's Encrypt. Valid options: autocert, certmagic",
-			EnvVars: []string{"VINE_ACME_PROVIDER"},
 		},
 		&ccli.BoolFlag{
 			Name:    "enable-tls",
@@ -182,12 +166,6 @@ func setup(app *ccli.App) {
 			Name:    "auto-update",
 			Usage:   "Enable automatic updates",
 			EnvVars: []string{"VINE_AUTO_UPDATE"},
-		},
-		&ccli.StringFlag{
-			Name:    "update-url",
-			Usage:   "Set the url to retrieve system updates from",
-			EnvVars: []string{"VINE_UPDATE_URL"},
-			Value:   update.DefaultURL,
 		},
 		&ccli.BoolFlag{
 			Name:    "report-usage",

@@ -17,13 +17,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/service/api/server/acme"
-	"github.com/lack-io/vine/service/api/server/acme/autocert"
-	"github.com/lack-io/vine/service/api/server/acme/certmagic"
 	"github.com/lack-io/vine/service/auth"
 	bmem "github.com/lack-io/vine/service/broker/memory"
 	"github.com/lack-io/vine/service/client"
@@ -41,7 +37,6 @@ import (
 	"github.com/lack-io/vine/service/server"
 	sgrpc "github.com/lack-io/vine/service/server/grpc"
 	mucpServer "github.com/lack-io/vine/service/server/mucp"
-	"github.com/lack-io/vine/service/sync/memory"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/muxer"
 	"github.com/lack-io/vine/util/wrapper"
@@ -56,10 +51,6 @@ var (
 	Protocol = "grpc"
 	// The endpoint host to route to
 	Endpoint string
-	// ACME (Cert management)
-	ACMEProvider          = "autocert"
-	ACMEChallengeProvider = "cloudflare"
-	ACMECA                = acme.LetsEncryptProductionCA
 )
 
 func Run(ctx *cli.Context, svcOpts ...vine.Option) {
@@ -80,10 +71,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	if len(ctx.String("protocol")) > 0 {
 		Protocol = ctx.String("protocol")
 	}
-	if len(ctx.String("acme-provider")) > 0 {
-		ACMEProvider = ctx.String("acme-provider")
-	}
-
 	// service opts
 	svcOpts = append(svcOpts, vine.Name(Name))
 
@@ -157,57 +144,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	// enable acme will create a net.Listener which
-	if ctx.Bool("enable-acme") {
-		var ap acme.Provider
-
-		switch ACMEProvider {
-		case "autocert":
-			ap = autocert.NewProvider()
-		case "certmagic":
-			if ACMEChallengeProvider != "cloudflare" {
-				log.Fatal("The only implemented DNS challenge provider is cloudflare")
-			}
-
-			apiToken := os.Getenv("CF_API_TOKEN")
-			if len(apiToken) == 0 {
-				log.Fatal("env variables CF_API_TOKEN and CF_ACCOUNT_ID must be set")
-			}
-
-			storage := certmagic.NewStorage(
-				memory.NewSync(),
-				svc.Options().Store,
-			)
-
-			config := cloudflare.NewDefaultConfig()
-			config.AuthToken = apiToken
-			config.ZoneToken = apiToken
-			challengeProvider, err := cloudflare.NewDNSProviderConfig(config)
-			if err != nil {
-				log.Fatal(err.Error())
-			}
-
-			// define the provider
-			ap = certmagic.NewProvider(
-				acme.AcceptToS(true),
-				acme.CA(ACMECA),
-				acme.Cache(storage),
-				acme.ChallengeProvider(challengeProvider),
-				acme.OnDemand(false),
-			)
-		default:
-			log.Fatalf("Unsupported acme provider: %s\n", ACMEProvider)
-		}
-
-		// generate the tls config
-		config, err := ap.TLSConfig(helper.ACMEHosts(ctx)...)
-		if err != nil {
-			log.Fatalf("Failed to generate acme tls config: %v", err)
-		}
-
-		// set the tls config
-		serverOpts = append(serverOpts, server.TLSConfig(config))
-		// enable tls will leverage tls certs and generate a tls.Config
-	} else if ctx.Bool("enable-tls") {
+	if ctx.Bool("enable-tls") {
 		// get certificates from the context
 		config, err := helper.TLSConfig(ctx)
 		if err != nil {
