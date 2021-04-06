@@ -24,7 +24,6 @@ import (
 	log "github.com/lack-io/vine/service/logger"
 	gorun "github.com/lack-io/vine/service/runtime"
 	handler "github.com/lack-io/vine/util/file"
-	"github.com/lack-io/vine/util/platform"
 	"github.com/lack-io/vine/util/update"
 )
 
@@ -134,7 +133,6 @@ func Run(context *cli.Context) error {
 		}
 
 		options := []gorun.Option{
-			gorun.WithScheduler(update.NewScheduler(updateURL, platform.Version)),
 		}
 		(*muRuntime).Init(options...)
 	}
@@ -164,7 +162,7 @@ func Run(context *cli.Context) error {
 		}
 
 		// NOTE: we use Version right now to check for the latest release
-		muService := &gorun.Service{Name: name, Version: platform.Version}
+		muService := &gorun.Service{Name: name}
 		if err := (*muRuntime).Create(muService, args...); err != nil {
 			log.Errorf("Failed to create runtime enviroment: %v", err)
 			return err

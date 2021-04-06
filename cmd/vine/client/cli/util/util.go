@@ -25,7 +25,6 @@ import (
 
 	"github.com/lack-io/vine/cmd/vine/service/runtime/profile"
 	"github.com/lack-io/vine/util/config"
-	"github.com/lack-io/vine/util/platform"
 )
 
 const (
@@ -64,22 +63,10 @@ var defaultEnvs = map[string]Env{
 	},
 }
 
-func isBuiltinService(command string) bool {
-	for _, service := range platform.Services {
-		if command == service {
-			return true
-		}
-	}
-	return false
-}
-
 // SetupCommand includes things that should run for each command.
 func SetupCommand(ctx *ccli.Context) {
 	switch ctx.Args().First() {
 	case "new", "server", "help":
-		return
-	}
-	if ctx.Args().Len() == 1 && isBuiltinService(ctx.Args().First()) {
 		return
 	}
 	if ctx.Args().Len() >= 1 && ctx.Args().First() == "env" {
