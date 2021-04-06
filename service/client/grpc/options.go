@@ -32,11 +32,11 @@ var (
 	DefaultPoolMaxIdle = 50
 
 	// DefaultMaxRecvMsgSize maximum message that client can receive
-	// (20 MB)
-	DefaultMaxRecvMsgSize = 1024 * 1024 * 20
+	// (200 MB)
+	DefaultMaxRecvMsgSize = 1024 * 1024 * 200
 
 	// DefaultMaxSendMsgSize maximum message that client can send
-	DefaultMaxSendMsgSize = 1024 * 1024 * 20
+	DefaultMaxSendMsgSize = 1024 * 1024 * 200
 )
 
 type poolMaxStreams struct{}

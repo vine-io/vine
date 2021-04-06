@@ -57,9 +57,9 @@ message Endpoint  {
   // HTTP Host e.g example.com
   repeated string host = 4;
   // HTTP Methods e.g GET, POST
-  repeated  string method = 5;
+  repeated string method = 5;
   // HTTP Path e.g /greeter. Expect POSIX regex
-  repeated  string path = 6;
+  repeated string path = 6;
   // Body destination
   // "*" or "" - top level message value
   // "string" - inner message value
