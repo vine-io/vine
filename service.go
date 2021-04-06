@@ -31,14 +31,14 @@ import (
 	"github.com/lack-io/vine/util/wrapper"
 )
 
-type ServiceImpl struct {
+type service struct {
 	opts Options
 
 	once sync.Once
 }
 
 func newService(opts ...Option) Service {
-	sv := new(ServiceImpl)
+	sv := new(service)
 	options := newOptions(opts...)
 
 	// service name
@@ -67,14 +67,14 @@ func newService(opts ...Option) Service {
 	return sv
 }
 
-func (s *ServiceImpl) Name() string {
+func (s *service) Name() string {
 	return s.opts.Server.Options().Name
 }
 
 // Init initialises options. Additionally it calls cmd.Init
 // which parses command line flags. cmd.Init is only called
 // on first Init.
-func (s *ServiceImpl) Init(opts ...Option) {
+func (s *service) Init(opts ...Option) {
 	// process options
 	for _, o := range opts {
 		o(&s.opts)
@@ -109,23 +109,23 @@ func (s *ServiceImpl) Init(opts ...Option) {
 	})
 }
 
-func (s *ServiceImpl) Options() Options {
+func (s *service) Options() Options {
 	return s.opts
 }
 
-func (s *ServiceImpl) Client() client.Client {
+func (s *service) Client() client.Client {
 	return s.opts.Client
 }
 
-func (s *ServiceImpl) Server() server.Server {
+func (s *service) Server() server.Server {
 	return s.opts.Server
 }
 
-func (s *ServiceImpl) String() string {
+func (s *service) String() string {
 	return "vine"
 }
 
-func (s *ServiceImpl) Start() error {
+func (s *service) Start() error {
 	for _, fn := range s.opts.BeforeStart {
 		if err := fn(); err != nil {
 			return err
@@ -145,7 +145,7 @@ func (s *ServiceImpl) Start() error {
 	return nil
 }
 
-func (s *ServiceImpl) Stop() error {
+func (s *service) Stop() error {
 	var gerr error
 
 	for _, fn := range s.opts.BeforeStop {
@@ -167,14 +167,16 @@ func (s *ServiceImpl) Stop() error {
 	return gerr
 }
 
-func (s *ServiceImpl) Run() error {
+func (s *service) Run() error {
 	// register the debug handler
-	s.opts.Server.Handle(
+	if err := s.opts.Server.Handle(
 		s.opts.Server.NewHandler(
 			handler.NewHandler(s.opts.Client),
 			server.InternalHandler(true),
 		),
-	)
+	); err != nil {
+		return err
+	}
 
 	// start the profiler
 	if s.opts.Profile != nil {

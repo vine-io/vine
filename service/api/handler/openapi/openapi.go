@@ -54,7 +54,6 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	var info *openapipb.OpenAPIInfo
 	tags := make(map[string]*openapipb.OpenAPITag, 0)
 	paths := make(map[string]*openapipb.OpenAPIPath, 0)
 	schemas := make(map[string]*openapipb.Model, 0)
@@ -94,9 +93,6 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 				if api == nil || api.Components.SecuritySchemes == nil {
 					continue
 				}
-				if info == nil {
-					info = api.Info
-				}
 				for _, tag := range api.Tags {
 					tags[tag.Name] = tag
 				}
@@ -120,7 +116,10 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	openapi := &openapipb.OpenAPI{
 		Openapi: "3.0.1",
-		Info:    info,
+		Info: &openapipb.OpenAPIInfo{
+			Title:       "Vine Document",
+			Description: "OpenAPI3.0",
+		},
 		Tags:    []*openapipb.OpenAPITag{},
 		Paths:   paths,
 		Servers: servers,
