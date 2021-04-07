@@ -271,6 +271,9 @@ github.com/kr/text
 # github.com/lack-io/cli v1.1.0
 ## explicit
 github.com/lack-io/cli
+# github.com/lack-io/gscheduler v0.0.1
+## explicit
+github.com/lack-io/gscheduler/cron
 # github.com/lucas-clemente/quic-go v0.19.3
 ## explicit
 github.com/lucas-clemente/quic-go

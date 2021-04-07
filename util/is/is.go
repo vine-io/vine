@@ -18,7 +18,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lack-io/vine/util/sched/cron"
+	"github.com/lack-io/gscheduler/cron"
 )
 
 type Empty struct{}
