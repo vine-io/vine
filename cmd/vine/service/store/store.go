@@ -13,8 +13,9 @@
 package store
 
 import (
+	"fmt"
+
 	"github.com/lack-io/cli"
-	"github.com/pkg/errors"
 
 	"github.com/lack-io/vine"
 	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
@@ -75,13 +76,13 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			Key:   "databases/" + database,
 			Value: []byte{},
 		}, store.WriteTo("vine", "internal")); err != nil {
-			return nil, errors.Wrap(err, "vine store couldn't store new database in internal table")
+			return nil, fmt.Errorf("vine store couldn't store new database in internal table: %w", err)
 		}
 		if err := storeHandler.Default.Write(&store.Record{
 			Key:   "tables/" + database + "/" + table,
 			Value: []byte{},
 		}, store.WriteTo("vine", "internal")); err != nil {
-			return nil, errors.Wrap(err, "vine store couldn't store new table in internal table")
+			return nil, fmt.Errorf("vine store couldn't store new table in internal table: %w", err)
 		}
 
 		return storeHandler.Default, nil

@@ -15,12 +15,12 @@ package cloudflare
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
 	"github.com/cloudflare/cloudflare-go"
 	miekdns "github.com/miekg/dns"
-	"github.com/pkg/errors"
 
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/provider"
 	dns "github.com/lack-io/vine/proto/services/network/dns"

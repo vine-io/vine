@@ -14,7 +14,7 @@
 // Go code. Run it bu building this program and putting it in your path with
 // the name
 //		protoc-gen-deepcopy
-// That word 'validator' at the end becomes part of the option string set for the
+// That word 'deepcopy' at the end becomes part of the option string set for the
 // protocol compiler, so once the protocol compiler (protoc) is installed
 // you can run
 //		protoc --deepcopy_out=:out_directory --go_out=output_directory input_directory/file.proto

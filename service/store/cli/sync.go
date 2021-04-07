@@ -13,32 +13,33 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/lack-io/cli"
-	"github.com/pkg/errors"
 )
 
 // Sync is the entrypoint for vine vine sync
 func Sync(ctx *cli.Context) error {
 	from, to, err := makeStores(ctx)
 	if err != nil {
-		return errors.Wrap(err, "Sync")
+		return fmt.Errorf("Sync: %w", err)
 	}
 
 	keys, err := from.List()
 	if err != nil {
-		return errors.Wrapf(err, "couldn't list from vine %s", from.String())
+		return fmt.Errorf("couldn't list from vine %s: %w", from.String(), err)
 	}
 	for _, k := range keys {
 		r, err := from.Read(k)
 		if err != nil {
-			return errors.Wrapf(err, "couldn't read %s from vine %s", k, from.String())
+			return fmt.Errorf("couldn't read %s from vine %s: %w", k, from.String(), err)
 		}
 		if len(r) != 1 {
-			return errors.Errorf("received multiple records reading %s from %s", k, from.String())
+			return fmt.Errorf("received multiple records reading %s from %s", k, from.String())
 		}
 		err = to.Write(r[0])
 		if err != nil {
-			return errors.Wrapf(err, "couldn't write %s to vine %s", k, to.String())
+			return fmt.Errorf("couldn't write %s to vine %s: %w", k, to.String(), err)
 		}
 	}
 	return nil

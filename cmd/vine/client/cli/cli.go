@@ -19,6 +19,7 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
+
 	storecli "github.com/lack-io/vine/service/store/cli"
 
 	"github.com/chzyer/readline"

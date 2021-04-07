@@ -14,12 +14,11 @@ package snapshot
 
 import (
 	"encoding/gob"
+	"fmt"
 	"io"
 	"net/url"
 	"os"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/lack-io/vine/service/store"
 )
@@ -70,10 +69,10 @@ func (f *FileRestore) Init(opts ...RestoreOption) error {
 	}
 	u, err := url.Parse(f.Options.Source)
 	if err != nil {
-		return errors.Wrap(err, "source is invalid")
+		return fmt.Errorf("source is invalid: %w", err)
 	}
 	if u.Scheme != "file" {
-		return errors.Errorf("unsupported scheme %s (wanted file)", u.Scheme)
+		return fmt.Errorf("unsupported scheme %s (wanted file)", u.Scheme)
 	}
 	f.path = u.Path
 	return nil
@@ -83,7 +82,7 @@ func (f *FileRestore) Init(opts ...RestoreOption) error {
 func (f *FileRestore) Start() (<-chan *store.Record, error) {
 	fi, err := os.Open(f.path)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Couldn't open file %s", f.path)
+		return nil, fmt.Errorf("Couldn't open file %s: %w", f.path, err)
 	}
 	recordChan := make(chan *store.Record)
 	go func(records chan<- *store.Record, reader io.ReadCloser) {

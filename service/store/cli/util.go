@@ -13,10 +13,10 @@
 package cli
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/lack-io/cli"
-	"github.com/pkg/errors"
 
 	"github.com/lack-io/vine/service/config/cmd"
 	"github.com/lack-io/vine/service/store"
@@ -26,7 +26,7 @@ import (
 func makeStore(ctx *cli.Context) (store.Store, error) {
 	builtinStore, err := getStore(ctx.String("store"))
 	if err != nil {
-		return nil, errors.Wrap(err, "makeStore")
+		return nil, fmt.Errorf("makeStore: %w", err)
 	}
 	s := builtinStore(
 		store.Nodes(strings.Split(ctx.String("nodes"), ",")...),
@@ -34,7 +34,7 @@ func makeStore(ctx *cli.Context) (store.Store, error) {
 		store.Table(ctx.String("table")),
 	)
 	if err := s.Init(); err != nil {
-		return nil, errors.Wrapf(err, "Couldn't init %s store", ctx.String("store"))
+		return nil, fmt.Errorf("Couldn't init %s store: %w", ctx.String("store"), err)
 	}
 	return s, nil
 }
@@ -43,11 +43,11 @@ func makeStore(ctx *cli.Context) (store.Store, error) {
 func makeStores(ctx *cli.Context) (store.Store, store.Store, error) {
 	fromBuilder, err := getStore(ctx.String("from-backend"))
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "from store")
+		return nil, nil, fmt.Errorf("from store: %w", err)
 	}
 	toBuilder, err := getStore(ctx.String("to-backend"))
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "to store")
+		return nil, nil, fmt.Errorf("to store: %w", err)
 	}
 	from := fromBuilder(
 		store.Nodes(strings.Split(ctx.String("from-nodes"), ",")...),
@@ -55,7 +55,7 @@ func makeStores(ctx *cli.Context) (store.Store, store.Store, error) {
 		store.Table(ctx.String("from-table")),
 	)
 	if err := from.Init(); err != nil {
-		return nil, nil, errors.Wrapf(err, "from: couldn't init %s", ctx.String("from-backend"))
+		return nil, nil, fmt.Errorf("from: couldn't init %s: %w", ctx.String("from-backend"), err)
 	}
 	to := toBuilder(
 		store.Nodes(strings.Split(ctx.String("to-nodes"), ",")...),
@@ -63,7 +63,7 @@ func makeStores(ctx *cli.Context) (store.Store, store.Store, error) {
 		store.Table(ctx.String("to-table")),
 	)
 	if err := to.Init(); err != nil {
-		return nil, nil, errors.Wrapf(err, "to: couldn't init %s", ctx.String("to-backend"))
+		return nil, nil, fmt.Errorf("to: couldn't init %s: %w", ctx.String("to-backend"), err)
 	}
 	return from, to, nil
 }
@@ -71,7 +71,7 @@ func makeStores(ctx *cli.Context) (store.Store, store.Store, error) {
 func getStore(s string) (func(...store.Option) store.Store, error) {
 	builtinStore, exists := cmd.DefaultStores[s]
 	if !exists {
-		return nil, errors.Errorf("store %s is not an implemented store - check your plugins", s)
+		return nil, fmt.Errorf("store %s is not an implemented store - check your plugins", s)
 	}
 	return builtinStore, nil
 }

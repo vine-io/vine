@@ -13,10 +13,11 @@
 package cli
 
 import (
+	"errors"
+	"fmt"
 	"net/url"
 
 	"github.com/lack-io/cli"
-	"github.com/pkg/errors"
 
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/store/cli/snapshot"
@@ -26,7 +27,7 @@ import (
 func Restore(ctx *cli.Context) error {
 	s, err := makeStore(ctx)
 	if err != nil {
-		return errors.Wrap(err, "couldn't construct a store")
+		return fmt.Errorf("couldn't construct a store: %w", err)
 	}
 	var rs snapshot.Restore
 	source := ctx.String("source")
@@ -36,23 +37,23 @@ func Restore(ctx *cli.Context) error {
 	}
 	u, err := url.Parse(source)
 	if err != nil {
-		return errors.Wrap(err, "source is invalid")
+		return fmt.Errorf("source is invalid: %w", err)
 	}
 	switch u.Scheme {
 	case "file":
 		rs = snapshot.NewFileRestore(snapshot.Source(source))
 	default:
-		return errors.Errorf("unsupported source scheme: %s", u.Scheme)
+		return fmt.Errorf("unsupported source scheme: %s", u.Scheme)
 	}
 
 	err = rs.Init()
 	if err != nil {
-		return errors.Wrap(err, "failed to initialise the restorer")
+		return fmt.Errorf("failed to initialise the restorer: %w", err)
 	}
 
 	recordChan, err := rs.Start()
 	if err != nil {
-		return errors.Wrap(err, "couldn't start the restorer")
+		return fmt.Errorf("couldn't start the restorer: %w", err)
 	}
 	counter := uint64(0)
 	for r := range recordChan {
