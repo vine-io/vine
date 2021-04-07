@@ -30,8 +30,11 @@ func FromRequest(r *http.Request) context.Context {
 	for k, v := range r.Header {
 		md[textproto.CanonicalMIMEHeaderKey(k)] = strings.Join(v, ",")
 	}
-	// pass http host
-	md["RemoteAddr"] = r.RemoteAddr
+	if v, ok := md.Get("X-Forwarded-For"); ok {
+		md["X-Forwarded-For"] = v + "," + r.RemoteAddr
+	} else {
+		md["X-Forwarded-For"] = v
+	}
 	md["Host"] = r.Host
 	// pass http method
 	md["Method"] = r.Method

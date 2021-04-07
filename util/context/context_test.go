@@ -15,13 +15,13 @@ func TestRequestToContext(t *testing.T) {
 		{
 			&http.Request{
 				Header: http.Header{
-					"Foo1": []string{"bar"},
-					"Foo2": []string{"bar", "baz"},
+					"Foo1":       []string{"bar"},
+					"Foo2":       []string{"bar", "baz"},
 				},
 			},
 			metadata.Metadata{
-				"Foo1": "bar",
-				"Foo2": "bar,baz",
+				"Foo1":       "bar",
+				"Foo2":       "bar,baz",
 			},
 		},
 	}
