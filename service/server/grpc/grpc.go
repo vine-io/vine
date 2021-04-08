@@ -50,8 +50,8 @@ import (
 
 var (
 	// DefaultMaxMsgSize define maximum message size that server can send
-	// or receive. Default value is 20MB.
-	DefaultMaxMsgSize = 1024 * 1024 * 20
+	// or receive. Default value is 100MB.
+	DefaultMaxMsgSize = 1024 * 1024 * 100
 )
 
 const (
