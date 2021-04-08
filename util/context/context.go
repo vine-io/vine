@@ -33,7 +33,7 @@ func FromRequest(r *http.Request) context.Context {
 	if v, ok := md.Get("X-Forwarded-For"); ok {
 		md["X-Forwarded-For"] = v + "," + r.RemoteAddr
 	} else {
-		md["X-Forwarded-For"] = v
+		md["X-Forwarded-For"] = r.RemoteAddr
 	}
 	md["Host"] = r.Host
 	// pass http method
