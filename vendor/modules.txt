@@ -219,7 +219,7 @@ github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/google/uuid v1.1.5
+# github.com/google/uuid v1.2.0
 ## explicit
 github.com/google/uuid
 # github.com/gorilla/mux v1.8.0
@@ -271,9 +271,11 @@ github.com/kr/text
 # github.com/lack-io/cli v1.1.0
 ## explicit
 github.com/lack-io/cli
-# github.com/lack-io/gscheduler v0.0.1
+# github.com/lack-io/gscheduler v0.1.0
 ## explicit
+github.com/lack-io/gscheduler
 github.com/lack-io/gscheduler/cron
+github.com/lack-io/gscheduler/rbtree
 # github.com/lucas-clemente/quic-go v0.19.3
 ## explicit
 github.com/lucas-clemente/quic-go

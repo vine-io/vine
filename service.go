@@ -154,6 +154,8 @@ func (s *service) Stop() error {
 		}
 	}
 
+	s.opts.Scheduler.Stop()
+
 	if err := s.opts.Server.Stop(); err != nil {
 		return err
 	}

@@ -18,6 +18,8 @@ import (
 
 	"github.com/lack-io/cli"
 
+	"github.com/lack-io/gscheduler"
+
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/client"
@@ -48,6 +50,7 @@ type Options struct {
 	Runtime   runtime.Runtime
 	Transport transport.Transport
 	Profile   profile.Profile
+	Scheduler gscheduler.Scheduler
 
 	// Before and After funcs
 	BeforeStart []func() error
@@ -75,6 +78,7 @@ func newOptions(opts ...Option) Options {
 		Registry:  registry.DefaultRegistry,
 		Runtime:   runtime.DefaultRuntime,
 		Transport: transport.DefaultTransport,
+		Scheduler: defaultScheduler,
 		Context:   context.Background(),
 		Signal:    true,
 	}
