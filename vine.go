@@ -36,7 +36,7 @@ type serviceKey struct{}
 // within vine. Its a convenience method for building
 // and initialising services.
 type Service interface {
-	// The service name
+	// Name The service name
 	Name() string
 	// Init initialises options
 	Init(...Option)
@@ -48,13 +48,13 @@ type Service interface {
 	Server() server.Server
 	// Run the service
 	Run() error
-	// The service implementation
+	// String The service implementation
 	String() string
 }
 
 // Function is a one time executing Service
 type Function interface {
-	// Inherits Service interface
+	// Service Inherits Service interface
 	Service
 	// Done signals to complete execution
 	Done() error

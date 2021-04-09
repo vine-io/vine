@@ -394,7 +394,7 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
-// @todo: Getting existing lines is not supported yet.
+// Logs @todo: Getting existing lines is not supported yet.
 // The reason for this is because it's hard to calculate line offset
 // as opposed to character offset.
 // This logger streams by default and only supports the `StreamCount` option.

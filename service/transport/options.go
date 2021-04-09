@@ -96,7 +96,7 @@ func Timeout(t time.Duration) Option {
 	}
 }
 
-// Use secure communication. If TLSConfig is not specified we
+// Secure Use secure communication. If TLSConfig is not specified we
 // use InsecureSkipVerify and generate a self signed cert
 func Secure(b bool) Option {
 	return func(o *Options) {
@@ -111,14 +111,14 @@ func TLSConfig(t *tls.Config) Option {
 	}
 }
 
-// Indicates whether this is a streaming connection
+// WithStream Indicates whether this is a streaming connection
 func WithStream() DialOption {
 	return func(o *DialOptions) {
 		o.Stream = true
 	}
 }
 
-// Timeout used when dialing the remote side
+// WithTimeout Timeout used when dialing the remote side
 func WithTimeout(d time.Duration) DialOption {
 	return func(o *DialOptions) {
 		o.Timeout = d
