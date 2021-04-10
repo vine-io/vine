@@ -152,7 +152,7 @@ curl -H 'Content-Type: application/json' -d '{}' http://localhost:8080/api/vine
 ## 接下来的事
 - [x] 修改 github.com/lack-io/vine/service 结构
 - [x] 添加内置定时任务功能
-- [ ] 使用高性能的 web 库替换 mux
+- [x] 使用高性能的 web 库替换 mux
 - [ ] 修改 Auth 组件
 - [x] 减少对应依赖，如 ACEM
 - [x] 添加数据库支持
