@@ -23,44 +23,49 @@
 package cors
 
 import (
-	"net/http"
+	"github.com/gofiber/fiber/v2"
+	"github.com/lack-io/vine/service/api/handler"
 )
 
 // CombinedCORSHandler wraps a server and provides CORS headers
-func CombinedCORSHandler(h http.Handler) http.Handler {
-	return corsHandler{h}
+func CombinedCORSHandler() handler.Handler {
+	return &corsHandler{}
 }
 
 type corsHandler struct {
-	handler http.Handler
 }
 
-func (c corsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	SetHeaders(w, r)
+func (c *corsHandler) Handle(ctx *fiber.Ctx) error {
+	SetHeaders(ctx)
 
-	if r.Method == "OPTIONS" {
-		return
+	if ctx.Method() == "OPTIONS" {
+		return nil
 	}
 
-	c.handler.ServeHTTP(w, r)
+	return ctx.Next()
+}
+
+func (c corsHandler) String() string {
+	return "cors"
 }
 
 // SetHeaders sets the CORS headers
-func SetHeaders(w http.ResponseWriter, r *http.Request) {
-	set := func(w http.ResponseWriter, k, v string) {
-		if v := w.Header().Get(k); len(v) > 0 {
+func SetHeaders(ctx *fiber.Ctx) error {
+	set := func(ctx *fiber.Ctx, k, v string) {
+		if v := ctx.Get(k); len(v) > 0 {
 			return
 		}
-		w.Header().Set(k, v)
+		ctx.Set(k, v)
 	}
 
-	if origin := r.Header.Get("Origin"); len(origin) > 0 {
-		set(w, "Access-Control-Allow-Origin", origin)
+	if origin := ctx.Get("Origin", ""); len(origin) > 0 {
+		set(ctx, "Access-Control-Allow-Origin", origin)
 	} else {
-		set(w, "Access-Control-Allow-Origin", "*")
+		set(ctx, "Access-Control-Allow-Origin", "*")
 	}
 
-	set(w, "Access-Control-Allow-Credentials", "true")
-	set(w, "Access-Control-Allow-Methods", "POST, PATCH, GET, OPTIONS, PUT, DELETE")
-	set(w, "Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	set(ctx, "Access-Control-Allow-Credentials", "true")
+	set(ctx, "Access-Control-Allow-Methods", "POST, PATCH, GET, OPTIONS, PUT, DELETE")
+	set(ctx, "Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	return nil
 }

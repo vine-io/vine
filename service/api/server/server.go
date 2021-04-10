@@ -23,15 +23,13 @@
 // Package server provides an API gateway server which handles inbound requests
 package server
 
-import (
-	"net/http"
-)
+import "github.com/gofiber/fiber/v2"
 
 // Server serves api requests
 type Server interface {
 	Address() string
 	Init(opts ...Option) error
-	Handle(path string, handler http.Handler)
+	Handle(path string, app *fiber.App)
 	Start() error
 	Stop() error
 }

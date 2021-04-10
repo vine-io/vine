@@ -26,13 +26,13 @@ package http
 import (
 	"errors"
 	"fmt"
-	"net/http"
-	"net/http/httputil"
 	"net/url"
 
+	"github.com/gofiber/fiber/v2"
 	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/service/api/handler"
 	"github.com/lack-io/vine/service/client/selector"
+	ctx "github.com/lack-io/vine/util/context"
 )
 
 const (
@@ -46,31 +46,30 @@ type httpHandler struct {
 	s *apipb.Service
 }
 
-func (h *httpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	service, err := h.getService(r)
+func (h *httpHandler) Handle(c *fiber.Ctx) error {
+	service, err := h.getService(c)
 	if err != nil {
-		w.WriteHeader(500)
-		return
+		return fiber.NewError(500, err.Error())
 	}
 
 	if len(service) == 0 {
-		w.WriteHeader(404)
-		return
+		return fiber.NewError(404)
 	}
 
 	rp, err := url.Parse(service)
 	if err != nil {
-		w.WriteHeader(500)
-		return
+		return fiber.NewError(500)
 	}
 
-	httputil.NewSingleHostReverseProxy(rp).ServeHTTP(w, r)
+	//httputil.NewSingleHostReverseProxy(rp).ServeHTTP(w, r)
+	return c.Redirect(rp.String())
 }
 
 // getService returns the service for this request from the selector
-func (h *httpHandler) getService(r *http.Request) (string, error) {
+func (h *httpHandler) getService(c *fiber.Ctx) (string, error) {
 	var service *apipb.Service
 
+	r := ctx.NewRequestCtx(c, ctx.FromRequest(c))
 	if h.s != nil {
 		// we were given the service
 		service = h.s

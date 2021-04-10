@@ -26,10 +26,10 @@ package api
 import (
 	"fmt"
 	"mime"
-	"net/http"
 	"strings"
 
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/lack-io/cli"
 	"github.com/rakyll/statik/fs"
 
@@ -61,17 +61,17 @@ import (
 )
 
 var (
-	Name                  = "go.vine.api"
-	Address               = ":8080"
-	Handler               = "meta"
-	Resolver              = "vine"
-	RPCPath               = "/rpc"
-	APIPath               = "/"
-	ProxyPath             = "/{service:[a-zA-Z0-9]+}"
-	Namespace             = "go.vine"
-	Type                  = "api"
-	HeaderPrefix          = "X-Vine-"
-	EnableRPC             = false
+	Name         = "go.vine.api"
+	Address      = ":8080"
+	Handler      = "meta"
+	Resolver     = "vine"
+	RPCPath      = "/rpc"
+	APIPath      = "/"
+	ProxyPath    = "/{service:[a-zA-Z0-9]+}"
+	Namespace    = "go.vine"
+	Type         = "api"
+	HeaderPrefix = "X-Vine-"
+	EnableRPC    = false
 )
 
 func Run(ctx *cli.Context, svcOpts ...vine.Option) {
@@ -132,14 +132,14 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	// create the router
-	var h http.Handler
-	r := mux.NewRouter()
-	h = r
+	//var h fasthttp.Handler
+	app := fiber.New(fiber.Config{DisableStartupMessage: true})
+	//h = r
 
 	if ctx.Bool("enable-stats") {
 		st := stats.New()
-		r.HandleFunc("/stats", st.StatsHandler)
-		h = st.ServeHTTP(r)
+		app.All("/stats", st.StatsHandler)
+		//h = st.ServeHTTP(r)
 		st.Start()
 		defer st.Stop()
 	}
@@ -152,26 +152,27 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			log.Fatalf("Starting OpenAPI: %v", err)
 		}
 		prefix := "/openapi-ui/"
-		fileServer := http.FileServer(statikFs)
-		r.HandleFunc(prefix, openAPI.OpenAPIHandler)
-		r.PathPrefix(prefix).Handler(http.StripPrefix(prefix, fileServer))
-		r.HandleFunc("/openapi.json", openAPI.OpenAPIJOSNHandler)
+		//fileServer := http.FileServer(statikFs)
+		app.All(prefix, openAPI.OpenAPIHandler)
+		app.Use(prefix, filesystem.New(filesystem.Config{Root: statikFs}))
+		//r.PathPrefix(prefix).Handler(http.StripPrefix(prefix, fileServer))
+		app.Get("/openapi.json", openAPI.OpenAPIJOSNHandler)
 		log.Infof("Starting OpenAPI at %v", prefix)
-		h = openAPI.ServeHTTP(r)
+		//h = openAPI.ServeHTTP(r)
 	}
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	app.Get("/", func(c *fiber.Ctx) error {
 		response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
-		w.Write([]byte(response))
+		return c.Send([]byte(response))
 	})
 
 	// strip favicon.ico
-	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
+	app.Get("/favicon.ico", func(ctx *fiber.Ctx) error { return nil })
 
 	// register rpc handler
 	if EnableRPC {
 		log.Infof("Registering RPC Handler at %s", RPCPath)
-		r.HandleFunc(RPCPath, handler.RPC)
+		app.All(RPCPath, handler.RPC)
 	}
 
 	// create the namespace resolver
@@ -208,7 +209,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		r.PathPrefix(APIPath).Handler(rp)
+		app.Group(APIPath, rp.Handle)
 	case "api":
 		log.Infof("Registering API Request Handler at %s", APIPath)
 		rt := regRouter.NewRouter(
@@ -221,7 +222,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		r.PathPrefix(APIPath).Handler(ap)
+		app.Group(APIPath, ap.Handle)
 	case "event":
 		log.Infof("Registering API Event Handler at %s", APIPath)
 		rt := regRouter.NewRouter(
@@ -234,7 +235,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		r.PathPrefix(APIPath).Handler(ev)
+		app.Group(APIPath, ev.Handle)
 	case "http", "proxy":
 		log.Infof("Registering API HTTP Handler at %s", ProxyPath)
 		rt := regRouter.NewRouter(
@@ -247,7 +248,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		r.PathPrefix(ProxyPath).Handler(ht)
+		app.Group(ProxyPath, ht.Handle)
 	case "web":
 		log.Infof("Registering API Web Handler at %s", APIPath)
 		rt := regRouter.NewRouter(
@@ -260,22 +261,23 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		r.PathPrefix(APIPath).Handler(w)
+		app.Group(ProxyPath, w.Handle)
 	default:
 		log.Infof("Registering API Default Handler at %s", APIPath)
 		rt := regRouter.NewRouter(
 			router.WithResolver(rr),
 			router.WithRegistry(svc.Options().Registry),
 		)
-		r.PathPrefix(APIPath).Handler(handler.Meta(svc, rt, nsResolver.ResolveWithType))
+		app.Group(ProxyPath, handler.Meta(svc, rt, nsResolver.ResolveWithType).Handle)
 	}
 
 	// create the auth wrapper and the server
+	// TODO: app middleware
 	authWrapper := auth.Wrapper(rr, nsResolver)
 	api := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
 
 	api.Init(opts...)
-	api.Handle("/", h)
+	api.Handle("/", app)
 
 	// Start API
 	if err := api.Start(); err != nil {

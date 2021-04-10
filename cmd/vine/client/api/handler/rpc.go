@@ -23,12 +23,14 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/service/api/server/cors"
 	"github.com/lack-io/vine/service/client"
@@ -46,32 +48,29 @@ type rpcRequest struct {
 
 // RPC Handler passes on a JSON or form encoded RPC request to
 // a service.
-func RPC(w http.ResponseWriter, r *http.Request) {
+func RPC(c *fiber.Ctx) error {
 
-	if r.Method == "OPTIONS" {
-		cors.SetHeaders(w, r)
-		return
+	if c.Method() == "OPTIONS" {
+
+		return cors.SetHeaders(c)
 	}
 
-	if r.Method != "POST" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
+	if c.Method() != "POST" {
+		return fiber.NewError(405, "Method not allowed")
 	}
-	defer r.Body.Close()
 
-	badRequest := func(description string) {
+	badRequest := func(description string) error {
 		e := errors.BadRequest("go.vine.rpc", description)
-		w.WriteHeader(400)
-		w.Write([]byte(e.Error()))
+		return fiber.NewError(400, e.Error())
 	}
 
 	var service, endpoint, address string
 	var request interface{}
 
 	// response content type
-	w.Header().Set("Content-Type", "application/json")
+	c.Set("Content-Type", "application/json")
 
-	ct := r.Header.Get("Content-Type")
+	ct := c.Get("Content-Type")
 
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
 	if idx := strings.IndexRune(ct, ';'); idx >= 0 {
@@ -82,12 +81,11 @@ func RPC(w http.ResponseWriter, r *http.Request) {
 	case "application/json":
 		var rpcReq rpcRequest
 
-		d := json.NewDecoder(r.Body)
+		d := json.NewDecoder(bytes.NewBuffer(c.Body()))
 		d.UseNumber()
 
 		if err := d.Decode(&rpcReq); err != nil {
-			badRequest(err.Error())
-			return
+			return badRequest(err.Error())
 		}
 
 		service = rpcReq.Service
@@ -104,36 +102,33 @@ func RPC(w http.ResponseWriter, r *http.Request) {
 			d.UseNumber()
 
 			if err := d.Decode(&request); err != nil {
-				badRequest("error decoding request string: " + err.Error())
-				return
+				return badRequest("error decoding request string: " + err.Error())
+
 			}
 		}
 	default:
-		r.ParseForm()
-		service = r.Form.Get("service")
-		endpoint = r.Form.Get("endpoint")
-		address = r.Form.Get("address")
+		service = c.FormValue("service")
+		endpoint = c.FormValue("endpoint")
+		address = c.FormValue("address")
 		if len(endpoint) == 0 {
-			endpoint = r.Form.Get("method")
+			endpoint = c.FormValue("method")
 		}
 
-		d := json.NewDecoder(strings.NewReader(r.Form.Get("request")))
+		d := json.NewDecoder(strings.NewReader(c.FormValue("request")))
 		d.UseNumber()
 
 		if err := d.Decode(&request); err != nil {
-			badRequest("error decoding request string: " + err.Error())
-			return
+			return badRequest("error decoding request string: " + err.Error())
 		}
 	}
 
 	if len(service) == 0 {
-		badRequest("invalid service")
-		return
+		return badRequest("invalid service")
+
 	}
 
 	if len(endpoint) == 0 {
-		badRequest("invalid endpoint")
-		return
+		return badRequest("invalid endpoint")
 	}
 
 	// create request/response
@@ -142,11 +137,11 @@ func RPC(w http.ResponseWriter, r *http.Request) {
 	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client.WithContentType("application/json"))
 
 	// create context
-	ctx := helper.RequestToContext(r)
+	ctx := helper.RequestToContext(c)
 
 	var opts []client.CallOption
 
-	timeout, _ := strconv.Atoi(r.Header.Get("Timeout"))
+	timeout, _ := strconv.Atoi(c.Get("Timeout"))
 	// set timeout
 	if timeout > 0 {
 		opts = append(opts, client.WithRequestTimeout(time.Duration(timeout)*time.Second))
@@ -168,15 +163,16 @@ func RPC(w http.ResponseWriter, r *http.Request) {
 			ce.Id = "go.vine.rpc"
 			ce.Status = http.StatusText(500)
 			ce.Detail = "error during request: " + ce.Detail
-			w.WriteHeader(500)
+			c.Response().SetStatusCode(500)
 		default:
-			w.WriteHeader(int(ce.Code))
+			c.Response().SetStatusCode(int(ce.Code))
 		}
-		w.Write([]byte(ce.Error()))
-		return
+		c.Write([]byte(ce.Error()))
+		return nil
 	}
 
 	b, _ := response.MarshalJSON()
-	w.Header().Set("Content-Length", strconv.Itoa(len(b)))
-	w.Write(b)
+	c.Set("Content-Length", strconv.Itoa(len(b)))
+	c.Write(b)
+	return nil
 }

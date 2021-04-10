@@ -27,6 +27,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func TestHTTPServer(t *testing.T) {
@@ -34,9 +36,7 @@ func TestHTTPServer(t *testing.T) {
 
 	s := NewServer("localhost:0")
 
-	s.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, testResponse)
-	}))
+	s.Handle("/", fiber.New())
 
 	if err := s.Start(); err != nil {
 		t.Fatal(err)

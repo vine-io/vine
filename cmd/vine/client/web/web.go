@@ -24,9 +24,7 @@
 package web
 
 import (
-	"encoding/json"
 	"fmt"
-	"html/template"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -36,29 +34,21 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/gorilla/mux"
 	"github.com/lack-io/cli"
 	"github.com/serenize/snaker"
 	"golang.org/x/net/publicsuffix"
 
 	"github.com/lack-io/vine"
-	apiAuth "github.com/lack-io/vine/cmd/vine/client/api/auth"
-	"github.com/lack-io/vine/cmd/vine/client/api/handler"
 	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	res "github.com/lack-io/vine/service/api/resolver"
-	"github.com/lack-io/vine/service/api/server"
 	"github.com/lack-io/vine/service/api/server/cors"
-	httpapi "github.com/lack-io/vine/service/api/server/http"
 	"github.com/lack-io/vine/service/auth"
-	"github.com/lack-io/vine/service/client/selector"
-	"github.com/lack-io/vine/service/config/cmd"
 	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry"
-	inauth "github.com/lack-io/vine/util/auth"
-	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/namespace"
-	"github.com/lack-io/vine/util/stats"
 )
 
 //Meta Fields of vine web
@@ -77,9 +67,9 @@ var (
 	// Base path sent to web service.
 	// This is stripped from the request path
 	// Allows the web service to define absolute paths
-	BasePathHeader        = "X-Vine-Web-Base-Path"
-	statsURL              string
-	loginURL              string
+	BasePathHeader = "X-Vine-Web-Base-Path"
+	statsURL       string
+	loginURL       string
 
 	// Host name the web dashboard is served on
 	Host, _ = os.Hostname()
@@ -267,14 +257,14 @@ func faviconHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func (s *service) indexHandler(w http.ResponseWriter, r *http.Request) {
-	cors.SetHeaders(w, r)
+func (s *service) indexHandler(c *fiber.Ctx) error {
+	cors.SetHeaders(c)
 
-	if r.Method == "OPTIONS" {
-		return
+	if c.Method() == "OPTIONS" {
+		return nil
 	}
 
-	services, err := s.registry.ListServices(registry.ListContext(r.Context()))
+	services, err := s.registry.ListServices(registry.ListContext(c.Context()))
 	if err != nil {
 		log.Errorf("Error listing services: %v", err)
 	}
@@ -286,7 +276,7 @@ func (s *service) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// if the resolver is subdomain, we will need the domain
-	domain, _ := publicsuffix.EffectiveTLDPlusOne(r.URL.Hostname())
+	domain, _ := publicsuffix.EffectiveTLDPlusOne(c.Hostname())
 
 	var webServices []webService
 	for _, svc := range services {
@@ -318,262 +308,265 @@ func (s *service) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := templateData{len(webServices) > 0, webServices}
-	s.render(w, r, indexTemplate, data)
+	return s.render(c, indexTemplate, data)
 }
 
-func (s *service) registryHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	svc := vars["name"]
+func (s *service) registryHandler(c *fiber.Ctx) error {
+	//vars := mux.Vars(c)
+	//svc := vars["name"]
+	//
+	//if len(svc) > 0 {
+	//	sv, err := s.registry.GetService(svc, registry.GetContext(r.Context()))
+	//	if err != nil {
+	//		http.Error(w, "Error occurred:"+err.Error(), 500)
+	//		return
+	//	}
+	//
+	//	if len(sv) == 0 {
+	//		http.Error(w, "Not found", 404)
+	//		return
+	//	}
+	//
+	//	if r.Header.Get("Content-Type") == "application/json" {
+	//		b, err := json.Marshal(map[string]interface{}{
+	//			"services": s,
+	//		})
+	//		if err != nil {
+	//			http.Error(w, "Error occurred:"+err.Error(), 500)
+	//			return
+	//		}
+	//		w.Header().Set("Content-Type", "application/json")
+	//		w.Write(b)
+	//		return
+	//	}
+	//
+	//	s.render(c, serviceTemplate, sv)
+	//	return
+	//}
+	//
+	//services, err := s.registry.ListServices(registry.ListContext(r.Context()))
+	//if err != nil {
+	//	log.Errorf("Error listing services: %v", err)
+	//}
+	//
+	//sort.Sort(sortedServices{services})
+	//
+	//if r.Header.Get("Content-Type") == "application/json" {
+	//	b, err := json.Marshal(map[string]interface{}{
+	//		"services": services,
+	//	})
+	//	if err != nil {
+	//		http.Error(w, "Error occurred:"+err.Error(), 500)
+	//		return
+	//	}
+	//	w.Header().Set("Content-Type", "application/json")
+	//	w.Write(b)
+	//	return
+	//}
 
-	if len(svc) > 0 {
-		sv, err := s.registry.GetService(svc, registry.GetContext(r.Context()))
-		if err != nil {
-			http.Error(w, "Error occurred:"+err.Error(), 500)
-			return
-		}
-
-		if len(sv) == 0 {
-			http.Error(w, "Not found", 404)
-			return
-		}
-
-		if r.Header.Get("Content-Type") == "application/json" {
-			b, err := json.Marshal(map[string]interface{}{
-				"services": s,
-			})
-			if err != nil {
-				http.Error(w, "Error occurred:"+err.Error(), 500)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(b)
-			return
-		}
-
-		s.render(w, r, serviceTemplate, sv)
-		return
-	}
-
-	services, err := s.registry.ListServices(registry.ListContext(r.Context()))
-	if err != nil {
-		log.Errorf("Error listing services: %v", err)
-	}
-
-	sort.Sort(sortedServices{services})
-
-	if r.Header.Get("Content-Type") == "application/json" {
-		b, err := json.Marshal(map[string]interface{}{
-			"services": services,
-		})
-		if err != nil {
-			http.Error(w, "Error occurred:"+err.Error(), 500)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
-		return
-	}
-
-	s.render(w, r, registryTemplate, services)
+	//return s.render(c, registryTemplate, services)
+	return nil
 }
 
-func (s *service) callHandler(w http.ResponseWriter, r *http.Request) {
-	services, err := s.registry.ListServices(registry.ListContext(r.Context()))
-	if err != nil {
-		log.Errorf("Error listing services: %v", err)
-	}
-
-	sort.Sort(sortedServices{services})
-
-	serviceMap := make(map[string][]*regpb.Endpoint)
-	for _, service := range services {
-		if len(service.Endpoints) > 0 {
-			serviceMap[service.Name] = service.Endpoints
-			continue
-		}
-		// lookup the endpoints otherwise
-		s, err := s.registry.GetService(service.Name, registry.GetContext(r.Context()))
-		if err != nil {
-			continue
-		}
-		if len(s) == 0 {
-			continue
-		}
-		serviceMap[service.Name] = s[0].Endpoints
-	}
-
-	if r.Header.Get("Content-Type") == "application/json" {
-		b, err := json.Marshal(map[string]interface{}{
-			"services": services,
-		})
-		if err != nil {
-			http.Error(w, "Error occurred:"+err.Error(), 500)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
-		return
-	}
-
-	s.render(w, r, callTemplate, serviceMap)
+func (s *service) callHandler(c *fiber.Ctx) error {
+	//services, err := s.registry.ListServices(registry.ListContext(c.Context()))
+	//if err != nil {
+	//	log.Errorf("Error listing services: %v", err)
+	//}
+	//
+	//sort.Sort(sortedServices{services})
+	//
+	//serviceMap := make(map[string][]*regpb.Endpoint)
+	//for _, service := range services {
+	//	if len(service.Endpoints) > 0 {
+	//		serviceMap[service.Name] = service.Endpoints
+	//		continue
+	//	}
+	//	// lookup the endpoints otherwise
+	//	s, err := s.registry.GetService(service.Name, registry.GetContext(r.Context()))
+	//	if err != nil {
+	//		continue
+	//	}
+	//	if len(s) == 0 {
+	//		continue
+	//	}
+	//	serviceMap[service.Name] = s[0].Endpoints
+	//}
+	//
+	//if r.Header.Get("Content-Type") == "application/json" {
+	//	b, err := json.Marshal(map[string]interface{}{
+	//		"services": services,
+	//	})
+	//	if err != nil {
+	//		http.Error(w, "Error occurred:"+err.Error(), 500)
+	//		return
+	//	}
+	//	w.Header().Set("Content-Type", "application/json")
+	//	w.Write(b)
+	//	return
+	//}
+	//
+	//return s.render(c, callTemplate, serviceMap)
+	return nil
 }
 
-func (s *service) render(w http.ResponseWriter, r *http.Request, tmpl string, data interface{}) {
-	t, err := template.New("template").Funcs(template.FuncMap{
-		"format": format,
-		"Title":  strings.Title,
-		"First": func(s string) string {
-			if len(s) == 0 {
-				return s
-			}
-			return strings.Title(string(s[0]))
-		},
-	}).Parse(layoutTemplate)
-	if err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
-		return
-	}
-	t, err = t.Parse(tmpl)
-	if err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
-		return
-	}
-
-	// If the user is logged in, render Account instead of Login
-	loginTitle := "Login"
-	user := ""
-
-	if c, err := r.Cookie(inauth.TokenCookieName); err == nil && c != nil {
-		token := strings.TrimPrefix(c.Value, inauth.TokenCookieName+"=")
-		if acc, err := s.auth.Inspect(token); err == nil {
-			loginTitle = "Account"
-			user = acc.ID
-		}
-	}
-
-	if err := t.ExecuteTemplate(w, "layout", map[string]interface{}{
-		"LoginTitle": loginTitle,
-		"LoginURL":   loginURL,
-		"StatsURL":   statsURL,
-		"Results":    data,
-		"User":       user,
-	}); err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
-	}
+func (s *service) render(c *fiber.Ctx, tmpl string, data interface{}) error {
+	//t, err := template.New("template").Funcs(template.FuncMap{
+	//	"format": format,
+	//	"Title":  strings.Title,
+	//	"First": func(s string) string {
+	//		if len(s) == 0 {
+	//			return s
+	//		}
+	//		return strings.Title(string(s[0]))
+	//	},
+	//}).Parse(layoutTemplate)
+	//if err != nil {
+	//	http.Error(w, "Error occurred:"+err.Error(), 500)
+	//	return
+	//}
+	//t, err = t.Parse(tmpl)
+	//if err != nil {
+	//	http.Error(w, "Error occurred:"+err.Error(), 500)
+	//	return
+	//}
+	//
+	//// If the user is logged in, render Account instead of Login
+	//loginTitle := "Login"
+	//user := ""
+	//
+	//if c, err := r.Cookie(inauth.TokenCookieName); err == nil && c != nil {
+	//	token := strings.TrimPrefix(c.Value, inauth.TokenCookieName+"=")
+	//	if acc, err := s.auth.Inspect(token); err == nil {
+	//		loginTitle = "Account"
+	//		user = acc.ID
+	//	}
+	//}
+	//
+	//if err := t.ExecuteTemplate(w, "layout", map[string]interface{}{
+	//	"LoginTitle": loginTitle,
+	//	"LoginURL":   loginURL,
+	//	"StatsURL":   statsURL,
+	//	"Results":    data,
+	//	"User":       user,
+	//}); err != nil {
+	//	http.Error(w, "Error occurred:"+err.Error(), 500)
+	//}
+	return nil
 }
 
 func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
-	if len(ctx.String("server-name")) > 0 {
-		Name = ctx.String("server-name")
-	}
-	if len(ctx.String("address")) > 0 {
-		Address = ctx.String("address")
-	}
-	if len(ctx.String("resolver")) > 0 {
-		Resolver = ctx.String("resolver")
-	}
-	if len(ctx.String("type")) > 0 {
-		Type = ctx.String("type")
-	}
-	if len(ctx.String("namespace")) > 0 {
-		// remove the service type from the namespace to allow for
-		// backwards compatability
-		Namespace = strings.TrimSuffix(ctx.String("namespace"), "."+Type)
-	}
-
-	// service opts
-	svcOpts = append(svcOpts, vine.Name(Name))
-
-	// Initialize Server
-	svc := vine.NewService(svcOpts...)
-
-	reg := &reg{Registry: *cmd.DefaultOptions().Registry}
-
-	s := &service{
-		Router:   mux.NewRouter(),
-		registry: reg,
-		// our internal resolver
-		resolver: &web.Resolver{
-			// Default to type path
-			Type:      Resolver,
-			Namespace: namespace.NewResolver(Type, Namespace).ResolveWithType,
-			Selector: selector.NewSelector(
-				selector.Registry(reg),
-			),
-		},
-		auth: *cmd.DefaultOptions().Auth,
-	}
-
-	var h http.Handler
-	// set as the server
-	h = s
-
-	if ctx.Bool("enable-stats") {
-		statsURL = "/stats"
-		st := stats.New()
-		s.HandleFunc("/stats", st.StatsHandler)
-		h = st.ServeHTTP(s)
-		st.Start()
-		defer st.Stop()
-	}
-
-	// create the proxy
-	p := s.proxy()
-
-	// the web handler itself
-	s.HandleFunc("/favicon.ico", faviconHandler)
-	s.HandleFunc("/client", s.callHandler)
-	s.HandleFunc("/services", s.registryHandler)
-	s.HandleFunc("/service/{name}", s.registryHandler)
-	s.HandleFunc("/rpc", handler.RPC)
-	s.PathPrefix("/{service:[a-zA-Z0-9]+}").Handler(p)
-	s.HandleFunc("/", s.indexHandler)
-
-	// insert the proxy
-	s.prx = p
-
-	var opts []server.Option
-
-	if ctx.Bool("enable-tls") {
-		config, err := helper.TLSConfig(ctx)
-		if err != nil {
-			log.Errorf(err.Error())
-			return
-		}
-
-		opts = append(opts, server.EnableTLS(true))
-		opts = append(opts, server.TLSConfig(config))
-	}
-
-	// create the namespace resolver and the auth wrapper
-	s.nsResolver = namespace.NewResolver(Type, Namespace)
-	authWrapper := apiAuth.Wrapper(s.resolver, s.nsResolver)
-
-	// create the service and add the auth wrapper
-	server := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
-
-	server.Init(opts...)
-	server.Handle("/", h)
-
-	// Setup auth redirect
-	if len(ctx.String("auth-login-url")) > 0 {
-		loginURL = ctx.String("auth-login-url")
-		svc.Options().Auth.Init(auth.LoginURL(loginURL))
-	}
-
-	if err := server.Start(); err != nil {
-		log.Fatal(err)
-	}
-
-	// Run server
-	if err := svc.Run(); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := server.Stop(); err != nil {
-		log.Fatal(err)
-	}
+	//if len(ctx.String("server-name")) > 0 {
+	//	Name = ctx.String("server-name")
+	//}
+	//if len(ctx.String("address")) > 0 {
+	//	Address = ctx.String("address")
+	//}
+	//if len(ctx.String("resolver")) > 0 {
+	//	Resolver = ctx.String("resolver")
+	//}
+	//if len(ctx.String("type")) > 0 {
+	//	Type = ctx.String("type")
+	//}
+	//if len(ctx.String("namespace")) > 0 {
+	//	// remove the service type from the namespace to allow for
+	//	// backwards compatability
+	//	Namespace = strings.TrimSuffix(ctx.String("namespace"), "."+Type)
+	//}
+	//
+	//// service opts
+	//svcOpts = append(svcOpts, vine.Name(Name))
+	//
+	//// Initialize Server
+	//svc := vine.NewService(svcOpts...)
+	//
+	//reg := &reg{Registry: *cmd.DefaultOptions().Registry}
+	//
+	//s := &service{
+	//	Router:   mux.NewRouter(),
+	//	registry: reg,
+	//	// our internal resolver
+	//	resolver: &web.Resolver{
+	//		// Default to type path
+	//		Type:      Resolver,
+	//		Namespace: namespace.NewResolver(Type, Namespace).ResolveWithType,
+	//		Selector: selector.NewSelector(
+	//			selector.Registry(reg),
+	//		),
+	//	},
+	//	auth: *cmd.DefaultOptions().Auth,
+	//}
+	//
+	//var h http.Handler
+	//// set as the server
+	//h = s
+	//
+	//if ctx.Bool("enable-stats") {
+	//	statsURL = "/stats"
+	//	st := stats.New()
+	//	s.HandleFunc("/stats", st.StatsHandler)
+	//	h = st.ServeHTTP(s)
+	//	st.Start()
+	//	defer st.Stop()
+	//}
+	//
+	//// create the proxy
+	//p := s.proxy()
+	//
+	//// the web handler itself
+	//s.HandleFunc("/favicon.ico", faviconHandler)
+	//s.HandleFunc("/client", s.callHandler)
+	//s.HandleFunc("/services", s.registryHandler)
+	//s.HandleFunc("/service/{name}", s.registryHandler)
+	//s.HandleFunc("/rpc", handler.RPC)
+	//s.PathPrefix("/{service:[a-zA-Z0-9]+}").Handler(p)
+	//s.HandleFunc("/", s.indexHandler)
+	//
+	//// insert the proxy
+	//s.prx = p
+	//
+	//var opts []server.Option
+	//
+	//if ctx.Bool("enable-tls") {
+	//	config, err := helper.TLSConfig(ctx)
+	//	if err != nil {
+	//		log.Errorf(err.Error())
+	//		return
+	//	}
+	//
+	//	opts = append(opts, server.EnableTLS(true))
+	//	opts = append(opts, server.TLSConfig(config))
+	//}
+	//
+	//// create the namespace resolver and the auth wrapper
+	//s.nsResolver = namespace.NewResolver(Type, Namespace)
+	//authWrapper := apiAuth.Wrapper(s.resolver, s.nsResolver)
+	//
+	//// create the service and add the auth wrapper
+	//server := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
+	//
+	//server.Init(opts...)
+	//server.Handle("/", h)
+	//
+	//// Setup auth redirect
+	//if len(ctx.String("auth-login-url")) > 0 {
+	//	loginURL = ctx.String("auth-login-url")
+	//	svc.Options().Auth.Init(auth.LoginURL(loginURL))
+	//}
+	//
+	//if err := server.Start(); err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//// Run server
+	//if err := svc.Run(); err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//if err := server.Stop(); err != nil {
+	//	log.Fatal(err)
+	//}
 }
 
 //Commands for `vine web`

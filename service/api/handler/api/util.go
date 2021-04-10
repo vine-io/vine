@@ -23,12 +23,11 @@
 package api
 
 import (
-	"fmt"
+	"bytes"
 	"mime"
 	"net"
-	"net/http"
-	"strings"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/oxtoacart/bpool"
 
 	apipb "github.com/lack-io/vine/proto/apis/api"
@@ -41,35 +40,31 @@ var (
 	bufferPool = bpool.NewSizedBufferPool(1024, 8)
 )
 
-func requestToProto(r *http.Request) (*apipb.Request, error) {
-	if err := r.ParseForm(); err != nil {
-		return nil, fmt.Errorf("Error parsing form: %v", err)
-	}
-
+func requestToProto(c *fiber.Ctx) (*apipb.Request, error) {
 	req := &apipb.Request{
-		Path:   r.URL.Path,
-		Method: r.Method,
+		Path:   string(c.Request().URI().Path()),
+		Method: c.Method(),
 		Header: make(map[string]*apipb.Pair),
 		Get:    make(map[string]*apipb.Pair),
 		Post:   make(map[string]*apipb.Pair),
-		Url:    r.URL.String(),
+		Url:    c.Request().URI().String(),
 	}
 
-	ct, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	ct, _, err := mime.ParseMediaType(c.Get("Content-Type"))
 	if err != nil {
 		ct = "text/plain; charset=UTF-8" //default CT is text/plain
-		r.Header.Set("Content-Type", ct)
+		c.Set("Content-Type", ct)
 	}
 
 	//set the body:
-	if r.Body != nil {
+	if len(c.Body()) != 0 {
 		switch ct {
 		case "application/x-www-form-urlencoded":
 			// expect form vals in Post data
 		default:
 			buf := bufferPool.Get()
 			defer bufferPool.Put(buf)
-			if _, err = buf.ReadFrom(r.Body); err != nil {
+			if _, err = buf.ReadFrom(bytes.NewBuffer(c.Body())); err != nil {
 				return nil, err
 			}
 			req.Body = buf.String()
@@ -77,9 +72,9 @@ func requestToProto(r *http.Request) (*apipb.Request, error) {
 	}
 
 	// Set X-Forwarded-For if it does not exist
-	if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
-		if prior, ok := r.Header["X-Forwarded-For"]; ok {
-			ip = strings.Join(prior, ", ") + ", " + ip
+	if ip, _, err := net.SplitHostPort(c.IP()); err == nil {
+		if prior := c.Get("X-Forwarded-For"); prior != "" {
+			ip = prior + ", " + ip
 		}
 
 		// Set the header
@@ -92,11 +87,12 @@ func requestToProto(r *http.Request) (*apipb.Request, error) {
 	// Host is stripped from net/http Headers so let's add it
 	req.Header["Host"] = &apipb.Pair{
 		Key:    "Host",
-		Values: []string{r.Host},
+		Values: []string{string(c.Request().Host())},
 	}
 
 	// Get data
-	for key, vals := range r.URL.Query() {
+	c.Request().URI().QueryArgs().VisitAll(func(k, v []byte) {
+		key, value := string(k), string(v)
 		header, ok := req.Get[key]
 		if !ok {
 			header = &apipb.Pair{
@@ -104,31 +100,33 @@ func requestToProto(r *http.Request) (*apipb.Request, error) {
 			}
 			req.Get[key] = header
 		}
-		header.Values = vals
-	}
+		header.Values = append(header.Values, value)
+	})
 
 	// Post data
-	for key, vals := range r.PostForm {
+	c.Request().PostArgs().VisitAll(func(k, v []byte) {
+		key, value := string(k), string(v)
 		header, ok := req.Post[key]
 		if !ok {
 			header = &apipb.Pair{
 				Key: key,
 			}
-			req.Post[key] = header
+			req.Get[key] = header
 		}
-		header.Values = vals
-	}
+		header.Values = append(header.Values, value)
+	})
 
-	for key, vals := range r.Header {
+	c.Request().Header.VisitAll(func(k, v []byte) {
+		key, value := string(k), string(v)
 		header, ok := req.Header[key]
 		if !ok {
 			header = &apipb.Pair{
 				Key: key,
 			}
-			req.Header[key] = header
+			req.Get[key] = header
 		}
-		header.Values = vals
-	}
+		header.Values = append(header.Values, value)
+	})
 
 	return req, nil
 }

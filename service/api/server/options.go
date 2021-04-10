@@ -24,8 +24,8 @@ package server
 
 import (
 	"crypto/tls"
-	"net/http"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine/service/api/resolver"
 )
 
@@ -39,7 +39,7 @@ type Options struct {
 	Wrappers     []Wrapper
 }
 
-type Wrapper func(h http.Handler) http.Handler
+type Wrapper func() fiber.Handler
 
 func WrapHandler(w Wrapper) Option {
 	return func(o *Options) {

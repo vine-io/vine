@@ -24,23 +24,22 @@
 package router
 
 import (
-	"net/http"
-
 	apipb "github.com/lack-io/vine/proto/apis/api"
+	ctx "github.com/lack-io/vine/util/context"
 )
 
 // Router is used to determine an endpoint for a request
 type Router interface {
-	// Returns options
+	// Options returns options
 	Options() Options
-	// Stop the router
+	// Close stop the router
 	Close() error
 	// Endpoint returns an api.Service endpoint or an error if it does not exist
-	Endpoint(r *http.Request) (*apipb.Service, error)
+	Endpoint(c *ctx.RequestCtx) (*apipb.Service, error)
 	// Register endpoint in router
 	Register(ep *apipb.Endpoint) error
 	// Deregister endpoint from router
 	Deregister(ep *apipb.Endpoint) error
 	// Route returns an api.Service route
-	Route(r *http.Request) (*apipb.Service, error)
+	Route(c *ctx.RequestCtx) (*apipb.Service, error)
 }

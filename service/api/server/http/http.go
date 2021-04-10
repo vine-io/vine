@@ -26,16 +26,16 @@ package http
 import (
 	"crypto/tls"
 	"net"
-	"net/http"
 	"sync"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/lack-io/vine/service/api/server"
-	"github.com/lack-io/vine/service/api/server/cors"
 	"github.com/lack-io/vine/service/logger"
 )
 
 type httpServer struct {
-	mux  *http.ServeMux
+	app  *fiber.App
 	opts server.Options
 
 	mtx     sync.RWMutex
@@ -51,7 +51,7 @@ func NewServer(address string, opts ...server.Option) server.Server {
 
 	return &httpServer{
 		opts:    options,
-		mux:     http.NewServeMux(),
+		app:     fiber.New(fiber.Config{DisableStartupMessage: true}),
 		address: address,
 		exit:    make(chan chan error),
 	}
@@ -70,23 +70,24 @@ func (s *httpServer) Init(opts ...server.Option) error {
 	return nil
 }
 
-func (s *httpServer) Handle(path string, handler http.Handler) {
+func (s *httpServer) Handle(path string, app *fiber.App) {
 	// TODO: move this stuff out to one place with ServeHTTP
 
 	// apply the wrappers, e.g. auth
 	for _, wrapper := range s.opts.Wrappers {
-		handler = wrapper(handler)
+		app.Use(wrapper())
 	}
 
 	// wrap with cors
 	if s.opts.EnableCORS {
-		handler = cors.CombinedCORSHandler(handler)
+		//app.Use()
+		app.Use(cors.New())
 	}
 
 	// wrap with logger
-	handler = loggingHandler(handler)
+	//handler = loggingHandler(handler)
 
-	s.mux.Handle(path, handler)
+	s.app.Mount(path, app)
 }
 
 func (s *httpServer) Start() error {
@@ -110,7 +111,7 @@ func (s *httpServer) Start() error {
 	s.mtx.Unlock()
 
 	go func() {
-		if err := http.Serve(l, s.mux); err != nil {
+		if err := s.app.Listener(l); err != nil {
 			// temporary fix
 			//logger.Fatal(err)
 		}

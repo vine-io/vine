@@ -24,14 +24,15 @@
 package event
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"path"
 	"regexp"
 	"strings"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/oxtoacart/bpool"
 
@@ -90,19 +91,17 @@ func evRoute(ns, p string) (string, string) {
 	return topic, action
 }
 
-func (e *event) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (e *event) Handle(c *fiber.Ctx) error {
 	bsize := handler.DefaultMaxRecvSize
 	if e.opts.MaxRecvSize > 0 {
 		bsize = e.opts.MaxRecvSize
 	}
-
-	r.Body = http.MaxBytesReader(w, r.Body, bsize)
+	c.Context().SetBodyStream(c.Context().RequestBodyStream(), int(bsize))
 
 	// request to topic:event
 	// create event
 	// publish to topic
-
-	topic, action := evRoute(e.opts.Namespace, r.URL.Path)
+	topic, action := evRoute(e.opts.Namespace, string(c.Request().URI().Path()))
 
 	// create event
 	ev := &api.Event{
@@ -113,8 +112,8 @@ func (e *event) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Timestamp: time.Now().Unix(),
 	}
 
-	// set headers
-	for key, vals := range r.Header {
+	c.Request().Header.VisitAll(func(k, v []byte) {
+		key, vals := string(k), string(v)
 		header, ok := ev.Header[key]
 		if !ok {
 			header = &api.Pair{
@@ -122,35 +121,34 @@ func (e *event) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			ev.Header[key] = header
 		}
-		header.Values = vals
-	}
+		header.Values = []string{vals}
+	})
 
 	// set body
-	if r.Method == "GET" {
-		bytes, _ := json.Marshal(r.URL.Query())
+	if c.Method() == "GET" {
+		bytes, _ := json.Marshal(c.Request().URI().QueryString())
 		ev.Data = string(bytes)
 	} else {
 		// Read body
 		buf := bufferPool.Get()
 		defer bufferPool.Put(buf)
-		if _, err := buf.ReadFrom(r.Body); err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+		if _, err := buf.ReadFrom(bytes.NewBuffer(c.Body())); err != nil {
+			return fiber.NewError(500, err.Error())
 		}
 		ev.Data = buf.String()
 	}
 
 	// get client
-	c := e.opts.Client
+	cc := e.opts.Client
 
 	// create publication
-	p := c.NewMessage(topic, ev)
+	p := cc.NewMessage(topic, ev)
 
 	// publish event
-	if err := c.Publish(ctx.FromRequest(r), p); err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+	if err := cc.Publish(ctx.FromRequest(c), p); err != nil {
+		return fiber.NewError(500, err.Error())
 	}
+	return nil
 }
 
 func (e *event) String() string {

@@ -23,67 +23,69 @@
 package handler
 
 import (
-	"net/http"
-
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/service/api/handler"
-	"github.com/lack-io/vine/service/api/handler/event"
-	"github.com/lack-io/vine/service/api/router"
-	"github.com/lack-io/vine/service/client"
-
-	// TODO: only import handler package
 	aapi "github.com/lack-io/vine/service/api/handler/api"
+	"github.com/lack-io/vine/service/api/handler/event"
 	ahttp "github.com/lack-io/vine/service/api/handler/http"
 	arpc "github.com/lack-io/vine/service/api/handler/rpc"
 	aweb "github.com/lack-io/vine/service/api/handler/web"
+	"github.com/lack-io/vine/service/api/router"
+	"github.com/lack-io/vine/service/client"
+	ctx "github.com/lack-io/vine/util/context"
 )
 
 type metaHandler struct {
 	c  client.Client
 	r  router.Router
-	ns func(*http.Request) string
+	ns func(*fiber.Ctx) string
 }
 
-func (m *metaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m *metaHandler) Handle(c *fiber.Ctx) error {
+
+	r := ctx.NewRequestCtx(c, ctx.FromRequest(c))
 	service, err := m.r.Route(r)
 	if err != nil {
-		er := errors.InternalServerError(m.ns(r), err.Error())
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(500)
-		w.Write([]byte(er.Error()))
-		return
+		err := errors.InternalServerError(m.ns(c), err.Error())
+		c.Set("Content-Type", "application/json")
+		return fiber.NewError(500, err.Error())
 	}
 
 	// TODO: don't do this ffs
 	switch service.Endpoint.Handler {
 	// web socket handler
 	case aweb.Handler:
-		aweb.WithService(service, handler.WithClient(m.c)).ServeHTTP(w, r)
+		return aweb.WithService(service, handler.WithClient(m.c)).Handle(c)
 	// proxy handler
 	case "proxy", ahttp.Handler:
-		ahttp.WithService(service, handler.WithClient(m.c)).ServeHTTP(w, r)
+		return ahttp.WithService(service, handler.WithClient(m.c)).Handle(c)
 	// rpcx handler
 	case arpc.Handler:
-		arpc.WithService(service, handler.WithClient(m.c)).ServeHTTP(w, r)
+		return arpc.WithService(service, handler.WithClient(m.c)).Handle(c)
 	// event handler
 	case event.Handler:
 		ev := event.NewHandler(
-			handler.WithNamespace(m.ns(r)),
+			handler.WithNamespace(m.ns(c)),
 			handler.WithClient(m.c),
 		)
-		ev.ServeHTTP(w, r)
+		return ev.Handle(c)
 	// api handler
 	case aapi.Handler:
-		aapi.WithService(service, handler.WithClient(m.c)).ServeHTTP(w, r)
+		return aapi.WithService(service, handler.WithClient(m.c)).Handle(c)
 	// default handler: rpc
 	default:
-		arpc.WithService(service, handler.WithClient(m.c)).ServeHTTP(w, r)
+		return arpc.WithService(service, handler.WithClient(m.c)).Handle(c)
 	}
 }
 
+func (m *metaHandler) String() string {
+	return "meta"
+}
+
 // Meta is a http.Handler that routes based on endpoint metadata
-func Meta(s vine.Service, r router.Router, ns func(*http.Request) string) http.Handler {
+func Meta(s vine.Service, r router.Router, ns func(ctx *fiber.Ctx) string) handler.Handler {
 	return &metaHandler{
 		c:  s.Client(),
 		r:  r,

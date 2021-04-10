@@ -23,14 +23,12 @@
 // Package handler provides http handlers
 package handler
 
-import (
-	"net/http"
-)
+import "github.com/gofiber/fiber/v2"
 
 // Handler represents a HTTP handler that manages a request
 type Handler interface {
-	// standard http handler
-	http.Handler
-	// name of handler
+	// Handle return fiber App
+	Handle(ctx *fiber.Ctx) error
+	// String the name of handler
 	String() string
 }

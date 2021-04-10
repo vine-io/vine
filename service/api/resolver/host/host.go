@@ -24,8 +24,7 @@
 package host
 
 import (
-	"net/http"
-
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine/service/api/resolver"
 )
 
@@ -33,12 +32,12 @@ type Resolver struct {
 	opts resolver.Options
 }
 
-func (r *Resolver) Resolve(req *http.Request) (*resolver.Endpoint, error) {
+func (r *Resolver) Resolve(c *fiber.Ctx) (*resolver.Endpoint, error) {
 	return &resolver.Endpoint{
-		Name:   req.Host,
-		Host:   req.Host,
-		Method: req.Method,
-		Path:   req.URL.Path,
+		Name:   string(c.Request().Host()),
+		Host:   string(c.Request().Host()),
+		Method: c.Method(),
+		Path:   c.Path(),
 	}, nil
 }
 

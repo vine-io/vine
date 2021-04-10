@@ -26,7 +26,6 @@ package registry
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"regexp"
 	"strings"
 	"sync"
@@ -39,6 +38,7 @@ import (
 	"github.com/lack-io/vine/service/api/router/util"
 	"github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/service/registry/cache"
+	ctx "github.com/lack-io/vine/util/context"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 
@@ -298,7 +298,7 @@ func (r *registryRouter) Deregister(ep *apipb.Endpoint) error {
 	return nil
 }
 
-func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
+func (r *registryRouter) Endpoint(c *ctx.RequestCtx) (*apipb.Service, error) {
 	if r.isClosed() {
 		return nil, errors.New("router closed")
 	}
@@ -307,10 +307,11 @@ func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 	defer r.RUnlock()
 
 	var idx int
-	if len(req.URL.Path) > 0 && req.URL.Path != "/" {
+	path := string(c.Request().URI().Path())
+	if len(path) > 0 && path != "/" {
 		idx = 1
 	}
-	path := strings.Split(req.URL.Path[idx:], "/")
+	paths := strings.Split(path[idx:], "/")
 
 	// use the first match
 	// TODO: weighted matching
@@ -323,7 +324,7 @@ func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 		var mMatch, hMatch, pMatch bool
 		// 1. try method
 		for _, m := range ep.Method {
-			if m == req.Method {
+			if m == c.Method() {
 				mMatch = true
 				break
 			}
@@ -331,7 +332,7 @@ func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 		if !mMatch {
 			continue
 		}
-		logger.Debugf("api method match %s", req.Method)
+		logger.Debugf("api method match %s", c.Method())
 
 		// 2. try host
 		if len(ep.Host) == 0 {
@@ -342,7 +343,7 @@ func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 					hMatch = true
 					break
 				} else {
-					if cep.hostregs[idx].MatchString(req.URL.Host) {
+					if cep.hostregs[idx].MatchString(string(c.Request().Host())) {
 						hMatch = true
 						break
 					}
@@ -352,18 +353,18 @@ func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 		if !hMatch {
 			continue
 		}
-		logger.Debugf("api host match %s", req.URL.Host)
+		logger.Debugf("api host match %s", string(c.Request().Host()))
 
 		// 3. try path via google.api path matching
 		for _, pathreg := range cep.pathregs {
-			matches, err := pathreg.Match(path, "")
+			matches, err := pathreg.Match(paths, "")
 			if err != nil {
 				logger.Debugf("api gpath not match %s != %v", path, pathreg)
 				continue
 			}
 			logger.Debugf("api gpath match %s = %v", path, pathreg)
 			pMatch = true
-			ctx := req.Context()
+			ctx := c.Context()
 			md, ok := metadata.FromContext(ctx)
 			if !ok {
 				md = make(metadata.Metadata)
@@ -372,14 +373,15 @@ func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 				md[fmt.Sprintf("x-api-field-%s", k)] = v
 			}
 			md["x-api-body"] = ep.Body
-			*req = *req.Clone(metadata.NewContext(ctx, md))
+			// TODO: Req.Clone from context metadata
+			c = c.Clone(metadata.NewContext(ctx, md))
 			break
 		}
 
 		if !pMatch {
 			// 4. try path via pcre path matching
 			for _, pathreg := range cep.pcreregs {
-				if !pathreg.MatchString(req.URL.Path) {
+				if !pathreg.MatchString(c.Path()) {
 					logger.Debugf("api pcre path not match %s != %v", path, pathreg)
 					continue
 				}
@@ -402,13 +404,13 @@ func (r *registryRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 	return nil, errors.New("not found")
 }
 
-func (r *registryRouter) Route(req *http.Request) (*apipb.Service, error) {
+func (r *registryRouter) Route(c *ctx.RequestCtx) (*apipb.Service, error) {
 	if r.isClosed() {
 		return nil, errors.New("router closed")
 	}
 
 	// try get an endpoint
-	ep, err := r.Endpoint(req)
+	ep, err := r.Endpoint(c)
 	if err == nil {
 		return ep, nil
 	}
@@ -418,7 +420,7 @@ func (r *registryRouter) Route(req *http.Request) (*apipb.Service, error) {
 	// TODO: don't ignore that shit
 
 	// get the service name
-	rp, err := r.opts.Resolver.Resolve(req)
+	rp, err := r.opts.Resolver.Resolve(c.Ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -458,11 +460,11 @@ func (r *registryRouter) Route(req *http.Request) (*apipb.Service, error) {
 		return &apipb.Service{
 			Name: name,
 			Endpoint: &apipb.Endpoint{
-				Name:    req.URL.String(),
+				Name:    c.Request().URI().String(),
 				Handler: r.opts.Handler,
-				Host:    []string{req.Host},
-				Method:  []string{req.Method},
-				Path:    []string{req.URL.Path},
+				Host:    []string{string(c.Request().Host())},
+				Method:  []string{c.Method()},
+				Path:    []string{c.Path()},
 			},
 			Services: services,
 		}, nil

@@ -24,29 +24,68 @@ package context
 
 import (
 	"context"
-	"net/http"
 	"net/textproto"
-	"strings"
+	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 
-func FromRequest(r *http.Request) context.Context {
-	ctx := r.Context()
+func FromRequest(c *fiber.Ctx) context.Context {
+	ctx := c.Context()
 	md, ok := metadata.FromContext(ctx)
 	if !ok {
 		md = make(metadata.Metadata)
 	}
-	for k, v := range r.Header {
-		md[textproto.CanonicalMIMEHeaderKey(k)] = strings.Join(v, ",")
-	}
+	c.Request().Header.VisitAll(func(key, value []byte) {
+		md[textproto.CanonicalMIMEHeaderKey(string(key))] = string(value)
+	})
 	if v, ok := md.Get("X-Forwarded-For"); ok {
-		md["X-Forwarded-For"] = v + "," + r.RemoteAddr
+		md["X-Forwarded-For"] = v + ", " + c.Context().RemoteAddr().String()
 	} else {
-		md["X-Forwarded-For"] = r.RemoteAddr
+		md["X-Forwarded-For"] = c.Context().RemoteAddr().String()
 	}
-	md["Host"] = r.Host
+	md["Host"] = string(c.Request().Host())
 	// pass http method
-	md["Method"] = r.Method
+	md["Method"] = c.Method()
 	return metadata.NewContext(ctx, md)
+}
+
+type RequestCtx struct {
+	*fiber.Ctx
+	ctx context.Context
+}
+
+var _ context.Context = (*RequestCtx)(nil)
+
+func (c *RequestCtx) Clone(ctx context.Context) *RequestCtx {
+	c.ctx = ctx
+	return c
+}
+
+func (c *RequestCtx) Context() context.Context {
+	return c.ctx
+}
+
+func (c *RequestCtx) Deadline() (deadline time.Time, ok bool) {
+	return c.ctx.Deadline()
+}
+
+func (c *RequestCtx) Done() <-chan struct{} {
+	return c.ctx.Done()
+}
+
+func (c *RequestCtx) Err() error {
+	return c.ctx.Err()
+}
+
+func (c *RequestCtx) Value(key interface{}) interface{} {
+	return c.ctx.Value(key)
+}
+
+func NewRequestCtx(c *fiber.Ctx, ctx context.Context) *RequestCtx {
+	return &RequestCtx{
+		Ctx: c,
+		ctx: ctx,
+	}
 }

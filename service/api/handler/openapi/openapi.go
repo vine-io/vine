@@ -23,12 +23,13 @@
 package openapi
 
 import (
+	"bytes"
 	"html/template"
 	"net/http"
 	"strings"
 
+	"github.com/gofiber/fiber/v2"
 	json "github.com/json-iterator/go"
-
 	"github.com/lack-io/vine"
 	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	maddr "github.com/lack-io/vine/util/addr"
@@ -39,14 +40,13 @@ type openAPI struct {
 	prefix string
 }
 
-func (o *openAPI) OpenAPIHandler(w http.ResponseWriter, r *http.Request) {
-	if ct := r.Header.Get("Content-Type"); ct == "application/json" {
-		w.Header().Set("Content-Type", ct)
-		//w.Write(b)
-		return
+func (o *openAPI) OpenAPIHandler(ctx *fiber.Ctx) error {
+	if ct := ctx.Get("Content-Type", ""); ct == "application/json" {
+		ctx.Set("Content-Type", ct)
+		return nil
 	}
 	var tmpl string
-	style := r.URL.Query().Get("style")
+	style := ctx.Query("style", "")
 	switch style {
 	case "redoc":
 		tmpl = redocTmpl
@@ -54,15 +54,13 @@ func (o *openAPI) OpenAPIHandler(w http.ResponseWriter, r *http.Request) {
 		tmpl = swaggerTmpl
 	}
 
-	render(w, r, tmpl, nil)
+	return render(ctx, tmpl, nil)
 }
 
-func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
+func (o *openAPI) OpenAPIJOSNHandler(ctx *fiber.Ctx) error {
 	services, err := o.svc.Options().Registry.ListServices()
 	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-		return
+		return fiber.NewError(500, err.Error())
 	}
 	tags := make(map[string]*openapipb.OpenAPITag, 0)
 	paths := make(map[string]*openapipb.OpenAPIPath, 0)
@@ -141,9 +139,8 @@ func (o *openAPI) OpenAPIJOSNHandler(w http.ResponseWriter, r *http.Request) {
 	for _, tag := range tags {
 		openapi.Tags = append(openapi.Tags, tag)
 	}
-	v, _ := json.Marshal(openapi)
-	w.Write(v)
-	w.WriteHeader(200)
+	data, _ := json.MarshalIndent(openapi, "", " ")
+	return ctx.Send(data)
 }
 
 func (o *openAPI) ServeHTTP(h http.Handler) http.Handler {
@@ -156,20 +153,22 @@ func New(svc vine.Service) *openAPI {
 	return &openAPI{svc: svc}
 }
 
-func render(w http.ResponseWriter, r *http.Request, tmpl string, data interface{}) {
+func render(ctx *fiber.Ctx, tmpl string, data interface{}) error {
 	t, err := template.New("template").Funcs(template.FuncMap{
 		//		"format": format,
 	}).Parse(layoutTemplate)
 	if err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
-		return
+		return fiber.NewError(500, "Error occurred:"+err.Error())
 	}
 	t, err = t.Parse(tmpl)
 	if err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
-		return
+		return fiber.NewError(500, "Error occurred:"+err.Error())
 	}
-	if err := t.ExecuteTemplate(w, "layout", data); err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
+	buf := bytes.NewBuffer([]byte(""))
+	if err := t.ExecuteTemplate(buf, "layout", data); err != nil {
+		return fiber.NewError(500, "Error occurred:"+err.Error())
 	}
+
+	ctx.Set("Content-Type", "text/html")
+	return ctx.SendString(buf.String())
 }

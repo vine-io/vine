@@ -24,29 +24,27 @@ package rpc
 
 import (
 	"bytes"
-	"context"
-	"io"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/gobwas/httphead"
-	"github.com/gobwas/ws"
-	"github.com/gobwas/ws/wsutil"
+	"github.com/fasthttp/websocket"
+	"github.com/gofiber/fiber/v2"
 	json "github.com/json-iterator/go"
-
 	apipb "github.com/lack-io/vine/proto/apis/api"
 	"github.com/lack-io/vine/service/client"
 	"github.com/lack-io/vine/service/client/selector"
 	raw "github.com/lack-io/vine/service/codec/bytes"
 	"github.com/lack-io/vine/service/logger"
+	ctx "github.com/lack-io/vine/util/context"
+	"github.com/valyala/fasthttp"
 )
 
-// serveWebsocket will stream rpc back over websockets assuming json
-func serveWebsocket(ctx context.Context, w http.ResponseWriter, r *http.Request, service *apipb.Service, c client.Client) {
-	var op ws.OpCode
+// serveWebSocket will stream rpc back over websockets assuming json
+func serveWebSocket(r *ctx.RequestCtx, service *apipb.Service, c client.Client) error {
+	var op int
 
-	ct := r.Header.Get("Content-Type")
+	ct := r.Get("Content-Type")
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
 	if idx := strings.IndexRune(ct, ';'); idx >= 0 {
 		ct = ct[:idx]
@@ -55,131 +53,121 @@ func serveWebsocket(ctx context.Context, w http.ResponseWriter, r *http.Request,
 	// check proto from request
 	switch ct {
 	case "application/json":
-		op = ws.OpText
+		op = websocket.TextMessage // TextMessage
 	default:
-		op = ws.OpBinary
+		op = websocket.BinaryMessage // BinaryMessage
 	}
 
 	hdr := make(http.Header)
-	if proto, ok := r.Header["Sec-WebSocket-Protocol"]; ok {
-		for _, p := range proto {
+	if proto := r.Get("Sec-WebSocket-Protocol"); proto != "" {
+		for _, p := range strings.Split(proto, ",") {
 			switch p {
 			case "binary":
 				hdr["Sec-WebSocket-Protocol"] = []string{"binary"}
-				op = ws.OpBinary
+				op = websocket.BinaryMessage
 			}
 		}
 	}
 	payload, err := requestPayload(r)
 	if err != nil {
 		logger.Error(err)
-		return
+		return err
 	}
 
-	upgrader := ws.HTTPUpgrader{Timeout: 5 * time.Second,
-		Protocol: func(proto string) bool {
-			if strings.Contains(proto, "binary") {
-				return true
-			}
-			// fallback to support all protocols now
+	upgrader := websocket.FastHTTPUpgrader{
+		HandshakeTimeout: 5 * time.Second,
+		ReadBufferSize:   1024,
+		WriteBufferSize:  1024,
+		//Subprotocols:      nil,
+		//Error:             nil,
+		CheckOrigin: func(c *fasthttp.RequestCtx) bool {
 			return true
 		},
-		Extension: func(httphead.Option) bool {
-			// disable extensions for compatibility
-			return false
-		},
-		Header: hdr,
+		EnableCompression: false,
 	}
 
-	conn, rw, _, err := upgrader.Upgrade(r, w)
-	if err != nil {
-		logger.Error(err)
-		return
-	}
+	return upgrader.Upgrade(r.Ctx.Context(), func(conn *websocket.Conn) {
 
-	defer func() {
-		if err := conn.Close(); err != nil {
+		defer func() {
+			if err := conn.Close(); err != nil {
+				logger.Error(err)
+				return
+			}
+		}()
+
+		var request interface{}
+		if !bytes.Equal(payload, []byte(`{}`)) {
+			switch ct {
+			case "application/json", "":
+				m := json.RawMessage(payload)
+				request = &m
+			default:
+				request = &raw.Frame{Data: payload}
+			}
+		}
+
+		// we always need to set content type for message
+		if ct == "" {
+			ct = "application/json"
+		}
+		req := c.NewRequest(
+			service.Name,
+			service.Endpoint.Name,
+			request,
+			client.WithContentType(ct),
+			client.StreamingRequest(),
+		)
+
+		so := selector.WithStrategy(strategy(service.Services))
+		// create a new stream
+		stream, err := c.Stream(r, req, client.WithSelectOption(so))
+		if err != nil {
 			logger.Error(err)
 			return
 		}
-	}()
 
-	var request interface{}
-	if !bytes.Equal(payload, []byte(`{}`)) {
-		switch ct {
-		case "application/json", "":
-			m := json.RawMessage(payload)
-			request = &m
-		default:
-			request = &raw.Frame{Data: payload}
+		if request != nil {
+			if err = stream.Send(request); err != nil {
+				logger.Error(err)
+				return
+			}
 		}
-	}
 
-	// we always need to set content type for message
-	if ct == "" {
-		ct = "application/json"
-	}
-	req := c.NewRequest(
-		service.Name,
-		service.Endpoint.Name,
-		request,
-		client.WithContentType(ct),
-		client.StreamingRequest(),
-	)
+		go writeLoop(conn, stream)
 
-	so := selector.WithStrategy(strategy(service.Services))
-	// create a new stream
-	stream, err := c.Stream(ctx, req, client.WithSelectOption(so))
-	if err != nil {
-		logger.Error(err)
-		return
-	}
+		rsp := stream.Response()
 
-	if request != nil {
-		if err = stream.Send(request); err != nil {
-			logger.Error(err)
-			return
-		}
-	}
-
-	go writeLoop(rw, stream)
-
-	rsp := stream.Response()
-
-	// receive from stream and send to client
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-stream.Context().Done():
-			return
-		default:
-			// read backend response body
-			buf, err := rsp.Read()
-			if err != nil {
-				// wants to avoid import  grpc/status.Status
-				if strings.Contains(err.Error(), "context canceled") {
+		// receive from stream and send to client
+		for {
+			select {
+			case <-r.Context().Done():
+				return
+			case <-stream.Context().Done():
+				return
+			default:
+				// read backend response body
+				buf, err := rsp.Read()
+				if err != nil {
+					// wants to avoid import  grpc/status.Status
+					if strings.Contains(err.Error(), "context canceled") {
+						return
+					}
+					logger.Error(err)
 					return
 				}
-				logger.Error(err)
-				return
-			}
 
-			// write the response
-			if err := wsutil.WriteServerMessage(rw, op, buf); err != nil {
-				logger.Error(err)
-				return
-			}
-			if err = rw.Flush(); err != nil {
-				logger.Error(err)
-				return
+				// write the response
+				if err := conn.WriteMessage(op, buf); err != nil {
+					logger.Error(err)
+					return
+				}
 			}
 		}
-	}
+	})
 }
 
 // writeLoop
-func writeLoop(rw io.ReadWriter, stream client.Stream) {
+func writeLoop(conn *websocket.Conn, stream client.Stream) {
 	// close stream when done
 	defer stream.Close()
 
@@ -188,14 +176,14 @@ func writeLoop(rw io.ReadWriter, stream client.Stream) {
 		case <-stream.Context().Done():
 			return
 		default:
-			buf, op, err := wsutil.ReadClientData(rw)
+			op, buf, err := conn.ReadMessage()
 			if err != nil {
-				if wserr, ok := err.(wsutil.ClosedError); ok {
+				if wserr, ok := err.(*websocket.CloseError); ok {
 					switch wserr.Code {
-					case ws.StatusGoingAway:
+					case websocket.CloseGoingAway:
 						// this happens when user leave the page
 						return
-					case ws.StatusNormalClosure, ws.StatusNoStatusRcvd:
+					case websocket.CloseNormalClosure, websocket.CloseNoStatusReceived:
 						// this happens when user close ws connection, or we don't get any status
 						return
 					}
@@ -207,7 +195,7 @@ func writeLoop(rw io.ReadWriter, stream client.Stream) {
 			default:
 				// not relevant
 				continue
-			case ws.OpText, ws.OpBinary:
+			case websocket.TextMessage, websocket.BinaryMessage:
 				break
 			}
 			// send to backend
@@ -222,9 +210,9 @@ func writeLoop(rw io.ReadWriter, stream client.Stream) {
 	}
 }
 
-func isStream(r *http.Request, svc *apipb.Service) bool {
+func isStream(c *fiber.Ctx, svc *apipb.Service) bool {
 	// check if it's a web socket
-	if !isWebSocket(r) {
+	if !isWebSocket(c) {
 		return false
 	}
 	// check if the endpoint supports streaming
@@ -243,9 +231,9 @@ func isStream(r *http.Request, svc *apipb.Service) bool {
 	return false
 }
 
-func isWebSocket(r *http.Request) bool {
+func isWebSocket(c *fiber.Ctx) bool {
 	contains := func(key, val string) bool {
-		vv := strings.Split(r.Header.Get(key), ",")
+		vv := strings.Split(c.Get(key), ",")
 		for _, v := range vv {
 			if val == strings.ToLower(strings.TrimSpace(v)) {
 				return true

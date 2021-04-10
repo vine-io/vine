@@ -84,7 +84,7 @@ func WithClient(c client.Client) Option {
 	}
 }
 
-// WithmaxRecvSize specifies max body size
+// WithMaxRecvSize WithmaxRecvSize specifies max body size
 func WithMaxRecvSize(size int64) Option {
 	return func(o *Options) {
 		o.MaxRecvSize = size

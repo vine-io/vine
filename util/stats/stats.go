@@ -30,6 +30,8 @@ import (
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type stats struct {
@@ -61,22 +63,21 @@ var (
 	total = 24
 )
 
-func render(w http.ResponseWriter, r *http.Request, tmpl string, data interface{}) {
+func render(ctx *fiber.Ctx, tmpl string, data interface{}) error {
 	t, err := template.New("template").Funcs(template.FuncMap{
 		//		"format": format,
 	}).Parse(layoutTemplate)
 	if err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
-		return
+		return fiber.NewError(500, "Error occurred:"+err.Error())
 	}
 	t, err = t.Parse(tmpl)
 	if err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
-		return
+		return fiber.NewError(500, "Error occurred:"+err.Error())
 	}
-	if err := t.ExecuteTemplate(w, "layout", data); err != nil {
-		http.Error(w, "Error occurred:"+err.Error(), 500)
+	if err := t.ExecuteTemplate(ctx, "layout", data); err != nil {
+		return fiber.NewError(500, "Error occurred:"+err.Error())
 	}
+	return nil
 }
 
 func (s *stats) run() {
@@ -144,21 +145,20 @@ func (s *stats) ServeHTTP(h http.Handler) http.Handler {
 	})
 }
 
-func (s *stats) StatsHandler(w http.ResponseWriter, r *http.Request) {
-	if ct := r.Header.Get("Content-Type"); ct == "application/json" {
+func (s *stats) StatsHandler(ctx *fiber.Ctx) error {
+	if ct := ctx.Get("Content-Type", ""); string(ct) == "application/json" {
 		s.RLock()
 		b, err := json.Marshal(s)
 		s.RUnlock()
 		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+			return fiber.NewError(500, err.Error())
 		}
-		w.Header().Set("Content-Type", ct)
-		w.Write(b)
-		return
+		ctx.Request().Header.Set("Content-Type", string(ct))
+		ctx.Write(b)
+		return nil
 	}
 
-	render(w, r, statsTemplate, nil)
+	return render(ctx, statsTemplate, nil)
 }
 
 func (s *stats) Start() error {

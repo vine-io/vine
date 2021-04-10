@@ -24,12 +24,11 @@
 package api
 
 import (
-	"net/http"
-
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine/service/api/resolver"
 )
 
-// default resolver for legacy purposes
+// Resolver default resolver for legacy purposes
 // it uses proxy routing to resolve names
 // /foo becomes namespace.foo
 // /v1/foo becomes namespace.v1.foo
@@ -37,19 +36,19 @@ type Resolver struct {
 	Options resolver.Options
 }
 
-func (r *Resolver) Resolve(req *http.Request) (*resolver.Endpoint, error) {
+func (r *Resolver) Resolve(c *fiber.Ctx) (*resolver.Endpoint, error) {
 	var name, method string
 
 	switch r.Options.Handler {
 	// internal handlers
 	case "meta", "api", "rpc", "vine":
-		name, method = apiRoute(req.URL.Path)
+		name, method = apiRoute(c.Path())
 	default:
-		method = req.Method
-		name = proxyRoute(req.URL.Path)
+		method = c.Method()
+		name = proxyRoute(c.Path())
 	}
 
-	ns := r.Options.Namespace(req)
+	ns := r.Options.Namespace(c)
 	return &resolver.Endpoint{
 		Name:   ns + "." + name,
 		Method: method,

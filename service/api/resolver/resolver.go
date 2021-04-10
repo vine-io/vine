@@ -25,7 +25,8 @@ package resolver
 
 import (
 	"errors"
-	"net/http"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 var (
@@ -35,7 +36,7 @@ var (
 
 // Resolver resolves requests to endpoints
 type Resolver interface {
-	Resolve(r *http.Request) (*Endpoint, error)
+	Resolve(c *fiber.Ctx) (*Endpoint, error)
 	String() string
 }
 
@@ -53,14 +54,14 @@ type Endpoint struct {
 
 type Options struct {
 	Handler   string
-	Namespace func(*http.Request) string
+	Namespace func(ctx *fiber.Ctx) string
 }
 
 type Option func(o *Options)
 
 // StaticNamespace returns the same namespace for each request
-func StaticNamespace(ns string) func(*http.Request) string {
-	return func(*http.Request) string {
+func StaticNamespace(ns string) func(*fiber.Ctx) string {
+	return func(*fiber.Ctx) string {
 		return ns
 	}
 }
