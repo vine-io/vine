@@ -54,9 +54,6 @@ func (h *TestFoo) Bar(ctx context.Context, req *TestReq, rsp *TestRsp) error {
 func TestStaticClientWrapper(t *testing.T) {
 	var err error
 
-	req := client.NewRequest("go.vine.service.foo", "TestFoo.Bar", &TestReq{}, client.WithContentType("application/json"))
-	rsp := &TestRsp{}
-
 	reg := rmemory.NewRegistry()
 	brk := bmemory.NewBroker(broker.Registry(reg))
 	tr := tmemory.NewTransport()
@@ -81,6 +78,9 @@ func TestStaticClientWrapper(t *testing.T) {
 		client.Broker(brk),
 		client.Transport(tr),
 	)
+
+	req := cli.NewRequest("go.vine.service.foo", "TestFoo.Bar", &TestReq{}, client.WithContentType("application/json"))
+	rsp := &TestRsp{}
 
 	w1 := wrapper.StaticClient("xxx_localhost:12345", cli)
 	if err = w1.Call(context.TODO(), req, nil); err == nil {
