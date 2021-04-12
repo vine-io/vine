@@ -110,7 +110,7 @@ var (
 	}
 )
 
-// run the auth service
+// Run run the auth service
 func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("address")) > 0 {

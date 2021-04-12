@@ -82,21 +82,21 @@ type Options struct {
 
 type Option func(o *Options)
 
-// Command line Name
+// Name command line Name
 func Name(n string) Option {
 	return func(o *Options) {
 		o.Name = n
 	}
 }
 
-// Command line Description
+// Description command line Description
 func Description(d string) Option {
 	return func(o *Options) {
 		o.Description = d
 	}
 }
 
-// Command line Version
+// Version command line Version
 func Version(v string) Option {
 	return func(o *Options) {
 		o.Version = v
@@ -181,70 +181,70 @@ func Profile(p *profile.Profile) Option {
 	}
 }
 
-// New broker func
+// NewBroker new broker func
 func NewBroker(name string, b func(...broker.Option) broker.Broker) Option {
 	return func(o *Options) {
 		o.Brokers[name] = b
 	}
 }
 
-// New client func
+// NewClient new client func
 func NewClient(name string, b func(...client.Option) client.Client) Option {
 	return func(o *Options) {
 		o.Clients[name] = b
 	}
 }
 
-// New registry func
+// NewRegistry new registry func
 func NewRegistry(name string, r func(...registry.Option) registry.Registry) Option {
 	return func(o *Options) {
 		o.Registries[name] = r
 	}
 }
 
-// New selector func
+// NewSelector new selector func
 func NewSelector(name string, s func(...selector.Option) selector.Selector) Option {
 	return func(o *Options) {
 		o.Selectors[name] = s
 	}
 }
 
-// New server func
+// NewServer new server func
 func NewServer(name string, s func(...server.Option) server.Server) Option {
 	return func(o *Options) {
 		o.Servers[name] = s
 	}
 }
 
-// New transport func
+// NewTransport new transport func
 func NewTransport(name string, t func(...transport.Option) transport.Transport) Option {
 	return func(o *Options) {
 		o.Transports[name] = t
 	}
 }
 
-// New runtime func
+// NewRuntime new runtime func
 func NewRuntime(name string, r func(...runtime.Option) runtime.Runtime) Option {
 	return func(o *Options) {
 		o.Runtimes[name] = r
 	}
 }
 
-// New tracer func
+// NewTracer new tracer func
 func NewTracer(name string, t func(...trace.Option) trace.Tracer) Option {
 	return func(o *Options) {
 		o.Tracers[name] = t
 	}
 }
 
-// New auth func
+// NewAuth new auth func
 func NewAuth(name string, t func(...auth.Option) auth.Auth) Option {
 	return func(o *Options) {
 		o.Auths[name] = t
 	}
 }
 
-// New dao func
+// NewDialect new dao func
 func NewDialect(name string, t func(...dao.Option) dao.Dialect) Option {
 	return func(o *Options) {
 		o.Dialects[name] = t

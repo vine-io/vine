@@ -112,9 +112,9 @@ func init() {
 }
 
 type Cmd interface {
-	// The cobra app within this cmd
+	// App The cli app within this cmd
 	App() *cli.App
-	// Adds options, parses flags and initialise
+	// Init Adds options, parses flags and initialise
 	// exits on error
 	Init(opts ...Option) error
 	// Options set within this command
