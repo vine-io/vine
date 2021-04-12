@@ -65,7 +65,7 @@ func newService(opts ...Option) Service {
 	options.Client = wrapper.AuthClient(authFn, options.Client)
 
 	// wrap the server to provided handler stats
-	options.Server.Init(
+	_ = options.Server.Init(
 		server.WrapHandler(wrapper.HandlerStats(stats.DefaultStats)),
 		server.WrapHandler(wrapper.TraceHandler(trace.DefaultTracer)),
 		server.WrapHandler(wrapper.AuthHandler(authFn)),
@@ -115,7 +115,7 @@ func (s *service) Init(opts ...Option) {
 
 		// Explicitly set the table name to the service name
 		name := s.opts.Cmd.App().Name
-		s.opts.Store.Init(store.Table(name))
+		_ = s.opts.Store.Init(store.Table(name))
 	})
 }
 

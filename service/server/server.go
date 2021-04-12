@@ -38,17 +38,17 @@ import (
 
 // Server is a simple vine server abstraction
 type Server interface {
-	// Initialise options
+	// Init initialise options
 	Init(...Option) error
-	// Retrieve the options
+	// Options retrieve the options
 	Options() Options
-	// Register a handler
+	// Handle register a handler
 	Handle(Handler) error
-	// Create a new handler
+	// NewHandler create a new handler
 	NewHandler(interface{}, ...HandlerOption) Handler
-	// Create a new subscriber
+	// NewSubscriber create a new subscriber
 	NewSubscriber(string, interface{}, ...SubscriberOption) Subscriber
-	// Register a subscriber
+	// Subscribe register a subscriber
 	Subscribe(Subscriber) error
 	// Start the server
 	Start() error
@@ -70,13 +70,13 @@ type Router interface {
 type Message interface {
 	// Topic of the message
 	Topic() string
-	// The decoded payload value
+	// Payload the decoded payload value
 	Payload() interface{}
-	// The content type of the payload
+	// ContentType the content type of the payload
 	ContentType() string
-	// The raw headers of the message
+	// Header the raw headers of the message
 	Header() map[string]string
-	// The raw body of the message
+	// Body the raw body of the message
 	Body() []byte
 	// Codec used tp decode the message
 	Codec() codec.Reader
@@ -86,11 +86,11 @@ type Message interface {
 type Request interface {
 	// Service name requested
 	Service() string
-	// The action requested
+	// Method the action requested
 	Method() string
 	// Endpoint name requested
 	Endpoint() string
-	// Content Type provided
+	// ContentType Content Type provided
 	ContentType() string
 	// Header of the request
 	Header() map[string]string
@@ -98,17 +98,17 @@ type Request interface {
 	Body() interface{}
 	// Read the undecoded request body
 	Read() ([]byte, error)
-	// The encoded message body
+	// Codec the encoded message body
 	Codec() codec.Reader
-	// Indicates whether its a stream
+	// Stream indicates whether its a stream
 	Stream() bool
 }
 
 // Response is the response write for unencoded messages
 type Response interface {
-	// Encoded writer
+	// Codec encoded writer
 	Codec() codec.Writer
-	// Write the header
+	// WriteHeader write the header
 	WriteHeader(map[string]string)
 	// Write a response directly to the client
 	Write([]byte) error

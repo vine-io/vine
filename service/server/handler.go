@@ -63,7 +63,7 @@ func OpenAPIHandler(openAPI *openapipb.OpenAPI) HandlerOption {
 	}
 }
 
-// Internal Handler options specifies that a handler is not advertised
+// InternalHandler options specifies that a handler is not advertised
 // to the discovery system. In the future this may also limit request
 // to the internal network or authorised user.
 func InternalHandler(b bool) HandlerOption {
@@ -72,7 +72,7 @@ func InternalHandler(b bool) HandlerOption {
 	}
 }
 
-// Internal Subscriber options specifies that a subscriber is not advertised
+// InternalSubscriber options specifies that a subscriber is not advertised
 // to the discovery system.
 func InternalSubscriber(b bool) SubscriberOption {
 	return func(o *SubscriberOptions) {
@@ -101,7 +101,7 @@ func DisableAutoAck() SubscriberOption {
 	}
 }
 
-// Shared queue name distributed messages across subscribers
+// SubscriberQueue Shared queue name distributed messages across subscribers
 func SubscriberQueue(n string) SubscriberOption {
 	return func(o *SubscriberOptions) {
 		o.Queue = n

@@ -128,7 +128,7 @@ func Name(n string) Option {
 	}
 }
 
-// Unique server id
+// Id Unique server id
 func Id(id string) Option {
 	return func(o *Options) {
 		o.Id = id
@@ -149,7 +149,7 @@ func Address(a string) Option {
 	}
 }
 
-// The address to advertise for discovery - host:port
+// Advertise the address to advertise for discovery - host:port
 func Advertise(a string) Option {
 	return func(o *Options) {
 		o.Advertise = a
