@@ -629,7 +629,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 			return fmt.Errorf("unsupported auth: %s", name)
 		}
 		*c.opts.Auth = a(authOpts...)
-		serverOpts = append(serverOpts, server.Auth(*c.opts.Auth))
 	} else {
 		(*c.opts.Auth).Init(authOpts...)
 	}

@@ -55,13 +55,11 @@ func newService(opts ...Option) Service {
 	serviceName := options.Server.Options().Name
 
 	// we pass functions to the wrappers since the values can change during initialisation
-	authFn := func() auth.Auth { return options.Server.Options().Auth }
-	cacheFn := func() *client.Cache { return options.Client.Options().Cache }
+	authFn := func() auth.Auth { return options.Auth }
 
 	// wrap client to inject From-Service header on any calls
 	options.Client = wrapper.FromService(serviceName, options.Client)
 	options.Client = wrapper.TraceCall(serviceName, trace.DefaultTracer, options.Client)
-	options.Client = wrapper.CacheClient(cacheFn, options.Client)
 	options.Client = wrapper.AuthClient(authFn, options.Client)
 
 	// wrap the server to provided handler stats

@@ -28,10 +28,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/codec"
-	"github.com/lack-io/vine/service/debug/trace"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/transport"
 )
@@ -40,8 +38,6 @@ type Options struct {
 	Codecs       map[string]codec.NewCodec
 	Broker       broker.Broker
 	Registry     registry.Registry
-	Tracer       trace.Tracer
-	Auth         auth.Auth
 	Transport    transport.Transport
 	Metadata     map[string]string
 	Name         string
@@ -82,10 +78,6 @@ func NewOptions(opt ...Option) Options {
 		o(&opts)
 	}
 
-	if opts.Auth == nil {
-		opts.Auth = auth.DefaultAuth
-	}
-
 	if opts.Broker == nil {
 		opts.Broker = broker.DefaultBroker
 	}
@@ -121,7 +113,7 @@ func NewOptions(opt ...Option) Options {
 	return opts
 }
 
-// Server name
+// Name the name of server
 func Name(n string) Option {
 	return func(o *Options) {
 		o.Name = n
@@ -186,20 +178,6 @@ func Registry(r registry.Registry) Option {
 	}
 }
 
-// Tracer mechanism for distributed tracking
-func Tracer(t trace.Tracer) Option {
-	return func(o *Options) {
-		o.Tracer = t
-	}
-}
-
-// Auth mechanism for role based access control
-func Auth(a auth.Auth) Option {
-	return func(o *Options) {
-		o.Auth = a
-	}
-}
-
 // Transport mechanism for communication e.g http, rabbitmq, etc
 func Transport(t transport.Transport) Option {
 	return func(o *Options) {
@@ -221,14 +199,14 @@ func RegisterCheck(fn func(context.Context) error) Option {
 	}
 }
 
-// Register the service with a TTL
+// RegisterTTL register the service with a TTL
 func RegisterTTL(t time.Duration) Option {
 	return func(o *Options) {
 		o.RegisterTTL = t
 	}
 }
 
-// Register the service with at interval
+// RegisterInterval register the service with at interval
 func RegisterInterval(t time.Duration) Option {
 	return func(o *Options) {
 		o.RegisterInterval = t
@@ -278,14 +256,14 @@ func Wait(wg *sync.WaitGroup) Option {
 	}
 }
 
-// Adds a handler Wrapper to a list of options passed into the server
+// WrapHandler adds a handler Wrapper to a list of options passed into the server
 func WrapHandler(w HandlerWrapper) Option {
 	return func(o *Options) {
 		o.HdlrWrappers = append(o.HdlrWrappers, w)
 	}
 }
 
-// Adds a subscriber Wrapper to a list of options passed into the server
+// WrapSubscriber adds a subscriber Wrapper to a list of options passed into the server
 func WrapSubscriber(w SubscriberWrapper) Option {
 	return func(o *Options) {
 		o.SubWrappers = append(o.SubWrappers, w)

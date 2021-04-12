@@ -30,7 +30,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 
-	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/broker"
 	"github.com/lack-io/vine/service/codec"
 	"github.com/lack-io/vine/service/registry"
@@ -88,7 +87,6 @@ func MaxMsgSize(s int) server.Option {
 
 func newOptions(opt ...server.Option) server.Options {
 	opts := server.Options{
-		Auth:      auth.DefaultAuth,
 		Codecs:    make(map[string]codec.NewCodec),
 		Metadata:  map[string]string{},
 		Broker:    broker.DefaultBroker,

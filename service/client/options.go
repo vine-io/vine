@@ -51,8 +51,6 @@ type Options struct {
 	PoolSize int
 	PoolTTL  time.Duration
 
-	Cache *Cache
-
 	// Middleware for client
 	Wrappers []Wrapper
 
@@ -117,7 +115,6 @@ type RequestOptions struct {
 
 func NewOptions(options ...Option) Options {
 	opts := Options{
-		Cache:       NewCache(),
 		Context:     context.Background(),
 		ContentType: DefaultContentType,
 		Codecs:      make(map[string]codec.NewCodec),
@@ -157,7 +154,7 @@ func Codec(contentType string, c codec.NewCodec) Option {
 	}
 }
 
-// Default content type of the client
+// ContentType default content type of the client
 func ContentType(ct string) Option {
 	return func(o *Options) {
 		o.ContentType = ct
@@ -194,21 +191,21 @@ func Transport(t transport.Transport) Option {
 	}
 }
 
-// Select is used to select a node to route a request to
+// Selector select is used to select a node to route a request to
 func Selector(s selector.Selector) Option {
 	return func(o *Options) {
 		o.Selector = s
 	}
 }
 
-// Adds a Wrapper to a list of options passed into the client
+// Wrap adds a Wrapper to a list of options passed into the client
 func Wrap(w Wrapper) Option {
 	return func(o *Options) {
 		o.Wrappers = append(o.Wrappers, w)
 	}
 }
 
-// Adds a Wrapper to the list of CallFunc wrappers
+// WrapCall adds a Wrapper to the list of CallFunc wrappers
 func WrapCall(cw ...CallWrapper) Option {
 	return func(o *Options) {
 		o.CallOptions.CallWrappers = append(o.CallOptions.CallWrappers, cw...)
@@ -223,7 +220,7 @@ func Backoff(fn BackoffFunc) Option {
 	}
 }
 
-// Number of retries when making the request.
+// Retries number of retries when making the request.
 // Should this be a Call Option?
 func Retries(i int) Option {
 	return func(o *Options) {
@@ -238,7 +235,7 @@ func Retry(fn RetryFunc) Option {
 	}
 }
 
-// The request timeout.
+// RequestTimeout the request timeout.
 // Should this be a Call Option?
 func RequestTimeout(d time.Duration) Option {
 	return func(o *Options) {
@@ -253,7 +250,7 @@ func StreamTimeout(d time.Duration) Option {
 	}
 }
 
-// Transport dial timeout
+// DialTimeout transport dial timeout
 func DialTimeout(d time.Duration) Option {
 	return func(o *Options) {
 		o.CallOptions.DialTimeout = d

@@ -57,27 +57,27 @@ type Message interface {
 
 // Request is the interface for a synchronous request used by Call or Stream
 type Request interface {
-	// The service to call
+	// Service the service to call
 	Service() string
-	// The action to take
+	// Method the action to take
 	Method() string
-	// The endpoint to invoke
+	// Endpoint the endpoint to invoke
 	Endpoint() string
-	// The content type
+	// ContentType the content type
 	ContentType() string
-	// The unencoded request body
+	// Body the unencoded request body
 	Body() interface{}
-	// Write to the encoded request writer. This is nil before a call is made
+	// Codec writes to the encoded request writer. This is nil before a call is made
 	Codec() codec.Writer
-	// indicates whether the request will be a streaming one rather than unary
+	// Stream indicates whether the request will be a streaming one rather than unary
 	Stream() bool
 }
 
 // Response is the response received from a service
 type Response interface {
-	// Read the response
+	// Codec reads the response
 	Codec() codec.Reader
-	// read the header
+	// Header reads the header
 	Header() map[string]string
 	// Read the undecoded response
 	Read() ([]byte, error)
@@ -87,9 +87,9 @@ type Response interface {
 type Stream interface {
 	// Context for the stream
 	Context() context.Context
-	// The request made
+	// Request the request made
 	Request() Request
-	// The response read
+	// Response the response read
 	Response() Response
 	// Send will encode and send a request
 	Send(interface{}) error
@@ -128,36 +128,36 @@ var (
 	// DefaultRetries is the default number of times a request is tried
 	DefaultRetries = 1
 	// DefaultRequestTimeout is the default request timeout
-	DefaultRequestTimeout = time.Second * 5
+	DefaultRequestTimeout = time.Second * 10
 	// DefaultPoolSize sets the connection pool size
 	DefaultPoolSize = 100
 	// DefaultPoolTTL sets the connection pool ttl
 	DefaultPoolTTL = time.Minute
 )
 
-// Makes a synchronous call to a service using the default client
+// Call makes a synchronous call to a service using the default client
 func Call(ctx context.Context, request Request, response interface{}, opts ...CallOption) error {
 	return DefaultClient.Call(ctx, request, response, opts...)
 }
 
-// Publishes a publication using the default client. Using the underlying broker
+// Publish publishes a publication using the default client. Using the underlying broker
 // set within the options.
 func Publish(ctx context.Context, msg Message, opts ...PublishOption) error {
 	return DefaultClient.Publish(ctx, msg, opts...)
 }
 
-// Creates a new message using the default client
+// NewMessage creates a new message using the default client
 func NewMessage(topic string, payload interface{}, opts ...MessageOption) Message {
 	return DefaultClient.NewMessage(topic, payload, opts...)
 }
 
-// Creates a new request using the default client. Content Type will
+// NewRequest creates a new request using the default client. Content Type will
 // be set to the default within options and use the appropriate codec
 func NewRequest(service, endpoint string, request interface{}, reqOpts ...RequestOption) Request {
 	return DefaultClient.NewRequest(service, endpoint, request, reqOpts...)
 }
 
-// Creates a streaming connection with a service and returns responses on the
+// NewStream creates a streaming connection with a service and returns responses on the
 // channel passed in. It's up to the user to close the streamer.
 func NewStream(ctx context.Context, request Request, opts ...CallOption) (Stream, error) {
 	return DefaultClient.Stream(ctx, request, opts...)

@@ -54,6 +54,7 @@ type Options struct {
 	Client    client.Client
 	Config    config.Config
 	Server    server.Server
+	Trace     trace.Tracer
 	Dialect   dao.Dialect
 	Store     store.Store
 	Registry  registry.Registry
@@ -184,7 +185,7 @@ func Registry(r registry.Registry) Option {
 // Tracer sets the tracer for the service
 func Tracer(t trace.Tracer) Option {
 	return func(o *Options) {
-		o.Server.Init(server.Tracer(t))
+		o.Trace = t
 	}
 }
 
@@ -192,7 +193,6 @@ func Tracer(t trace.Tracer) Option {
 func Auth(a auth.Auth) Option {
 	return func(o *Options) {
 		o.Auth = a
-		o.Server.Init(server.Auth(a))
 	}
 }
 
