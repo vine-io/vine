@@ -28,65 +28,62 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type proxy struct {
 	// The default http reverse proxy
 	Router *httputil.ReverseProxy
 	// The director which picks the route
-	Director func(r *http.Request)
+	Director func(c *fiber.Ctx)
 }
 
-func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !isWebSocket(r) {
-		// the usual path
-		p.Router.ServeHTTP(w, r)
-		return
-	}
+func (p *proxy) Handler(c *fiber.Ctx) error {
+	//if !isWebSocket(c) {
+	//	// the usual path
+	//	p.Router.ServeHTTP(w, r)
+	//	return
+	//}
 
 	// the websocket path
-	req := new(http.Request)
-	*req = *r
-	p.Director(req)
-	host := req.URL.Host
+	p.Director(c)
+	host := string(c.Request().Host())
 
 	if len(host) == 0 {
-		http.Error(w, "invalid host", 500)
-		return
+		return fiber.NewError(500, "invalid host")
 	}
 
 	// set x-forward-for
-	if clientIP, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
-		if ips, ok := req.Header["X-Forwarded-For"]; ok {
-			clientIP = strings.Join(ips, ", ") + ", " + clientIP
+	if clientIP, _, err := net.SplitHostPort(c.IP()); err == nil {
+		if ips := c.Get("X-Forwarded-For"); ips != "" {
+			clientIP = ips + ", " + clientIP
 		}
-		req.Header.Set("X-Forwarded-For", clientIP)
+		c.Set("X-Forwarded-For", clientIP)
 	}
 
 	// connect to the backend host
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		return fiber.NewError(500, err.Error())
 	}
 
 	// hijack the connection
-	hj, ok := w.(http.Hijacker)
+	hj, ok := c.Context().Conn().(http.Hijacker)
 	if !ok {
-		http.Error(w, "failed to connect", 500)
-		return
+		return fiber.NewError(500, "failed to connect")
 	}
 
 	nc, _, err := hj.Hijack()
 	if err != nil {
-		return
+		return err
 	}
 
 	defer nc.Close()
 	defer conn.Close()
 
-	if err = req.Write(conn); err != nil {
-		return
+	if _, err = c.Request().WriteTo(conn); err != nil {
+		return err
 	}
 
 	errCh := make(chan error, 2)
@@ -100,11 +97,13 @@ func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go cp(nc, conn)
 
 	<-errCh
+
+	return nil
 }
 
-func isWebSocket(r *http.Request) bool {
+func isWebSocket(c *fiber.Ctx) bool {
 	contains := func(key, val string) bool {
-		vv := strings.Split(r.Header.Get(key), ",")
+		vv := strings.Split(c.Get(key), ",")
 		for _, v := range vv {
 			if val == strings.ToLower(strings.TrimSpace(v)) {
 				return true

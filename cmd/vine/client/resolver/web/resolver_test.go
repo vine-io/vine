@@ -23,10 +23,9 @@
 package web
 
 import (
-	"net/http"
-	"net/url"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/client/selector"
@@ -76,17 +75,13 @@ func TestWebResolver(t *testing.T) {
 
 			r.Register(v)
 
-			u, err := url.Parse("https://" + service.Host + service.Path)
-			if err != nil {
-				t.Fatal(err)
-			}
+			//u, err := url.Parse("https://" + service.Host + service.Path)
+			//if err != nil {
+			//	t.Fatal(err)
+			//}
 
-			req := &http.Request{
-				Header: make(http.Header),
-				URL:    u,
-				Host:   u.Hostname(),
-			}
-			if endpoint, err := res.Resolve(req); err != nil {
+			req := fiber.Ctx{}
+			if endpoint, err := res.Resolve(&req); err != nil {
 				t.Fatalf("Failed to resolve %v: %v", service, err)
 			} else if endpoint.Host != "127.0.0.1:8080" {
 				t.Fatalf("Failed to resolve %v", service.Host)

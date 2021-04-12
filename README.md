@@ -153,11 +153,11 @@ curl -H 'Content-Type: application/json' -d '{}' http://localhost:8080/api/vine
 - [x] 修改 github.com/lack-io/vine/service 结构
 - [x] 添加内置定时任务功能
 - [x] 使用高性能的 web 库替换 mux
-- [ ] 修改 Auth 组件
 - [x] 减少对应依赖，如 ACEM
 - [x] 添加数据库支持
-- [ ] 修改 vine new 功能，添加 gateway 模板
 - [x] 组件下的 struct 整合进 proto 中，同 registry 的实现
+- [ ] 修改 Auth 组件
+- [ ] 修改 vine new 功能，添加 gateway 模板
 - [ ] 添加 protoc-gen-cli 生成服务的客户端命令行
 - [ ] 提供接口，将 openapi 输出 pdf，Markdown 格式
 - [ ] 完善 Vine 文档

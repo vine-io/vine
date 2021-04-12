@@ -25,9 +25,6 @@ package web
 
 import (
 	"fmt"
-	"net"
-	"net/http"
-	"net/http/httputil"
 	"os"
 	"sort"
 	"strings"
@@ -35,15 +32,21 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gorilla/mux"
 	"github.com/lack-io/cli"
+	apiAuth "github.com/lack-io/vine/cmd/vine/client/api/auth"
+	"github.com/lack-io/vine/cmd/vine/client/api/handler"
+	"github.com/lack-io/vine/service/api/server"
+	httpapi "github.com/lack-io/vine/service/api/server/http"
+	"github.com/lack-io/vine/service/client/selector"
+	"github.com/lack-io/vine/service/config/cmd"
+	"github.com/lack-io/vine/util/helper"
+	"github.com/lack-io/vine/util/stats"
 	"github.com/serenize/snaker"
 	"golang.org/x/net/publicsuffix"
 
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
-	res "github.com/lack-io/vine/service/api/resolver"
 	"github.com/lack-io/vine/service/api/server/cors"
 	"github.com/lack-io/vine/service/auth"
 	log "github.com/lack-io/vine/service/logger"
@@ -53,18 +56,18 @@ import (
 
 //Meta Fields of vine web
 var (
-	// Default server name
+	// Name default server name
 	Name = "go.vine.web"
-	// Default address to bind to
+	// Address default address to bind to
 	Address = ":8082"
-	// The namespace to serve
+	// Namespace the namespace to serve
 	// Example:
 	// Namespace + /[Service]/foo/bar
 	// Host: Namespace.Service Endpoint: /foo/bar
 	Namespace = "go.vine"
 	Type      = "web"
 	Resolver  = "path"
-	// Base path sent to web service.
+	// BasePathHeader base path sent to web service.
 	// This is stripped from the request path
 	// Allows the web service to define absolute paths
 	BasePathHeader = "X-Vine-Web-Base-Path"
@@ -76,7 +79,7 @@ var (
 )
 
 type service struct {
-	*mux.Router
+	app *fiber.App
 	// registry we use
 	registry registry.Registry
 	// the resolver
@@ -97,116 +100,117 @@ type reg struct {
 	services []*regpb.Service
 }
 
-// ServeHTTP serves the web dashboard and proxies where appropriate
-func (s *service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if len(r.URL.Host) == 0 {
-		r.URL.Host = r.Host
-	}
-
-	if len(r.URL.Scheme) == 0 {
-		r.URL.Scheme = "http"
-	}
-
-	// no host means dashboard
-	host := r.URL.Hostname()
-	if len(host) == 0 {
-		h, _, err := net.SplitHostPort(r.Host)
-		if err != nil && strings.Contains(err.Error(), "missing port in address") {
-			host = r.Host
-		} else if err == nil {
-			host = h
-		}
-	}
-
-	// check again
-	if len(host) == 0 {
-		s.Router.ServeHTTP(w, r)
-		return
-	}
-
-	// check based on host set
-	if len(Host) > 0 && Host == host {
-		s.Router.ServeHTTP(w, r)
-		return
-	}
-
-	// an ip instead of hostname means dashboard
-	ip := net.ParseIP(host)
-	if ip != nil {
-		s.Router.ServeHTTP(w, r)
-		return
-	}
-
-	// namespace matching host means dashboard
-	parts := strings.Split(host, ".")
-	reverse(parts)
-	namespace := strings.Join(parts, ".")
-
-	// replace mu since we know its ours
-	if strings.HasPrefix(namespace, "mu.vine") {
-		namespace = strings.Replace(namespace, "mu.vine", "go.vine", 1)
-	}
-
-	// web dashboard if namespace matches
-	if namespace == Namespace+"."+Type {
-		s.Router.ServeHTTP(w, r)
-		return
-	}
-
-	// if a host has no subdomain serve dashboard
-	v, err := publicsuffix.EffectiveTLDPlusOne(host)
-	if err != nil || v == host {
-		s.Router.ServeHTTP(w, r)
-		return
-	}
-
-	// check if its a web request
-	if _, _, isWeb := s.resolver.Info(r); isWeb {
-		s.Router.ServeHTTP(w, r)
-		return
-	}
+// Handle serves the web dashboard and proxies where appropriate
+func (s *service) Handle(c *fiber.Ctx) error {
+	//host := string(c.Request().Host())
+	//if len(c.Request().Host()) == 0 {
+	//	r.URL.Host = r.Host
+	//}
+	//
+	//if len(r.URL.Scheme) == 0 {
+	//	r.URL.Scheme = "http"
+	//}
+	//
+	//// no host means dashboard
+	//host := r.URL.Hostname()
+	//if len(host) == 0 {
+	//	h, _, err := net.SplitHostPort(r.Host)
+	//	if err != nil && strings.Contains(err.Error(), "missing port in address") {
+	//		host = r.Host
+	//	} else if err == nil {
+	//		host = h
+	//	}
+	//}
+	//
+	//// check again
+	//if len(host) == 0 {
+	//	s.Router.ServeHTTP(w, r)
+	//	return
+	//}
+	//
+	//// check based on host set
+	//if len(Host) > 0 && Host == host {
+	//	s.Router.ServeHTTP(w, r)
+	//	return
+	//}
+	//
+	//// an ip instead of hostname means dashboard
+	//ip := net.ParseIP(host)
+	//if ip != nil {
+	//	s.Router.ServeHTTP(w, r)
+	//	return
+	//}
+	//
+	//// namespace matching host means dashboard
+	//parts := strings.Split(host, ".")
+	//reverse(parts)
+	//namespace := strings.Join(parts, ".")
+	//
+	//// replace mu since we know its ours
+	//if strings.HasPrefix(namespace, "mu.vine") {
+	//	namespace = strings.Replace(namespace, "mu.vine", "go.vine", 1)
+	//}
+	//
+	//// web dashboard if namespace matches
+	//if namespace == Namespace+"."+Type {
+	//	s.Router.ServeHTTP(w, r)
+	//	return
+	//}
+	//
+	//// if a host has no subdomain serve dashboard
+	//v, err := publicsuffix.EffectiveTLDPlusOne(host)
+	//if err != nil || v == host {
+	//	s.Router.ServeHTTP(w, r)
+	//	return
+	//}
+	//
+	//// check if its a web request
+	//if _, _, isWeb := s.resolver.Info(r); isWeb {
+	//	s.Router.ServeHTTP(w, r)
+	//	return
+	//}
 
 	// otherwise serve the proxy
-	s.prx.ServeHTTP(w, r)
+	return s.prx.Handler(c)
 }
 
 // proxy is a http reverse proxy
 func (s *service) proxy() *proxy {
-	director := func(r *http.Request) {
-		kill := func() {
-			r.URL.Host = ""
-			r.URL.Path = ""
-			r.URL.Scheme = ""
-			r.Host = ""
-			r.RequestURI = ""
-		}
-
-		// check to see if the endpoint was encoded in the request context
-		// by the auth wrapper
-		var endpoint *res.Endpoint
-		if val, ok := (r.Context().Value(res.Endpoint{})).(*res.Endpoint); ok {
-			endpoint = val
-		}
-
-		// TODO: better error handling
-		var err error
-		if endpoint == nil {
-			if endpoint, err = s.resolver.Resolve(r); err != nil {
-				log.Errorf("Failed to resolve url: %v: %v\n", r.URL, err)
-				kill()
-				return
-			}
-		}
-
-		r.Header.Set(BasePathHeader, "/"+endpoint.Name)
-		r.URL.Host = endpoint.Host
-		r.URL.Path = endpoint.Path
-		r.URL.Scheme = "http"
-		r.Host = r.URL.Host
+	director := func(c *fiber.Ctx) {
+		//kill := func() {
+		//	r.URL.Host = ""
+		//	r.URL.Path = ""
+		//	r.URL.Scheme = ""
+		//	r.Host = ""
+		//	r.RequestURI = ""
+		//}
+		//
+		//// check to see if the endpoint was encoded in the request context
+		//// by the auth wrapper
+		//var endpoint *res.Endpoint
+		//if val, ok := (r.Context().Value(res.Endpoint{})).(*res.Endpoint); ok {
+		//	endpoint = val
+		//}
+		//
+		//// TODO: better error handling
+		//var err error
+		//if endpoint == nil {
+		//	if endpoint, err = s.resolver.Resolve(r); err != nil {
+		//		log.Errorf("Failed to resolve url: %v: %v\n", r.URL, err)
+		//		kill()
+		//		return
+		//	}
+		//}
+		//
+		//r.Header.Set(BasePathHeader, "/"+endpoint.Name)
+		//r.URL.Host = endpoint.Host
+		//r.URL.Path = endpoint.Path
+		//r.URL.Scheme = "http"
+		//r.Host = r.URL.Host
 	}
 
 	return &proxy{
-		Router:   &httputil.ReverseProxy{Director: director},
+		//Router:   &httputil.ReverseProxy{Director: director},
 		Director: director,
 	}
 }
@@ -253,8 +257,8 @@ func formatEndpoint(v *regpb.Value, r int) string {
 	return fmt.Sprintf(strings.Join(fparts, ""), vals...)
 }
 
-func faviconHandler(w http.ResponseWriter, r *http.Request) {
-	return
+func faviconHandler(c *fiber.Ctx) error {
+	return nil
 }
 
 func (s *service) indexHandler(c *fiber.Ctx) error {
@@ -457,116 +461,111 @@ func (s *service) render(c *fiber.Ctx, tmpl string, data interface{}) error {
 
 func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
-	//if len(ctx.String("server-name")) > 0 {
-	//	Name = ctx.String("server-name")
-	//}
-	//if len(ctx.String("address")) > 0 {
-	//	Address = ctx.String("address")
-	//}
-	//if len(ctx.String("resolver")) > 0 {
-	//	Resolver = ctx.String("resolver")
-	//}
-	//if len(ctx.String("type")) > 0 {
-	//	Type = ctx.String("type")
-	//}
-	//if len(ctx.String("namespace")) > 0 {
-	//	// remove the service type from the namespace to allow for
-	//	// backwards compatability
-	//	Namespace = strings.TrimSuffix(ctx.String("namespace"), "."+Type)
-	//}
-	//
-	//// service opts
-	//svcOpts = append(svcOpts, vine.Name(Name))
-	//
-	//// Initialize Server
-	//svc := vine.NewService(svcOpts...)
-	//
-	//reg := &reg{Registry: *cmd.DefaultOptions().Registry}
-	//
-	//s := &service{
-	//	Router:   mux.NewRouter(),
-	//	registry: reg,
-	//	// our internal resolver
-	//	resolver: &web.Resolver{
-	//		// Default to type path
-	//		Type:      Resolver,
-	//		Namespace: namespace.NewResolver(Type, Namespace).ResolveWithType,
-	//		Selector: selector.NewSelector(
-	//			selector.Registry(reg),
-	//		),
-	//	},
-	//	auth: *cmd.DefaultOptions().Auth,
-	//}
-	//
-	//var h http.Handler
-	//// set as the server
-	//h = s
-	//
-	//if ctx.Bool("enable-stats") {
-	//	statsURL = "/stats"
-	//	st := stats.New()
-	//	s.HandleFunc("/stats", st.StatsHandler)
-	//	h = st.ServeHTTP(s)
-	//	st.Start()
-	//	defer st.Stop()
-	//}
-	//
-	//// create the proxy
-	//p := s.proxy()
-	//
-	//// the web handler itself
-	//s.HandleFunc("/favicon.ico", faviconHandler)
-	//s.HandleFunc("/client", s.callHandler)
-	//s.HandleFunc("/services", s.registryHandler)
-	//s.HandleFunc("/service/{name}", s.registryHandler)
-	//s.HandleFunc("/rpc", handler.RPC)
-	//s.PathPrefix("/{service:[a-zA-Z0-9]+}").Handler(p)
-	//s.HandleFunc("/", s.indexHandler)
-	//
-	//// insert the proxy
-	//s.prx = p
-	//
-	//var opts []server.Option
-	//
-	//if ctx.Bool("enable-tls") {
-	//	config, err := helper.TLSConfig(ctx)
-	//	if err != nil {
-	//		log.Errorf(err.Error())
-	//		return
-	//	}
-	//
-	//	opts = append(opts, server.EnableTLS(true))
-	//	opts = append(opts, server.TLSConfig(config))
-	//}
-	//
-	//// create the namespace resolver and the auth wrapper
-	//s.nsResolver = namespace.NewResolver(Type, Namespace)
-	//authWrapper := apiAuth.Wrapper(s.resolver, s.nsResolver)
-	//
-	//// create the service and add the auth wrapper
-	//server := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
-	//
-	//server.Init(opts...)
-	//server.Handle("/", h)
-	//
-	//// Setup auth redirect
-	//if len(ctx.String("auth-login-url")) > 0 {
-	//	loginURL = ctx.String("auth-login-url")
-	//	svc.Options().Auth.Init(auth.LoginURL(loginURL))
-	//}
-	//
-	//if err := server.Start(); err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//// Run server
-	//if err := svc.Run(); err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//if err := server.Stop(); err != nil {
-	//	log.Fatal(err)
-	//}
+	if len(ctx.String("server-name")) > 0 {
+		Name = ctx.String("server-name")
+	}
+	if len(ctx.String("address")) > 0 {
+		Address = ctx.String("address")
+	}
+	if len(ctx.String("resolver")) > 0 {
+		Resolver = ctx.String("resolver")
+	}
+	if len(ctx.String("type")) > 0 {
+		Type = ctx.String("type")
+	}
+	if len(ctx.String("namespace")) > 0 {
+		// remove the service type from the namespace to allow for
+		// backwards compatability
+		Namespace = strings.TrimSuffix(ctx.String("namespace"), "."+Type)
+	}
+
+	// service opts
+	svcOpts = append(svcOpts, vine.Name(Name))
+
+	// Initialize Server
+	svc := vine.NewService(svcOpts...)
+
+	reg := &reg{Registry: *cmd.DefaultOptions().Registry}
+
+	s := &service{
+		app:      fiber.New(fiber.Config{DisableStartupMessage: true}),
+		registry: reg,
+		// our internal resolver
+		resolver: &web.Resolver{
+			// Default to type path
+			Type:      Resolver,
+			Namespace: namespace.NewResolver(Type, Namespace).ResolveWithType,
+			Selector: selector.NewSelector(
+				selector.Registry(reg),
+			),
+		},
+		auth: *cmd.DefaultOptions().Auth,
+	}
+
+	if ctx.Bool("enable-stats") {
+		statsURL = "/stats"
+		st := stats.New()
+		s.app.All("/stats", st.StatsHandler)
+		st.Start()
+		defer st.Stop()
+	}
+
+	// create the proxy
+	p := s.proxy()
+
+	// the web handler itself
+	s.app.All("/favicon.ico", faviconHandler)
+	s.app.All("/client", s.callHandler)
+	s.app.All("/services", s.registryHandler)
+	s.app.All("/service/{name}", s.registryHandler)
+	s.app.All("/rpc", handler.RPC)
+	s.app.All("/{service:[a-zA-Z0-9]+}", p.Handler)
+	s.app.All("/", s.indexHandler)
+
+	// insert the proxy
+	s.prx = p
+
+	var opts []server.Option
+
+	if ctx.Bool("enable-tls") {
+		config, err := helper.TLSConfig(ctx)
+		if err != nil {
+			log.Errorf(err.Error())
+			return
+		}
+
+		opts = append(opts, server.EnableTLS(true))
+		opts = append(opts, server.TLSConfig(config))
+	}
+
+	// create the namespace resolver and the auth wrapper
+	s.nsResolver = namespace.NewResolver(Type, Namespace)
+	authWrapper := apiAuth.Wrapper(s.resolver, s.nsResolver)
+
+	// create the service and add the auth wrapper
+	server := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
+
+	server.Init(opts...)
+	server.Handle("/", s.app)
+
+	// Setup auth redirect
+	if len(ctx.String("auth-login-url")) > 0 {
+		loginURL = ctx.String("auth-login-url")
+		svc.Options().Auth.Init(auth.LoginURL(loginURL))
+	}
+
+	if err := server.Start(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Run server
+	if err := svc.Run(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := server.Stop(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 //Commands for `vine web`

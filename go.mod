@@ -24,7 +24,6 @@ require (
 	github.com/gofiber/fiber/v2 v2.7.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.2.0
-	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/hcl v1.0.0
 	github.com/hpcloud/tail v1.0.0
 	github.com/imdario/mergo v0.3.11

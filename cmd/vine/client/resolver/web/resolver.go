@@ -25,10 +25,10 @@ package web
 import (
 	"errors"
 	"net"
-	"net/http"
 	"regexp"
 	"strings"
 
+	"github.com/gofiber/fiber/v2"
 	"golang.org/x/net/publicsuffix"
 
 	res "github.com/lack-io/vine/service/api/resolver"
@@ -45,7 +45,7 @@ type Resolver struct {
 	// Type of resolver e.g path, domain
 	Type string
 	// a function which returns the namespace of the request
-	Namespace func(*http.Request) string
+	Namespace func(c *fiber.Ctx) string
 	// selector to find services
 	Selector selector.Selector
 }
@@ -62,13 +62,13 @@ func (r *Resolver) String() string {
 
 // Info checks whether this is a web request.
 // It returns host, namespace and whether its internal
-func (r *Resolver) Info(req *http.Request) (string, string, bool) {
+func (r *Resolver) Info(c *fiber.Ctx) (string, string, bool) {
 	// set to host
-	host := req.URL.Hostname()
+	host := c.Hostname()
 
 	// set as req.Host if blank
 	if len(host) == 0 {
-		host = req.Host
+		host = string(c.Request().Host())
 	}
 
 	// split out ip
@@ -77,7 +77,7 @@ func (r *Resolver) Info(req *http.Request) (string, string, bool) {
 	}
 
 	// determine the namespace of the request
-	namespace := r.Namespace(req)
+	namespace := r.Namespace(c)
 
 	// overide host if the namespace is go.vine.web, since
 	// this will also catch localhost & 127.0.0.1, resulting
@@ -106,24 +106,24 @@ func (r *Resolver) Info(req *http.Request) (string, string, bool) {
 	// Check for services info path, also handled by vine web but
 	// not a top level path. TODO: Find a better way of detecting and
 	// handling the non-proxied paths.
-	if strings.HasPrefix(req.URL.Path, "/service/") {
+	if strings.HasPrefix(c.Path(), "/service/") {
 		return host, namespace, true
 	}
 
 	// Check if the request is a top level path
-	isWeb := strings.Count(req.URL.Path, "/") == 1
+	isWeb := strings.Count(c.Path(), "/") == 1
 	return host, namespace, isWeb
 }
 
 // Resolve replaces the values of Host, Path, Scheme to calla backend service
 // It accounts for subdomains for service names based on namespace
-func (r *Resolver) Resolve(req *http.Request) (*res.Endpoint, error) {
+func (r *Resolver) Resolve(c *fiber.Ctx) (*res.Endpoint, error) {
 	// get host, namespace and if its an internal request
-	host, _, _ := r.Info(req)
+	host, _, _ := r.Info(c)
 
 	// check for vine web
 	if r.Type == "path" || host == "web.vine.mu" {
-		return r.resolveWithPath(req)
+		return r.resolveWithPath(c)
 	}
 
 	domain, err := publicsuffix.EffectiveTLDPlusOne(host)
@@ -147,7 +147,7 @@ func (r *Resolver) Resolve(req *http.Request) (*res.Endpoint, error) {
 		// for vine.mu subdomains, we route foo.vine.mu/bar to
 		// go.vine.web.bar
 		name = defaultNamespace + "." + alias
-	} else if comps := strings.Split(req.URL.Path, "/"); len(comps) > 0 {
+	} else if comps := strings.Split(c.Path(), "/"); len(comps) > 0 {
 		// for non vine.mu subdomains, we route foo.m3o.app/bar to
 		// foo.web.bar
 		name = alias + ".web." + comps[1]
@@ -157,7 +157,7 @@ func (r *Resolver) Resolve(req *http.Request) (*res.Endpoint, error) {
 	next, err := r.Selector.Select(name)
 	if err == selector.ErrNotFound {
 		// fallback to path based
-		return r.resolveWithPath(req)
+		return r.resolveWithPath(c)
 	} else if err != nil {
 		return nil, err
 	}
@@ -171,14 +171,14 @@ func (r *Resolver) Resolve(req *http.Request) (*res.Endpoint, error) {
 	// we're done
 	return &res.Endpoint{
 		Name:   alias,
-		Method: req.Method,
+		Method: c.Method(),
 		Host:   s.Address,
-		Path:   req.URL.Path,
+		Path:   c.Path(),
 	}, nil
 }
 
-func (r *Resolver) resolveWithPath(req *http.Request) (*res.Endpoint, error) {
-	parts := strings.Split(req.URL.Path, "/")
+func (r *Resolver) resolveWithPath(c *fiber.Ctx) (*res.Endpoint, error) {
+	parts := strings.Split(c.Path(), "/")
 	if len(parts) < 2 {
 		return nil, errors.New("unknown service")
 	}
@@ -187,7 +187,7 @@ func (r *Resolver) resolveWithPath(req *http.Request) (*res.Endpoint, error) {
 		return nil, res.ErrInvalidPath
 	}
 
-	_, namespace, _ := r.Info(req)
+	_, namespace, _ := r.Info(c)
 	next, err := r.Selector.Select(namespace + "." + parts[1])
 	if err == selector.ErrNotFound {
 		return nil, res.ErrNotFound
@@ -204,7 +204,7 @@ func (r *Resolver) resolveWithPath(req *http.Request) (*res.Endpoint, error) {
 	// we're done
 	return &res.Endpoint{
 		Name:   parts[1],
-		Method: req.Method,
+		Method: c.Path(),
 		Host:   s.Address,
 		Path:   "/" + strings.Join(parts[2:], "/"),
 	}, nil
