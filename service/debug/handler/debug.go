@@ -41,7 +41,6 @@ func NewHandler(c client.Client) *Debug {
 		log:   log.DefaultLog,
 		stats: stats.DefaultStats,
 		trace: trace.DefaultTracer,
-		cache: c.Options().Cache,
 	}
 }
 
@@ -191,8 +190,3 @@ func (d *Debug) Log(ctx context.Context, stream server.Stream) error {
 	return nil
 }
 
-// Cache returns all the key value pairs in the client cache
-func (d *Debug) Cache(ctx context.Context, req *proto.CacheRequest, rsp *proto.CacheResponse) error {
-	rsp.Values = d.cache.List()
-	return nil
-}

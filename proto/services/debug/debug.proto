@@ -9,7 +9,6 @@ service Debug {
   rpc Health(HealthRequest) returns (HealthResponse) {};
   rpc Stats(StatsRequest) returns (StatsResponse) {};
   rpc Trace(TraceRequest) returns (TraceResponse) {};
-  rpc Cache(CacheRequest) returns (CacheResponse) {};
 }
 
 message HealthRequest {
@@ -103,8 +102,3 @@ message Span {
   SpanType type = 8;
 }
 
-message CacheRequest {}
-
-message CacheResponse {
-  map<string, string> values = 1;
-}
