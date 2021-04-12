@@ -146,14 +146,14 @@ func (s *stats) ServeHTTP(h http.Handler) http.Handler {
 }
 
 func (s *stats) StatsHandler(ctx *fiber.Ctx) error {
-	if ct := ctx.Get("Content-Type", ""); string(ct) == "application/json" {
+	if ct := ctx.Get("Content-Type", ""); ct == "application/json" {
 		s.RLock()
 		b, err := json.Marshal(s)
 		s.RUnlock()
 		if err != nil {
 			return fiber.NewError(500, err.Error())
 		}
-		ctx.Request().Header.Set("Content-Type", string(ct))
+		ctx.Request().Header.Set("Content-Type", ct)
 		ctx.Write(b)
 		return nil
 	}

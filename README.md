@@ -165,3 +165,4 @@ curl -H 'Content-Type: application/json' -d '{}' http://localhost:8080/api/vine
 - [ ] 服务自动升级
 - [ ] 部署工具
 - [ ] 内置依赖注入
+- [ ] 内置 pprof

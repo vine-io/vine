@@ -32,7 +32,7 @@ import (
 	"github.com/lack-io/vine/cmd/generator"
 )
 
-// Generate generates code for the services in the given file.
+// GenerateGRPC generate generates code for the services in the given file.
 func (g *gogo) GenerateGRPC(file *generator.FileDescriptor) {
 	if len(file.FileDescriptorProto.Service) == 0 {
 		return

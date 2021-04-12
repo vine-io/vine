@@ -88,9 +88,9 @@ type Account struct {
 // Token can be short or long lived
 type Token struct {
 	// The token to be used for accessing resources
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"accessToken"`
 	// RefreshToken to be used to generate a new token
-	RefreshToken string `json:"refresh_token"`
+	RefreshToken string `json:"refreshToken"`
 	// Time of token creation
 	Created time.Time `json:"created"`
 	// Time of token expiry

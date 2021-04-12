@@ -25,13 +25,13 @@ package openapi
 import (
 	"bytes"
 	"html/template"
-	"net/http"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	json "github.com/json-iterator/go"
 	"github.com/lack-io/vine"
 	openapipb "github.com/lack-io/vine/proto/apis/openapi"
+	regpb "github.com/lack-io/vine/proto/apis/registry"
 	maddr "github.com/lack-io/vine/util/addr"
 )
 
@@ -143,10 +143,18 @@ func (o *openAPI) OpenAPIJOSNHandler(ctx *fiber.Ctx) error {
 	return ctx.Send(data)
 }
 
-func (o *openAPI) ServeHTTP(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h.ServeHTTP(w, r)
-	})
+func (o *openAPI) OpenAPIServiceHandler(ctx *fiber.Ctx) error {
+	services, err := o.svc.Options().Registry.ListServices()
+	if err != nil {
+		return fiber.NewError(500, err.Error())
+	}
+	out := make([]*regpb.Service, 0)
+	for _, item := range services {
+		list, _ := o.svc.Options().Registry.GetService(item.Name)
+		out = append(out, list...)
+	}
+	data, _ := json.MarshalIndent(out, "", " ")
+	return ctx.Send(data)
 }
 
 func New(svc vine.Service) *openAPI {

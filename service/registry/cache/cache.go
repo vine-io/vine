@@ -35,9 +35,9 @@ import (
 
 // Cache is the registry cache interface
 type Cache interface {
-	// embed the registry interface
+	// Registry embed the registry interface
 	registry.Registry
-	// stop the cache watcher
+	// Stop stop the cache watcher
 	Stop()
 }
 

@@ -426,6 +426,6 @@ func NewRegistry(opts ...registry.Option) registry.Registry {
 		register: make(map[string]uint64),
 		leases:   make(map[string]clientv3.LeaseID),
 	}
-	configure(e, opts...)
+	_ = configure(e, opts...)
 	return e
 }

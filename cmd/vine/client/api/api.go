@@ -139,7 +139,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	if ctx.Bool("enable-stats") {
 		st := stats.New()
 		app.All("/stats", st.StatsHandler)
-		//h = st.ServeHTTP(r)
 		st.Start()
 		defer st.Stop()
 	}
@@ -152,13 +151,11 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			log.Fatalf("Starting OpenAPI: %v", err)
 		}
 		prefix := "/openapi-ui/"
-		//fileServer := http.FileServer(statikFs)
 		app.All(prefix, openAPI.OpenAPIHandler)
 		app.Use(prefix, filesystem.New(filesystem.Config{Root: statikFs}))
-		//r.PathPrefix(prefix).Handler(http.StripPrefix(prefix, fileServer))
 		app.Get("/openapi.json", openAPI.OpenAPIJOSNHandler)
+		app.Get("/services", openAPI.OpenAPIServiceHandler)
 		log.Infof("Starting OpenAPI at %v", prefix)
-		//h = openAPI.ServeHTTP(r)
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {
