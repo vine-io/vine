@@ -26,7 +26,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -34,7 +33,7 @@ import (
 
 type proxy struct {
 	// The default http reverse proxy
-	Router *httputil.ReverseProxy
+	//Router *httputil.ReverseProxy
 	// The director which picks the route
 	Director func(c *fiber.Ctx)
 }

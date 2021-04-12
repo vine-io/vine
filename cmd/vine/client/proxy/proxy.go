@@ -55,11 +55,11 @@ import (
 var (
 	// Name of the proxy
 	Name = "go.vine.proxy"
-	// The address of the proxy
+	// Address the address of the proxy
 	Address = ":8081"
-	// the proxy protocol
+	// Protocol the proxy protocol
 	Protocol = "grpc"
-	// The endpoint host to route to
+	// Endpoint the endpoint host to route to
 	Endpoint string
 )
 
