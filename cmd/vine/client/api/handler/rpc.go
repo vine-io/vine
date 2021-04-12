@@ -51,7 +51,6 @@ type rpcRequest struct {
 func RPC(c *fiber.Ctx) error {
 
 	if c.Method() == "OPTIONS" {
-
 		return cors.SetHeaders(c)
 	}
 

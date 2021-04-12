@@ -132,9 +132,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	// create the router
-	//var h fasthttp.Handler
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
-	//h = r
 
 	if ctx.Bool("enable-stats") {
 		st := stats.New()
