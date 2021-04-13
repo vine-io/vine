@@ -24,9 +24,7 @@ package api
 
 import (
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
-	pb "github.com/lack-io/vine/proto/services/api/auth"
 	log "github.com/lack-io/vine/service/logger"
 )
 
@@ -45,7 +43,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		vine.Address(Address),
 	)
 
-	_ = pb.RegisterAuthHandler(svc.Server(), NewHandler(svc))
+	//_ = pb.RegisterAuthHandler(svc.Server(), NewHandler(svc))
 
 	if err := svc.Run(); err != nil {
 		log.Error(err)

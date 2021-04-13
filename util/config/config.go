@@ -30,6 +30,7 @@ import (
 	"strings"
 
 	conf "github.com/lack-io/vine/service/config"
+	"github.com/lack-io/vine/service/config/memory"
 	"github.com/lack-io/vine/service/config/source/file"
 	log "github.com/lack-io/vine/service/logger"
 )
@@ -89,14 +90,15 @@ func newConfig() conf.Config {
 	}
 
 	// create a new config
-	c, err := conf.NewConfig(
+	c := memory.NewConfig(
 		conf.WithSource(
 			file.NewSource(
 				file.WithPath(fp),
 			),
 		),
 	)
-	if err != nil {
+
+	if err != c.Init() {
 		log.Error(err)
 		return conf.DefaultConfig
 	}

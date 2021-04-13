@@ -134,11 +134,11 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		)
 	}
 
-	st := *cmd.DefaultCmd.Options().Store
+	dao := *cmd.DefaultCmd.Options().Dialect
 
 	// set the handlers store
-	authH.Init(auth.Store(st))
-	ruleH.Init(auth.Store(st))
+	authH.Init(auth.Dialect(dao))
+	ruleH.Init(auth.Dialect(dao))
 
 	// setup service
 	svcOpts = append(svcOpts, vine.Name(Name))

@@ -8,6 +8,7 @@ service Auth {
 	rpc Generate(GenerateRequest) returns (GenerateResponse) {};
 	rpc Inspect(InspectRequest) returns (InspectResponse) {};		
 	rpc Token(TokenRequest) returns (TokenResponse) {};
+	rpc Verify(VerifyRequest) returns (VerifyResponse) {};
 }
 
 service Accounts {
@@ -127,3 +128,9 @@ message ListRequest {
 message ListResponse {
 	repeated Rule rules = 1;
 }
+
+message VerifyRequest {
+	string token = 1;
+}
+
+message VerifyResponse {}

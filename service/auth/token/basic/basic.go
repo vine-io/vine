@@ -23,20 +23,19 @@
 package basic
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
-	json "github.com/json-iterator/go"
+	"github.com/lack-io/vine/service/dao"
+	"github.com/lack-io/vine/service/dao/sqlite"
 
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/auth/token"
-	"github.com/lack-io/vine/service/store"
 )
 
 // Basic implementation of token provider, backed by the store
 type Basic struct {
-	store store.Store
+	dialect dao.Dialect
 }
 
 var (
@@ -48,12 +47,12 @@ var (
 func NewTokenProvider(opts ...token.Option) token.Provider {
 	options := token.NewOptions(opts...)
 
-	if options.Store == nil {
-		options.Store = store.DefaultStore
+	if options.Dialect == nil {
+		options.Dialect = sqlite.NewDialect()
 	}
 
 	return &Basic{
-		store: options.Store,
+		dialect: options.Dialect,
 	}
 }
 
@@ -62,21 +61,21 @@ func (b *Basic) Generate(acc *auth.Account, opts ...token.GenerateOption) (*toke
 	options := token.NewGenerateOptions(opts...)
 
 	// marshal the account to bytes
-	bytes, err := json.Marshal(acc)
-	if err != nil {
-		return nil, err
-	}
+	//bytes, err := json.Marshal(acc)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	// write to the store
 	key := uuid.New().String()
-	err = b.store.Write(&store.Record{
-		Key:    fmt.Sprintf("%v%v", StorePrefix, key),
-		Value:  bytes,
-		Expiry: options.Expiry,
-	})
-	if err != nil {
-		return nil, err
-	}
+	//err = b.store.Write(&store.Record{
+	//	Key:    fmt.Sprintf("%v%v", StorePrefix, key),
+	//	Value:  bytes,
+	//	Expiry: options.Expiry,
+	//})
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	// return the token
 	return &token.Token{
@@ -89,21 +88,22 @@ func (b *Basic) Generate(acc *auth.Account, opts ...token.GenerateOption) (*toke
 // Inspect a token
 func (b *Basic) Inspect(t string) (*auth.Account, error) {
 	// lookup the token in the store
-	recs, err := b.store.Read(StorePrefix + t)
-	if err == store.ErrNotFound {
-		return nil, token.ErrInvalidToken
-	} else if err != nil {
-		return nil, err
-	}
-	bytes := recs[0].Value
+	//recs, err := b.store.Read(StorePrefix + t)
+	//if err == store.ErrNotFound {
+	//	return nil, token.ErrInvalidToken
+	//} else if err != nil {
+	//	return nil, err
+	//}
+	//bytes := recs[0].Value
+	//
+	//// unmarshal the bytes
+	//var acc *auth.Account
+	//if err := json.Unmarshal(bytes, &acc); err != nil {
+	//	return nil, err
+	//}
 
-	// unmarshal the bytes
-	var acc *auth.Account
-	if err := json.Unmarshal(bytes, &acc); err != nil {
-		return nil, err
-	}
-
-	return acc, nil
+	//return acc, nil
+	return nil, nil
 }
 
 // String returns basic

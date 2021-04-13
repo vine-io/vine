@@ -25,12 +25,12 @@ package token
 import (
 	"time"
 
-	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/service/dao"
 )
 
 type Options struct {
-	// Store to persist the tokens
-	Store store.Store
+	// Dialect to persist the tokens
+	Dialect dao.Dialect
 	// PublicKey base64 encoded, used by JWT
 	PublicKey string
 	// PrivateKey base64 encoded, used by JWT
@@ -39,10 +39,10 @@ type Options struct {
 
 type Option func(o *Options)
 
-// WithStore sets the token providers store
-func WithStore(s store.Store) Option {
+// WithDialect sets the token providers store
+func WithDialect(d dao.Dialect) Option {
 	return func(o *Options) {
-		o.Store = s
+		o.Dialect = d
 	}
 }
 
@@ -66,8 +66,8 @@ func NewOptions(opts ...Option) Options {
 		o(&options)
 	}
 	//set default store
-	if options.Store == nil {
-		options.Store = store.DefaultStore
+	if options.Dialect == nil {
+		options.Dialect = dao.DefaultDialect
 	}
 	return options
 }

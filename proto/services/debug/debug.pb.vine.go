@@ -6,12 +6,11 @@ package debug
 import (
 	context "context"
 	fmt "fmt"
-	math "math"
-
 	proto "github.com/gogo/protobuf/proto"
 	apipb "github.com/lack-io/vine/proto/apis/api"
 	client "github.com/lack-io/vine/service/client"
 	server "github.com/lack-io/vine/service/server"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

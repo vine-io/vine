@@ -34,7 +34,7 @@ import (
 
 // authClaims to be encoded in the JWT
 type authClaims struct {
-	Type     string            `json:"type"`
+	Type     auth.Type         `json:"type"`
 	Scopes   []string          `json:"scopes"`
 	Metadata map[string]string `json:"metadata"`
 

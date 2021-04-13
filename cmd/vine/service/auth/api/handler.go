@@ -23,11 +23,7 @@
 package api
 
 import (
-	"context"
-
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/services/api/auth"
 	"github.com/lack-io/vine/service/auth"
 )
 
@@ -42,11 +38,11 @@ func NewHandler(svc vine.Service) *Handler {
 }
 
 // Verify gets a token and verifies it with the auth package
-func (h *Handler) Verify(ctx context.Context, req *pb.VerifyRequest, rsp *pb.VerifyResponse) error {
-	if len(req.Token) == 0 {
-		return errors.BadRequest("go.vine.api.auth", "token required")
-	}
-
-	_, err := h.Inspect(req.Token)
-	return err
-}
+//func (h *Handler) Verify(ctx context.Context, req *pb.VerifyRequest, rsp *pb.VerifyResponse) error {
+//	if len(req.Token) == 0 {
+//		return errors.BadRequest("go.vine.api.auth", "token required")
+//	}
+//
+//	_, err := h.Inspect(req.Token)
+//	return err
+//}

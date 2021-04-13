@@ -34,6 +34,7 @@ type AuthService interface {
 	Generate(ctx context.Context, in *GenerateRequest, opts ...client.CallOption) (*GenerateResponse, error)
 	Inspect(ctx context.Context, in *InspectRequest, opts ...client.CallOption) (*InspectResponse, error)
 	Token(ctx context.Context, in *TokenRequest, opts ...client.CallOption) (*TokenResponse, error)
+	Verify(ctx context.Context, in *VerifyRequest, opts ...client.CallOption) (*VerifyResponse, error)
 }
 
 type authService struct {
@@ -78,11 +79,22 @@ func (c *authService) Token(ctx context.Context, in *TokenRequest, opts ...clien
 	return out, nil
 }
 
+func (c *authService) Verify(ctx context.Context, in *VerifyRequest, opts ...client.CallOption) (*VerifyResponse, error) {
+	req := c.c.NewRequest(c.name, "Auth.Verify", in)
+	out := new(VerifyResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Auth service
 type AuthHandler interface {
 	Generate(context.Context, *GenerateRequest, *GenerateResponse) error
 	Inspect(context.Context, *InspectRequest, *InspectResponse) error
 	Token(context.Context, *TokenRequest, *TokenResponse) error
+	Verify(context.Context, *VerifyRequest, *VerifyResponse) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
@@ -90,6 +102,7 @@ func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.Handl
 		Generate(ctx context.Context, in *GenerateRequest, out *GenerateResponse) error
 		Inspect(ctx context.Context, in *InspectRequest, out *InspectResponse) error
 		Token(ctx context.Context, in *TokenRequest, out *TokenResponse) error
+		Verify(ctx context.Context, in *VerifyRequest, out *VerifyResponse) error
 	}
 	type Auth struct {
 		authImpl
@@ -112,6 +125,10 @@ func (h *authHandler) Inspect(ctx context.Context, in *InspectRequest, out *Insp
 
 func (h *authHandler) Token(ctx context.Context, in *TokenRequest, out *TokenResponse) error {
 	return h.AuthHandler.Token(ctx, in, out)
+}
+
+func (h *authHandler) Verify(ctx context.Context, in *VerifyRequest, out *VerifyResponse) error {
+	return h.AuthHandler.Verify(ctx, in, out)
 }
 
 // API Endpoints for Accounts service

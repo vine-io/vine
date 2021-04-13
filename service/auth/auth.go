@@ -74,12 +74,24 @@ type Auth interface {
 	String() string
 }
 
+// Type defines the type of Account and Resource
+type Type string
+
+const (
+	// AllType of Type
+	AllType Type = "*"
+	// Service for Type
+	Service Type = "service"
+	// User for Type
+	User Type = "user"
+)
+
 // Account provided by an auth provider
 type Account struct {
 	// ID of the account e.g. email
 	ID string `json:"id"`
 	// Type of the account, e.g. service
-	Type string `json:"type"`
+	Type Type `json:"type"`
 	// Issuer of the account
 	Issuer string `json:"issuer"`
 	// Any other associated metadata
@@ -112,19 +124,19 @@ type Resource struct {
 	// Name of the resource, e.g. go.vine.service.notes
 	Name string `json:"name"`
 	// Type of resource, e.g. service
-	Type string `json:"type"`
+	Type Type `json:"type"`
 	// Endpoint resource e.g NotesService.Create
 	Endpoint string `json:"endpoint"`
 }
 
 // Access defines the type of access a rule grants
-type Access int
+type Access string
 
 const (
 	// AccessGranted to a resource
-	AccessGranted Access = iota
+	AccessGranted Access = "Grant"
 	// AccessDenied to a resource
-	AccessDenied
+	AccessDenied Access = "denied"
 )
 
 // Rule is used to verify access to a resource

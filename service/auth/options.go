@@ -28,7 +28,7 @@ import (
 
 	"github.com/lack-io/vine/service/auth/provider"
 	"github.com/lack-io/vine/service/client"
-	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/service/dao"
 )
 
 func NewOptions(opts ...Option) Options {
@@ -60,8 +60,8 @@ type Options struct {
 	Provider provider.Provider
 	// LoginURL is the relative url path where a user can login
 	LoginURL string
-	// Store to back auth
-	Store store.Store
+	// Dialect to back auth
+	Dialect dao.Dialect
 	// Client to use for RPC
 	Client client.Client
 	// Addrs sets the addresses of auth
@@ -84,10 +84,10 @@ func Namespace(n string) Option {
 	}
 }
 
-// Store to back auth
-func Store(s store.Store) Option {
+// Dialect to back auth
+func Dialect(d dao.Dialect) Option {
 	return func(o *Options) {
-		o.Store = s
+		o.Dialect = d
 	}
 }
 
@@ -144,14 +144,16 @@ func WithClient(c client.Client) Option {
 type GenerateOptions struct {
 	// Metadata associated with the account
 	Metadata map[string]string
-	// Scopes the account has access too
+	// Scopes the account has access to
 	Scopes []string
 	// Provider of the account, e.g. oauth
 	Provider string
 	// Type of the account, e.g. user
-	Type string
+	Type Type
 	// Secret used to authenticate the account
 	Secret string
+
+	Context context.Context
 }
 
 type GenerateOption func(o *GenerateOptions)
@@ -164,7 +166,7 @@ func WithSecret(s string) GenerateOption {
 }
 
 // WithType for the generated account
-func WithType(t string) GenerateOption {
+func WithType(t Type) GenerateOption {
 	return func(o *GenerateOptions) {
 		o.Type = t
 	}
@@ -191,12 +193,24 @@ func WithScopes(s ...string) GenerateOption {
 	}
 }
 
+// WithGenerateContext fot the generated account
+func WithGenerateContext(ctx context.Context) GenerateOption {
+	return func(o *GenerateOptions) {
+		o.Context = ctx
+	}
+}
+
 // NewGenerateOptions from a slice of options
 func NewGenerateOptions(opts ...GenerateOption) GenerateOptions {
 	var options GenerateOptions
 	for _, o := range opts {
 		o(&options)
 	}
+
+	if options.Context == nil {
+		options.Context = context.Background()
+	}
+
 	return options
 }
 
@@ -209,6 +223,8 @@ type TokenOptions struct {
 	RefreshToken string
 	// Expiry is the time the token should live for
 	Expiry time.Duration
+
+	Context context.Context
 }
 
 type TokenOption func(o *TokenOptions)
@@ -233,6 +249,12 @@ func WithToken(rt string) TokenOption {
 	}
 }
 
+func WithTokenContext(ctx context.Context) TokenOption {
+	return func(o *TokenOptions) {
+		o.Context = ctx
+	}
+}
+
 // NewTokenOptions from a slice of options
 func NewTokenOptions(opts ...TokenOption) TokenOptions {
 	var options TokenOptions
@@ -243,6 +265,10 @@ func NewTokenOptions(opts ...TokenOption) TokenOptions {
 	// set defualt expiry of token
 	if options.Expiry == 0 {
 		options.Expiry = time.Minute
+	}
+
+	if options.Context == nil {
+		options.Context = context.Background()
 	}
 
 	return options

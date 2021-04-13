@@ -19,6 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 package grpc
 
 import (
@@ -74,9 +75,9 @@ func (s *gRPC) Options() auth.Options {
 func (s *gRPC) Generate(id string, opts ...auth.GenerateOption) (*auth.Account, error) {
 	options := auth.NewGenerateOptions(opts...)
 
-	rsp, err := s.auth.Generate(context.TODO(), &pb.GenerateRequest{
+	rsp, err := s.auth.Generate(options.Context, &pb.GenerateRequest{
 		Id:       id,
-		Type:     options.Type,
+		Type:     string(options.Type),
 		Secret:   options.Secret,
 		Scopes:   options.Scopes,
 		Metadata: options.Metadata,
@@ -105,7 +106,7 @@ func (s *gRPC) Grant(rule *auth.Rule) error {
 			Priority: rule.Priority,
 			Access:   access,
 			Resource: &pb.Resource{
-				Type:     rule.Resource.Type,
+				Type:     string(rule.Resource.Type),
 				Name:     rule.Resource.Name,
 				Endpoint: rule.Resource.Endpoint,
 			},
@@ -227,8 +228,8 @@ func serializeRule(r *pb.Rule) *auth.Rule {
 		Access:   access,
 		Priority: r.Priority,
 		Resource: &auth.Resource{
-			Type:     r.Resource.Type,
 			Name:     r.Resource.Name,
+			Type:     auth.Type(r.Resource.Type),
 			Endpoint: r.Resource.Endpoint,
 		},
 	}

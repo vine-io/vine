@@ -27,30 +27,31 @@ import (
 
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/auth/token"
-	"github.com/lack-io/vine/service/store/memory"
 )
 
 func TestGenerate(t *testing.T) {
-	store := memory.NewStore()
-	b := NewTokenProvider(token.WithStore(store))
+	//store := memory.NewStore()
+	//b := NewTokenProvider(token.WithStore(store))
+	b := NewTokenProvider()
 
 	_, err := b.Generate(&auth.Account{ID: "test"})
 	if err != nil {
 		t.Fatalf("Generate returned %v error, expected nil", err)
 	}
 
-	recs, err := store.List()
-	if err != nil {
-		t.Fatalf("Unable to read from store: %v", err)
-	}
-	if len(recs) != 1 {
-		t.Errorf("Generate didn't write to the store, expected 1 record, got %v", len(recs))
-	}
+	//recs, err := store.List()
+	//if err != nil {
+	//	t.Fatalf("Unable to read from store: %v", err)
+	//}
+	//if len(recs) != 1 {
+	//	t.Errorf("Generate didn't write to the store, expected 1 record, got %v", len(recs))
+	//}
 }
 
 func TestInspect(t *testing.T) {
-	store := memory.NewStore()
-	b := NewTokenProvider(token.WithStore(store))
+	//store := memory.NewStore()
+	//b := NewTokenProvider(token.WithStore(store))
+	b := NewTokenProvider()
 
 	t.Run("Valid token", func(t *testing.T) {
 		md := map[string]string{"foo": "bar"}

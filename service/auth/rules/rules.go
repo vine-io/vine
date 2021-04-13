@@ -35,7 +35,7 @@ import (
 // will be returned
 func Verify(rules []*auth.Rule, acc *auth.Account, res *auth.Resource) error {
 	// the rule is only to be applied if the type matches the resource or is catch-all (*)
-	validTypes := []string{"*", res.Type}
+	validTypes := []auth.Type{"*", res.Type}
 
 	// the rule is only to be applied if the name matches the resource or is catch-all (*)
 	validNames := []string{"*", res.Name}
@@ -53,7 +53,7 @@ func Verify(rules []*auth.Rule, acc *auth.Account, res *auth.Resource) error {
 	// filter the rules to the ones which match the criteria above
 	filteredRules := make([]*auth.Rule, 0)
 	for _, rule := range rules {
-		if !include(validTypes, rule.Resource.Type) {
+		if !includeType(validTypes, rule.Resource.Type) {
 			continue
 		}
 		if !include(validNames, rule.Resource.Name) {
@@ -108,6 +108,15 @@ func Verify(rules []*auth.Rule, acc *auth.Account, res *auth.Resource) error {
 func include(slice []string, val string) bool {
 	for _, s := range slice {
 		if strings.ToLower(s) == strings.ToLower(val) {
+			return true
+		}
+	}
+	return false
+}
+
+func includeType(slice []auth.Type, val auth.Type) bool {
+	for _, s := range slice {
+		if strings.ToLower(string(s)) == strings.ToLower(string(val)) {
 			return true
 		}
 	}
