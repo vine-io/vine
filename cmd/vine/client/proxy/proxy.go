@@ -189,12 +189,10 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	case "mucp":
 		popts = append(popts, proxy.WithClient(mucpCli.NewClient()))
 		p = mucp.NewProxy(popts...)
-
 		serverOpts = append(serverOpts, server.WithRouter(p))
 		ss = mucpServer.NewServer(serverOpts...)
 	default:
 		p = mucp.NewProxy(popts...)
-
 		serverOpts = append(serverOpts, server.WithRouter(p))
 		ss = sgrpc.NewServer(serverOpts...)
 	}

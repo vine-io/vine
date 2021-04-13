@@ -53,8 +53,6 @@ type Debug struct {
 	stats stats.Stats
 	// the tracer
 	trace trace.Tracer
-	// the cache
-	cache *client.Cache
 }
 
 func (d *Debug) Health(ctx context.Context, req *proto.HealthRequest, rsp *proto.HealthResponse) error {
