@@ -29,7 +29,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/service/config"
+	"github.com/lack-io/vine/service/config/memory"
 )
 
 func TestConfig(t *testing.T) {
@@ -48,10 +48,11 @@ func TestConfig(t *testing.T) {
 		t.Error(err)
 	}
 
-	conf, err := config.NewConfig()
+	conf  := memory.NewConfig()
 	if err != nil {
 		t.Fatal(err)
 	}
+	conf.Init()
 	conf.Load(NewSource(WithPath(path)))
 	// simulate multiple close
 	go conf.Close()

@@ -27,15 +27,15 @@ import "context"
 
 // Secrets encrypts or decrypts arbitrary data. The data should be as small as possible
 type Secrets interface {
-	// Initialise options
+	// Init initialise options
 	Init(...Option) error
-	// Return the options
+	// Options returns the options
 	Options() Options
 	// Decrypt a value
 	Decrypt([]byte, ...DecryptOption) ([]byte, error)
 	// Encrypt a value
 	Encrypt([]byte, ...EncryptOption) ([]byte, error)
-	// Secrets implementation
+	// String secrets implementation of String
 	String() string
 }
 
