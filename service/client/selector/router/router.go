@@ -35,6 +35,7 @@ import (
 	"github.com/lack-io/vine/service/client/selector"
 	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/service/router"
+	rr "github.com/lack-io/vine/service/router/registry"
 )
 
 type routerSelector struct {
@@ -233,7 +234,7 @@ func NewSelector(opts ...selector.Option) selector.Selector {
 	r, ok := options.Context.Value(routerKey{}).(router.Router)
 	if !ok {
 		// TODO: Use router.DefaultRouter?
-		r = router.NewRouter(
+		r = rr.NewRouter(
 			router.Registry(options.Registry),
 		)
 	}

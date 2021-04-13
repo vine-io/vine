@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package vine provides a vine rpc resolver which prefixes a namespace
+// Package api provides a vine rpc resolver which prefixes a namespace
 package api
 
 import (

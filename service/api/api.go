@@ -32,15 +32,15 @@ import (
 )
 
 type Api interface {
-	// Initialise options
+	// Init initialise options
 	Init(...Option) error
-	// Get the options
+	// Options Get the options
 	Options() Options
 	// Register a http handler
 	Register(*apipb.Endpoint) error
-	// Register a route
+	// Deregister unregister a route
 	Deregister(*apipb.Endpoint) error
-	// Implemenation of api
+	// String implemenation of api
 	String() string
 }
 

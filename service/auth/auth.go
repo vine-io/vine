@@ -45,6 +45,11 @@ var (
 	ErrForbidden = errors.New("resource forbidden")
 )
 
+var (
+	// DefaultAuth the default value of Auth
+	DefaultAuth Auth
+)
+
 // Auth provides authentication and authorization
 type Auth interface {
 	// Init the auth

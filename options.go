@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/gscheduler"
 
 	"github.com/lack-io/vine/service/auth"

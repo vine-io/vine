@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
+	configMemory "github.com/lack-io/vine/service/config/memory"
 
 	"github.com/lack-io/vine/service/auth"
 	"github.com/lack-io/vine/service/auth/provider"
@@ -437,8 +438,8 @@ var (
 		"pprof": pprof.NewProfile,
 	}
 
-	DefaultConfigs = map[string]func(...config.Option) (config.Config, error){
-		"service": config.NewConfig,
+	DefaultConfigs = map[string]func(...config.Option) config.Config {
+		"memory": configMemory.NewConfig,
 	}
 )
 

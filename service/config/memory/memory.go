@@ -20,23 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package config
+package memory
 
 import (
 	"bytes"
 	"sync"
 	"time"
 
+	"github.com/lack-io/vine/service/config"
 	"github.com/lack-io/vine/service/config/loader"
-	"github.com/lack-io/vine/service/config/loader/memory"
+	m "github.com/lack-io/vine/service/config/loader/memory"
 	"github.com/lack-io/vine/service/config/reader"
 	"github.com/lack-io/vine/service/config/reader/json"
 	"github.com/lack-io/vine/service/config/source"
 )
 
-type config struct {
+type memory struct {
 	exit chan bool
-	opts Options
+	opts config.Options
 
 	sync.RWMutex
 	// the current snapshot
@@ -52,17 +53,17 @@ type watcher struct {
 	value reader.Value
 }
 
-func newConfig(opts ...Option) (Config, error) {
-	var c config
+func newConfig(opts ...config.Option) config.Config {
+	var c memory
 
 	c.Init(opts...)
 	go c.run()
 
-	return &c, nil
+	return &c
 }
 
-func (c *config) Init(opts ...Option) error {
-	c.opts = Options{
+func (c *memory) Init(opts ...config.Option) error {
+	c.opts = config.Options{
 		Reader: json.NewReader(),
 	}
 	c.exit = make(chan bool)
@@ -72,7 +73,7 @@ func (c *config) Init(opts ...Option) error {
 
 	// default loader uses the configured reader
 	if c.opts.Loader == nil {
-		c.opts.Loader = memory.NewLoader(memory.WithReader(c.opts.Reader))
+		c.opts.Loader = m.NewLoader(m.WithReader(c.opts.Reader))
 	}
 
 	err := c.opts.Loader.Load(c.opts.Source...)
@@ -93,11 +94,11 @@ func (c *config) Init(opts ...Option) error {
 	return nil
 }
 
-func (c *config) Options() Options {
+func (c *memory) Options() config.Options {
 	return c.opts
 }
 
-func (c *config) run() {
+func (c *memory) run() {
 	watch := func(w loader.Watcher) error {
 		for {
 			// get changeset
@@ -159,20 +160,20 @@ func (c *config) run() {
 	}
 }
 
-func (c *config) Map() map[string]interface{} {
+func (c *memory) Map() map[string]interface{} {
 	c.RLock()
 	defer c.RUnlock()
 	return c.vals.Map()
 }
 
-func (c *config) Scan(v interface{}) error {
+func (c *memory) Scan(v interface{}) error {
 	c.RLock()
 	defer c.RUnlock()
 	return c.vals.Scan(v)
 }
 
 // Sync sync loads all the sources, calls the parser and updates the config
-func (c *config) Sync() error {
+func (c *memory) Sync() error {
 	if err := c.opts.Loader.Sync(); err != nil {
 		return err
 	}
@@ -192,7 +193,7 @@ func (c *config) Sync() error {
 	return nil
 }
 
-func (c *config) Close() error {
+func (c *memory) Close() error {
 	select {
 	case <-c.exit:
 		return nil
@@ -202,7 +203,7 @@ func (c *config) Close() error {
 	return nil
 }
 
-func (c *config) Get(path ...string) reader.Value {
+func (c *memory) Get(path ...string) reader.Value {
 	c.RLock()
 	defer c.RUnlock()
 
@@ -215,7 +216,7 @@ func (c *config) Get(path ...string) reader.Value {
 	return newValue()
 }
 
-func (c *config) Set(val interface{}, path ...string) {
+func (c *memory) Set(val interface{}, path ...string) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -226,7 +227,7 @@ func (c *config) Set(val interface{}, path ...string) {
 	return
 }
 
-func (c *config) Del(path ...string) {
+func (c *memory) Del(path ...string) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -237,7 +238,7 @@ func (c *config) Del(path ...string) {
 	return
 }
 
-func (c *config) Bytes() []byte {
+func (c *memory) Bytes() []byte {
 	c.RLock()
 	defer c.RUnlock()
 
@@ -248,7 +249,7 @@ func (c *config) Bytes() []byte {
 	return c.vals.Bytes()
 }
 
-func (c *config) Load(sources ...source.Source) error {
+func (c *memory) Load(sources ...source.Source) error {
 	if err := c.opts.Loader.Load(sources...); err != nil {
 		return err
 	}
@@ -271,7 +272,7 @@ func (c *config) Load(sources ...source.Source) error {
 	return nil
 }
 
-func (c *config) Watch(path ...string) (Watcher, error) {
+func (c *memory) Watch(path ...string) (config.Watcher, error) {
 	value := c.Get(path...)
 
 	w, err := c.opts.Loader.Watch(path...)
@@ -287,8 +288,8 @@ func (c *config) Watch(path ...string) (Watcher, error) {
 	}, nil
 }
 
-func (c *config) String() string {
-	return "config"
+func (c *memory) String() string {
+	return "memory"
 }
 
 func (w *watcher) Next() (reader.Value, error) {
@@ -315,4 +316,8 @@ func (w *watcher) Next() (reader.Value, error) {
 
 func (w *watcher) Stop() error {
 	return w.lw.Stop()
+}
+
+func NewConfig(opts ...config.Option) config.Config {
+	return newConfig(opts...)
 }

@@ -53,14 +53,9 @@ type Watcher interface {
 }
 
 var (
-	// Default Config Manager
-	DefaultConfig, _ = NewConfig()
+	// DefaultConfig default Config Manager
+	DefaultConfig Config
 )
-
-// NewConfig returns new config
-func NewConfig(opts ...Option) (Config, error) {
-	return newConfig(opts...)
-}
 
 // Bytes Return config as raw json
 func Bytes() []byte {

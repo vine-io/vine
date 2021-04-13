@@ -50,7 +50,7 @@ type nodeError struct {
 	msg   error
 }
 
-// Increment increments node error count
+// Update increment increments node error count
 func (e *nodeError) Update(err error) {
 	e.Lock()
 	defer e.Unlock()

@@ -89,7 +89,7 @@ func Registry(r registry.Registry) Option {
 	}
 }
 
-// Strategy sets route advertising strategy
+// Advertise sets route advertising strategy
 func Advertise(a Strategy) Option {
 	return func(o *Options) {
 		o.Advertise = a

@@ -62,7 +62,7 @@ type Options struct {
 	Profile   *profile.Profile
 
 	Brokers    map[string]func(...broker.Option) broker.Broker
-	Configs    map[string]func(...config.Option) (config.Config, error)
+	Configs    map[string]func(...config.Option) config.Config
 	Clients    map[string]func(...client.Option) client.Client
 	Registries map[string]func(...registry.Option) registry.Registry
 	Selectors  map[string]func(...selector.Option) selector.Selector

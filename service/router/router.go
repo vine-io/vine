@@ -32,7 +32,7 @@ var (
 	// DefaultNetwork is default router service name
 	DefaultNetwork = "go.vine"
 	// DefaultRouter is default network router
-	DefaultRouter = NewRouter()
+	DefaultRouter Router
 )
 
 // Router is an interface for a routing control plane
@@ -41,7 +41,7 @@ type Router interface {
 	Init(...Option) error
 	// Options returns the router options
 	Options() Options
-	// The routing table
+	// Table the routing table
 	Table() Table
 	// Advertise advertises routes
 	Advertise() (<-chan *Advert, error)
@@ -55,7 +55,7 @@ type Router interface {
 	Start() error
 	// Stop stops the router
 	Stop() error
-	// Returns the router implementation
+	// String returns the router implementation
 	String() string
 }
 
@@ -155,7 +155,3 @@ func (s Strategy) String() string {
 	}
 }
 
-// NewRouter creates new Router and returns it
-func NewRouter(opts ...Option) Router {
-	return newRouter(opts...)
-}

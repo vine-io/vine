@@ -34,6 +34,7 @@ import (
 	"time"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/lack-io/vine/service/router/registry"
 
 	pbNet "github.com/lack-io/vine/proto/services/network"
 	pbRtr "github.com/lack-io/vine/proto/services/router"
@@ -991,7 +992,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					}
 
 					routes, err := n.router.Table().Query(q...)
-					if err != nil && err != router.ErrRouteNotFound {
+					if err != nil && err != registry.ErrRouteNotFound {
 						log.Debugf("Network node %s failed listing best routes for %s: %v", n.id, route.Service, err)
 						continue
 					}
@@ -999,7 +1000,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					// we found no routes for the given service
 					// create the new route we have just received
 					if len(routes) == 0 {
-						if err := n.router.Table().Create(route); err != nil && err != router.ErrDuplicateRoute {
+						if err := n.router.Table().Create(route); err != nil && err != registry.ErrDuplicateRoute {
 							log.Debugf("Network node %s failed to add route: %v", n.id, err)
 						}
 						continue
@@ -1025,7 +1026,7 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 					///////////////////////////////////////////////////////////////////////
 
 					// add route to the routing table
-					if err := n.router.Table().Create(route); err != nil && err != router.ErrDuplicateRoute {
+					if err := n.router.Table().Create(route); err != nil && err != registry.ErrDuplicateRoute {
 						log.Debugf("Network node %s failed to add route: %v", n.id, err)
 					}
 				}
@@ -1089,12 +1090,12 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 // pruneRoutes prunes routes return by given query
 func (n *network) pruneRoutes(q ...router.QueryOption) error {
 	routes, err := n.router.Table().Query(q...)
-	if err != nil && err != router.ErrRouteNotFound {
+	if err != nil && err != registry.ErrRouteNotFound {
 		return err
 	}
 
 	for _, route := range routes {
-		if err := n.router.Table().Delete(route); err != nil && err != router.ErrRouteNotFound {
+		if err := n.router.Table().Delete(route); err != nil && err != registry.ErrRouteNotFound {
 			return err
 		}
 	}
@@ -1336,7 +1337,7 @@ func (n *network) getProtoRoutes() ([]*pbRtr.Route, error) {
 	}
 
 	routes, err := n.router.Table().Query(q...)
-	if err != nil && err != router.ErrRouteNotFound {
+	if err != nil && err != registry.ErrRouteNotFound {
 		return nil, err
 	}
 

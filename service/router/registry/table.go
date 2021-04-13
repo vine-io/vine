@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package router
+package registry
 
 import (
 	"errors"
@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	r "github.com/lack-io/vine/service/router"
 
 	log "github.com/lack-io/vine/service/logger"
 )
@@ -43,21 +44,21 @@ var (
 type table struct {
 	sync.RWMutex
 	// routes stores service routes
-	routes map[string]map[uint64]Route
+	routes map[string]map[uint64]r.Route
 	// watchers stores table watchers
 	watchers map[string]*tableWatcher
 }
 
 // newTable creates a new routing table and returns it
-func newTable(opts ...Option) *table {
+func newTable(opts ...r.Option) *table {
 	return &table{
-		routes:   make(map[string]map[uint64]Route),
+		routes:   make(map[string]map[uint64]r.Route),
 		watchers: make(map[string]*tableWatcher),
 	}
 }
 
 // sendEvent sends events to all subscribed watchers
-func (t *table) sendEvent(e *Event) {
+func (t *table) sendEvent(e *r.Event) {
 	t.RLock()
 	defer t.RUnlock()
 
@@ -76,23 +77,23 @@ func (t *table) sendEvent(e *Event) {
 }
 
 // Create creates new route in the routing table
-func (t *table) Create(r Route) error {
-	service := r.Service
-	sum := r.Hash()
+func (t *table) Create(route r.Route) error {
+	service := route.Service
+	sum := route.Hash()
 
 	t.Lock()
 	defer t.Unlock()
 
 	// check if there any routes in the table for route destination
 	if _, ok := t.routes[service]; !ok {
-		t.routes[service] = make(map[uint64]Route)
+		t.routes[service] = make(map[uint64]r.Route)
 	}
 
 	// add new route to the table for the route destination
 	if _, ok := t.routes[service][sum]; !ok {
-		t.routes[service][sum] = r
-		log.Debugf("Router emitting %s for route: %s", Create, r.Address)
-		go t.sendEvent(&Event{Type: Create, Timestamp: time.Now(), Route: r})
+		t.routes[service][sum] = route
+		log.Debugf("Router emitting %s for route: %s", r.Create, r.Address)
+		go t.sendEvent(&r.Event{Type: r.Create, Timestamp: time.Now(), Route: route})
 		return nil
 	}
 
@@ -100,9 +101,9 @@ func (t *table) Create(r Route) error {
 }
 
 // Delete deletes the route from the routing table
-func (t *table) Delete(r Route) error {
-	service := r.Service
-	sum := r.Hash()
+func (t *table) Delete(route r.Route) error {
+	service := route.Service
+	sum := route.Hash()
 
 	t.Lock()
 	defer t.Unlock()
@@ -116,44 +117,44 @@ func (t *table) Delete(r Route) error {
 	}
 
 	delete(t.routes[service], sum)
-	log.Debugf("Router emitting %s for route: %s", Delete, r.Address)
-	go t.sendEvent(&Event{Type: Delete, Timestamp: time.Now(), Route: r})
+	log.Debugf("Router emitting %s for route: %s", r.Delete, r.Address)
+	go t.sendEvent(&r.Event{Type: r.Delete, Timestamp: time.Now(), Route: route})
 
 	return nil
 }
 
 // Update updates routing table with the new route
-func (t *table) Update(r Route) error {
-	service := r.Service
-	sum := r.Hash()
+func (t *table) Update(route r.Route) error {
+	service := route.Service
+	sum := route.Hash()
 
 	t.Lock()
 	defer t.Unlock()
 
 	// check if the route destination has any routes in the table
 	if _, ok := t.routes[service]; !ok {
-		t.routes[service] = make(map[uint64]Route)
+		t.routes[service] = make(map[uint64]r.Route)
 	}
 
 	if _, ok := t.routes[service][sum]; !ok {
-		t.routes[service][sum] = r
-		log.Debugf("Router emitting %s for route: %s", Update, r.Address)
-		go t.sendEvent(&Event{Type: Update, Timestamp: time.Now(), Route: r})
+		t.routes[service][sum] = route
+		log.Debugf("Router emitting %s for route: %s", r.Update, r.Address)
+		go t.sendEvent(&r.Event{Type: r.Update, Timestamp: time.Now(), Route: route})
 		return nil
 	}
 
 	// just update route, but dont emit Update event
-	t.routes[service][sum] = r
+	t.routes[service][sum] = route
 
 	return nil
 }
 
 // List returns a list of all routes in the table
-func (t *table) List() ([]Route, error) {
+func (t *table) List() ([]r.Route, error) {
 	t.RLock()
 	defer t.RUnlock()
 
-	var routes []Route
+	var routes []r.Route
 	for _, rmap := range t.routes {
 		for _, route := range rmap {
 			routes = append(routes, route)
@@ -164,7 +165,7 @@ func (t *table) List() ([]Route, error) {
 }
 
 // isMatch checks if the route matches given query options
-func isMatch(route Route, address, gateway, network, router string, strategy Strategy) bool {
+func isMatch(route r.Route, address, gateway, network, router string, strategy r.Strategy) bool {
 	// matches the values provided
 	match := func(a, b string) bool {
 		return a == "*" || a == b
@@ -179,7 +180,7 @@ func isMatch(route Route, address, gateway, network, router string, strategy Str
 	// by default assume we are querying all routes
 	link := "*"
 	// if AdvertiseLocal change the link query accordingly
-	if strategy == AdvertiseLocal {
+	if strategy == r.AdvertiseLocal {
 		link = "local"
 	}
 
@@ -203,9 +204,9 @@ func isMatch(route Route, address, gateway, network, router string, strategy Str
 }
 
 // findRoutes finds all the routes for given network and router and returns them
-func findRoutes(routes map[uint64]Route, address, gateway, network, router string, strategy Strategy) []Route {
+func findRoutes(routes map[uint64]r.Route, address, gateway, network, router string, strategy r.Strategy) []r.Route {
 	// routeMap stores the routes we're going to advertise
-	routeMap := make(map[string][]Route)
+	routeMap := make(map[string][]r.Route)
 
 	for _, route := range routes {
 		if isMatch(route, address, gateway, network, router, strategy) {
@@ -219,13 +220,13 @@ func findRoutes(routes map[uint64]Route, address, gateway, network, router strin
 			}
 
 			// if AdvertiseAll, keep appending
-			if strategy == AdvertiseAll || strategy == AdvertiseLocal {
+			if strategy == r.AdvertiseAll || strategy == r.AdvertiseLocal {
 				routeMap[routeKey] = append(routeMap[routeKey], route)
 				continue
 			}
 
 			// now we're going to find the best routes
-			if strategy == AdvertiseBest {
+			if strategy == r.AdvertiseBest {
 				// if the current optimal route metric is higher then routing table route, replace it
 				if len(routeMap[routeKey]) > 0 {
 					// NOTE: we know than when AdvertiseBest is set, we only ever have one item in current
@@ -238,7 +239,7 @@ func findRoutes(routes map[uint64]Route, address, gateway, network, router strin
 		}
 	}
 
-	var results []Route
+	var results []r.Route
 	for _, route := range routeMap {
 		results = append(results, route...)
 	}
@@ -247,18 +248,18 @@ func findRoutes(routes map[uint64]Route, address, gateway, network, router strin
 }
 
 // Lookup queries routing table and returns all routes that match the lookup query
-func (t *table) Query(q ...QueryOption) ([]Route, error) {
+func (t *table) Query(q ...r.QueryOption) ([]r.Route, error) {
 	t.RLock()
 	defer t.RUnlock()
 
 	// create new query options
-	opts := NewQuery(q...)
+	opts := r.NewQuery(q...)
 
 	// creates a cwslicelist of query results
-	results := make([]Route, 0, len(t.routes))
+	results := make([]r.Route, 0, len(t.routes))
 
 	// if No routes are queried, return early
-	if opts.Strategy == AdvertiseNone {
+	if opts.Strategy == r.AdvertiseNone {
 		return results, nil
 	}
 
@@ -278,9 +279,9 @@ func (t *table) Query(q ...QueryOption) ([]Route, error) {
 }
 
 // Watch returns routing table entry watcher
-func (t *table) Watch(opts ...WatchOption) (Watcher, error) {
+func (t *table) Watch(opts ...r.WatchOption) (r.Watcher, error) {
 	// by default watch everything
-	wopts := WatchOptions{
+	wopts := r.WatchOptions{
 		Service: "*",
 	}
 
@@ -291,7 +292,7 @@ func (t *table) Watch(opts ...WatchOption) (Watcher, error) {
 	w := &tableWatcher{
 		id:      uuid.New().String(),
 		opts:    wopts,
-		resChan: make(chan *Event, 10),
+		resChan: make(chan *r.Event, 10),
 		done:    make(chan struct{}),
 	}
 
@@ -309,4 +310,50 @@ func (t *table) Watch(opts ...WatchOption) (Watcher, error) {
 	t.Unlock()
 
 	return w, nil
+}
+
+
+// tableWatcher implements routing table router
+type tableWatcher struct {
+	sync.RWMutex
+	id      string
+	opts    r.WatchOptions
+	resChan chan *r.Event
+	done    chan struct{}
+}
+
+// Next returns the next noticed action taken on table
+// TODO: right now we only allow to watch particular service
+func (w *tableWatcher) Next() (*r.Event, error) {
+	for {
+		select {
+		case res := <-w.resChan:
+			switch w.opts.Service {
+			case res.Route.Service, "*":
+				return res, nil
+			default:
+				continue
+			}
+		case <-w.done:
+			return nil, r.ErrWatcherStopped
+		}
+	}
+}
+
+// Chan returns watcher events channel
+func (w *tableWatcher) Chan() (<-chan *r.Event, error) {
+	return w.resChan, nil
+}
+
+// Stop stops routing table watcher
+func (w *tableWatcher) Stop() {
+	w.Lock()
+	defer w.Unlock()
+
+	select {
+	case <-w.done:
+		return
+	default:
+		close(w.done)
+	}
 }
