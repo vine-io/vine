@@ -117,13 +117,13 @@ func newRpcRouter() *router {
 	}
 }
 
-// Is this an exported - upper case - name?
+// IsExported Is this an exported - upper case - name?
 func IsExported(name string) bool {
 	rune, _ := utf8.DecodeRuneInString(name)
 	return unicode.IsUpper(rune)
 }
 
-// Is this type exported or a builtin?
+// IsExportedOrBuiltinType Is this type exported or a builtin?
 func IsExportedOrBuiltinType(t reflect.Type) bool {
 	for t.Kind() == reflect.Ptr {
 		t = t.Elem()

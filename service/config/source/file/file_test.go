@@ -28,36 +28,7 @@ import (
 	"path/filepath"
 	"testing"
 	"time"
-
-	"github.com/lack-io/vine/service/config/memory"
 )
-
-func TestConfig(t *testing.T) {
-	data := []byte(`{"foo": "bar"}`)
-	path := filepath.Join(os.TempDir(), fmt.Sprintf("file.%d", time.Now().UnixNano()))
-	fh, err := os.Create(path)
-	if err != nil {
-		t.Error(err)
-	}
-	defer func() {
-		fh.Close()
-		os.Remove(path)
-	}()
-	_, err = fh.Write(data)
-	if err != nil {
-		t.Error(err)
-	}
-
-	conf  := memory.NewConfig()
-	if err != nil {
-		t.Fatal(err)
-	}
-	conf.Init()
-	conf.Load(NewSource(WithPath(path)))
-	// simulate multiple close
-	go conf.Close()
-	go conf.Close()
-}
 
 func TestFile(t *testing.T) {
 	data := []byte(`{"foo": "bar"}`)

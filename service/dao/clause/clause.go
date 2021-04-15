@@ -44,7 +44,6 @@ type Builder interface {
 	AddVar(Writer, ...interface{})
 }
 
-// Clause
 type Clause struct {
 	Name                string // WHERE
 	BeforeExpression    Expression

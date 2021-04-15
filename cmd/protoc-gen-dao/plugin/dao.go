@@ -64,15 +64,16 @@ type dao struct {
 	aliasTypes  map[string]string
 	aliasFields map[string]*Field
 
-	sourcePkg string
-	ctxPkg    generator.Single
-	timePkg   generator.Single
-	stringPkg generator.Single
-	errPkg    generator.Single
-	DriverPkg generator.Single
-	jsonPkg   generator.Single
-	daoPkg    generator.Single
-	clausePkg generator.Single
+	sourcePkg  string
+	ctxPkg     generator.Single
+	timePkg    generator.Single
+	stringPkg  generator.Single
+	errPkg     generator.Single
+	DriverPkg  generator.Single
+	jsonPkg    generator.Single
+	daoPkg     generator.Single
+	clausePkg  generator.Single
+	strconvPkg generator.Single
 }
 
 func New() *dao {
@@ -123,6 +124,7 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	g.errPkg = g.NewImport("errors", "errors")
 	g.daoPkg = g.NewImport("github.com/lack-io/vine/service/dao", "dao")
 	g.clausePkg = g.NewImport("github.com/lack-io/vine/service/dao/clause", "clause")
+	g.strconvPkg = g.NewImport("strconv", "strconv")
 	if g.gen.OutPut.Load {
 		g.sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
 	}
@@ -656,8 +658,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 		case _map:
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
-			if field.Map.Key.GetType() == descriptor.FieldDescriptorProto_TYPE_STRING {
+			switch field.Map.Key.GetType() {
+			case descriptor.FieldDescriptorProto_TYPE_STRING:
 				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, k))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
+			case descriptor.FieldDescriptorProto_TYPE_INT32, descriptor.FieldDescriptorProto_TYPE_INT64:
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, %s.Itoa(int(k))))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.strconvPkg.Use()))
 			}
 			g.P("}")
 			g.P("}")
