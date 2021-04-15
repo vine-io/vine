@@ -111,6 +111,11 @@ func (s *service) Init(opts ...Option) {
 			logger.Fatal(err)
 		}
 
+		s.opts.BeforeStop = append(s.opts.BeforeStop, func() error {
+			s.opts.Scheduler.Stop()
+			return nil
+		})
+
 		// Explicitly set the table name to the service name
 		name := s.opts.Cmd.App().Name
 		_ = s.opts.Store.Init(store.Table(name))
@@ -161,8 +166,6 @@ func (s *service) Stop() error {
 			gerr = err
 		}
 	}
-
-	s.opts.Scheduler.Stop()
 
 	if err := s.opts.Server.Stop(); err != nil {
 		return err
