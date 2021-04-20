@@ -25,7 +25,7 @@ package pool
 import (
 	"time"
 
-	"github.com/lack-io/vine/service/transport"
+	"github.com/lack-io/vine/core/transport"
 )
 
 // Pool is an interface for connection pooling
@@ -34,16 +34,16 @@ type Pool interface {
 	Close() error
 	// Get a connection
 	Get(addr string, opts ...transport.DialOption) (Conn, error)
-	// Releases the connection
+	// Release releases the connection
 	Release(c Conn, status error) error
 }
 
 type Conn interface {
-	// unique id of connection
+	// Id unique id of connection
 	Id() string
-	// time it was created
+	// Created time it was created
 	Created() time.Time
-	// embedded connection
+	// Client embedded connection
 	transport.Client
 }
 

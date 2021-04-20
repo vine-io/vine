@@ -28,20 +28,19 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/service/client"
-	cmucp "github.com/lack-io/vine/service/client/mucp"
-	log "github.com/lack-io/vine/service/logger"
-	tun "github.com/lack-io/vine/service/network/tunnel"
-	"github.com/lack-io/vine/service/network/tunnel/transport"
-	"github.com/lack-io/vine/service/proxy"
-	"github.com/lack-io/vine/service/proxy/mucp"
-	"github.com/lack-io/vine/service/registry/memory"
-	"github.com/lack-io/vine/service/router"
-	regRouter "github.com/lack-io/vine/service/router/registry"
-	"github.com/lack-io/vine/service/server"
-	smucp "github.com/lack-io/vine/service/server/mucp"
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client/mucp"
+	"github.com/lack-io/vine/core/registry/memory"
+	rr "github.com/lack-io/vine/core/router"
+	"github.com/lack-io/vine/core/router/registry"
+	"github.com/lack-io/vine/core/server"
+	smucp "github.com/lack-io/vine/core/server/mucp"
+	log "github.com/lack-io/vine/lib/logger"
+	tun "github.com/lack-io/vine/lib/network/tunnel"
+	"github.com/lack-io/vine/lib/network/tunnel/transport"
+	"github.com/lack-io/vine/lib/proxy"
+	pmucp "github.com/lack-io/vine/lib/proxy/mucp"
 	"github.com/lack-io/vine/util/muxer"
 )
 
@@ -88,9 +87,9 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	)
 
 	// local tunnel router
-	r := regRouter.NewRouter(
-		router.Id(svc.Server().Options().Id),
-		router.Registry(svc.Client().Options().Registry),
+	r := registry.NewRouter(
+		rr.Id(svc.Server().Options().Id),
+		rr.Registry(svc.Client().Options().Registry),
 	)
 
 	// start the router
@@ -119,12 +118,12 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	)
 
 	// local server client talks to tunnel
-	localSrvClient := cmucp.NewClient(
+	localSrvClient := mucp.NewClient(
 		client.Transport(tunTransport),
 	)
 
 	// local proxy
-	localProxy := mucp.NewProxy(
+	localProxy := pmucp.NewProxy(
 		proxy.WithClient(localSrvClient),
 		proxy.WithEndpoint(Tunnel),
 	)
@@ -143,7 +142,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	)
 
 	// local proxy
-	tunProxy := mucp.NewProxy(
+	tunProxy := pmucp.NewProxy(
 		proxy.WithRouter(r),
 		proxy.WithClient(svc.Client()),
 	)

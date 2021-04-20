@@ -26,8 +26,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/service/transport"
-	"github.com/lack-io/vine/service/transport/memory"
+	"github.com/lack-io/vine/core/transport"
+	"github.com/lack-io/vine/core/transport/memory"
 )
 
 func testPool(t *testing.T, size int, ttl time.Duration) {

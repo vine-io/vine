@@ -23,7 +23,7 @@ func (e *{{title .Alias}}) Call(ctx context.Context, req *{{.Alias}}.Request, rs
 import (
 	"context"
 
-	log "github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/lib/logger"
 
 	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
@@ -73,7 +73,7 @@ func (e *{{title .Alias}}) PingPong(ctx context.Context, stream {{.Alias}}.{{tit
 import (
 	"context"
 
-	log "github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/lib/logger"
 
 	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
@@ -90,7 +90,7 @@ func (e *{{title .Alias}}) Handle(ctx context.Context, msg *{{.Alias}}.Message) 
 
 import (
 	"context"
-	log "github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/lib/logger"
 
 	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
@@ -113,7 +113,7 @@ func Handler(ctx context.Context, msg *{{.Alias}}.Message) error {
 import (
 	"context"
 	"encoding/json"
-	log "github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/lib/logger"
 
 	"{{.Dir}}/client"
 	"github.com/lack-io/vine/proto/apis/errors"
@@ -168,7 +168,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/lib/client"
 	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
 )
 

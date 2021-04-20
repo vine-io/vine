@@ -28,14 +28,14 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
+	registry2 "github.com/lack-io/vine/core/registry"
 
 	"github.com/lack-io/vine"
 	rcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/registry/handler"
+	log "github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	regsvcpb "github.com/lack-io/vine/proto/services/registry"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/registry"
 	"github.com/lack-io/vine/util/helper"
 )
 
@@ -53,7 +53,7 @@ type subscriber struct {
 	// id is registry id
 	Id string
 	// registry is service registry
-	Registry registry.Registry
+	Registry registry2.Registry
 }
 
 // Process processes registry events
@@ -86,7 +86,7 @@ func (s *subscriber) Process(ctx context.Context, event *regpb.Event) error {
 	switch event.Type {
 	case regpb.EventType_Create, regpb.EventType_Update:
 		log.Debugf("registering service: %s", svc.Name)
-		if err := s.Registry.Register(svc, registry.RegisterTTL(ttl)); err != nil {
+		if err := s.Registry.Register(svc, registry2.RegisterTTL(ttl)); err != nil {
 			log.Debugf("failed to register service: %s", svc.Name)
 			return err
 		}

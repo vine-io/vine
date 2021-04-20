@@ -4,7 +4,7 @@ var (
 	MainFNC = `package main
 
 import (
-  	log	"github.com/lack-io/vine/service/logger"
+  	log	"github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine"
 
 	"{{.Dir}}/handler"
@@ -37,7 +37,7 @@ func main() {
 	MainSRV = `package main
 
 import (
-	log "github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine"
 
 	"{{.Dir}}/handler"
@@ -71,7 +71,7 @@ func main() {
 	MainAPI = `package main
 
 import (
-	log "github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine"
 
 	"{{.Dir}}/handler"
@@ -106,8 +106,8 @@ func main() {
 import (
     	"net/http"
 
-        log "github.com/lack-io/vine/service/logger"
-        "github.com/lack-io/vine/service/web"
+        log "github.com/lack-io/vine/lib/logger"
+        "github.com/lack-io/vine/lib/web"
         "{{.Dir}}/handler"
 )
 

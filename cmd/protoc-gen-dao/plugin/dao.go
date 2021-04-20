@@ -31,7 +31,7 @@ import (
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
 	"github.com/lack-io/vine/cmd/generator"
-	"github.com/lack-io/vine/service/dao/schema"
+	"github.com/lack-io/vine/lib/dao/schema"
 )
 
 var TagString = "gen"
@@ -64,16 +64,15 @@ type dao struct {
 	aliasTypes  map[string]string
 	aliasFields map[string]*Field
 
-	sourcePkg  string
-	ctxPkg     generator.Single
-	timePkg    generator.Single
-	stringPkg  generator.Single
-	errPkg     generator.Single
-	DriverPkg  generator.Single
-	jsonPkg    generator.Single
-	daoPkg     generator.Single
-	clausePkg  generator.Single
-	strconvPkg generator.Single
+	sourcePkg string
+	ctxPkg    generator.Single
+	timePkg   generator.Single
+	stringPkg generator.Single
+	errPkg    generator.Single
+	DriverPkg generator.Single
+	jsonPkg   generator.Single
+	daoPkg    generator.Single
+	clausePkg generator.Single
 }
 
 func New() *dao {
@@ -122,9 +121,8 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	g.DriverPkg = g.NewImport("database/sql/driver", "driver")
 	g.jsonPkg = g.NewImport("github.com/json-iterator/go", "json")
 	g.errPkg = g.NewImport("errors", "errors")
-	g.daoPkg = g.NewImport("github.com/lack-io/vine/service/dao", "dao")
-	g.clausePkg = g.NewImport("github.com/lack-io/vine/service/dao/clause", "clause")
-	g.strconvPkg = g.NewImport("strconv", "strconv")
+	g.daoPkg = g.NewImport("github.com/lack-io/vine/lib/dao", "dao")
+	g.clausePkg = g.NewImport("github.com/lack-io/vine/lib/dao/clause", "clause")
 	if g.gen.OutPut.Load {
 		g.sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
 	}
@@ -662,7 +660,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
 				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, k))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
 			case descriptor.FieldDescriptorProto_TYPE_INT32, descriptor.FieldDescriptorProto_TYPE_INT64:
-				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, %s.Itoa(int(k))))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.strconvPkg.Use()))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, %s))`, g.daoPkg.Use(), column, g.daoPkg.Use(), `fmt.Sprintf("%d", k)`))
 			}
 			g.P("}")
 			g.P("}")

@@ -24,7 +24,7 @@ package api
 
 import (
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/service/auth"
+	"github.com/lack-io/vine/lib/auth"
 )
 
 // Handler is an implementation of the auth api

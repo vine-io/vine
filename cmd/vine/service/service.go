@@ -32,13 +32,13 @@ import (
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/handler/exec"
 	"github.com/lack-io/vine/cmd/vine/service/handler/file"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/proxy"
-	"github.com/lack-io/vine/service/proxy/grpc"
-	"github.com/lack-io/vine/service/proxy/http"
-	"github.com/lack-io/vine/service/proxy/mucp"
-	"github.com/lack-io/vine/service/runtime"
-	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/core/server"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/proxy"
+	"github.com/lack-io/vine/lib/proxy/grpc"
+	"github.com/lack-io/vine/lib/proxy/http"
+	"github.com/lack-io/vine/lib/proxy/mucp"
+	"github.com/lack-io/vine/lib/runtime"
 )
 
 func Run(ctx *cli.Context, opts ...vine.Option) {

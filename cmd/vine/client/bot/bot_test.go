@@ -30,11 +30,11 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
+	memory2 "github.com/lack-io/vine/core/registry/memory"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/service/agent/command"
-	"github.com/lack-io/vine/service/agent/input"
-	"github.com/lack-io/vine/service/registry/memory"
+	"github.com/lack-io/vine/lib/agent/command"
+	"github.com/lack-io/vine/lib/agent/input"
 )
 
 type testInput struct {
@@ -126,7 +126,7 @@ func TestBot(t *testing.T) {
 	}
 
 	svc := vine.NewService(
-		vine.Registry(memory.NewRegistry()),
+		vine.Registry(memory2.NewRegistry()),
 	)
 
 	bot := newBot(ctx, inputs, commands, svc)

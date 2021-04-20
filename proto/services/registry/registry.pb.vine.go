@@ -7,10 +7,10 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
+	client "github.com/lack-io/vine/core/client"
+	server "github.com/lack-io/vine/core/server"
 	apipb "github.com/lack-io/vine/proto/apis/api"
 	registry "github.com/lack-io/vine/proto/apis/registry"
-	client "github.com/lack-io/vine/service/client"
-	server "github.com/lack-io/vine/service/server"
 	math "math"
 )
 

@@ -26,8 +26,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lack-io/vine/service/auth"
-	"github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/lib/auth"
+	"github.com/lack-io/vine/lib/logger"
 )
 
 // Generate generates a service account for and continually

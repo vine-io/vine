@@ -34,7 +34,7 @@ import (
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 
-	"github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/lib/logger"
 )
 
 // ServiceEntry is returned after we query for a service

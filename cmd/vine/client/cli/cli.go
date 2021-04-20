@@ -30,7 +30,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	storecli "github.com/lack-io/vine/service/store/cli"
+	storecli "github.com/lack-io/vine/lib/store/cli"
 
 	"github.com/chzyer/readline"
 )

@@ -29,8 +29,8 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/service/debug"
-	log "github.com/lack-io/vine/service/logger"
+	"github.com/lack-io/vine/lib/debug"
+	log "github.com/lack-io/vine/lib/logger"
 )
 
 const (

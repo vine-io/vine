@@ -25,20 +25,20 @@ package handler
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine"
+	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/lib/api/handler"
+	aapi "github.com/lack-io/vine/lib/api/handler/api"
+	"github.com/lack-io/vine/lib/api/handler/event"
+	ahttp "github.com/lack-io/vine/lib/api/handler/http"
+	arpc "github.com/lack-io/vine/lib/api/handler/rpc"
+	aweb "github.com/lack-io/vine/lib/api/handler/web"
+	"github.com/lack-io/vine/lib/api/router"
 	"github.com/lack-io/vine/proto/apis/errors"
-	"github.com/lack-io/vine/service/api/handler"
-	aapi "github.com/lack-io/vine/service/api/handler/api"
-	"github.com/lack-io/vine/service/api/handler/event"
-	ahttp "github.com/lack-io/vine/service/api/handler/http"
-	arpc "github.com/lack-io/vine/service/api/handler/rpc"
-	aweb "github.com/lack-io/vine/service/api/handler/web"
-	"github.com/lack-io/vine/service/api/router"
-	"github.com/lack-io/vine/service/client"
 	ctx "github.com/lack-io/vine/util/context"
 )
 
 type metaHandler struct {
-	c  client.Client
+	c  client2.Client
 	r  router.Router
 	ns func(*fiber.Ctx) string
 }

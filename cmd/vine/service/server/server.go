@@ -30,9 +30,9 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/service/config/cmd"
-	log "github.com/lack-io/vine/service/logger"
-	gorun "github.com/lack-io/vine/service/runtime"
+	"github.com/lack-io/vine/lib/config/cmd"
+	log "github.com/lack-io/vine/lib/logger"
+	gorun "github.com/lack-io/vine/lib/runtime"
 	handler "github.com/lack-io/vine/util/file"
 	"github.com/lack-io/vine/util/update"
 )
@@ -142,8 +142,7 @@ func Run(context *cli.Context) error {
 			updateURL = update.DefaultURL
 		}
 
-		options := []gorun.Option{
-		}
+		options := []gorun.Option{}
 		(*muRuntime).Init(options...)
 	}
 

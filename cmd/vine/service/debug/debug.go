@@ -30,12 +30,12 @@ import (
 	logHandler "github.com/lack-io/vine/cmd/vine/service/debug/log"
 	statshandler "github.com/lack-io/vine/cmd/vine/service/debug/stats"
 	tracehandler "github.com/lack-io/vine/cmd/vine/service/debug/trace"
+	dservice "github.com/lack-io/vine/lib/debug"
+	"github.com/lack-io/vine/lib/debug/log"
+	ulog "github.com/lack-io/vine/lib/logger"
 	pblog "github.com/lack-io/vine/proto/services/debug/log"
 	pbstats "github.com/lack-io/vine/proto/services/debug/stats"
 	pbtrace "github.com/lack-io/vine/proto/services/debug/trace"
-	dservice "github.com/lack-io/vine/service/debug"
-	"github.com/lack-io/vine/service/debug/log"
-	ulog "github.com/lack-io/vine/service/logger"
 )
 
 var (

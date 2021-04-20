@@ -27,19 +27,19 @@ import (
 	"io"
 	"time"
 
+	router2 "github.com/lack-io/vine/core/router"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/router"
-	"github.com/lack-io/vine/service/router"
 )
 
 // Router implements router handler
 type Router struct {
-	Router router.Router
+	Router router2.Router
 }
 
 // Lookup looks up routes in the routing table and returns them
 func (r *Router) Lookup(ctx context.Context, req *pb.LookupRequest, resp *pb.LookupResponse) error {
-	routes, err := r.Router.Lookup(router.QueryService(req.Query.Service))
+	routes, err := r.Router.Lookup(router2.QueryService(req.Query.Service))
 	if err != nil {
 		return errors.InternalServerError("go.vine.router", "failed to lookup routes: %v", err)
 	}
@@ -113,9 +113,9 @@ func (r *Router) Advertise(ctx context.Context, req *pb.Request, stream pb.Route
 
 // Process processes advertisements
 func (r *Router) Process(ctx context.Context, req *pb.Advert, rsp *pb.ProcessResponse) error {
-	events := make([]*router.Event, len(req.Events))
+	events := make([]*router2.Event, len(req.Events))
 	for i, event := range req.Events {
-		route := router.Route{
+		route := router2.Route{
 			Service: event.Route.Service,
 			Address: event.Route.Address,
 			Gateway: event.Route.Gateway,
@@ -125,17 +125,17 @@ func (r *Router) Process(ctx context.Context, req *pb.Advert, rsp *pb.ProcessRes
 			Metric:  event.Route.Metric,
 		}
 
-		events[i] = &router.Event{
+		events[i] = &router2.Event{
 			Id:        event.Id,
-			Type:      router.EventType(event.Type),
+			Type:      router2.EventType(event.Type),
 			Timestamp: time.Unix(0, event.Timestamp),
 			Route:     route,
 		}
 	}
 
-	advert := &router.Advert{
+	advert := &router2.Advert{
 		Id:        req.Id,
-		Type:      router.AdvertType(req.Type),
+		Type:      router2.AdvertType(req.Type),
 		Timestamp: time.Unix(0, req.Timestamp),
 		TTL:       time.Duration(req.Ttl),
 		Events:    events,
@@ -159,7 +159,7 @@ func (r *Router) Watch(ctx context.Context, req *pb.WatchRequest, stream pb.Rout
 
 	for {
 		event, err := watcher.Next()
-		if err == router.ErrWatcherStopped {
+		if err == router2.ErrWatcherStopped {
 			return errors.InternalServerError("go.vine.router", "watcher stopped")
 		}
 

@@ -31,8 +31,8 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/runtime"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/runtime"
 )
 
 var (

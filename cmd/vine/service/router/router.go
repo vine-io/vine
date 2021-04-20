@@ -30,13 +30,12 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
+	"github.com/lack-io/vine/core/router"
+	"github.com/lack-io/vine/core/router/handler"
+	"github.com/lack-io/vine/core/router/registry"
+	log "github.com/lack-io/vine/lib/logger"
 	pb "github.com/lack-io/vine/proto/services/router"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/router"
-	"github.com/lack-io/vine/service/router/handler"
-	regRouter "github.com/lack-io/vine/service/router/registry"
 )
 
 var (
@@ -223,7 +222,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		vine.RegisterInterval(time.Duration(ctx.Int("register-interval"))*time.Second),
 	)
 
-	r := regRouter.NewRouter(
+	r := registry.NewRouter(
 		router.Id(service.Server().Options().Id),
 		router.Address(service.Server().Options().Id),
 		router.Network(Network),

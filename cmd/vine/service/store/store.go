@@ -30,9 +30,9 @@ import (
 	"github.com/lack-io/vine"
 	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/store/handler"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/store"
 	pb "github.com/lack-io/vine/proto/services/store"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/util/helper"
 )
 

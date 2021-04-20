@@ -27,10 +27,10 @@ import (
 	"time"
 
 	"github.com/lack-io/vine"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/runtime"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/runtime"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/runtime"
 )
 
 type Runtime struct {

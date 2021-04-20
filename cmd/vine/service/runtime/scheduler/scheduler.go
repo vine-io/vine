@@ -31,8 +31,8 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/runtime"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/runtime"
 )
 
 type scheduler struct {

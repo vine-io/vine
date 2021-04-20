@@ -26,7 +26,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/service/server"
+	"github.com/lack-io/vine/core/server"
 )
 
 type function struct {

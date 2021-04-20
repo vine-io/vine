@@ -27,8 +27,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lack-io/vine/service/runtime"
-	"github.com/lack-io/vine/service/store"
+	"github.com/lack-io/vine/lib/runtime"
+	"github.com/lack-io/vine/lib/store"
 	"github.com/lack-io/vine/util/namespace"
 )
 

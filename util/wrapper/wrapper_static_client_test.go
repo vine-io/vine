@@ -26,14 +26,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/lack-io/vine/service/broker"
-	bmemory "github.com/lack-io/vine/service/broker/memory"
-	"github.com/lack-io/vine/service/client"
-	"github.com/lack-io/vine/service/client/mucp"
-	rmemory "github.com/lack-io/vine/service/registry/memory"
-	"github.com/lack-io/vine/service/server"
-	serverMucp "github.com/lack-io/vine/service/server/mucp"
-	tmemory "github.com/lack-io/vine/service/transport/memory"
+	broker2 "github.com/lack-io/vine/core/broker"
+	memory2 "github.com/lack-io/vine/core/broker/memory"
+	client2 "github.com/lack-io/vine/core/client"
+	mucp2 "github.com/lack-io/vine/core/client/mucp"
+	"github.com/lack-io/vine/core/registry/memory"
+	"github.com/lack-io/vine/lib/server"
+	serverMucp "github.com/lack-io/vine/lib/server/mucp"
+	tmemory "github.com/lack-io/vine/lib/transport/memory"
 	"github.com/lack-io/vine/util/wrapper"
 )
 
@@ -54,8 +54,8 @@ func (h *TestFoo) Bar(ctx context.Context, req *TestReq, rsp *TestRsp) error {
 func TestStaticClientWrapper(t *testing.T) {
 	var err error
 
-	reg := rmemory.NewRegistry()
-	brk := bmemory.NewBroker(broker.Registry(reg))
+	reg := memory.NewRegistry()
+	brk := memory2.NewBroker(broker2.Registry(reg))
 	tr := tmemory.NewTransport()
 
 	svc := serverMucp.NewServer(
@@ -73,13 +73,13 @@ func TestStaticClientWrapper(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cli := mucp.NewClient(
-		client.Registry(reg),
-		client.Broker(brk),
-		client.Transport(tr),
+	cli := mucp2.NewClient(
+		client2.Registry(reg),
+		client2.Broker(brk),
+		client2.Transport(tr),
 	)
 
-	req := cli.NewRequest("go.vine.service.foo", "TestFoo.Bar", &TestReq{}, client.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.service.foo", "TestFoo.Bar", &TestReq{}, client2.WithContentType("application/json"))
 	rsp := &TestRsp{}
 
 	w1 := wrapper.StaticClient("xxx_localhost:12345", cli)

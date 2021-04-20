@@ -25,22 +25,22 @@ package handler
 import (
 	"context"
 
+	broker2 "github.com/lack-io/vine/core/broker"
+	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/broker"
-	"github.com/lack-io/vine/service/broker"
-	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/namespace"
 )
 
 type Broker struct {
-	Broker broker.Broker
+	Broker broker2.Broker
 }
 
 func (b *Broker) Publish(ctx context.Context, req *pb.PublishRequest, rsp *pb.Empty) error {
 	ns := namespace.FromContext(ctx)
 
 	log.Debugf("Publishing message to %s topic in the %v namespace", req.Topic, ns)
-	err := b.Broker.Publish(ns+"."+req.Topic, &broker.Message{
+	err := b.Broker.Publish(ns+"."+req.Topic, &broker2.Message{
 		Header: req.Message.Header,
 		Body:   req.Message.Body,
 	})
@@ -56,7 +56,7 @@ func (b *Broker) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream
 	errChan := make(chan error, 1)
 
 	// message handler to stream back messages from broker
-	handler := func(p broker.Event) error {
+	handler := func(p broker2.Event) error {
 		if err := stream.Send(&pb.Message{
 			Header: p.Message().Header,
 			Body:   p.Message().Body,
@@ -72,7 +72,7 @@ func (b *Broker) Subscribe(ctx context.Context, req *pb.SubscribeRequest, stream
 	}
 
 	log.Debugf("Subscribing to %s topic in namespace %v", req.Topic, ns)
-	sub, err := b.Broker.Subscribe(ns+"."+req.Topic, handler, broker.Queue(ns+"."+req.Queue))
+	sub, err := b.Broker.Subscribe(ns+"."+req.Topic, handler, broker2.Queue(ns+"."+req.Queue))
 	if err != nil {
 		return errors.InternalServerError("go.vine.broker", err.Error())
 	}

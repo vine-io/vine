@@ -25,7 +25,7 @@ package vine
 import (
 	"context"
 
-	"github.com/lack-io/vine/service/client"
+	"github.com/lack-io/vine/core/client"
 )
 
 type event struct {

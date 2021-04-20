@@ -28,12 +28,12 @@ import (
 	"net/http"
 	"testing"
 
+	memory2 "github.com/lack-io/vine/core/registry/memory"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
-	"github.com/lack-io/vine/service/registry/memory"
 )
 
 func TestRoundTripper(t *testing.T) {
-	m := memory.NewRegistry()
+	m := memory2.NewRegistry()
 
 	rt := NewRoundTripper(
 		WithRegistry(m),

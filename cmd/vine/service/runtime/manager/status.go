@@ -28,9 +28,9 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/runtime"
-	"github.com/lack-io/vine/service/store"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/runtime"
+	"github.com/lack-io/vine/lib/store"
 )
 
 // statusPrefix is prefixed to every status key written to the memory store

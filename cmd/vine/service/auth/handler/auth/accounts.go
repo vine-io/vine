@@ -25,8 +25,8 @@ package auth
 import (
 	"context"
 
+	"github.com/lack-io/vine/lib/auth"
 	pb "github.com/lack-io/vine/proto/services/auth"
-	"github.com/lack-io/vine/service/auth"
 )
 
 // List returns all auth accounts

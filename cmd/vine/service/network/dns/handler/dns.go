@@ -27,8 +27,8 @@ import (
 	"errors"
 
 	"github.com/lack-io/vine/cmd/vine/service/network/dns/provider"
+	log "github.com/lack-io/vine/lib/logger"
 	dns "github.com/lack-io/vine/proto/services/network/dns"
-	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 

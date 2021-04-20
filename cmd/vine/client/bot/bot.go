@@ -36,16 +36,16 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
+	"github.com/lack-io/vine/lib/agent/command"
+	"github.com/lack-io/vine/lib/agent/input"
+	log "github.com/lack-io/vine/lib/logger"
 	proto "github.com/lack-io/vine/proto/services/bot"
-	"github.com/lack-io/vine/service/agent/command"
-	"github.com/lack-io/vine/service/agent/input"
-	log "github.com/lack-io/vine/service/logger"
 	botc "github.com/lack-io/vine/util/command/bot"
 
 	// inputs
-	_ "github.com/lack-io/vine/service/agent/input/discord"
-	_ "github.com/lack-io/vine/service/agent/input/slack"
-	_ "github.com/lack-io/vine/service/agent/input/telegram"
+	_ "github.com/lack-io/vine/lib/agent/input/discord"
+	_ "github.com/lack-io/vine/lib/agent/input/slack"
+	_ "github.com/lack-io/vine/lib/agent/input/telegram"
 )
 
 type bot struct {

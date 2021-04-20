@@ -33,11 +33,11 @@ import (
 	"text/tabwriter"
 
 	"github.com/lack-io/cli"
+	client2 "github.com/lack-io/vine/core/client"
+	bytes2 "github.com/lack-io/vine/core/codec/bytes"
 
 	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
-	"github.com/lack-io/vine/service/client"
-	cbytes "github.com/lack-io/vine/service/codec/bytes"
-	"github.com/lack-io/vine/service/config/cmd"
+	"github.com/lack-io/vine/lib/config/cmd"
 	clic "github.com/lack-io/vine/util/command/cli"
 	"github.com/lack-io/vine/util/file"
 )
@@ -200,7 +200,7 @@ func streamService(c *cli.Context, args []string) ([]byte, error) {
 	// ignore error
 	json.Unmarshal([]byte(strings.Join(args[2:], " ")), &request)
 
-	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client.WithContentType("application/json"))
+	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client2.WithContentType("application/json"))
 	stream, err := (*cmd.DefaultOptions().Client).Stream(context.Background(), req)
 	if err != nil {
 		return nil, fmt.Errorf("error calling %s.%s: %v", service, endpoint, err)
@@ -214,7 +214,7 @@ func streamService(c *cli.Context, args []string) ([]byte, error) {
 
 	for {
 		if output == "raw" {
-			rsp := cbytes.Frame{}
+			rsp := bytes2.Frame{}
 			if err := stream.Recv(&rsp); err != nil {
 				return nil, fmt.Errorf("error receiving from %s.%s: %v", service, endpoint, err)
 			}
@@ -253,6 +253,6 @@ func upload(ctx *cli.Context, args []string) ([]byte, error) {
 	filename := ctx.Args().Get(0)
 	localfile := ctx.Args().Get(1)
 
-	fileClient := file.New("go.vine.server", client.DefaultClient)
+	fileClient := file.New("go.vine.server", client2.DefaultClient)
 	return nil, fileClient.Upload(filename, localfile)
 }

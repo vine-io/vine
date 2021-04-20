@@ -23,43 +23,43 @@
 package vine
 
 import (
-	"github.com/lack-io/vine/service/auth"
-	authNoop "github.com/lack-io/vine/service/auth/noop"
-	"github.com/lack-io/vine/service/broker"
-	brokerHttp "github.com/lack-io/vine/service/broker/http"
-	"github.com/lack-io/vine/service/client"
-	clientGrpc "github.com/lack-io/vine/service/client/grpc"
-	"github.com/lack-io/vine/service/config"
-	configMemory "github.com/lack-io/vine/service/config/memory"
-	"github.com/lack-io/vine/service/dao"
-	daoNop "github.com/lack-io/vine/service/dao/nop"
-	"github.com/lack-io/vine/service/debug/trace"
-	traceMem "github.com/lack-io/vine/service/debug/trace/memory"
-	"github.com/lack-io/vine/service/registry"
-	registryMdns "github.com/lack-io/vine/service/registry/mdns"
-	"github.com/lack-io/vine/service/router"
-	rr "github.com/lack-io/vine/service/router/registry"
-	"github.com/lack-io/vine/service/server"
-	serverGrpc "github.com/lack-io/vine/service/server/grpc"
-	"github.com/lack-io/vine/service/store"
-	storeMem "github.com/lack-io/vine/service/store/memory"
-	"github.com/lack-io/vine/service/transport"
-	transportHTTP "github.com/lack-io/vine/service/transport/http"
+	"github.com/lack-io/vine/core/broker"
+	"github.com/lack-io/vine/core/broker/http"
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client/grpc"
+	"github.com/lack-io/vine/core/registry"
+	"github.com/lack-io/vine/core/registry/mdns"
+	"github.com/lack-io/vine/core/router"
+	rreg "github.com/lack-io/vine/core/router/registry"
+	"github.com/lack-io/vine/core/server"
+	serverGrpc "github.com/lack-io/vine/core/server/grpc"
+	"github.com/lack-io/vine/core/transport"
+	transportHTTP "github.com/lack-io/vine/core/transport/http"
+	"github.com/lack-io/vine/lib/auth"
+	authNoop "github.com/lack-io/vine/lib/auth/noop"
+	"github.com/lack-io/vine/lib/config"
+	configMemory "github.com/lack-io/vine/lib/config/memory"
+	"github.com/lack-io/vine/lib/dao"
+	daoNop "github.com/lack-io/vine/lib/dao/nop"
+	"github.com/lack-io/vine/lib/debug/trace"
+	traceMem "github.com/lack-io/vine/lib/debug/trace/memory"
+	"github.com/lack-io/vine/lib/store"
+	storeMem "github.com/lack-io/vine/lib/store/memory"
 )
 
 func init() {
 	// default registry
-	registry.DefaultRegistry = registryMdns.NewRegistry()
+	registry.DefaultRegistry = mdns.NewRegistry()
 	// default transport
 	transport.DefaultTransport = transportHTTP.NewTransport()
 	// default broker
-	broker.DefaultBroker = brokerHttp.NewBroker()
+	broker.DefaultBroker = http.NewBroker()
 	// default client
-	client.DefaultClient = clientGrpc.NewClient()
+	client.DefaultClient = grpc.NewClient()
 	// default server
 	server.DefaultServer = serverGrpc.NewServer()
 	// default router
-	router.DefaultRouter = rr.NewRouter()
+	router.DefaultRouter = rreg.NewRouter()
 	// default auth
 	auth.DefaultAuth = authNoop.NewAuth()
 	// default config

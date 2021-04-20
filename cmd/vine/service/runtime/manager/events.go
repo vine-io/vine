@@ -29,9 +29,9 @@ import (
 
 	"github.com/google/uuid"
 
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/runtime"
-	"github.com/lack-io/vine/service/store"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/runtime"
+	"github.com/lack-io/vine/lib/store"
 	"github.com/lack-io/vine/util/namespace"
 )
 

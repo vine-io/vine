@@ -35,12 +35,12 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
+	goapi "github.com/lack-io/vine/lib/api"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/network"
+	"github.com/lack-io/vine/lib/network/resolver"
 	apipb "github.com/lack-io/vine/proto/apis/api"
 	pb "github.com/lack-io/vine/proto/services/network"
-	goapi "github.com/lack-io/vine/service/api"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/network"
-	"github.com/lack-io/vine/service/network/resolver"
 )
 
 var (

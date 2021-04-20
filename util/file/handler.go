@@ -29,10 +29,10 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/lack-io/vine/core/server"
+	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/proto/apis/errors"
 	proto "github.com/lack-io/vine/proto/services/file"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/server"
 )
 
 // NewHandler is a handler that can be registered with a vine Server

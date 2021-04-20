@@ -26,16 +26,16 @@ import (
 	"context"
 	"sync"
 
-	"github.com/lack-io/vine/service/dao"
-	"github.com/lack-io/vine/service/dao/sqlite"
+	"github.com/lack-io/vine/lib/dao"
+	"github.com/lack-io/vine/lib/dao/sqlite"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/lack-io/vine/lib/auth"
+	"github.com/lack-io/vine/lib/auth/token"
+	"github.com/lack-io/vine/lib/auth/token/basic"
+	"github.com/lack-io/vine/lib/store"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/auth"
-	"github.com/lack-io/vine/service/auth"
-	"github.com/lack-io/vine/service/auth/token"
-	"github.com/lack-io/vine/service/auth/token/basic"
-	"github.com/lack-io/vine/service/store"
 )
 
 const (

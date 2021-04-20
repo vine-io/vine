@@ -26,8 +26,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/service/runtime"
-	"github.com/lack-io/vine/service/store/memory"
+	"github.com/lack-io/vine/lib/runtime"
+	"github.com/lack-io/vine/lib/store/memory"
 	"github.com/lack-io/vine/util/namespace"
 )
 

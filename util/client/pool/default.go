@@ -28,7 +28,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/service/transport"
+	"github.com/lack-io/vine/core/transport"
 )
 
 type pool struct {

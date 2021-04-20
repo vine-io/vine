@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package handler is the handler for the `vineadm debug trace` service
+// Package trace the handler for the `vine debug trace` service
 package trace
 
 import (
@@ -29,13 +29,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/lib/config/cmd"
+	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/proto/apis/errors"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/proto/services/debug"
 	"github.com/lack-io/vine/proto/services/debug/trace"
-	"github.com/lack-io/vine/service/client"
-	"github.com/lack-io/vine/service/config/cmd"
-	log "github.com/lack-io/vine/service/logger"
 	"github.com/lack-io/vine/util/ring"
 )
 
@@ -51,7 +51,7 @@ func New(done <-chan bool, windowSize int, services func() []*regpb.Service) (*T
 	return s, nil
 }
 
-// trace is the Debug.trace handler
+// Trace is the Debug.trace handler
 type Trace struct {
 	client client.Client
 

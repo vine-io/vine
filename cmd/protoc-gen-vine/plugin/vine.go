@@ -89,9 +89,9 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	g.contextPkg = g.NewImport("context", "context")
 	g.apiPbPkg = g.NewImport("github.com/lack-io/vine/proto/apis/api", "apipb")
 	g.openApiPkg = g.NewImport("github.com/lack-io/vine/proto/apis/openapi", "openapi")
-	g.apiPkg = g.NewImport("github.com/lack-io/vine/service/api", "api")
-	g.clientPkg = g.NewImport("github.com/lack-io/vine/service/client", "client")
-	g.serverPkg = g.NewImport("github.com/lack-io/vine/service/server", "server")
+	g.apiPkg = g.NewImport("github.com/lack-io/vine/lib/api", "api")
+	g.clientPkg = g.NewImport("github.com/lack-io/vine/core/client", "client")
+	g.serverPkg = g.NewImport("github.com/lack-io/vine/core/server", "server")
 
 	for i, service := range file.TagServices() {
 		g.generateService(file, service, i)

@@ -22,7 +22,7 @@
 
 package manager
 
-import "github.com/lack-io/vine/service/store"
+import "github.com/lack-io/vine/lib/store"
 
 // Options for the runtime manager
 type Options struct {

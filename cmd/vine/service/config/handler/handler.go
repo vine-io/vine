@@ -29,13 +29,13 @@ import (
 	"sync"
 	"time"
 
+	client2 "github.com/lack-io/vine/core/client"
+	cr "github.com/lack-io/vine/lib/config/reader"
+	jr "github.com/lack-io/vine/lib/config/reader/json"
+	"github.com/lack-io/vine/lib/config/source"
+	"github.com/lack-io/vine/lib/store"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/config"
-	"github.com/lack-io/vine/service/client"
-	cr "github.com/lack-io/vine/service/config/reader"
-	jr "github.com/lack-io/vine/service/config/reader/json"
-	"github.com/lack-io/vine/service/config/source"
-	"github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/util/namespace"
 )
 
@@ -443,6 +443,6 @@ func values(ch *source.ChangeSet) (cr.Values, error) {
 
 // publish a change
 func publish(ctx context.Context, ch *pb.WatchResponse) error {
-	req := client.NewMessage(WatchTopic, ch)
-	return client.Publish(ctx, req)
+	req := client2.NewMessage(WatchTopic, ch)
+	return client2.Publish(ctx, req)
 }

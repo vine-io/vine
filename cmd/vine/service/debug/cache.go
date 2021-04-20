@@ -26,16 +26,16 @@ import (
 	"sync"
 	"time"
 
+	registry2 "github.com/lack-io/vine/core/registry"
+	cache2 "github.com/lack-io/vine/core/registry/cache"
+	"github.com/lack-io/vine/lib/config/cmd"
+	log "github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
-	"github.com/lack-io/vine/service/config/cmd"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/registry"
-	"github.com/lack-io/vine/service/registry/cache"
 )
 
 // Stats is the Debug.Stats handler
 type cached struct {
-	registry registry.Registry
+	registry registry2.Registry
 
 	sync.RWMutex
 	serviceCache []*regpb.Service
@@ -43,7 +43,7 @@ type cached struct {
 
 func newCache(done <-chan bool) *cached {
 	c := &cached{
-		registry: cache.New(*cmd.DefaultOptions().Registry),
+		registry: cache2.New(*cmd.DefaultOptions().Registry),
 	}
 
 	// first scan

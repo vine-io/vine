@@ -27,11 +27,11 @@ import (
 	"context"
 	"sync"
 
-	"github.com/lack-io/vine/service/client"
-	"github.com/lack-io/vine/service/debug/handler"
-	"github.com/lack-io/vine/service/proxy"
-	"github.com/lack-io/vine/service/server"
-	"github.com/lack-io/vine/service/server/mucp"
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/server"
+	"github.com/lack-io/vine/core/server/mucp"
+	"github.com/lack-io/vine/lib/debug/handler"
+	"github.com/lack-io/vine/lib/proxy"
 )
 
 // Server is a proxy muxer that incudes the use of the DefaultHandler

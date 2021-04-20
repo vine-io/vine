@@ -29,9 +29,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lack-io/vine/lib/store"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/store"
-	"github.com/lack-io/vine/service/store"
 	"github.com/lack-io/vine/util/context/metadata"
 	"github.com/lack-io/vine/util/namespace"
 )

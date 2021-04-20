@@ -29,11 +29,10 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/net/publicsuffix"
-
-	res "github.com/lack-io/vine/service/api/resolver"
-	"github.com/lack-io/vine/service/client/selector"
+	"github.com/lack-io/vine/core/client/selector"
+	res "github.com/lack-io/vine/lib/api/resolver"
 	"github.com/lack-io/vine/util/namespace"
+	"golang.org/x/net/publicsuffix"
 )
 
 var (

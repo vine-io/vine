@@ -26,8 +26,8 @@ import (
 	"context"
 	"sync"
 
+	"github.com/lack-io/vine/lib/auth"
 	pb "github.com/lack-io/vine/proto/services/auth"
-	"github.com/lack-io/vine/service/auth"
 )
 
 const (

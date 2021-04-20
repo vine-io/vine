@@ -31,26 +31,26 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
+	router2 "github.com/lack-io/vine/core/router"
+	registry2 "github.com/lack-io/vine/core/router/registry"
 
 	"github.com/lack-io/vine"
 	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/network/api"
 	netdns "github.com/lack-io/vine/cmd/vine/service/network/dns"
 	"github.com/lack-io/vine/cmd/vine/service/network/handler"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/network"
-	"github.com/lack-io/vine/service/network/resolver"
-	"github.com/lack-io/vine/service/network/resolver/dns"
-	"github.com/lack-io/vine/service/network/resolver/http"
-	"github.com/lack-io/vine/service/network/resolver/registry"
-	"github.com/lack-io/vine/service/network/tunnel"
-	"github.com/lack-io/vine/service/proxy"
-	"github.com/lack-io/vine/service/proxy/mucp"
-	"github.com/lack-io/vine/service/router"
-	regRouter "github.com/lack-io/vine/service/router/registry"
-	"github.com/lack-io/vine/service/server"
-	"github.com/lack-io/vine/service/transport"
-	"github.com/lack-io/vine/service/transport/quic"
+	"github.com/lack-io/vine/core/server"
+	"github.com/lack-io/vine/core/transport"
+	"github.com/lack-io/vine/core/transport/quic"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/network"
+	"github.com/lack-io/vine/lib/network/resolver"
+	"github.com/lack-io/vine/lib/network/resolver/dns"
+	"github.com/lack-io/vine/lib/network/resolver/http"
+	"github.com/lack-io/vine/lib/network/resolver/registry"
+	"github.com/lack-io/vine/lib/network/tunnel"
+	"github.com/lack-io/vine/lib/proxy"
+	"github.com/lack-io/vine/lib/proxy/mucp"
 	"github.com/lack-io/vine/util/helper"
 	mux "github.com/lack-io/vine/util/muxer"
 )
@@ -107,17 +107,17 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	// advertise the best routes
-	strategy := router.AdvertiseLocal
+	strategy := router2.AdvertiseLocal
 	if a := ctx.String("advertise-strategy"); len(a) > 0 {
 		switch a {
 		case "all":
-			strategy = router.AdvertiseAll
+			strategy = router2.AdvertiseAll
 		case "best":
-			strategy = router.AdvertiseBest
+			strategy = router2.AdvertiseBest
 		case "local":
-			strategy = router.AdvertiseLocal
+			strategy = router2.AdvertiseLocal
 		case "none":
-			strategy = router.AdvertiseNone
+			strategy = router2.AdvertiseNone
 		}
 	}
 
@@ -152,12 +152,12 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	id := svc.Server().Options().Id
 
 	// local tunnel router
-	rtr := regRouter.NewRouter(
-		router.Network(Network),
-		router.Id(id),
-		router.Registry(svc.Client().Options().Registry),
-		router.Advertise(strategy),
-		router.Gateway(gateway),
+	rtr := registry2.NewRouter(
+		router2.Network(Network),
+		router2.Id(id),
+		router2.Registry(svc.Client().Options().Registry),
+		router2.Advertise(strategy),
+		router2.Gateway(gateway),
 	)
 
 	// create new network

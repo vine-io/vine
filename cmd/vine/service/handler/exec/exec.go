@@ -30,9 +30,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lack-io/vine/core/server"
+	"github.com/lack-io/vine/lib/proxy"
 	"github.com/lack-io/vine/proto/apis/errors"
-	"github.com/lack-io/vine/service/proxy"
-	"github.com/lack-io/vine/service/server"
 )
 
 type Proxy struct {

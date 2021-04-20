@@ -25,7 +25,7 @@ package api
 import (
 	"github.com/lack-io/cli"
 	"github.com/lack-io/vine"
-	log "github.com/lack-io/vine/service/logger"
+	log "github.com/lack-io/vine/lib/logger"
 )
 
 var (

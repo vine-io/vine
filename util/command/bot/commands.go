@@ -28,7 +28,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/service/agent/command"
+	"github.com/lack-io/vine/lib/agent/command"
 	clic "github.com/lack-io/vine/util/command/cli"
 )
 

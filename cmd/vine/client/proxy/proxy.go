@@ -28,25 +28,24 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/service/auth"
-	bmem "github.com/lack-io/vine/service/broker/memory"
-	"github.com/lack-io/vine/service/client"
-	mucpCli "github.com/lack-io/vine/service/client/mucp"
-	"github.com/lack-io/vine/service/config/cmd"
-	log "github.com/lack-io/vine/service/logger"
-	"github.com/lack-io/vine/service/proxy"
-	"github.com/lack-io/vine/service/proxy/http"
-	"github.com/lack-io/vine/service/proxy/mucp"
-	"github.com/lack-io/vine/service/registry"
-	rmem "github.com/lack-io/vine/service/registry/memory"
-	"github.com/lack-io/vine/service/router"
-	rs "github.com/lack-io/vine/service/router/grpc"
-	regRouter "github.com/lack-io/vine/service/router/registry"
-	"github.com/lack-io/vine/service/server"
-	sgrpc "github.com/lack-io/vine/service/server/grpc"
-	mucpServer "github.com/lack-io/vine/service/server/mucp"
+	"github.com/lack-io/vine/core/broker/memory"
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client/mucp"
+	"github.com/lack-io/vine/core/registry"
+	regMemory "github.com/lack-io/vine/core/registry/memory"
+	rr "github.com/lack-io/vine/core/router"
+	"github.com/lack-io/vine/core/router/grpc"
+	rreg "github.com/lack-io/vine/core/router/registry"
+	"github.com/lack-io/vine/core/server"
+	sgrpc "github.com/lack-io/vine/core/server/grpc"
+	mucpServer "github.com/lack-io/vine/core/server/mucp"
+	"github.com/lack-io/vine/lib/auth"
+	"github.com/lack-io/vine/lib/config/cmd"
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/proxy"
+	"github.com/lack-io/vine/lib/proxy/http"
+	pmucp "github.com/lack-io/vine/lib/proxy/mucp"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/muxer"
 	"github.com/lack-io/vine/util/wrapper"
@@ -91,28 +90,28 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	var popts []proxy.Option
 
 	// create new router
-	var r router.Router
+	var r rr.Router
 
 	routerName := ctx.String("router")
 	routerAddr := ctx.String("router-address")
 
-	ropts := []router.Option{
-		router.Id(server.DefaultId),
-		router.Client(client.DefaultClient),
-		router.Address(routerAddr),
-		router.Registry(registry.DefaultRegistry),
+	ropts := []rr.Option{
+		rr.Id(server.DefaultId),
+		rr.Client(client.DefaultClient),
+		rr.Address(routerAddr),
+		rr.Registry(registry.DefaultRegistry),
 	}
 
 	// check if we need to use the router service
 	switch {
 	case routerName == "go.vine.router":
-		r = rs.NewRouter(ropts...)
+		r = grpc.NewRouter(ropts...)
 	case routerName == "service":
-		r = rs.NewRouter(ropts...)
+		r = grpc.NewRouter(ropts...)
 	case len(routerAddr) > 0:
-		r = rs.NewRouter(ropts...)
+		r = grpc.NewRouter(ropts...)
 	default:
-		r = regRouter.NewRouter(ropts...)
+		r = rreg.NewRouter(ropts...)
 	}
 
 	// start the router
@@ -149,8 +148,8 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	serverOpts := []server.Option{
 		server.Address(Address),
-		server.Registry(rmem.NewRegistry()),
-		server.Broker(bmem.NewBroker()),
+		server.Registry(regMemory.NewRegistry()),
+		server.Broker(memory.NewBroker()),
 	}
 
 	// enable acme will create a net.Listener which
@@ -187,12 +186,12 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		// TODO: http server
 		ss = mucpServer.NewServer(serverOpts...)
 	case "mucp":
-		popts = append(popts, proxy.WithClient(mucpCli.NewClient()))
-		p = mucp.NewProxy(popts...)
+		popts = append(popts, proxy.WithClient(mucp.NewClient()))
+		p = pmucp.NewProxy(popts...)
 		serverOpts = append(serverOpts, server.WithRouter(p))
 		ss = mucpServer.NewServer(serverOpts...)
 	default:
-		p = mucp.NewProxy(popts...)
+		p = pmucp.NewProxy(popts...)
 		serverOpts = append(serverOpts, server.WithRouter(p))
 		ss = sgrpc.NewServer(serverOpts...)
 	}
