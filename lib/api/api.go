@@ -40,7 +40,7 @@ type Api interface {
 	Register(*apipb.Endpoint) error
 	// Deregister unregister a route
 	Deregister(*apipb.Endpoint) error
-	// String implemenation of api
+	// String implementation of api
 	String() string
 }
 
