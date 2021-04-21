@@ -29,7 +29,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	storeproto "github.com/lack-io/vine/proto/services/store"
 )
 

@@ -23,7 +23,7 @@
 package manager
 
 import (
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/runtime"
 	"github.com/lack-io/vine/lib/store"
 	"github.com/lack-io/vine/lib/store/memory"

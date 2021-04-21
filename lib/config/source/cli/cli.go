@@ -32,7 +32,7 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/config/source"
 )
 

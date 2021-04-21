@@ -39,7 +39,7 @@ import (
 	svcAuth "github.com/lack-io/vine/lib/auth/grpc"
 	"github.com/lack-io/vine/lib/auth/token"
 	"github.com/lack-io/vine/lib/auth/token/jwt"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/auth"

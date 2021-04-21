@@ -31,7 +31,7 @@ import (
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/lib/auth"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/debug/handler"
 	"github.com/lack-io/vine/lib/debug/stats"
 	"github.com/lack-io/vine/lib/debug/trace"
@@ -89,26 +89,28 @@ func (s *service) Init(opts ...Option) {
 	}
 
 	s.once.Do(func() {
-		// set cmd name
-		if len(s.opts.Cmd.App().Name) == 0 {
-			s.opts.Cmd.App().Name = s.Server().Options().Name
-		}
+		if s.opts.Cmd != nil {
+			// set cmd name
+			if len(s.opts.Cmd.App().Name) == 0 {
+				s.opts.Cmd.App().Name = s.Server().Options().Name
+			}
 
-		// Initialise the command flags, overriding new service
-		if err := s.opts.Cmd.Init(
-			cmd.Auth(&s.opts.Auth),
-			cmd.Broker(&s.opts.Broker),
-			cmd.Registry(&s.opts.Registry),
-			cmd.Runtime(&s.opts.Runtime),
-			cmd.Transport(&s.opts.Transport),
-			cmd.Client(&s.opts.Client),
-			cmd.Config(&s.opts.Config),
-			cmd.Server(&s.opts.Server),
-			cmd.Dialect(&s.opts.Dialect),
-			cmd.Store(&s.opts.Store),
-			cmd.Profile(&s.opts.Profile),
-		); err != nil {
-			logger.Fatal(err)
+			// Initialise the command flags, overriding new service
+			if err := s.opts.Cmd.Init(
+				cmd.Auth(&s.opts.Auth),
+				cmd.Broker(&s.opts.Broker),
+				cmd.Registry(&s.opts.Registry),
+				cmd.Runtime(&s.opts.Runtime),
+				cmd.Transport(&s.opts.Transport),
+				cmd.Client(&s.opts.Client),
+				cmd.Config(&s.opts.Config),
+				cmd.Server(&s.opts.Server),
+				cmd.Dialect(&s.opts.Dialect),
+				cmd.Store(&s.opts.Store),
+				cmd.Profile(&s.opts.Profile),
+			); err != nil {
+				logger.Fatal(err)
+			}
 		}
 
 		s.opts.BeforeStop = append(s.opts.BeforeStop, func() error {
@@ -117,7 +119,7 @@ func (s *service) Init(opts ...Option) {
 		})
 
 		// Explicitly set the table name to the service name
-		name := s.opts.Cmd.App().Name
+		name := s.opts.Server.Options().Name
 		_ = s.opts.Store.Init(store.Table(name))
 	})
 }

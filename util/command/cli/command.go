@@ -42,7 +42,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/serenize/snaker"
 
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	proto "github.com/lack-io/vine/proto/services/debug"
 	dns "github.com/lack-io/vine/proto/services/network/dns"

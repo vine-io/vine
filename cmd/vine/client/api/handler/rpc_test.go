@@ -35,7 +35,7 @@ import (
 	 "github.com/lack-io/vine/core/client/selector"
 	 "github.com/lack-io/vine/core/registry/memory"
 	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 

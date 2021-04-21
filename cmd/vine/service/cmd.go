@@ -51,7 +51,7 @@ import (
 	"github.com/lack-io/vine/cmd/vine/service/server"
 	"github.com/lack-io/vine/cmd/vine/service/store"
 	"github.com/lack-io/vine/cmd/vine/service/tunnel"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	gostore "github.com/lack-io/vine/lib/store"
 	inauth "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/helper"

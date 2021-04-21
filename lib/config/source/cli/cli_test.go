@@ -31,7 +31,7 @@ import (
 
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/lib/config"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/config/source"
 )
 

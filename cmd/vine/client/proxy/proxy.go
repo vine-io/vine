@@ -41,7 +41,7 @@ import (
 	sgrpc "github.com/lack-io/vine/core/server/grpc"
 	mucpServer "github.com/lack-io/vine/core/server/mucp"
 	"github.com/lack-io/vine/lib/auth"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/proxy"
 	"github.com/lack-io/vine/lib/proxy/http"

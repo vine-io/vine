@@ -29,7 +29,7 @@ import (
 	"time"
 
 	client2 "github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/proto/apis/errors"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/proto/services/debug"

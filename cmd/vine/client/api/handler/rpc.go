@@ -33,7 +33,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	client2 "github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/lib/api/server/cors"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/util/helper"
 )

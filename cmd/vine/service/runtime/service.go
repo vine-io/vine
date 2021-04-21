@@ -40,7 +40,7 @@ import (
 	"github.com/lack-io/vine"
 	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/handler"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/runtime"
 	svcRuntime "github.com/lack-io/vine/lib/runtime/grpc"
 	"github.com/lack-io/vine/lib/runtime/local/git"

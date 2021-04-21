@@ -30,7 +30,7 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	gorun "github.com/lack-io/vine/lib/runtime"
 	handler "github.com/lack-io/vine/util/file"

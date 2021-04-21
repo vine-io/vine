@@ -28,7 +28,7 @@ import (
 
 	registry2 "github.com/lack-io/vine/core/registry"
 	cache2 "github.com/lack-io/vine/core/registry/cache"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 )

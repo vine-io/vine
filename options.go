@@ -35,8 +35,8 @@ import (
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/core/transport"
 	"github.com/lack-io/vine/lib/auth"
+	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/config"
-	"github.com/lack-io/vine/lib/config/cmd"
 	"github.com/lack-io/vine/lib/dao"
 	"github.com/lack-io/vine/lib/debug/profile"
 	"github.com/lack-io/vine/lib/debug/trace"
@@ -237,7 +237,6 @@ func Address(addr string) Option {
 func Name(n string) Option {
 	return func(o *Options) {
 		o.Server.Init(server.Name(n))
-		o.Cmd.Init(cmd.Name(n))
 	}
 }
 
@@ -245,7 +244,6 @@ func Name(n string) Option {
 func Version(v string) Option {
 	return func(o *Options) {
 		o.Server.Init(server.Version(v))
-		o.Cmd.Init(cmd.Version(v))
 	}
 }
 

@@ -43,7 +43,7 @@ import (
 	"github.com/lack-io/vine/lib/api/server/cors"
 	httpapi "github.com/lack-io/vine/lib/api/server/http"
 	"github.com/lack-io/vine/lib/auth"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/util/helper"

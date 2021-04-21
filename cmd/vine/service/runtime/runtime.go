@@ -32,7 +32,7 @@ import (
 	"github.com/lack-io/vine/cmd/vine/service/runtime/handler"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/manager"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/profile"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/runtime"
 	pb "github.com/lack-io/vine/proto/services/runtime"

@@ -37,7 +37,7 @@ import (
 	bytes2 "github.com/lack-io/vine/core/codec/bytes"
 
 	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	clic "github.com/lack-io/vine/util/command/cli"
 	"github.com/lack-io/vine/util/file"
 )

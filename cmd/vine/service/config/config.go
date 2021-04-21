@@ -33,7 +33,7 @@ import (
 
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/config/handler"
-	"github.com/lack-io/vine/lib/config/cmd"
+	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	proto "github.com/lack-io/vine/proto/services/config"
 	"github.com/lack-io/vine/util/client"

@@ -76,8 +76,6 @@ import (
 
 	daoNop "github.com/lack-io/vine/lib/dao/nop"
 
-	// stores
-	fileStore "github.com/lack-io/vine/lib/store/bolt"
 	svcStore "github.com/lack-io/vine/lib/store/grpc"
 	memStore "github.com/lack-io/vine/lib/store/memory"
 
@@ -401,7 +399,6 @@ var (
 	}
 
 	DefaultStores = map[string]func(...store.Option) store.Store{
-		"file":    fileStore.NewStore,
 		"memory":  memStore.NewStore,
 		"service": svcStore.NewStore,
 	}
