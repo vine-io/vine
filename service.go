@@ -25,7 +25,7 @@ package vine
 import (
 	"os"
 	"os/signal"
-	gruntime "runtime"
+	"runtime"
 	"sync"
 
 	"github.com/lack-io/vine/core/client"
@@ -194,9 +194,9 @@ func (s *service) Run() error {
 	// start the profiler
 	if s.opts.Profile != nil {
 		// to view mutex contention
-		gruntime.SetMutexProfileFraction(5)
+		runtime.SetMutexProfileFraction(5)
 		// to view blocking profile
-		gruntime.SetBlockProfileRate(1)
+		runtime.SetBlockProfileRate(1)
 
 		if err := s.opts.Profile.Start(); err != nil {
 			return err
