@@ -136,7 +136,7 @@ var (
 			Usage:   "Sets the client retries. Default: 1",
 		},
 		&cli.IntFlag{
-			Name:    "client_pool_size",
+			Name:    "client-pool-size",
 			EnvVars: []string{"VINE_CLIENT_POOL_SIZE"},
 			Usage:   "Sets the client connection pool size. Default: 1",
 		},

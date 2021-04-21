@@ -237,6 +237,7 @@ func Address(addr string) Option {
 func Name(n string) Option {
 	return func(o *Options) {
 		o.Server.Init(server.Name(n))
+		o.Cmd.Init(cmd.Name(n))
 	}
 }
 
@@ -244,6 +245,7 @@ func Name(n string) Option {
 func Version(v string) Option {
 	return func(o *Options) {
 		o.Server.Init(server.Version(v))
+		o.Cmd.Init(cmd.Version(v))
 	}
 }
 
