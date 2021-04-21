@@ -64,7 +64,7 @@ func TestHTTPTransportPortRange(t *testing.T) {
 
 	lsn.Close()
 	lsn1.Close()
-	lsn.Close()
+	lsn2.Close()
 }
 
 func TestHTTPTransportCommunication(t *testing.T) {

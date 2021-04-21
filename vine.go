@@ -52,18 +52,6 @@ type Service interface {
 	String() string
 }
 
-// Function is a one time executing Service
-type Function interface {
-	// Service Inherits Service interface
-	Service
-	// Done signals to complete execution
-	Done() error
-	// Handle registers an RPC handler
-	Handle(v interface{}) error
-	// Subscribe registers a subscriber
-	Subscribe(topic string, v interface{}) error
-}
-
 // Event is used to publish messages to topic
 type Event interface {
 	// Publish publishes a message to the event topic
@@ -90,11 +78,6 @@ func FromContext(ctx context.Context) (Service, bool) {
 // NewContext returns a new Context with the Service embedded within it.
 func NewContext(ctx context.Context, s Service) context.Context {
 	return context.WithValue(ctx, serviceKey{}, s)
-}
-
-// NewFunction returns a new Function for a one time executing Service
-func NewFunction(opts ...Option) Function {
-	return newFunction(opts...)
 }
 
 // NewEvent creates a new event publisher
