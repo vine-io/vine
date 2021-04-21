@@ -37,7 +37,7 @@ type cache struct {
 // Cache is a cpu register style cache for the store.
 // It syncs between N stores in a faulting manner.
 type Cache interface {
-	// Implements the store interface
+	// Store implements the store interface
 	store.Store
 }
 
