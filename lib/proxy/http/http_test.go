@@ -32,7 +32,7 @@ import (
 
 	"github.com/lack-io/vine"
 	client2 "github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/lib/server"
+	"github.com/lack-io/vine/core/server"
 )
 
 type testHandler struct{}

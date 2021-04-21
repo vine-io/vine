@@ -28,9 +28,9 @@ import (
 	"reflect"
 	"testing"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/lib/auth"
-	"github.com/lack-io/vine/lib/server"
 	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/util/context/metadata"
 )
@@ -389,10 +389,10 @@ func TestAuthHandler(t *testing.T) {
 type testClient struct {
 	callCount int
 	callRsp   interface{}
-	client2.Client
+	client.Client
 }
 
-func (c *testClient) Call(ctx context.Context, req client2.Request, rsp interface{}, opts ...client2.CallOption) error {
+func (c *testClient) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	c.callCount++
 
 	if c.callRsp != nil {

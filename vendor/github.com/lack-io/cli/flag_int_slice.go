@@ -57,6 +57,7 @@ func (i *IntSlice) SetInt(value int) {
 // Set parses the value into an integer and appends it to the list of values
 func (i *IntSlice) Set(value string) error {
 	if !i.hasBeenSet {
+		i.value = &[]int{}
 		i.hasBeenSet = true
 	}
 
@@ -71,6 +72,7 @@ func (i *IntSlice) Set(value string) error {
 	if err != nil {
 		return err
 	}
+
 	*i.value = append(*i.value, tmp...)
 
 	return nil
@@ -116,7 +118,7 @@ func (i *IntSlice) Serialize() string {
 // Value returns the slice of ints set by this flag
 func (i *IntSlice) Value() []int {
 	if i.value == nil {
-		return []int{}
+		i.value = &[]int{}
 	}
 	return *i.value
 }

@@ -28,7 +28,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/lib/transport"
+	"github.com/lack-io/vine/core/transport"
 )
 
 func testBrokenTunAccept(t *testing.T, tun Tunnel, wait chan bool, wg *sync.WaitGroup) {

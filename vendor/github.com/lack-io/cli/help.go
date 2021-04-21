@@ -33,12 +33,10 @@ var helpCommand = &Command{
 		args := c.Args()
 		if args.Present() {
 			_ = ShowCommandHelp(c, args.First())
-			os.Exit(0)
 			return nil
 		}
 
 		_ = ShowAppHelp(c)
-		os.Exit(0)
 		return nil
 	},
 }
@@ -52,12 +50,10 @@ var helpSubcommand = &Command{
 		args := c.Args()
 		if args.Present() {
 			_ = ShowCommandHelp(c, args.First())
-			os.Exit(0)
 			return nil
 		}
 
 		_ = ShowSubcommandHelp(c)
-		os.Exit(0)
 		return nil
 	},
 }

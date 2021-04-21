@@ -284,13 +284,11 @@ func (a *App) RunContext(ctx context.Context, arguments []string) (err error) {
 
 	if !a.HideHelp && checkHelp(context) {
 		_ = ShowAppHelp(context)
-		os.Exit(0)
 		return nil
 	}
 
 	if !a.HideVersion && checkVersion(context) {
 		ShowVersion(context)
-		os.Exit(0)
 		return nil
 	}
 

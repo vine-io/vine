@@ -41,8 +41,9 @@ var BashCompletionFlag Flag = &BoolFlag{
 
 // VersionFlag prints the version for the application
 var VersionFlag Flag = &BoolFlag{
-	Name:  "version",
-	Usage: "print the version",
+	Name:    "version",
+	Aliases: []string{"v"},
+	Usage:   "print the version",
 }
 
 // HelpFlag prints the help for all commands and subcommands.

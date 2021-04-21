@@ -46,6 +46,7 @@ func newFloat64Slice(val []float64, p *[]float64) *Float64Slice {
 // Set parses the value into a float64 and appends it to the list of values
 func (f *Float64Slice) Set(value string) error {
 	if !f.hasBeenSet {
+		f.val = &[]float64{}
 		f.hasBeenSet = true
 	}
 
@@ -105,7 +106,7 @@ func (f *Float64Slice) Serialize() string {
 // Value returns the slice of float64s set by this flag
 func (f *Float64Slice) Value() []float64 {
 	if f.val == nil {
-		return []float64{}
+		f.val = &[]float64{}
 	}
 	return *f.val
 }

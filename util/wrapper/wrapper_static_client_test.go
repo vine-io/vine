@@ -31,9 +31,9 @@ import (
 	client2 "github.com/lack-io/vine/core/client"
 	mucp2 "github.com/lack-io/vine/core/client/mucp"
 	"github.com/lack-io/vine/core/registry/memory"
-	"github.com/lack-io/vine/lib/server"
-	serverMucp "github.com/lack-io/vine/lib/server/mucp"
-	tmemory "github.com/lack-io/vine/lib/transport/memory"
+	"github.com/lack-io/vine/core/server"
+	serverMucp "github.com/lack-io/vine/core/server/mucp"
+	tmemory "github.com/lack-io/vine/core/transport/memory"
 	"github.com/lack-io/vine/util/wrapper"
 )
 

@@ -31,11 +31,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	client2 "github.com/lack-io/vine/core/client"
-	selector2 "github.com/lack-io/vine/core/client/selector"
-	memory2 "github.com/lack-io/vine/core/registry/memory"
+	 "github.com/lack-io/vine/core/client"
+	 "github.com/lack-io/vine/core/client/selector"
+	 "github.com/lack-io/vine/core/registry/memory"
+	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/lib/config/cmd"
-	"github.com/lack-io/vine/lib/server"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 
@@ -66,11 +66,11 @@ func (t *TestHandler) Exec(ctx context.Context, req *TestRequest, rsp *TestRespo
 }
 
 func TestRPCHandler(t *testing.T) {
-	r := memory2.NewRegistry()
+	r := memory.NewRegistry()
 
 	(*cmd.DefaultOptions().Client).Init(
-		client2.Registry(r),
-		client2.Selector(selector2.NewSelector(selector2.Registry(r))),
+		client.Registry(r),
+		client.Selector(selector.NewSelector(selector.Registry(r))),
 	)
 
 	(*cmd.DefaultOptions().Server).Init(
