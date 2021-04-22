@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package handler is the handler for the `vine debug stats` service
+// Package stats is the handler for the `vine debug stats` service
 package stats
 
 import (
@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/proto/apis/errors"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
@@ -51,7 +51,7 @@ func New(done <-chan bool, windowSize int, services func() []*regpb.Service) (*S
 
 // Stats is the Debug.Stats handler
 type Stats struct {
-	client client2.Client
+	client client.Client
 
 	sync.RWMutex
 	// historical snapshots from the start
@@ -170,7 +170,7 @@ func (s *Stats) scrape() {
 
 				req := s.client.NewRequest(service.Name, "Debug.Stats", &debug.StatsRequest{})
 				rsp := new(debug.StatsResponse)
-				if err := s.client.Call(ctx, req, rsp, client2.WithAddress(node.Address)); err != nil {
+				if err := s.client.Call(ctx, req, rsp, client.WithAddress(node.Address)); err != nil {
 					// Don't report an error to the user if stats can't be collected, just continue
 					return
 				}

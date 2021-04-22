@@ -24,8 +24,8 @@ package network
 
 import (
 	"github.com/google/uuid"
-	router2 "github.com/lack-io/vine/core/router"
 
+	"github.com/lack-io/vine/core/router"
 	"github.com/lack-io/vine/lib/network/resolver"
 	"github.com/lack-io/vine/lib/network/resolver/registry"
 	"github.com/lack-io/vine/lib/network/tunnel"
@@ -50,7 +50,7 @@ type Options struct {
 	// Tunnel is network tunnel
 	Tunnel tunnel.Tunnel
 	// Router is network router
-	Router router2.Router
+	Router router.Router
 	// Proxy is network proxy
 	Proxy proxy.Proxy
 	// Resolver is network resolver
@@ -100,7 +100,7 @@ func Tunnel(t tunnel.Tunnel) Option {
 }
 
 // Router sets the network router
-func Router(r router2.Router) Option {
+func Router(r router.Router) Option {
 	return func(o *Options) {
 		o.Router = r
 	}
@@ -127,7 +127,7 @@ func DefaultOptions() Options {
 		Name:     DefaultName,
 		Address:  DefaultAddress,
 		Tunnel:   tunnel.NewTunnel(),
-		Router:   router2.DefaultRouter,
+		Router:   router.DefaultRouter,
 		Proxy:    mucp.NewProxy(),
 		Resolver: &registry.Resolver{},
 	}

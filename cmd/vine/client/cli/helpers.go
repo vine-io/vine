@@ -23,7 +23,7 @@
 package cli
 
 import (
-	"bytes"
+	b "bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -33,9 +33,9 @@ import (
 	"text/tabwriter"
 
 	"github.com/lack-io/cli"
-	client2 "github.com/lack-io/vine/core/client"
-	bytes2 "github.com/lack-io/vine/core/codec/bytes"
 
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/codec/bytes"
 	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
 	"github.com/lack-io/vine/lib/cmd"
 	clic "github.com/lack-io/vine/util/command/cli"
@@ -147,7 +147,7 @@ func listEnvs(c *cli.Context, args []string) ([]byte, error) {
 	envs := cliutil.GetEnvs()
 	current := cliutil.GetEnv(c)
 
-	byt := bytes.NewBuffer([]byte{})
+	byt := b.NewBuffer([]byte{})
 
 	w := tabwriter.NewWriter(byt, 0, 0, 1, ' ', 0)
 	for i, env := range envs {
@@ -200,7 +200,7 @@ func streamService(c *cli.Context, args []string) ([]byte, error) {
 	// ignore error
 	json.Unmarshal([]byte(strings.Join(args[2:], " ")), &request)
 
-	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client2.WithContentType("application/json"))
+	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client.WithContentType("application/json"))
 	stream, err := (*cmd.DefaultOptions().Client).Stream(context.Background(), req)
 	if err != nil {
 		return nil, fmt.Errorf("error calling %s.%s: %v", service, endpoint, err)
@@ -214,7 +214,7 @@ func streamService(c *cli.Context, args []string) ([]byte, error) {
 
 	for {
 		if output == "raw" {
-			rsp := bytes2.Frame{}
+			rsp := bytes.Frame{}
 			if err := stream.Recv(&rsp); err != nil {
 				return nil, fmt.Errorf("error receiving from %s.%s: %v", service, endpoint, err)
 			}
@@ -253,6 +253,6 @@ func upload(ctx *cli.Context, args []string) ([]byte, error) {
 	filename := ctx.Args().Get(0)
 	localfile := ctx.Args().Get(1)
 
-	fileClient := file.New("go.vine.server", client2.DefaultClient)
+	fileClient := file.New("go.vine.server", client.DefaultClient)
 	return nil, fileClient.Upload(filename, localfile)
 }

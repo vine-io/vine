@@ -31,11 +31,11 @@ import (
 	"log"
 	"os"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	proto "github.com/lack-io/vine/proto/services/file"
 )
 
-// Client is the client interface to access files
+// File is the client interface to access files
 type File interface {
 	Open(filename string, truncate bool) (int64, error)
 	Stat(filename string) (*proto.StatResponse, error)
@@ -49,8 +49,8 @@ type File interface {
 	DownloadAt(filename, saveFile string, blockId int) error
 }
 
-// NewClient returns a new Client which uses a vine Client
-func New(service string, c client2.Client) File {
+// New returns a new Client which uses a vine Client
+func New(service string, c client.Client) File {
 	return &fc{proto.NewFileService(service, c)}
 }
 

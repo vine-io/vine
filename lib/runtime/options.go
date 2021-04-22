@@ -26,7 +26,7 @@ import (
 	"context"
 	"io"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 )
 
 type Option func(o *Options)
@@ -42,7 +42,7 @@ type Options struct {
 	// Base image to use
 	Image string
 	// Client to use when making requests
-	Client client2.Client
+	Client client.Client
 }
 
 // WithSource sets the base image / repository
@@ -74,7 +74,7 @@ func WithImage(t string) Option {
 }
 
 // WithClient sets the client to use
-func WithClient(c client2.Client) Option {
+func WithClient(c client.Client) Option {
 	return func(o *Options) {
 		o.Client = c
 	}

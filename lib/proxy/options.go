@@ -24,19 +24,19 @@
 package proxy
 
 import (
-	client2 "github.com/lack-io/vine/core/client"
-	router2 "github.com/lack-io/vine/core/router"
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/router"
 )
 
 type Options struct {
 	// Specific endpoint to always call
 	Endpoint string
 	// The default client to use
-	Client client2.Client
+	Client client.Client
 	// The default router to use
-	Router router2.Router
+	Router router.Router
 	// Extra links for different clients
-	Links map[string]client2.Client
+	Links map[string]client.Client
 }
 
 type Option func(o *Options)
@@ -49,24 +49,24 @@ func WithEndpoint(e string) Option {
 }
 
 // WithClient sets the client
-func WithClient(c client2.Client) Option {
+func WithClient(c client.Client) Option {
 	return func(o *Options) {
 		o.Client = c
 	}
 }
 
 // WithRouter specific the router to use
-func WithRouter(r router2.Router) Option {
+func WithRouter(r router.Router) Option {
 	return func(o *Options) {
 		o.Router = r
 	}
 }
 
 // WithLink sets a link for outbound requests
-func WithLink(name string, c client2.Client) Option {
+func WithLink(name string, c client.Client) Option {
 	return func(o *Options) {
 		if o.Links == nil {
-			o.Links = make(map[string]client2.Client)
+			o.Links = make(map[string]client.Client)
 		}
 		o.Links[name] = c
 	}

@@ -26,10 +26,10 @@ import (
 	"context"
 
 	ccli "github.com/lack-io/cli"
-	client2 "github.com/lack-io/vine/core/client"
-	grpc2 "github.com/lack-io/vine/core/client/grpc"
 
 	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
+	"github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client/grpc"
 	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/util/config"
 	"github.com/lack-io/vine/util/context/metadata"
@@ -37,20 +37,20 @@ import (
 
 // New returns a wrapped grpc client which will inject the
 // token found in config into each request
-func New(ctx *ccli.Context) client2.Client {
+func New(ctx *ccli.Context) client.Client {
 	env := cliutil.GetEnv(ctx)
 	token, _ := config.Get("vine", "auth", env.Name, "token")
-	return &wrapper{grpc2.NewClient(), token, env.Name, ctx}
+	return &wrapper{grpc.NewClient(), token, env.Name, ctx}
 }
 
 type wrapper struct {
-	client2.Client
+	client.Client
 	token string
 	env   string
 	ctx   *ccli.Context
 }
 
-func (a *wrapper) Call(ctx context.Context, req client2.Request, rsp interface{}, opts ...client2.CallOption) error {
+func (a *wrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	if len(a.token) > 0 {
 		ctx = metadata.Set(ctx, "Authorization", auth.BearerScheme+a.token)
 	}

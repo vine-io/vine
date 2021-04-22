@@ -25,7 +25,7 @@ package source
 import (
 	"context"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/lib/config/encoder"
 	"github.com/lack-io/vine/lib/config/encoder/json"
 )
@@ -38,7 +38,7 @@ type Options struct {
 	Context context.Context
 
 	// Client to use for RPC
-	Client client2.Client
+	Client client.Client
 }
 
 type Option func(o *Options)
@@ -47,7 +47,7 @@ func NewOptions(opts ...Option) Options {
 	options := Options{
 		Encoder: json.NewEncoder(),
 		Context: context.Background(),
-		Client:  client2.DefaultClient,
+		Client:  client.DefaultClient,
 	}
 
 	for _, o := range opts {
@@ -65,7 +65,7 @@ func WithEncoder(e encoder.Encoder) Option {
 }
 
 // WithClient sets the source client
-func WithClient(c client2.Client) Option {
+func WithClient(c client.Client) Option {
 	return func(o *Options) {
 		o.Client = c
 	}

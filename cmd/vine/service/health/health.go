@@ -29,10 +29,10 @@ import (
 	"net/http"
 
 	"github.com/lack-io/cli"
-	client2 "github.com/lack-io/vine/core/client"
 
 	"github.com/lack-io/vine"
 	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
+	"github.com/lack-io/vine/core/client"
 	log "github.com/lack-io/vine/lib/logger"
 	proto "github.com/lack-io/vine/proto/services/debug"
 	qcli "github.com/lack-io/vine/util/command/cli"
@@ -70,10 +70,10 @@ func Run(ctx *cli.Context) {
 	}
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		req := client2.NewRequest(serverName, "Debug.Health", &proto.HealthRequest{})
+		req := client.NewRequest(serverName, "Debug.Health", &proto.HealthRequest{})
 		rsp := &proto.HealthResponse{}
 
-		err := client2.Call(context.TODO(), req, rsp, client2.WithAddress(serverAddress))
+		err := client.Call(context.TODO(), req, rsp, client.WithAddress(serverAddress))
 		if err != nil || rsp.Status != "ok" {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "NOT_HEALTHY")

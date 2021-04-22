@@ -31,7 +31,7 @@ import (
 	"testing"
 
 	"github.com/lack-io/vine"
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/server"
 )
 
@@ -113,7 +113,7 @@ func TestHTTPRouter(t *testing.T) {
 	wg.Wait()
 
 	for _, test := range testCases {
-		req := service.Client().NewRequest("foobar", test.rpcEp, map[string]string{"foo": "bar"}, client2.WithContentType("application/json"))
+		req := service.Client().NewRequest("foobar", test.rpcEp, map[string]string{"foo": "bar"}, client.WithContentType("application/json"))
 		var rsp map[string]string
 		err := service.Client().Call(ctx, req, &rsp)
 		if err != nil && test.err == false {

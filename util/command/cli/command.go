@@ -36,12 +36,12 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
-	client2 "github.com/lack-io/vine/core/client"
-	bytes2 "github.com/lack-io/vine/core/codec/bytes"
-	grpc2 "github.com/lack-io/vine/core/registry/grpc"
 	"github.com/olekukonko/tablewriter"
 	"github.com/serenize/snaker"
 
+	"github.com/lack-io/vine/core/client"
+	b2 "github.com/lack-io/vine/core/codec/bytes"
+	"github.com/lack-io/vine/core/registry/grpc"
 	"github.com/lack-io/vine/lib/cmd"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	proto "github.com/lack-io/vine/proto/services/debug"
@@ -210,7 +210,7 @@ func RegisterService(c *cli.Context, args []string) ([]byte, error) {
 	}
 
 	reg := *cmd.DefaultOptions().Registry
-	reg.Init(grpc2.WithClient(inclient.New(c)))
+	reg.Init(grpc.WithClient(inclient.New(c)))
 	if err := reg.Register(svc); err != nil {
 		return nil, err
 	}
@@ -235,7 +235,7 @@ func DeregisterService(c *cli.Context, args []string) ([]byte, error) {
 	}
 
 	reg := *cmd.DefaultOptions().Registry
-	reg.Init(grpc2.WithClient(inclient.New(c)))
+	reg.Init(grpc.WithClient(inclient.New(c)))
 	if err := reg.Deregister(svc); err != nil {
 		return nil, err
 	}
@@ -253,7 +253,7 @@ func GetService(c *cli.Context, args []string) ([]byte, error) {
 	var err error
 
 	reg := *cmd.DefaultOptions().Registry
-	reg.Init(grpc2.WithClient(inclient.New(c)))
+	reg.Init(grpc.WithClient(inclient.New(c)))
 	svc, err = reg.GetService(args[0])
 	if err != nil {
 		return nil, err
@@ -335,7 +335,7 @@ func NetworkConnect(c *cli.Context, args []string) ([]byte, error) {
 
 	var rsp map[string]interface{}
 
-	req := cli.NewRequest("go.vine.network", "Network.Connect", request, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network", "Network.Connect", request, client.WithContentType("application/json"))
 	err := cli.Call(context.TODO(), req, &rsp)
 	if err != nil {
 		return nil, err
@@ -354,7 +354,7 @@ func NetworkConnections(c *cli.Context) ([]byte, error) {
 
 	var rsp map[string]interface{}
 
-	req := cli.NewRequest("go.vine.network", "Network.Graph", request, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network", "Network.Graph", request, client.WithContentType("application/json"))
 	err := cli.Call(context.TODO(), req, &rsp)
 	if err != nil {
 		return nil, err
@@ -396,7 +396,7 @@ func NetworkGraph(c *cli.Context) ([]byte, error) {
 
 	var rsp map[string]interface{}
 
-	req := cli.NewRequest("go.vine.network", "Network.Graph", map[string]interface{}{}, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network", "Network.Graph", map[string]interface{}{}, client.WithContentType("application/json"))
 	err := cli.Call(context.TODO(), req, &rsp)
 	if err != nil {
 		return nil, err
@@ -412,7 +412,7 @@ func NetworkNodes(c *cli.Context) ([]byte, error) {
 	var rsp map[string]interface{}
 
 	// TODO: change to list nodes
-	req := cli.NewRequest("go.vine.network", "Network.Nodes", map[string]interface{}{}, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network", "Network.Nodes", map[string]interface{}{}, client.WithContentType("application/json"))
 	err := cli.Call(context.TODO(), req, &rsp)
 	if err != nil {
 		return nil, err
@@ -465,7 +465,7 @@ func NetworkRoutes(c *cli.Context) ([]byte, error) {
 
 	var rsp map[string]interface{}
 
-	req := cli.NewRequest("go.vine.network", "Network.Routes", request, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network", "Network.Routes", request, client.WithContentType("application/json"))
 	err := cli.Call(context.TODO(), req, &rsp)
 	if err != nil {
 		return nil, err
@@ -538,7 +538,7 @@ func NetworkServices(c *cli.Context) ([]byte, error) {
 
 	var rsp map[string]interface{}
 
-	req := cli.NewRequest("go.vine.network", "Network.Services", map[string]interface{}{}, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network", "Network.Services", map[string]interface{}{}, client.WithContentType("application/json"))
 	err := cli.Call(context.TODO(), req, &rsp)
 	if err != nil {
 		return nil, err
@@ -583,7 +583,7 @@ func NetworkDNSResolve(c *cli.Context) ([]byte, error) {
 	request["type"] = c.String("type")
 
 	cli := (*cmd.DefaultOptions().Client)
-	req := cli.NewRequest("go.vine.network.dns", "Dns.Resolve", request, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network.dns", "Dns.Resolve", request, client.WithContentType("application/json"))
 	var rsp map[string][]*dns.Record
 	err := cli.Call(
 		metadata.NewContext(context.Background(), map[string]string{
@@ -591,7 +591,7 @@ func NetworkDNSResolve(c *cli.Context) ([]byte, error) {
 		}),
 		req,
 		&rsp,
-		client2.WithRetries(3),
+		client.WithRetries(3),
 	)
 	if err != nil {
 		return []byte(``), err
@@ -635,7 +635,7 @@ func networkDNSHelper(action, address, domain, token string) error {
 	}
 
 	cli := (*cmd.DefaultOptions().Client)
-	req := cli.NewRequest("go.vine.network.dns", action, request, client2.WithContentType("application/json"))
+	req := cli.NewRequest("go.vine.network.dns", action, request, client.WithContentType("application/json"))
 	var rsp map[string]interface{}
 	err := cli.Call(
 		metadata.NewContext(context.Background(), map[string]string{
@@ -643,7 +643,7 @@ func networkDNSHelper(action, address, domain, token string) error {
 		}),
 		req,
 		&rsp,
-		client2.WithRetries(3),
+		client.WithRetries(3),
 	)
 	if err != nil {
 		return err
@@ -656,7 +656,7 @@ func ListServices(c *cli.Context) ([]byte, error) {
 	var err error
 
 	reg := *cmd.DefaultOptions().Registry
-	reg.Init(grpc2.WithClient(inclient.New(c)))
+	reg.Init(grpc.WithClient(inclient.New(c)))
 	rsp, err = reg.ListServices()
 	if err != nil {
 		return nil, err
@@ -684,7 +684,7 @@ func Publish(c *cli.Context, args []string) error {
 	message := args[1]
 
 	cl := *cmd.DefaultOptions().Client
-	ct := func(o *client2.MessageOptions) {
+	ct := func(o *client.MessageOptions) {
 		o.ContentType = "application/json"
 	}
 
@@ -730,17 +730,17 @@ func CallService(c *cli.Context, args []string) ([]byte, error) {
 	}
 
 	ctx := callContext(c)
-	creq := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client2.WithContentType("application/json"))
+	creq := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client.WithContentType("application/json"))
 
-	var opts []client2.CallOption
+	var opts []client.CallOption
 
 	if addr := c.String("address"); len(addr) > 0 {
-		opts = append(opts, client2.WithAddress(addr))
+		opts = append(opts, client.WithAddress(addr))
 	}
 
 	var err error
 	if output := c.String("output"); output == "raw" {
-		rsp := bytes2.Frame{}
+		rsp := b2.Frame{}
 		err = (*cmd.DefaultOptions().Client).Call(ctx, creq, &rsp, opts...)
 		// set the raw output
 		response = rsp.Data
@@ -779,7 +779,7 @@ func QueryHealth(c *cli.Context, args []string) ([]byte, error) {
 			context.Background(),
 			req,
 			rsp,
-			client2.WithAddress(addr),
+			client.WithAddress(addr),
 		)
 		if err != nil {
 			return nil, err
@@ -789,7 +789,7 @@ func QueryHealth(c *cli.Context, args []string) ([]byte, error) {
 
 	// otherwise get the service and call each instance individually
 	reg := *cmd.DefaultOptions().Registry
-	reg.Init(grpc2.WithClient(inclient.New(c)))
+	reg.Init(grpc.WithClient(inclient.New(c)))
 	service, err := reg.GetService(args[0])
 	if err != nil {
 		return nil, err
@@ -821,7 +821,7 @@ func QueryHealth(c *cli.Context, args []string) ([]byte, error) {
 				context.Background(),
 				req,
 				rsp,
-				client2.WithAddress(address),
+				client.WithAddress(address),
 			)
 
 			var status string
@@ -843,7 +843,7 @@ func QueryStats(c *cli.Context, args []string) ([]byte, error) {
 	}
 
 	reg := *cmd.DefaultOptions().Registry
-	reg.Init(grpc2.WithClient(inclient.New(c)))
+	reg.Init(grpc.WithClient(inclient.New(c)))
 	service, err := reg.GetService(args[0])
 	if err != nil {
 		return nil, err
@@ -877,7 +877,7 @@ func QueryStats(c *cli.Context, args []string) ([]byte, error) {
 				context.Background(),
 				req,
 				rsp,
-				client2.WithAddress(address),
+				client.WithAddress(address),
 			)
 
 			var started, uptime, memory, gc string

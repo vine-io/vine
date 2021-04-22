@@ -31,7 +31,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/lib/api/server/cors"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/proto/apis/errors"
@@ -133,22 +133,22 @@ func RPC(c *fiber.Ctx) error {
 	// create request/response
 	var response json.RawMessage
 	var err error
-	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client2.WithContentType("application/json"))
+	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client.WithContentType("application/json"))
 
 	// create context
 	ctx := helper.RequestToContext(c)
 
-	var opts []client2.CallOption
+	var opts []client.CallOption
 
 	timeout, _ := strconv.Atoi(c.Get("Timeout"))
 	// set timeout
 	if timeout > 0 {
-		opts = append(opts, client2.WithRequestTimeout(time.Duration(timeout)*time.Second))
+		opts = append(opts, client.WithRequestTimeout(time.Duration(timeout)*time.Second))
 	}
 
 	// remote call
 	if len(address) > 0 {
-		opts = append(opts, client2.WithAddress(address))
+		opts = append(opts, client.WithAddress(address))
 	}
 
 	// remote call

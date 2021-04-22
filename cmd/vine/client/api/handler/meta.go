@@ -24,8 +24,9 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
+
 	"github.com/lack-io/vine"
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/lib/api/handler"
 	aapi "github.com/lack-io/vine/lib/api/handler/api"
 	"github.com/lack-io/vine/lib/api/handler/event"
@@ -38,7 +39,7 @@ import (
 )
 
 type metaHandler struct {
-	c  client2.Client
+	c  client.Client
 	r  router.Router
 	ns func(*fiber.Ctx) string
 }

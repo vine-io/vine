@@ -26,7 +26,7 @@ import (
 	"context"
 	"time"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 )
 
 // Options contains configuration for the Store
@@ -42,7 +42,7 @@ type Options struct {
 	// Context should contain all implementation specific options, using context.WithValue.
 	Context context.Context
 	// Client to use for RPC
-	Client client2.Client
+	Client client.Client
 }
 
 // Option sets values in Options
@@ -79,7 +79,7 @@ func WithContext(c context.Context) Option {
 }
 
 // WithClient sets the stores client to use for RPC
-func WithClient(c client2.Client) Option {
+func WithClient(c client.Client) Option {
 	return func(o *Options) {
 		o.Client = c
 	}

@@ -26,7 +26,7 @@ import (
 	"context"
 	"strings"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/lib/debug/stats"
@@ -36,7 +36,7 @@ import (
 )
 
 type fromServiceWrapper struct {
-	client2.Client
+	client.Client
 
 	// headers to inject
 	headers metadata.Metadata
@@ -51,23 +51,23 @@ func (f *fromServiceWrapper) setHeaders(ctx context.Context) context.Context {
 	return metadata.MergeContext(ctx, f.headers, false)
 }
 
-func (f *fromServiceWrapper) Call(ctx context.Context, req client2.Request, rsp interface{}, opts ...client2.CallOption) error {
+func (f *fromServiceWrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	ctx = f.setHeaders(ctx)
 	return f.Client.Call(ctx, req, rsp, opts...)
 }
 
-func (f *fromServiceWrapper) Stream(ctx context.Context, req client2.Request, opts ...client2.CallOption) (client2.Stream, error) {
+func (f *fromServiceWrapper) Stream(ctx context.Context, req client.Request, opts ...client.CallOption) (client.Stream, error) {
 	ctx = f.setHeaders(ctx)
 	return f.Client.Stream(ctx, req, opts...)
 }
 
-func (f *fromServiceWrapper) Publish(ctx context.Context, p client2.Message, opts ...client2.PublishOption) error {
+func (f *fromServiceWrapper) Publish(ctx context.Context, p client.Message, opts ...client.PublishOption) error {
 	ctx = f.setHeaders(ctx)
 	return f.Client.Publish(ctx, p, opts...)
 }
 
 // FromService wraps a client to inject service and auth metadata
-func FromService(name string, c client2.Client) client2.Client {
+func FromService(name string, c client.Client) client.Client {
 	return &fromServiceWrapper{
 		Client: c,
 		headers: metadata.Metadata{
@@ -93,13 +93,13 @@ func HandlerStats(stats stats.Stats) server.HandlerWrapper {
 }
 
 type traceWrapper struct {
-	client2.Client
+	client.Client
 
 	name  string
 	trace trace.Tracer
 }
 
-func (c *traceWrapper) Call(ctx context.Context, req client2.Request, rsp interface{}, opts ...client2.CallOption) error {
+func (c *traceWrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	newCtx, s := c.trace.Start(ctx, req.Service()+"."+req.Endpoint())
 
 	s.Type = trace.SpanTypeRequestOutbound
@@ -114,7 +114,7 @@ func (c *traceWrapper) Call(ctx context.Context, req client2.Request, rsp interf
 }
 
 // TraceCall is a call tracing wrapper
-func TraceCall(name string, t trace.Tracer, c client2.Client) client2.Client {
+func TraceCall(name string, t trace.Tracer, c client.Client) client.Client {
 	return &traceWrapper{
 		name:   name,
 		trace:  t,
@@ -151,13 +151,13 @@ func TraceHandler(t trace.Tracer) server.HandlerWrapper {
 }
 
 type authWrapper struct {
-	client2.Client
+	client.Client
 	auth func() auth.Auth
 }
 
-func (a *authWrapper) Call(ctx context.Context, req client2.Request, rsp interface{}, opts ...client2.CallOption) error {
+func (a *authWrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	// parse the options
-	var options client2.CallOptions
+	var options client.CallOptions
 	for _, o := range opts {
 		o(&options)
 	}
@@ -193,7 +193,7 @@ func (a *authWrapper) Call(ctx context.Context, req client2.Request, rsp interfa
 }
 
 // AuthClient wraps requests with the auth header
-func AuthClient(auth func() auth.Auth, c client2.Client) client2.Client {
+func AuthClient(auth func() auth.Auth, c client.Client) client.Client {
 	return &authWrapper{c, auth}
 }
 
@@ -263,18 +263,18 @@ func AuthHandler(fn func() auth.Auth) server.HandlerWrapper {
 
 type staticClient struct {
 	address string
-	client2.Client
+	client.Client
 }
 
-func (s *staticClient) Call(ctx context.Context, req client2.Request, rsp interface{}, opts ...client2.CallOption) error {
-	return s.Client.Call(ctx, req, rsp, append(opts, client2.WithAddress(s.address))...)
+func (s *staticClient) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
+	return s.Client.Call(ctx, req, rsp, append(opts, client.WithAddress(s.address))...)
 }
 
-func (s *staticClient) Stream(ctx context.Context, req client2.Request, opts ...client2.CallOption) (client2.Stream, error) {
-	return s.Client.Stream(ctx, req, append(opts, client2.WithAddress(s.address))...)
+func (s *staticClient) Stream(ctx context.Context, req client.Request, opts ...client.CallOption) (client.Stream, error) {
+	return s.Client.Stream(ctx, req, append(opts, client.WithAddress(s.address))...)
 }
 
 // StaticClient sets an address on every call
-func StaticClient(address string, c client2.Client) client2.Client {
+func StaticClient(address string, c client.Client) client.Client {
 	return &staticClient{address, c}
 }

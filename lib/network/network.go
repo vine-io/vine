@@ -26,7 +26,7 @@ package network
 import (
 	"time"
 
-	client2 "github.com/lack-io/vine/core/client"
+	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/server"
 )
 
@@ -91,7 +91,7 @@ type Network interface {
 	// Close stops the tunnel and resolving
 	Close() error
 	// Client is vine client
-	Client() client2.Client
+	Client() client.Client
 	// Server is vine server
 	Server() server.Server
 }
