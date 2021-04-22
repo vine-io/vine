@@ -328,7 +328,7 @@ func Run(ctx *cli.Context) {
 				{"pkg/service/" + alias + ".go", t2.ServiceSRV},
 				{"pkg/dao/" + alias + ".go", t2.DaoHandler},
 				{"deploy/Dockerfile", t2.DockerSRV},
-				{"deploy/" + alias + ".conf", t2.ConfSRV},
+				{"deploy/" + alias + ".ini", t2.ConfSRV},
 				{"deploy/" + alias + ".service", t2.SystemedSRV},
 				{"deploy/Dockerfile", t2.DockerSRV},
 				{"proto/apis/apis.proto", t2.ProtoType},
