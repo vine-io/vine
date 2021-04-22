@@ -305,7 +305,7 @@ func Run(ctx *cli.Context) {
 	//	}
 	//}
 	if cluster {
-
+		fmt.Println("todo list")
 	} else {
 		switch atype {
 		case Service:
@@ -345,17 +345,19 @@ func Run(ctx *cli.Context) {
 		//	}
 		case Web:
 			// create service config
-			c.Files = []file{
-				{"main.go", t2.MainWEB},
-				//{"plugin.go", t2.Plugin},
-				{"handler/handler.go", t2.HandlerWEB},
-				{"html/index.html", t2.HTMLWEB},
-				{"Dockerfile", t2.DockerWEB},
-				{"Makefile", t2.SingleMakefile},
-				{"README.md", t2.Readme},
-				{".gitignore", t2.GitIgnore},
-			}
-			c.Comments = []string{}
+			//c.Files = []file{
+			//	{"main.go", t2.MainWEB},
+			//	//{"plugin.go", t2.Plugin},
+			//	{"handler/handler.go", t2.HandlerWEB},
+			//	{"html/index.html", t2.HTMLWEB},
+			//	{"Dockerfile", t2.DockerWEB},
+			//	{"Makefile", t2.SingleMakefile},
+			//	{"README.md", t2.Readme},
+			//	{".gitignore", t2.GitIgnore},
+			//}
+			//c.Comments = []string{}
+			fmt.Println("todo list")
+			return
 		default:
 			fmt.Printf("Unknown type %s, eg service, web\n", atype)
 			return
