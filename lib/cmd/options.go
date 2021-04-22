@@ -25,6 +25,8 @@ package cmd
 import (
 	"context"
 
+	"github.com/lack-io/cli"
+
 	"github.com/lack-io/vine/core/broker"
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/client/selector"
@@ -45,6 +47,8 @@ type Options struct {
 	Name        string
 	Description string
 	Version     string
+
+	app *cli.App
 
 	// We need pointers to things so we can swap them out if needed.
 	Broker    *broker.Broker
@@ -100,6 +104,12 @@ func Description(d string) Option {
 func Version(v string) Option {
 	return func(o *Options) {
 		o.Version = v
+	}
+}
+
+func CliApp(app *cli.App) Option {
+	return func(o *Options) {
+		o.app = app
 	}
 }
 

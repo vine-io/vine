@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2021 Lack
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package tool
 
 import (
-	"github.com/lack-io/vine/cmd/vine/app"
+	"os"
+
+	"github.com/BurntSushi/toml"
 )
 
-func main() {
-	app.Init()
+type Config struct {
+	Package Package `json:"package" toml:"package"`
+	Mod     []Mod   `json:"mod" toml:"mod"`
+	Pkg     Mod     `json:"pkg" toml:"pkg"`
+}
+
+type Package struct {
+	Kind      string `json:"kind" toml:"kind"`
+	Namespace string `json:"namespace" toml:"namespace"`
+}
+
+type Mod struct {
+	Name    string `json:"name" toml:"name"`
+	Version string `json:"version" toml:"version"`
+}
+
+func New(f string) (*Config, error) {
+	b, err := os.ReadFile(f)
+	if err != nil {
+		return nil, err
+	}
+	var c Config
+	_, err = toml.Decode(string(b), &c)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }

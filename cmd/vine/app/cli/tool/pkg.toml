@@ -1,0 +1,7 @@
+[package]
+kind = "single"
+namespace = "go.vine"
+
+[pkg]
+name = "helloworld"
+version = "latest"

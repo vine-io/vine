@@ -33,10 +33,9 @@ import (
 	"text/tabwriter"
 
 	"github.com/lack-io/cli"
-
+	"github.com/lack-io/vine/cmd/vine/app/cli/util"
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/codec/bytes"
-	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
 	"github.com/lack-io/vine/lib/cmd"
 	clic "github.com/lack-io/vine/util/command/cli"
 	"github.com/lack-io/vine/util/file"
@@ -134,18 +133,18 @@ func callService(c *cli.Context, args []string) ([]byte, error) {
 }
 
 func getEnv(c *cli.Context, args []string) ([]byte, error) {
-	env := cliutil.GetEnv(c)
+	env := util.GetEnv(c)
 	return []byte(env.Name), nil
 }
 
 func setEnv(c *cli.Context, args []string) ([]byte, error) {
-	cliutil.SetEnv(args[0])
+	util.SetEnv(args[0])
 	return nil, nil
 }
 
 func listEnvs(c *cli.Context, args []string) ([]byte, error) {
-	envs := cliutil.GetEnvs()
-	current := cliutil.GetEnv(c)
+	envs := util.GetEnvs()
+	current := util.GetEnv(c)
 
 	byt := b.NewBuffer([]byte{})
 
@@ -175,7 +174,7 @@ func addEnv(c *cli.Context, args []string) ([]byte, error) {
 		args = append(args, "") // default to no proxy address
 	}
 
-	cliutil.AddEnv(cliutil.Env{
+	util.AddEnv(util.Env{
 		Name:         args[0],
 		ProxyAddress: args[1],
 	})

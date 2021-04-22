@@ -7,8 +7,8 @@ ENTRYPOINT [ "/{{.Alias}}-{{.Type}}" ]
 `
 
 	DockerSRV = `FROM alpine
-ADD {{.Alias}}-{{.Type}} /{{.Alias}}-{{.Type}}
-ENTRYPOINT [ "/{{.Alias}}-{{.Type}}" ]
+ADD {{.Alias}} /{{.Alias}}
+ENTRYPOINT [ "/{{.Alias}}" ]
 `
 
 	DockerWEB = `FROM alpine

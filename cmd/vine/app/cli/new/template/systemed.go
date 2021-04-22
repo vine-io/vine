@@ -1,0 +1,5 @@
+package template
+
+var (
+	SystemedSRV = ``
+)

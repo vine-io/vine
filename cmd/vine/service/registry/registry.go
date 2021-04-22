@@ -28,10 +28,10 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
+	cli3 "github.com/lack-io/vine/cmd/vine/app/cli"
 	registry2 "github.com/lack-io/vine/core/registry"
 
 	"github.com/lack-io/vine"
-	rcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/registry/handler"
 	log "github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
@@ -161,7 +161,7 @@ func Commands(options ...vine.Option) []*cli.Command {
 			Run(ctx, options...)
 			return nil
 		},
-		Subcommands: rcli.RegistryCommands(),
+		Subcommands: cli3.RegistryCommands(),
 	}
 
 	return []*cli.Command{command}

@@ -34,9 +34,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/cli"
 	"github.com/lack-io/vine"
-	apiAuth "github.com/lack-io/vine/cmd/vine/client/api/auth"
-	"github.com/lack-io/vine/cmd/vine/client/api/handler"
 	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
+	auth3 "github.com/lack-io/vine/cmd/vine/app/api/auth"
+	"github.com/lack-io/vine/cmd/vine/app/api/handler"
 	"github.com/lack-io/vine/core/client/selector"
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/lib/api/server"
@@ -539,7 +539,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// create the namespace resolver and the auth wrapper
 	s.nsResolver = namespace.NewResolver(Type, Namespace)
-	authWrapper := apiAuth.Wrapper(s.resolver, s.nsResolver)
+	authWrapper := auth3.Wrapper(s.resolver, s.nsResolver)
 
 	// create the service and add the auth wrapper
 	server := httpapi.NewServer(Address, server.WrapHandler(authWrapper))

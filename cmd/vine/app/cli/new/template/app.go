@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2021 Lack
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,12 +20,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package template
+
+var (
+	SingleMod = `package pkg
+
+var (
+	Name = ""
+	Version = "latest"
+)
+`
+
+	SinglePlugin = `package pkg
+{{if .Plugins}}
+import ({{range .Plugins}}
+	_ "github.com/lack-io/plugins/{{.}}"{{end}}
+){{end}}
+`
+
+	SingleDefault = `package pkg
+
+func init() {
+	// TODO: setup default lib
+}
+`
+
+	SingleApp = `package pkg
 
 import (
-	"github.com/lack-io/vine/cmd/vine/app"
+	"github.com/lack-io/vine"
+	log "github.com/lack-io/vine/lib/logger"
+
+	"{{.Dir}}/pkg/server"
 )
 
-func main() {
-	app.Init()
-}
+func Run() {
+	s := server.New(
+		vine.Name(Name),
+		vine.Version(Version),
+	)
+
+	if err := s.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := s.Run(); err != nil {
+		log.Fatal(err)
+	}
+}`
+
+	DaoHandler = `package dao`
+)

@@ -29,9 +29,8 @@ import (
 	"net/http"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
-	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
+	cli3 "github.com/lack-io/vine/cmd/vine/app/cli"
 	"github.com/lack-io/vine/core/client"
 	log "github.com/lack-io/vine/lib/logger"
 	proto "github.com/lack-io/vine/proto/services/debug"
@@ -48,7 +47,7 @@ func Run(ctx *cli.Context) {
 
 	// just check service health
 	if ctx.Args().Len() > 0 {
-		mcli.Print(qcli.QueryHealth)(ctx)
+		cli3.Print(qcli.QueryHealth)(ctx)
 		return
 	}
 

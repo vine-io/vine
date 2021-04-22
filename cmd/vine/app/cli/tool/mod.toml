@@ -1,0 +1,11 @@
+[package]
+kind = "cluster"
+namespace = "go.vine"
+
+[[mod]]
+name = "helloworld"
+version = "v1.0.0"
+
+[[mod]]
+name = "gateway"
+version = "v0.0.1"

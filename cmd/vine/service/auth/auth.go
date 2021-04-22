@@ -29,9 +29,9 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
-	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
+
+	"github.com/lack-io/vine/cmd/vine/app/cli/util"
 	"github.com/lack-io/vine/cmd/vine/service/auth/api"
 	authHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/auth"
 	rulesHandler "github.com/lack-io/vine/cmd/vine/service/auth/handler/rules"
@@ -156,7 +156,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 }
 
 func authFromContext(ctx *cli.Context) auth.Auth {
-	if cliutil.IsLocal(ctx) {
+	if util.IsLocal(ctx) {
 		return *cmd.DefaultCmd.Options().Auth
 	}
 	return svcAuth.NewAuth(
@@ -167,7 +167,7 @@ func authFromContext(ctx *cli.Context) auth.Auth {
 // login using a token
 func login(ctx *cli.Context) {
 	// check for the token flag
-	env := cliutil.GetEnv(ctx)
+	env := util.GetEnv(ctx)
 	if tok := ctx.String("token"); len(tok) > 0 {
 		_, err := authFromContext(ctx).Inspect(tok)
 		if err != nil {

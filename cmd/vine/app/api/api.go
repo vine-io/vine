@@ -31,11 +31,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/lack-io/cli"
+	"github.com/lack-io/vine/cmd/vine/app/api/auth"
+	"github.com/lack-io/vine/cmd/vine/app/api/handler"
 	"github.com/rakyll/statik/fs"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/cmd/vine/client/api/auth"
-	"github.com/lack-io/vine/cmd/vine/client/api/handler"
 	rrvine "github.com/lack-io/vine/cmd/vine/client/resolver/api"
 	ahandler "github.com/lack-io/vine/lib/api/handler"
 	aapi "github.com/lack-io/vine/lib/api/handler/api"

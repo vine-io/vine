@@ -36,9 +36,8 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
-	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
+	util2 "github.com/lack-io/vine/cmd/vine/app/cli/util"
 	"github.com/lack-io/vine/cmd/vine/service/runtime/handler"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/runtime"
@@ -85,7 +84,7 @@ func timeAgo(v string) string {
 }
 
 func runtimeFromContext(ctx *cli.Context) runtime.Runtime {
-	if cliutil.IsLocal(ctx) {
+	if util2.IsLocal(ctx) {
 		return *cmd.DefaultCmd.Options().Runtime
 	}
 

@@ -31,11 +31,11 @@ import (
 	"time"
 
 	"github.com/lack-io/cli"
+	cli3 "github.com/lack-io/vine/cmd/vine/app/cli"
 	router2 "github.com/lack-io/vine/core/router"
 	registry2 "github.com/lack-io/vine/core/router/registry"
 
 	"github.com/lack-io/vine"
-	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
 	"github.com/lack-io/vine/cmd/vine/service/network/api"
 	netdns "github.com/lack-io/vine/cmd/vine/service/network/dns"
 	"github.com/lack-io/vine/cmd/vine/service/network/handler"
@@ -326,9 +326,9 @@ func Commands(options ...vine.Option) []*cli.Command {
 					netdns.Run(ctx)
 					return nil
 				},
-				Subcommands: mcli.NetworkDNSCommands(),
+				Subcommands: cli3.NetworkDNSCommands(),
 			},
-		}, mcli.NetworkCommands()...),
+		}, cli3.NetworkCommands()...),
 		Action: func(ctx *cli.Context) error {
 			if err := helper.UnexpectedSubcommand(ctx); err != nil {
 				return err

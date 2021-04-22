@@ -113,15 +113,15 @@ import (
 
 func main() {
 	// create new web service
-        service := web.NewService(
-                web.Name("{{.FQDN}}"),
-                web.Version("latest"),
-        )
+	service := web.NewService(
+		web.Name("{{.FQDN}}"),
+		web.Version("latest"),
+	)
 
 	// initialise service
-        if err := service.Init(); err != nil {
-                log.Fatal(err)
-        }
+	if err := service.Init(); err != nil {
+		log.Fatal(err)
+	}
 
 	// register html handler
 	service.Handle("/", http.FileServer(http.Dir("html")))
@@ -130,9 +130,9 @@ func main() {
 	service.HandleFunc("/{{.Alias}}/call", handler.{{title .Alias}}Call)
 
 	// run service
-        if err := service.Run(); err != nil {
-                log.Fatal(err)
-        }
+	if err := service.Run(); err != nil {
+		log.Fatal(err)
+	}
 }
 `
 )

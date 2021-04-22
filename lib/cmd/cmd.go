@@ -110,7 +110,6 @@ type Cmd interface {
 
 type cmd struct {
 	opts Options
-	app  *cli.App
 }
 
 var (
@@ -468,25 +467,25 @@ func newCmd(opts ...Option) Cmd {
 
 	cmd := new(cmd)
 	cmd.opts = options
-	cmd.app = cli.NewApp()
-	cmd.app.Name = cmd.opts.Name
-	cmd.app.Version = cmd.opts.Version
-	cmd.app.Usage = cmd.opts.Description
-	cmd.app.Before = cmd.Before
-	cmd.app.Flags = DefaultFlags
-	cmd.app.Action = func(c *cli.Context) error {
+	cmd.opts.app = cli.NewApp()
+	cmd.opts.app.Name = cmd.opts.Name
+	cmd.opts.app.Version = cmd.opts.Version
+	cmd.opts.app.Usage = cmd.opts.Description
+	cmd.opts.app.Before = cmd.Before
+	cmd.opts.app.Flags = DefaultFlags
+	cmd.opts.app.Action = func(c *cli.Context) error {
 		return nil
 	}
 
 	if len(options.Version) == 0 {
-		cmd.app.HideVersion = true
+		cmd.opts.app.HideVersion = true
 	}
 
 	return cmd
 }
 
 func (c *cmd) App() *cli.App {
-	return c.app
+	return c.opts.app
 }
 
 func (c *cmd) Init(opts ...Option) error {
@@ -494,14 +493,14 @@ func (c *cmd) Init(opts ...Option) error {
 		o(&c.opts)
 	}
 	if len(c.opts.Name) > 0 {
-		c.app.Name = c.opts.Name
+		c.opts.app.Name = c.opts.Name
 	}
 	if len(c.opts.Version) > 0 {
-		c.app.Version = c.opts.Version
+		c.opts.app.Version = c.opts.Version
 	}
-	c.app.HideVersion = len(c.opts.Version) == 0
-	c.app.Usage = c.opts.Description
-	c.app.RunAndExitOnError()
+	c.opts.app.HideVersion = len(c.opts.Version) == 0
+	c.opts.app.Usage = c.opts.Description
+	c.opts.app.RunAndExitOnError()
 	return nil
 }
 

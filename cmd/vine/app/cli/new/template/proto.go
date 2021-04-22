@@ -1,6 +1,17 @@
 package template
 
 var (
+	ProtoType = `syntax = "proto3";
+// +dao:output={{.Dir}}/pkg/dao;dao
+package apis;
+
+option go_package = "{{.Dir}}/proto/apis;apis";
+
+message Message {
+	string name = 1;
+}
+`
+
 	ProtoFNC = `syntax = "proto3";
 
 package {{.FQDN}};
@@ -26,7 +37,9 @@ message Response {
 
 	ProtoSRV = `syntax = "proto3";
 
-package {{.FQDN}};
+package {{.Alias}};
+
+option go_package = "{{.Dir}}/proto/service/{{.Alias}};{{.Alias}}";
 
 service {{title .Alias}} {
 	rpc Call(Request) returns (Response) {}

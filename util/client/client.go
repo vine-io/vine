@@ -27,7 +27,7 @@ import (
 
 	ccli "github.com/lack-io/cli"
 
-	cliutil "github.com/lack-io/vine/cmd/vine/client/cli/util"
+	"github.com/lack-io/vine/cmd/vine/app/cli/util"
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/client/grpc"
 	"github.com/lack-io/vine/lib/auth"
@@ -38,7 +38,7 @@ import (
 // New returns a wrapped grpc client which will inject the
 // token found in config into each request
 func New(ctx *ccli.Context) client.Client {
-	env := cliutil.GetEnv(ctx)
+	env := util.GetEnv(ctx)
 	token, _ := config.Get("vine", "auth", env.Name, "token")
 	return &wrapper{grpc.NewClient(), token, env.Name, ctx}
 }
@@ -54,7 +54,7 @@ func (a *wrapper) Call(ctx context.Context, req client.Request, rsp interface{},
 	if len(a.token) > 0 {
 		ctx = metadata.Set(ctx, "Authorization", auth.BearerScheme+a.token)
 	}
-	if len(a.env) > 0 && !cliutil.IsLocal(a.ctx) && !cliutil.IsServer(a.ctx) {
+	if len(a.env) > 0 && !util.IsLocal(a.ctx) && !util.IsServer(a.ctx) {
 		// @todo this is temporarily removed because multi tenancy is not there yet
 		// and the moment core and non core services run in different environments, we
 		// get issues. To test after `vine env add mine 127.0.0.1:8081` do,

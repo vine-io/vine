@@ -26,9 +26,8 @@ import (
 	"fmt"
 
 	"github.com/lack-io/cli"
-
 	"github.com/lack-io/vine"
-	mcli "github.com/lack-io/vine/cmd/vine/client/cli"
+	cli3 "github.com/lack-io/vine/cmd/vine/app/cli"
 	"github.com/lack-io/vine/cmd/vine/service/store/handler"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/store"
@@ -125,7 +124,7 @@ func Commands(options ...vine.Option) []*cli.Command {
 			Run(ctx, options...)
 			return nil
 		},
-		Subcommands: mcli.StoreCommands(),
+		Subcommands: cli3.StoreCommands(),
 	}
 
 	return []*cli.Command{command}

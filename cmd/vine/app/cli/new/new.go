@@ -37,8 +37,8 @@ import (
 	"github.com/lack-io/cli"
 	"github.com/xlab/treeprint"
 
-	tmpl "github.com/lack-io/vine/cmd/vine/client/cli/new/template"
-	"github.com/lack-io/vine/util/usage"
+	t2 "github.com/lack-io/vine/cmd/vine/app/cli/new/template"
+	"github.com/lack-io/vine/cmd/vine/app/cli/tool"
 )
 
 func protoComments(goDir, alias string) []string {
@@ -46,15 +46,20 @@ func protoComments(goDir, alias string) []string {
 		"\ndownload protoc zip packages (protoc-$VERSION-$PLATFORM.zip) and install:\n",
 		"visit https://github.com/protocolbuffers/protobuf/releases",
 		"\ndownload protobuf for vine:\n",
-		"go get -u github.com/gogo/protobuf",
-		"go get github.com/gogo/googleapis",
-		"go get -u github.com/lack-io/vine/cmd/protoc-gen-gogofaster",
-		"go get github.com/lack-io/vine/cmd/protoc-gen-vine",
-		"\ncompile the proto file " + alias + ".proto:\n",
+		"cd " + goDir,
+		"make install\n",
+		"compile the proto file " + alias + ".proto:\n",
 		"cd " + goDir,
 		"make proto\n",
 	}
 }
+
+// specify type
+const (
+	Gateway string = "gateway"
+	Service string = "service"
+	Web     string = "web"
+)
 
 type config struct {
 	// foo
@@ -63,8 +68,11 @@ type config struct {
 	Command string
 	// go.vine
 	Namespace string
-	// api, service, web, function
+	// gateway, service, web
+	// gateway only in cluster
 	Type string
+	// cluster, single
+	Cluster bool
 	// go.vine.service.foo
 	FQDN string
 	// github.com/vine/foo
@@ -81,6 +89,8 @@ type config struct {
 	Comments []string
 	// Plugins registry=etcd:broker=nats
 	Plugins []string
+
+	Toml *tool.Config
 }
 
 type file struct {
@@ -112,14 +122,6 @@ func create(c config) error {
 	if _, err := os.Stat(c.GoDir); !os.IsNotExist(err) {
 		return fmt.Errorf("%s already exists", c.GoDir)
 	}
-
-	// create usage report
-	u := usage.New("new")
-	// a single request/service
-	u.Metrics.Count["requests"] = uint64(1)
-	u.Metrics.Count["services"] = uint64(1)
-	// send report
-	go usage.Report(u)
 
 	// just wait
 	<-time.After(time.Millisecond * 250)
@@ -180,6 +182,7 @@ func Run(ctx *cli.Context) {
 	alias := ctx.String("alias")
 	fqdn := ctx.String("fqdn")
 	atype := ctx.String("type")
+	cluster := ctx.Bool("cluster")
 	dir := ctx.Args().First()
 	useGoPath := ctx.Bool("gopath")
 	useGoModule := os.Getenv("GO111MODULE")
@@ -207,6 +210,9 @@ func Run(ctx *cli.Context) {
 	}
 	if len(alias) > 0 {
 		command += " --alias=" + alias
+	}
+	if cluster {
+		command += " --cluster"
 	}
 	if len(fqdn) > 0 {
 		command += " --fqdn=" + fqdn
@@ -279,6 +285,7 @@ func Run(ctx *cli.Context) {
 		Command:   command,
 		Namespace: namespace,
 		Type:      atype,
+		Cluster:   cluster,
 		FQDN:      fqdn,
 		Dir:       dir,
 		GoDir:     goDir,
@@ -288,72 +295,76 @@ func Run(ctx *cli.Context) {
 		Comments:  protoComments(goDir, alias),
 	}
 
-	switch atype {
-	case "function":
-		// create service config
-		c.Files = []file{
-			{"main.go", tmpl.MainFNC},
-			{"generate.go", tmpl.GenerateFile},
-			{"plugin.go", tmpl.Plugin},
-			{"handler/" + alias + ".go", tmpl.HandlerFNC},
-			{"subscriber/" + alias + ".go", tmpl.SubscriberFNC},
-			{"proto/" + alias + "/" + alias + ".proto", tmpl.ProtoFNC},
-			{"Dockerfile", tmpl.DockerFNC},
-			{"Makefile", tmpl.Makefile},
-			{"README.md", tmpl.ReadmeFNC},
-			{".gitignore", tmpl.GitIgnore},
+	//if kin && atype != Package {
+	//	var err error
+	//	f := filepath.Join(goDir, "vine.toml")
+	//	c.Toml, err = tool.New(f)
+	//	if err != nil {
+	//		fmt.Printf("read %s failed: %v", f, err)
+	//		return
+	//	}
+	//}
+	if cluster {
+
+	} else {
+		switch atype {
+		case Service:
+			// create service config
+			c.Files = []file{
+				{"cmd/main.go", t2.SingleCMD},
+				{"pkg/mod.go", t2.SingleMod},
+				{"pkg/plugin.go", t2.SinglePlugin},
+				{"pkg/app.go", t2.SingleApp},
+				{"pkg/default.go", t2.SingleDefault},
+				{"pkg/server/" + alias + ".go", t2.SingleSRV},
+				{"pkg/service/" + alias + ".go", t2.ServiceSRV},
+				{"pkg/dao/" + alias + ".go", t2.DaoHandler},
+				{"deploy/Dockerfile", t2.DockerSRV},
+				{"deploy/" + alias + ".conf", t2.ConfSRV},
+				{"deploy/" + alias + ".service", t2.SystemedSRV},
+				{"deploy/Dockerfile", t2.DockerSRV},
+				{"proto/apis/apis.proto", t2.ProtoType},
+				{"proto/service/" + alias + "/" + alias + ".proto", t2.ProtoSRV},
+				{"Makefile", t2.SingleMakefile},
+				{"vine.toml", t2.TOML},
+				{"README.md", t2.Readme},
+				{".gitignore", t2.GitIgnore},
+			}
+		//case Gateway:
+		//	// create api config
+		//	c.Files = []file{
+		//		{"main.go", t2.MainAPI},
+		//		//{"plugin.go", t2.Plugin},
+		//		{"client/" + alias + ".go", t2.WrapperAPI},
+		//		{"handler/" + alias + ".go", t2.HandlerAPI},
+		//		{"proto/" + alias + "/" + alias + ".proto", t2.ProtoAPI},
+		//		{"Makefile", t2.SingleMakefile},
+		//		{"Dockerfile", t2.DockerSRV},
+		//		{"README.md", t2.Readme},
+		//		{".gitignore", t2.GitIgnore},
+		//	}
+		case Web:
+			// create service config
+			c.Files = []file{
+				{"main.go", t2.MainWEB},
+				//{"plugin.go", t2.Plugin},
+				{"handler/handler.go", t2.HandlerWEB},
+				{"html/index.html", t2.HTMLWEB},
+				{"Dockerfile", t2.DockerWEB},
+				{"Makefile", t2.SingleMakefile},
+				{"README.md", t2.Readme},
+				{".gitignore", t2.GitIgnore},
+			}
+			c.Comments = []string{}
+		default:
+			fmt.Printf("Unknown type %s, eg service, web\n", atype)
+			return
 		}
 
-	case "service":
-		// create service config
-		c.Files = []file{
-			{"main.go", tmpl.MainSRV},
-			{"generate.go", tmpl.GenerateFile},
-			{"plugin.go", tmpl.Plugin},
-			{"handler/" + alias + ".go", tmpl.HandlerSRV},
-			{"subscriber/" + alias + ".go", tmpl.SubscriberSRV},
-			{"proto/" + alias + "/" + alias + ".proto", tmpl.ProtoSRV},
-			{"Dockerfile", tmpl.DockerSRV},
-			{"Makefile", tmpl.Makefile},
-			{"README.md", tmpl.Readme},
-			{".gitignore", tmpl.GitIgnore},
+		// set gomodule
+		if useGoModule != "off" {
+			c.Files = append(c.Files, file{"go.mod", t2.Module})
 		}
-	case "api":
-		// create api config
-		c.Files = []file{
-			{"main.go", tmpl.MainAPI},
-			{"generate.go", tmpl.GenerateFile},
-			{"plugin.go", tmpl.Plugin},
-			{"client/" + alias + ".go", tmpl.WrapperAPI},
-			{"handler/" + alias + ".go", tmpl.HandlerAPI},
-			{"proto/" + alias + "/" + alias + ".proto", tmpl.ProtoAPI},
-			{"Makefile", tmpl.Makefile},
-			{"Dockerfile", tmpl.DockerSRV},
-			{"README.md", tmpl.Readme},
-			{".gitignore", tmpl.GitIgnore},
-		}
-	case "web":
-		// create service config
-		c.Files = []file{
-			{"main.go", tmpl.MainWEB},
-			{"plugin.go", tmpl.Plugin},
-			{"handler/handler.go", tmpl.HandlerWEB},
-			{"html/index.html", tmpl.HTMLWEB},
-			{"Dockerfile", tmpl.DockerWEB},
-			{"Makefile", tmpl.Makefile},
-			{"README.md", tmpl.Readme},
-			{".gitignore", tmpl.GitIgnore},
-		}
-		c.Comments = []string{}
-
-	default:
-		fmt.Println("Unknown type", atype)
-		return
-	}
-
-	// set gomodule
-	if useGoModule != "off" {
-		c.Files = append(c.Files, file{"go.mod", tmpl.Module})
 	}
 
 	if err := create(c); err != nil {
@@ -367,17 +378,21 @@ func Commands() []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "new",
-			Usage: "Create a service template",
+			Usage: "Create a project template",
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:  "namespace",
-					Usage: "Namespace for the service e.g com.example",
+					Usage: "Namespace for the project e.g com.example",
 					Value: "go.vine",
 				},
 				&cli.StringFlag{
 					Name:  "type",
-					Usage: "Type of service e.g api, function, service, web",
+					Usage: "Type of service e.g gateway, service, web",
 					Value: "service",
+				},
+				&cli.BoolFlag{
+					Name:  "cluster",
+					Usage: "create cluster package.",
 				},
 				&cli.StringFlag{
 					Name:  "fqdn",
