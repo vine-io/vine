@@ -1,6 +1,8 @@
 package template
 
 var (
-	ConfSRV = `
+	ConfSRV = `#[server]
+SERVER_NAME="{{.Alias}}"
+SERVER_ADDRESS="localhost:11401"
 `
 )
