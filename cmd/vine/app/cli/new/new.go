@@ -103,11 +103,22 @@ func write(c config, file, tmpl string) error {
 		"title": strings.Title,
 	}
 
-	f, err := os.Create(file)
-	if err != nil {
-		return err
+	var f *os.File
+	var err error
+	stat, _ := os.Stat(file)
+	if stat == nil {
+		f, err = os.Create(file)
+		if err != nil {
+			return err
+		}
+	} else {
+		f, err = os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+		if err != nil {
+			return err
+		}
 	}
 	defer f.Close()
+
 
 	t, err := template.New("f").Funcs(fn).Parse(tmpl)
 	if err != nil {
@@ -119,12 +130,11 @@ func write(c config, file, tmpl string) error {
 
 func create(c config) error {
 	// check if dir exists
-	if _, err := os.Stat(c.GoDir); !os.IsNotExist(err) {
-		return fmt.Errorf("%s already exists", c.GoDir)
+	if !c.Cluster {
+		if _, err := os.Stat(c.GoDir); !os.IsNotExist(err) {
+			return fmt.Errorf("%s already exists", c.GoDir)
+		}
 	}
-
-	// just wait
-	<-time.After(time.Millisecond * 250)
 
 	fmt.Printf("Creating service %s in %s\n\n", c.FQDN, c.GoDir)
 
@@ -136,9 +146,7 @@ func create(c config) error {
 		dir := filepath.Dir(f)
 
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				return err
-			}
+			_ =  os.MkdirAll(dir, 0755)
 		}
 
 		addFileToTree(t, file.Path)
