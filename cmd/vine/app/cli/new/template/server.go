@@ -1,23 +1,6 @@
 package template
 
 var (
-	HandlerFNC = `package handler
-
-import (
-	"context"
-
-	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
-)
-
-type {{title .Alias}} struct{}
-
-// Call is a single request handler called via client.Call or the generated client code
-func (e *{{title .Alias}}) Call(ctx context.Context, req *{{.Alias}}.Request, rsp *{{.Alias}}.Response) error {
-	rsp.Msg = "Hello " + req.Name
-	return nil
-}
-`
-
 	HandlerSRV = `package handler
 
 import (
@@ -45,7 +28,7 @@ func (e *{{title .Alias}}) Stream(ctx context.Context, req *{{.Alias}}.Streaming
 
 	for i := 0; i < int(req.Count); i++ {
 		log.Infof("Responding: %d", i)
-		if err := stream.Send(&{{.Alias}}.StreamingResponse{
+		if err := stream.Send(&pb.StreamingResponse{
 			Count: int64(i),
 		}); err != nil {
 			return err
@@ -67,24 +50,6 @@ func (e *{{title .Alias}}) PingPong(ctx context.Context, stream {{.Alias}}.{{tit
 			return err
 		}
 	}
-}
-`
-
-	SubscriberFNC = `package subscriber
-
-import (
-	"context"
-
-	log "github.com/lack-io/vine/lib/logger"
-
-	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
-)
-
-type {{title .Alias}} struct{}
-
-func (e *{{title .Alias}}) Handle(ctx context.Context, msg *{{.Alias}}.Message) error {
-	log.Info("Handler Received message: ", msg.Say)
-	return nil
 }
 `
 

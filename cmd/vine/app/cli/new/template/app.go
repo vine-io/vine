@@ -26,7 +26,7 @@ var (
 	SingleMod = `package pkg
 
 var (
-	Name = ""
+	Name = "{{.FQDN}}"
 	Version = "latest"
 )
 `
