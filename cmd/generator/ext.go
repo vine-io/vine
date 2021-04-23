@@ -226,7 +226,7 @@ func (g *Generator) extractFileOutFile(file *FileDescriptor) (output *FileOutPut
 	return
 }
 
-// extractMessage extract MessageDescriptor by name
+// ExtractMessage extract MessageDescriptor by name
 func (g *Generator) ExtractMessage(name string) *MessageDescriptor {
 	obj := g.ObjectNamed(name)
 
