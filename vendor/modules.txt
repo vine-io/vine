@@ -302,7 +302,7 @@ github.com/lucas-clemente/quic-go/quictrace/pb
 github.com/marten-seemann/qtls
 # github.com/marten-seemann/qtls-go1-15 v0.1.1
 github.com/marten-seemann/qtls-go1-15
-# github.com/mattn/go-runewidth v0.0.7
+# github.com/mattn/go-runewidth v0.0.9
 github.com/mattn/go-runewidth
 # github.com/mattn/go-sqlite3 v1.14.6
 ## explicit
@@ -334,7 +334,7 @@ github.com/nlopes/slack
 github.com/nlopes/slack/internal/errorsx
 github.com/nlopes/slack/internal/timex
 github.com/nlopes/slack/slackutilsx
-# github.com/olekukonko/tablewriter v0.0.4
+# github.com/olekukonko/tablewriter v0.0.5
 ## explicit
 github.com/olekukonko/tablewriter
 # github.com/opencontainers/go-digest v1.0.0

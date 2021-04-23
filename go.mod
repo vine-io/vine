@@ -38,7 +38,7 @@ require (
 	github.com/miekg/dns v1.1.35
 	github.com/mitchellh/hashstructure v1.1.0
 	github.com/nlopes/slack v0.6.0
-	github.com/olekukonko/tablewriter v0.0.4
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rakyll/statik v0.1.7
