@@ -24,19 +24,21 @@ package template
 
 var (
 	TOML = `[package]
-{{if .Cluster -}}
-kind = "cluster"
-{{- else -}}
-kind = "single"
-{{- end}}
-namespace = "{{.Namespace}}"
-
-{{if .Cluster}}
-
-{{else -}}
-[pkg]
-name = "{{.Alias}}"
-version = "v0.0.1"
-{{end -}}
+kind = "{{.Toml.Package.Kind}}"
+namespace = "{{.Toml.Package.Namespace}}"
+{{if .Toml.Mod }}{{range .Toml.Mod}}
+[[mod]]
+name = "{{.Name}}"
+alias = "{{.Alias}}"
+type = "{{.Type}}"
+version = "{{.Version}}"
+dir = "{{.Dir}}"
+{{end}}{{end}}
+{{if .Toml.Pkg}}[pkg]
+name = "{{.Toml.Pkg.Name}}"
+alias = "{{.Toml.Pkg.Alias}}"
+type = "{{.Toml.Pkg.Type}}"
+version = "{{.Toml.Pkg.Version}}"
+dir = "{{.Toml.Pkg.Dir}}"{{end}}
 `
 )

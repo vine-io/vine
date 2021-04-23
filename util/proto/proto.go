@@ -24,12 +24,12 @@
 package proto
 
 import (
-	router2 "github.com/lack-io/vine/core/router"
+	"github.com/lack-io/vine/core/router"
 	pbRtr "github.com/lack-io/vine/proto/services/router"
 )
 
 // RouteToProto encodes route into protobuf and returns it
-func RouteToProto(route router2.Route) *pbRtr.Route {
+func RouteToProto(route router.Route) *pbRtr.Route {
 	return &pbRtr.Route{
 		Service: route.Service,
 		Address: route.Address,
@@ -42,8 +42,8 @@ func RouteToProto(route router2.Route) *pbRtr.Route {
 }
 
 // ProtoToRoute decodes protobuf route into router route and returns it
-func ProtoToRoute(route *pbRtr.Route) router2.Route {
-	return router2.Route{
+func ProtoToRoute(route *pbRtr.Route) router.Route {
+	return router.Route{
 		Service: route.Service,
 		Address: route.Address,
 		Gateway: route.Gateway,

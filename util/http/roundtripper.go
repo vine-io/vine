@@ -26,12 +26,12 @@ import (
 	"errors"
 	"net/http"
 
-	selector2 "github.com/lack-io/vine/core/client/selector"
+	"github.com/lack-io/vine/core/client/selector"
 )
 
 type roundTripper struct {
 	rt   http.RoundTripper
-	st   selector2.Strategy
+	st   selector.Strategy
 	opts Options
 }
 

@@ -25,9 +25,9 @@ package web
 import (
 	"context"
 	"crypto/tls"
-	"net/http"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/cli"
 	"github.com/lack-io/vine/core/registry"
 
@@ -52,8 +52,7 @@ type Options struct {
 	// RegisterCheck runs a check function before registering the service
 	RegisterCheck func(context.Context) error
 
-	Server  *http.Server
-	Handler http.Handler
+	App    *fiber.App
 
 	// Alternative Options
 	Context context.Context
@@ -181,17 +180,10 @@ func RegisterInterval(t time.Duration) Option {
 	}
 }
 
-//Handler for custom handler
-func Handler(h http.Handler) Option {
+// App for custom fiber.App
+func App(app *fiber.App) Option {
 	return func(o *Options) {
-		o.Handler = h
-	}
-}
-
-//Server for custom Server
-func Server(svc *http.Server) Option {
-	return func(o *Options) {
-		o.Server = svc
+		o.App = app
 	}
 }
 

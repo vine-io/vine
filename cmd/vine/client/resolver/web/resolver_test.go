@@ -26,18 +26,18 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	selector2 "github.com/lack-io/vine/core/client/selector"
+	"github.com/lack-io/vine/core/client/selector"
 	"github.com/lack-io/vine/core/client/selector/dns"
-	memory2 "github.com/lack-io/vine/core/registry/memory"
+	"github.com/lack-io/vine/core/registry/memory"
 	"github.com/lack-io/vine/lib/api/resolver"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 
 func TestWebResolver(t *testing.T) {
-	r := memory2.NewRegistry()
+	r := memory.NewRegistry()
 
 	selector := dns.NewSelector(
-		selector2.Registry(r),
+		selector.Registry(r),
 	)
 
 	res := &Resolver{

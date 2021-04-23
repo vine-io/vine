@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"github.com/lack-io/vine"
-	registry2 "github.com/lack-io/vine/core/registry"
+	 "github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/lib/auth"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/proto/apis/errors"
@@ -43,7 +43,7 @@ type Registry struct {
 	// the publisher
 	Publisher vine.Event
 	// internal registry
-	Registry registry2.Registry
+	Registry registry.Registry
 	// auth to verify clients
 	Auth auth.Auth
 }
@@ -81,7 +81,7 @@ func (r *Registry) publishEvent(action string, service *regpb.Service) error {
 func (r *Registry) GetService(ctx context.Context, req *regsvcpb.GetRequest, rsp *regsvcpb.GetResponse) error {
 	// get the services in the default namespace
 	services, err := r.Registry.GetService(req.Service)
-	if err == registry2.ErrNotFound {
+	if err == registry.ErrNotFound {
 		return errors.NotFound("go.vine.registry", err.Error())
 	} else if err != nil {
 		return errors.InternalServerError("go.vine.registry", err.Error())
@@ -106,10 +106,10 @@ func (r *Registry) GetService(ctx context.Context, req *regsvcpb.GetRequest, rsp
 
 // Register a service
 func (r *Registry) Register(ctx context.Context, req *regpb.Service, rsp *regsvcpb.EmptyResponse) error {
-	var regOpts []registry2.RegisterOption
+	var regOpts []registry.RegisterOption
 	if req.Options != nil {
 		ttl := time.Duration(req.Options.Ttl) * time.Second
-		regOpts = append(regOpts, registry2.RegisterTTL(ttl))
+		regOpts = append(regOpts, registry.RegisterTTL(ttl))
 	}
 
 	service := withNamespace(*req, namespace.FromContext(ctx))
@@ -159,7 +159,7 @@ func (r *Registry) ListServices(ctx context.Context, req *regsvcpb.ListRequest, 
 
 // Watch a service for changes
 func (r *Registry) Watch(ctx context.Context, req *regsvcpb.WatchRequest, rsp regsvcpb.Registry_WatchStream) error {
-	watcher, err := r.Registry.Watch(registry2.WatchService(req.Service))
+	watcher, err := r.Registry.Watch(registry.WatchService(req.Service))
 	if err != nil {
 		return errors.InternalServerError("go.vine.registry", err.Error())
 	}

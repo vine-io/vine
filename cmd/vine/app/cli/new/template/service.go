@@ -5,32 +5,32 @@ var (
 
 import "github.com/lack-io/vine"
 
-type {{title .Alias}} interface {
+type {{title .Name}} interface {
 	Call()
 	Stream()
 	PingPong()
 }
 
-var _ {{title .Alias}} = (*{{.Alias}})(nil)
+var _ {{title .Name}} = (*{{.Name}})(nil)
 
-type {{.Alias}} struct {
+type {{.Name}} struct {
 	vine.Service
 }
 
-func (s *{{.Alias}}) Call() {
+func (s *{{.Name}}) Call() {
 	// FIXME: modify method
 	panic("implement me")
 }
 
-func (s *{{.Alias}}) Stream() {
+func (s *{{.Name}}) Stream() {
 	panic("implement me")
 }
 
-func (s *{{.Alias}}) PingPong() {
+func (s *{{.Name}}) PingPong() {
 	panic("implement me")
 }
 
-func New(s vine.Service) *{{.Alias}} {
-	return &{{.Alias}}{Service: s}
+func New(s vine.Service) *{{.Name}} {
+	return &{{.Name}}{Service: s}
 }`
 )

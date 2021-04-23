@@ -30,8 +30,8 @@ import (
 	"net/http"
 	"strings"
 
-	selector2 "github.com/lack-io/vine/core/client/selector"
-	registry2 "github.com/lack-io/vine/core/registry"
+	"github.com/lack-io/vine/core/client/selector"
+	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 
@@ -69,7 +69,7 @@ func WriteInternalServerError(w http.ResponseWriter, err error) {
 
 func NewRoundTripper(opts ...Option) http.RoundTripper {
 	options := Options{
-		Registry: registry2.DefaultRegistry,
+		Registry: registry.DefaultRegistry,
 	}
 	for _, o := range opts {
 		o(&options)
@@ -77,7 +77,7 @@ func NewRoundTripper(opts ...Option) http.RoundTripper {
 
 	return &roundTripper{
 		rt:   http.DefaultTransport,
-		st:   selector2.Random,
+		st:   selector.Random,
 		opts: options,
 	}
 }

@@ -25,17 +25,17 @@ package handler
 import (
 	"context"
 
-	router2 "github.com/lack-io/vine/core/router"
+	"github.com/lack-io/vine/core/router"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/router"
 )
 
 type Table struct {
-	Router router2.Router
+	Router router.Router
 }
 
 func (t *Table) Create(ctx context.Context, route *pb.Route, resp *pb.CreateResponse) error {
-	err := t.Router.Table().Create(router2.Route{
+	err := t.Router.Table().Create(router.Route{
 		Service: route.Service,
 		Address: route.Address,
 		Gateway: route.Gateway,
@@ -52,7 +52,7 @@ func (t *Table) Create(ctx context.Context, route *pb.Route, resp *pb.CreateResp
 }
 
 func (t *Table) Update(ctx context.Context, route *pb.Route, resp *pb.UpdateResponse) error {
-	err := t.Router.Table().Update(router2.Route{
+	err := t.Router.Table().Update(router.Route{
 		Service: route.Service,
 		Address: route.Address,
 		Gateway: route.Gateway,
@@ -69,7 +69,7 @@ func (t *Table) Update(ctx context.Context, route *pb.Route, resp *pb.UpdateResp
 }
 
 func (t *Table) Delete(ctx context.Context, route *pb.Route, resp *pb.DeleteResponse) error {
-	err := t.Router.Table().Delete(router2.Route{
+	err := t.Router.Table().Delete(router.Route{
 		Service: route.Service,
 		Address: route.Address,
 		Gateway: route.Gateway,
@@ -112,7 +112,7 @@ func (t *Table) List(ctx context.Context, req *pb.Request, resp *pb.ListResponse
 }
 
 func (t *Table) Query(ctx context.Context, req *pb.QueryRequest, resp *pb.QueryResponse) error {
-	routes, err := t.Router.Table().Query(router2.QueryService(req.Query.Service))
+	routes, err := t.Router.Table().Query(router.QueryService(req.Query.Service))
 	if err != nil {
 		return errors.InternalServerError("go.vine.router", "failed to lookup routes: %s", err)
 	}

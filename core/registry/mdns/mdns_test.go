@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	registry2 "github.com/lack-io/vine/core/registry"
+	"github.com/lack-io/vine/core/registry"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
 

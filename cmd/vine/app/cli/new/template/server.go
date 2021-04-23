@@ -1,75 +1,23 @@
 package template
 
 var (
-	HandlerSRV = `package handler
-
-import (
-	"context"
-
-	log "github.com/lack-io/vine/lib/logger"
-
-	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
-)
-
-type {{title .Alias}} struct{
-	
-}
-
-// Call is a single request handler called via client.Call or the generated client code
-func (e *{{title .Alias}}) Call(ctx context.Context, req *{{.Alias}}.Request, rsp *{{.Alias}}.Response) error {
-	log.Info("Received {{title .Alias}}.Call request")
-	rsp.Msg = "Hello " + req.Name
-	return nil
-}
-
-// Stream is a server side stream handler called via client.Stream or the generated client code
-func (e *{{title .Alias}}) Stream(ctx context.Context, req *{{.Alias}}.StreamingRequest, stream {{.Alias}}.{{title .Alias}}_StreamStream) error {
-	log.Infof("Received {{title .Alias}}.Stream request with count: %d", req.Count)
-
-	for i := 0; i < int(req.Count); i++ {
-		log.Infof("Responding: %d", i)
-		if err := stream.Send(&pb.StreamingResponse{
-			Count: int64(i),
-		}); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (e *{{title .Alias}}) PingPong(ctx context.Context, stream {{.Alias}}.{{title .Alias}}_PingPongStream) error {
-	for {
-		req, err := stream.Recv()
-		if err != nil {
-			return err
-		}
-		log.Infof("Got ping %v", req.Stroke)
-		if err := stream.Send(&{{.Alias}}.Pong{Stroke: req.Stroke}); err != nil {
-			return err
-		}
-	}
-}
-`
-
 	SubscriberSRV = `package subscriber
 
 import (
 	"context"
 	log "github.com/lack-io/vine/lib/logger"
 
-	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
+	{{.Name}} "{{.Dir}}/proto/{{.Name}}"
 )
 
 type {{title .Alias}} struct{}
 
-func (e *{{title .Alias}}) Handle(ctx context.Context, msg *{{.Alias}}.Message) error {
+func (e *{{title .Alias}}) Handle(ctx context.Context, msg *{{.Name}}.Message) error {
 	log.Info("Handler Received message: ", msg.Say)
 	return nil
 }
 
-func Handler(ctx context.Context, msg *{{.Alias}}.Message) error {
+func Handler(ctx context.Context, msg *{{.Name}}.Message) error {
 	log.Info("Function Received message: ", msg.Say)
 	return nil
 }
@@ -85,7 +33,7 @@ import (
 	"{{.Dir}}/client"
 	"github.com/lack-io/vine/proto/apis/errors"
 	"github.com/lack-io/vine/proto/services/api"
-	{{.Alias}} "path/to/service/proto/{{.Alias}}"
+	{{.Name}} "path/to/service/proto/{{.Name}}"
 )
 
 type {{title .Alias}} struct{}
@@ -100,22 +48,22 @@ func extractValue(pair *api.Pair) string {
 	return pair.Values[0]
 }
 
-// {{title .Alias}}.Call is called by the API as /{{.Alias}}/call with post body {"name": "foo"}
+// {{title .Alias}}.Call is called by the API as /{{.Name}}/call with post body {"name": "foo"}
 func (e *{{title .Alias}}) Call(ctx context.Context, req *api.Request, rsp *api.Response) error {
 	log.Info("Received {{title .Alias}}.Call request")
 
 	// extract the client from the context
-	{{.Alias}}Client, ok := client.{{title .Alias}}FromContext(ctx)
+	{{.Name}}Client, ok := client.{{title .Alias}}FromContext(ctx)
 	if !ok {
-		return errors.InternalServerError("{{.FQDN}}.{{.Alias}}.call", "{{.Alias}} client not found")
+		return errors.InternalServerError("{{.Alias}}.{{.Name}}.call", "{{.Name}} client not found")
 	}
 
 	// make request
-	response, err := {{.Alias}}Client.Call(ctx, &{{.Alias}}.Request{
+	response, err := {{.Name}}Client.Call(ctx, &{{.Name}}.Request{
 		Name: extractValue(req.Post["name"]),
 	})
 	if err != nil {
-		return errors.InternalServerError("{{.FQDN}}.{{.Alias}}.call", err.Error())
+		return errors.InternalServerError("{{.Alias}}.{{.Name}}.call", err.Error())
 	}
 
 	b, _ := json.Marshal(response)
@@ -124,50 +72,6 @@ func (e *{{title .Alias}}) Call(ctx context.Context, req *api.Request, rsp *api.
 	rsp.Body = string(b)
 
 	return nil
-}
-`
-
-	HandlerWEB = `package handler
-
-import (
-	"context"
-	"encoding/json"
-	"net/http"
-	"time"
-
-	"github.com/lack-io/vine/lib/client"
-	{{.Alias}} "{{.Dir}}/proto/{{.Alias}}"
-)
-
-func {{title .Alias}}Call(w http.ResponseWriter, r *http.Request) {
-	// decode the incoming request as json
-	var request map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// call the backend service
-	{{.Alias}}Client := {{.Alias}}.New{{title .Alias}}Service("{{.Namespace}}.service.{{.Alias}}", client.DefaultClient)
-	rsp, err := {{.Alias}}Client.Call(context.TODO(), &{{.Alias}}.Request{
-		Name: request["name"].(string),
-	})
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	// we want to augment the response
-	response := map[string]interface{}{
-		"msg": rsp.Msg,
-		"ref": time.Now().UnixNano(),
-	}
-
-	// encode and write the response as json
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
 }
 `
 
@@ -180,17 +84,17 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/service"
-	pb "{{.Dir}}/proto/service/{{.Alias}}"
+	pb "{{.Dir}}/proto/service/{{.Name}}"
 )
 
-type {{.Alias}} struct{
+type {{.Name}} struct{
 	vine.Service
 
-	h service.{{title .Alias}}
+	h service.{{title .Name}}
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *{{.Alias}}) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
+func (s *{{.Name}}) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
 	// TODO: Validate
 	s.h.Call()
 	// FIXME: fix call method
@@ -200,7 +104,7 @@ func (s *{{.Alias}}) Call(ctx context.Context, req *pb.Request, rsp *pb.Response
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *{{.Alias}}) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Alias}}_StreamStream) error {
+func (s *{{.Name}}) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}_StreamStream) error {
 	log.Infof("Received {{title .Alias}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -209,7 +113,7 @@ func (s *{{.Alias}}) Stream(ctx context.Context, req *pb.StreamingRequest, strea
 
 	for i := 0; i < int(req.Count); i++ {
 		log.Infof("Responding: %d", i)
-		if err := stream.Send(&{{.Alias}}.StreamingResponse{
+		if err := stream.Send(&{{.Name}}.StreamingResponse{
 			Count: int64(i),
 		}); err != nil {
 			return err
@@ -220,7 +124,7 @@ func (s *{{.Alias}}) Stream(ctx context.Context, req *pb.StreamingRequest, strea
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *{{.Alias}}) PingPong(ctx context.Context, stream pb.{{title .Alias}}_PingPongStream) error {
+func (s *{{.Name}}) PingPong(ctx context.Context, stream pb.{{title .Name}}_PingPongStream) error {
 	// TODO: Validate
 	s.h.PingPong()
 	// FIXME: fix stream pingpong
@@ -237,14 +141,94 @@ func (s *{{.Alias}}) PingPong(ctx context.Context, stream pb.{{title .Alias}}_Pi
 	}
 }
 
-func (s *{{.Alias}}) Init(opts ...vine.Option) error {
+func (s *{{.Name}}) Init(opts ...vine.Option) error {
 	s.Service.Init(opts...)
 	return pb.Register{{title .Alias}}Handler(s.Service.Server(), s)
 }
 
-func New(opts ...vine.Option) *{{.Alias}} {
+func New(opts ...vine.Option) *{{.Name}} {
 	srv := vine.NewService(opts...)
-	return &{{.Alias}}{
+	return &{{.Name}}{
+		Service: srv,
+		h:       service.New(srv),
+	}
+}
+`
+
+	ClusterSRV = `package server
+
+import (
+	"context"
+
+	"github.com/lack-io/vine"
+	log "github.com/lack-io/vine/lib/logger"
+
+	"{{.Dir}}/pkg/{{.Name}}/service"
+	pb "{{.Dir}}/proto/service/{{.Name}}"
+)
+
+type {{.Name}} struct{
+	vine.Service
+
+	h service.{{title .Name}}
+}
+
+// Call is a single request handler called via client.Call or the generated client code
+func (s *{{.Name}}) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
+	// TODO: Validate
+	s.h.Call()
+	// FIXME: fix call method
+	log.Info("Received {{title .Alias}}.Call request")
+	rsp.Msg = "Hello " + req.Name
+	return nil
+}
+
+// Stream is a server side stream handler called via client.Stream or the generated client code
+func (s *{{.Name}}) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}_StreamStream) error {
+	log.Infof("Received {{title .Alias}}.Stream request with count: %d", req.Count)
+
+	// TODO: Validate
+	s.h.Stream()
+	// FIXME: fix stream method
+
+	for i := 0; i < int(req.Count); i++ {
+		log.Infof("Responding: %d", i)
+		if err := stream.Send(&{{.Name}}.StreamingResponse{
+			Count: int64(i),
+		}); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// PingPong is a bidirectional stream handler called via client.Stream or the generated client code
+func (s *{{.Name}}) PingPong(ctx context.Context, stream pb.{{title .Name}}_PingPongStream) error {
+	// TODO: Validate
+	s.h.PingPong()
+	// FIXME: fix stream pingpong
+
+	for {
+		req, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+		log.Infof("Got ping %v", req.Stroke)
+		if err := stream.Send(&pb.Pong{Stroke: req.Stroke}); err != nil {
+			return err
+		}
+	}
+}
+
+func (s *{{.Name}}) Init(opts ...vine.Option) error {
+	s.Service.Init(opts...)
+	return pb.Register{{title .Alias}}Handler(s.Service.Server(), s)
+}
+
+func New(opts ...vine.Option) *{{.Name}} {
+	srv := vine.NewService(opts...)
+	return &{{.Name}}{
 		Service: srv,
 		h:       service.New(srv),
 	}

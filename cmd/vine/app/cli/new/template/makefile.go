@@ -1,20 +1,20 @@
 package template
 
 var (
-	SingleMakefile = `
+	Makefile = `
 GOPATH:=$(shell go env GOPATH)
 {{if ne .Type "web"}}
 .PHONY: proto
 proto:
 	cd ${GOPATH}/src && \
 {{if eq .UseGoPath true}}	protoc -I=. -I=${GOPATH}/src:. --vine_out=:. --gogo_out=:. {{.Dir}}/proto/apis/apis.proto && \
-	protoc -I=. -I=${GOPATH}/src:. --vine_out=:. --gogo_out=:. {{.Dir}}/proto/service/{{.Alias}}/{{.Alias}}.proto
+	protoc -I=. -I=${GOPATH}/src:. --vine_out=:. --gogo_out=:. {{.Dir}}/proto/service/{{.Name}}/{{.Name}}.proto
 {{end}}
 .PHONY: build
 build: proto
 {{else}}
 .PHONY: build
-build:{{end}}	go build -a -installsuffix cgo -ldflags "-s -w" -o {{.Alias}} *.go
+build:{{end}}	go build -a -installsuffix cgo -ldflags "-s -w" -o {{.Name}} {{.Dir}}/cmd/main.go
 
 .PHONY: install
 install:
@@ -39,7 +39,7 @@ test:
 
 .PHONY: docker
 docker:
-	docker build . -t {{.Alias}}:latest
+	docker build . -t {{.Name}}:latest
 `
 
 	GenerateFile = `package main

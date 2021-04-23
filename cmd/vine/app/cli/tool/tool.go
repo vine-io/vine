@@ -30,8 +30,8 @@ import (
 
 type Config struct {
 	Package Package `json:"package" toml:"package"`
-	Mod     []Mod   `json:"mod" toml:"mod"`
-	Pkg     Mod     `json:"pkg" toml:"pkg"`
+	Mod     *Mods   `json:"mod" toml:"mod"`
+	Pkg     *Mod    `json:"pkg" toml:"pkg"`
 }
 
 type Package struct {
@@ -39,9 +39,14 @@ type Package struct {
 	Namespace string `json:"namespace" toml:"namespace"`
 }
 
+type Mods []Mod
+
 type Mod struct {
 	Name    string `json:"name" toml:"name"`
+	Alias   string `json:"alias" toml:"alias"`
+	Type    string `json:"type" toml:"type"`
 	Version string `json:"version" toml:"version"`
+	Dir     string `json:"dir" toml:"dir"`
 }
 
 func New(f string) (*Config, error) {

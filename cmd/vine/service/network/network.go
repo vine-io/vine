@@ -30,11 +30,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lack-io/cli"
-	cli3 "github.com/lack-io/vine/cmd/vine/app/cli"
-	router2 "github.com/lack-io/vine/core/router"
-	registry2 "github.com/lack-io/vine/core/router/registry"
+	ccli "github.com/lack-io/cli"
 
+	"github.com/lack-io/vine/cmd/vine/app/cli"
+	"github.com/lack-io/vine/core/router"
+	rreg "github.com/lack-io/vine/core/router/registry"
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/service/network/api"
 	netdns "github.com/lack-io/vine/cmd/vine/service/network/dns"
@@ -71,7 +71,7 @@ var (
 )
 
 // Run runs the vine server
-func Run(ctx *cli.Context, svcOpts ...vine.Option) {
+func Run(ctx *ccli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -107,17 +107,17 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	// advertise the best routes
-	strategy := router2.AdvertiseLocal
+	strategy := router.AdvertiseLocal
 	if a := ctx.String("advertise-strategy"); len(a) > 0 {
 		switch a {
 		case "all":
-			strategy = router2.AdvertiseAll
+			strategy = router.AdvertiseAll
 		case "best":
-			strategy = router2.AdvertiseBest
+			strategy = router.AdvertiseBest
 		case "local":
-			strategy = router2.AdvertiseLocal
+			strategy = router.AdvertiseLocal
 		case "none":
-			strategy = router2.AdvertiseNone
+			strategy = router.AdvertiseNone
 		}
 	}
 
@@ -152,12 +152,12 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	id := svc.Server().Options().Id
 
 	// local tunnel router
-	rtr := registry2.NewRouter(
-		router2.Network(Network),
-		router2.Id(id),
-		router2.Registry(svc.Client().Options().Registry),
-		router2.Advertise(strategy),
-		router2.Gateway(gateway),
+	rtr := rreg.NewRouter(
+		router.Network(Network),
+		router.Id(id),
+		router.Registry(svc.Client().Options().Registry),
+		router.Advertise(strategy),
+		router.Gateway(gateway),
 	)
 
 	// create new network
@@ -236,58 +236,58 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	netClose(net)
 }
 
-func Commands(options ...vine.Option) []*cli.Command {
-	command := &cli.Command{
+func Commands(options ...vine.Option) []*ccli.Command {
+	command := &ccli.Command{
 		Name:  "network",
 		Usage: "Run the vine network node",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
+		Flags: []ccli.Flag{
+			&ccli.StringFlag{
 				Name:    "address",
 				Usage:   "Set the vine network address :8085",
 				EnvVars: []string{"VINE_NETWORK_ADDRESS"},
 			},
-			&cli.StringFlag{
+			&ccli.StringFlag{
 				Name:    "advertise",
 				Usage:   "Set the vine network address to advertise",
 				EnvVars: []string{"VINE_NETWORK_ADVERTISE"},
 			},
-			&cli.StringFlag{
+			&ccli.StringFlag{
 				Name:    "gateway",
 				Usage:   "Set the default gateway",
 				EnvVars: []string{"VINE_NETWORK_GATEWAY"},
 			},
-			&cli.StringFlag{
+			&ccli.StringFlag{
 				Name:    "network",
 				Usage:   "Set the vine network name: go.vine",
 				EnvVars: []string{"VINE_NETWORK"},
 			},
-			&cli.StringFlag{
+			&ccli.StringFlag{
 				Name:    "nodes",
 				Usage:   "Set the vine network nodes to connect to. This can be a comma separated list.",
 				EnvVars: []string{"VINE_NETWORK_NODES"},
 			},
-			&cli.StringFlag{
+			&ccli.StringFlag{
 				Name:    "token",
 				Usage:   "Set the vine network token for authentication",
 				EnvVars: []string{"VINE_NETWORK_TOKEN"},
 			},
-			&cli.StringFlag{
+			&ccli.StringFlag{
 				Name:    "resolver",
 				Usage:   "Set the vine network resolver. This can be a comma separated list.",
 				EnvVars: []string{"VINE_NETWORK_RESOLVER"},
 			},
-			&cli.StringFlag{
+			&ccli.StringFlag{
 				Name:    "advertise-strategy",
 				Usage:   "Set the route advertise strategy; all, best, local, none",
 				EnvVars: []string{"VINE_NETWORK_ADVERTISE_STRATEGY"},
 			},
 		},
-		Subcommands: append([]*cli.Command{
+		Subcommands: append([]*ccli.Command{
 			{
 				Name:        "api",
 				Usage:       "Run the network api",
 				Description: "Run the network api",
-				Action: func(ctx *cli.Context) error {
+				Action: func(ctx *ccli.Context) error {
 					api.Run(ctx)
 					return nil
 				},
@@ -296,40 +296,40 @@ func Commands(options ...vine.Option) []*cli.Command {
 				Name:        "dns",
 				Usage:       "Start a DNS resolver service that registers core nodes in DNS",
 				Description: "Start a DNS resolver service that registers core nodes in DNS",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
+				Flags: []ccli.Flag{
+					&ccli.StringFlag{
 						Name:    "provider",
 						Usage:   "The DNS provider to use. Currently, only cloudflare is implemented",
 						EnvVars: []string{"VINE_NETWORK_DNS_PROVIDER"},
 						Value:   "cloudflare",
 					},
-					&cli.StringFlag{
+					&ccli.StringFlag{
 						Name:    "api-token",
 						Usage:   "The provider's API Token.",
 						EnvVars: []string{"VINE_NETWORK_DNS_API_TOKEN"},
 					},
-					&cli.StringFlag{
+					&ccli.StringFlag{
 						Name:    "zone-id",
 						Usage:   "The provider's Zone ID.",
 						EnvVars: []string{"VINE_NETWORK_DNS_ZONE_ID"},
 					},
-					&cli.StringFlag{
+					&ccli.StringFlag{
 						Name:    "token",
 						Usage:   "Shared secret that must be presented to the service to authorize requests.",
 						EnvVars: []string{"VINE_NETWORK_DNS_TOKEN"},
 					},
 				},
-				Action: func(ctx *cli.Context) error {
+				Action: func(ctx *ccli.Context) error {
 					if err := helper.UnexpectedSubcommand(ctx); err != nil {
 						return err
 					}
 					netdns.Run(ctx)
 					return nil
 				},
-				Subcommands: cli3.NetworkDNSCommands(),
+				Subcommands: cli.NetworkDNSCommands(),
 			},
-		}, cli3.NetworkCommands()...),
-		Action: func(ctx *cli.Context) error {
+		}, cli.NetworkCommands()...),
+		Action: func(ctx *ccli.Context) error {
 			if err := helper.UnexpectedSubcommand(ctx); err != nil {
 				return err
 			}
@@ -338,5 +338,5 @@ func Commands(options ...vine.Option) []*cli.Command {
 		},
 	}
 
-	return []*cli.Command{command}
+	return []*ccli.Command{command}
 }

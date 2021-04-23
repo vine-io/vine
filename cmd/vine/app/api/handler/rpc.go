@@ -166,12 +166,12 @@ func RPC(c *fiber.Ctx) error {
 		default:
 			c.Response().SetStatusCode(int(ce.Code))
 		}
-		c.Write([]byte(ce.Error()))
-		return nil
+		_, err = c.Write([]byte(ce.Error()))
+		return err
 	}
 
 	b, _ := response.MarshalJSON()
 	c.Set("Content-Length", strconv.Itoa(len(b)))
-	c.Write(b)
-	return nil
+	_, err = c.Write(b)
+	return err
 }

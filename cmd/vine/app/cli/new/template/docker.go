@@ -1,20 +1,15 @@
 package template
 
 var (
-	DockerFNC = `FROM alpine
-ADD {{.Alias}}-{{.Type}} /{{.Alias}}-{{.Type}}
-ENTRYPOINT [ "/{{.Alias}}-{{.Type}}" ]
-`
-
 	DockerSRV = `FROM alpine
-ADD {{.Alias}} /{{.Alias}}
-ENTRYPOINT [ "/{{.Alias}}" ]
+ADD {{.Name}} /{{.Name}}
+ENTRYPOINT [ "/{{.Name}}" ]
 `
 
 	DockerWEB = `FROM alpine
 ADD html /html
-ADD {{.Alias}}-{{.Type}} /{{.Alias}}-{{.Type}}
+ADD {{.Name}} /{{.Name}}
 WORKDIR /
-ENTRYPOINT [ "/{{.Alias}}-{{.Type}}" ]
+ENTRYPOINT [ "/{{.Name}}" ]
 `
 )

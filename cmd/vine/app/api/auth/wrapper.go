@@ -42,18 +42,15 @@ import (
 // Wrapper wraps a handler and authenticates requests
 func Wrapper(r resolver.Resolver, nr *namespace.Resolver) server.Wrapper {
 	return func() fiber.Handler {
-		//return authWrapper{
-		//	handler:    h,
-		//	resolver:   r,
-		//	nsResolver: nr,
-		//	auth:       auth.DefaultAuth,
-		//}
-		return nil
+		return authWrapper{
+			resolver:   r,
+			nsResolver: nr,
+			auth:       auth.DefaultAuth,
+		}.Handle
 	}
 }
 
 type authWrapper struct {
-	handler    func(c *fiber.Ctx) error
 	auth       auth.Auth
 	resolver   resolver.Resolver
 	nsResolver *namespace.Resolver
@@ -128,7 +125,7 @@ func (a authWrapper) Handle(c *fiber.Ctx) error {
 	res := &auth.Resource{Type: "service", Name: resName, Endpoint: resEndpoint}
 	if err := a.auth.Verify(acc, res, auth.VerifyContext(r.Context())); err == nil {
 		// The account has the necessary permissions to access the resource
-		return a.handler(r.Ctx)
+		return c.Next()
 	}
 
 	// The account is set, but they don't have enough permissions, hence

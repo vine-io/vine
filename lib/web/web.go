@@ -28,7 +28,21 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+)
+
+const (
+	MethodGet     = "GET"     // RFC 7231, 4.3.1
+	MethodHead    = "HEAD"    // RFC 7231, 4.3.2
+	MethodPost    = "POST"    // RFC 7231, 4.3.3
+	MethodPut     = "PUT"     // RFC 7231, 4.3.4
+	MethodPatch   = "PATCH"   // RFC 5789
+	MethodDelete  = "DELETE"  // RFC 7231, 4.3.5
+	MethodConnect = "CONNECT" // RFC 7231, 4.3.6
+	MethodOptions = "OPTIONS" // RFC 7231, 4.3.7
+	MethodTrace   = "TRACE"   // RFC 7231, 4.3.8
+	MethodAny     = "*"
 )
 
 // Service is a web service with service discovery built in
@@ -36,8 +50,7 @@ type Service interface {
 	Client() *http.Client
 	Init(opts ...Option) error
 	Options() Options
-	Handle(pattern string, handler http.Handler)
-	HandleFunc(pattern string, handler func(http.ResponseWriter, *http.Request))
+	Handle(method, pattern string, handler fiber.Handler)
 	Run() error
 }
 

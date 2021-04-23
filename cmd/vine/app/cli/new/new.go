@@ -41,14 +41,14 @@ import (
 	"github.com/lack-io/vine/cmd/vine/app/cli/tool"
 )
 
-func protoComments(goDir, alias string) []string {
+func protoComments(goDir, name string) []string {
 	return []string{
 		"\ndownload protoc zip packages (protoc-$VERSION-$PLATFORM.zip) and install:\n",
 		"visit https://github.com/protocolbuffers/protobuf/releases",
 		"\ndownload protobuf for vine:\n",
 		"cd " + goDir,
 		"make install\n",
-		"compile the proto file " + alias + ".proto:\n",
+		"compile the proto file apis.proto and " + name + ".proto:\n",
 		"cd " + goDir,
 		"make proto\n",
 	}
@@ -63,7 +63,7 @@ const (
 
 type config struct {
 	// foo
-	Alias string
+	Name string
 	// vine new example -type
 	Command string
 	// go.vine
@@ -74,10 +74,10 @@ type config struct {
 	// cluster, single
 	Cluster bool
 	// go.vine.service.foo
-	FQDN string
-	// github.com/vine/foo
-	Dir string
+	Alias string
 	// $GOPATH/src/github.com/vine/foo
+	Dir string
+	// github.com/vine/foo
 	GoDir string
 	// $GOPATH
 	GoPath string
@@ -119,7 +119,6 @@ func write(c config, file, tmpl string) error {
 	}
 	defer f.Close()
 
-
 	t, err := template.New("f").Funcs(fn).Parse(tmpl)
 	if err != nil {
 		return err
@@ -129,14 +128,7 @@ func write(c config, file, tmpl string) error {
 }
 
 func create(c config) error {
-	// check if dir exists
-	if !c.Cluster {
-		if _, err := os.Stat(c.GoDir); !os.IsNotExist(err) {
-			return fmt.Errorf("%s already exists", c.GoDir)
-		}
-	}
-
-	fmt.Printf("Creating service %s in %s\n\n", c.FQDN, c.GoDir)
+	fmt.Printf("Creating service %s in %s\n\n", c.Alias, c.GoDir)
 
 	t := treeprint.New()
 
@@ -146,7 +138,7 @@ func create(c config) error {
 		dir := filepath.Dir(f)
 
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			_ =  os.MkdirAll(dir, 0755)
+			_ = os.MkdirAll(dir, 0755)
 		}
 
 		addFileToTree(t, file.Path)
@@ -187,16 +179,15 @@ func addFileToTree(root treeprint.Tree, file string) {
 
 func Run(ctx *cli.Context) {
 	namespace := ctx.String("namespace")
-	alias := ctx.String("alias")
-	fqdn := ctx.String("fqdn")
+	dir := ctx.String("dir")
 	atype := ctx.String("type")
 	cluster := ctx.Bool("cluster")
-	dir := ctx.Args().First()
+	name := ctx.Args().First()
 	useGoPath := ctx.Bool("gopath")
 	useGoModule := os.Getenv("GO111MODULE")
 	var plugins []string
 
-	if len(dir) == 0 {
+	if len(name) == 0 {
 		fmt.Println("specify service name")
 		return
 	}
@@ -211,19 +202,23 @@ func Run(ctx *cli.Context) {
 		return
 	}
 
+	if strings.Contains(name, "/") || strings.Contains(name, "\\") {
+		fmt.Println("invalid service name: contains '/' or '\\'")
+		return
+	}
+
+	alias := strings.Join([]string{namespace, atype, name}, ".")
+
 	// set the command
 	command := "vine new"
 	if len(namespace) > 0 {
 		command += " --namespace=" + namespace
 	}
-	if len(alias) > 0 {
-		command += " --alias=" + alias
+	if len(dir) > 0 {
+		command += " --dir=" + dir
 	}
 	if cluster {
 		command += " --cluster"
-	}
-	if len(fqdn) > 0 {
-		command += " --fqdn=" + fqdn
 	}
 	if len(atype) > 0 {
 		command += " --type=" + atype
@@ -231,7 +226,7 @@ func Run(ctx *cli.Context) {
 	if plugins := ctx.StringSlice("plugin"); len(plugins) > 0 {
 		command += " --plugin=" + strings.Join(plugins, ":")
 	}
-	command += " " + dir
+	command += " " + name
 
 	// check if the path is absolute, we don't want this
 	// we want to a relative path so we can install in GOPATH
@@ -242,7 +237,6 @@ func Run(ctx *cli.Context) {
 
 	var goPath string
 	var goDir string
-
 	// only set gopath if told to use it
 	if useGoPath {
 		goPath = build.Default.GOPATH
@@ -264,18 +258,6 @@ func Run(ctx *cli.Context) {
 		goDir = path.Clean(dir)
 	}
 
-	if len(alias) == 0 {
-		// set as last part
-		alias = filepath.Base(dir)
-		// strip hyphens
-		parts := strings.Split(alias, "-")
-		alias = parts[0]
-	}
-
-	if len(fqdn) == 0 {
-		fqdn = strings.Join([]string{namespace, atype, alias}, ".")
-	}
-
 	for _, plugin := range ctx.StringSlice("plugin") {
 		// registry=etcd:broker=nats
 		for _, p := range strings.Split(plugin, ":") {
@@ -289,32 +271,136 @@ func Run(ctx *cli.Context) {
 	}
 
 	c := config{
-		Alias:     alias,
+		Name:      name,
 		Command:   command,
 		Namespace: namespace,
 		Type:      atype,
 		Cluster:   cluster,
-		FQDN:      fqdn,
+		Alias:     alias,
 		Dir:       dir,
-		GoDir:     goDir,
 		GoPath:    goPath,
+		GoDir:     goDir,
 		UseGoPath: useGoPath,
 		Plugins:   plugins,
-		Comments:  protoComments(goDir, alias),
+		Comments:  protoComments(dir, name),
 	}
 
-	//if kin && atype != Package {
-	//	var err error
-	//	f := filepath.Join(goDir, "vine.toml")
-	//	c.Toml, err = tool.New(f)
-	//	if err != nil {
-	//		fmt.Printf("read %s failed: %v", f, err)
-	//		return
-	//	}
-	//}
 	if cluster {
-		fmt.Println("todo list")
+		var exists bool
+		if _, err := os.Stat(c.Dir); !os.IsNotExist(err) {
+			var err error
+			c.Toml, err = tool.New(filepath.Join(c.GoDir, "vine.toml"))
+			if err != nil {
+				fmt.Printf("invalid vine project: %v\n", err)
+				return
+			}
+			*c.Toml.Mod = append(*c.Toml.Mod, tool.Mod{
+				Name:    c.Name,
+				Alias:   c.Alias,
+				Type:    atype,
+				Version: "latest",
+				Dir:     filepath.Join(c.Dir, c.Name),
+			})
+			exists = true
+		} else {
+			c.Toml = &tool.Config{
+				Package: tool.Package{
+					Kind:      "cluster",
+					Namespace: c.Namespace,
+				},
+				Mod: &tool.Mods{tool.Mod{
+					Name:    c.Name,
+					Alias:   c.Alias,
+					Type:    atype,
+					Version: "latest",
+					Dir:     filepath.Join(c.Dir, c.Name),
+				}},
+			}
+			exists = false
+		}
+		switch atype {
+		case Service:
+			// create service config
+			c.Files = []file{
+				{"cmd/" + name + "/main.go", t2.ClusterCMD},
+				{"pkg/" + name + "/mod.go", t2.ClusterMod},
+				{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
+				{"pkg/" + name + "/app.go", t2.ClusterApp},
+				{"pkg/" + name + "/default.go", t2.ClusterDefault},
+				{"pkg/" + name + "/server/" + name + ".go", t2.ClusterSRV},
+				{"pkg/" + name + "/service/" + name + ".go", t2.ServiceSRV},
+				{"pkg/" + name + "/dao/" + name + ".go", t2.DaoHandler},
+				{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
+				{"deploy/config/" + name + ".ini", t2.ConfSRV},
+				{"deploy/systemed/" + name + ".service", t2.SystemedSRV},
+				{"proto/service/" + name + "/" + name + ".proto", t2.ProtoSRV},
+				{"vine.toml", t2.TOML},
+			}
+		case Gateway:
+			// create api config
+			c.Files = []file{
+				{"cmd/" + name + "/main.go", t2.ClusterCMD},
+				{"pkg/" + name + "/mod.go", t2.ClusterMod},
+				{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
+				{"pkg/" + name + "/app.go", t2.GatewayApp},
+				{"pkg/" + name + "/default.go", t2.ClusterDefault},
+				{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
+				{"deploy/config/" + name + ".ini", t2.ConfSRV},
+				{"deploy/systemed/" + name + ".service", t2.SystemedSRV},
+				{"vine.toml", t2.TOML},
+			}
+		case Web:
+			// create service config
+			c.Files = []file{
+				{"cmd/" + name + "/main.go", t2.ClusterCMD},
+				{"pkg/" + name + "/mod.go", t2.ClusterMod},
+				{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
+				{"pkg/" + name + "/app.go", t2.WebSRV},
+				{"pkg/" + name + "/default.go", t2.ClusterDefault},
+				{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
+				{"deploy/config/" + name + ".ini", t2.ConfSRV},
+				{"deploy/systemed/" + name + ".service", t2.SystemedSRV},
+				{"vine.toml", t2.TOML},
+			}
+			c.Comments = []string{}
+		default:
+			fmt.Printf("Unknown type %s, eg service, web\n", atype)
+			return
+		}
+
+		if !exists {
+			if c.Type != Gateway {
+				c.Files = append(c.Files, file{"proto/apis/apis.proto", t2.ProtoType})
+			}
+			c.Files = append(c.Files, file{"Makefile", t2.Makefile})
+			c.Files = append(c.Files, file{"README.md", t2.Readme})
+			c.Files = append(c.Files, file{".gitignore", t2.GitIgnore})
+		}
+
+		// set gomodule
+		if useGoModule != "off" {
+			c.Files = append(c.Files, file{"go.mod", t2.Module})
+		}
 	} else {
+		c.GoDir = filepath.Join(c.GoDir, c.Name)
+		if _, err := os.Stat(c.GoDir); !os.IsNotExist(err) {
+			fmt.Printf("%s already exists\n", c.GoDir)
+			return
+		}
+		c.Toml = &tool.Config{
+			Package: tool.Package{
+				Kind:      "single",
+				Namespace: c.Namespace,
+			},
+			Pkg: &tool.Mod{
+				Name:    c.Name,
+				Alias:   c.Alias,
+				Type:    atype,
+				Version: "latest",
+				Dir:     filepath.Join(c.Dir, c.Name),
+			},
+		}
+		c.Dir = filepath.Join(c.Dir, c.Name)
 		switch atype {
 		case Service:
 			// create service config
@@ -324,48 +410,36 @@ func Run(ctx *cli.Context) {
 				{"pkg/plugin.go", t2.SinglePlugin},
 				{"pkg/app.go", t2.SingleApp},
 				{"pkg/default.go", t2.SingleDefault},
-				{"pkg/server/" + alias + ".go", t2.SingleSRV},
-				{"pkg/service/" + alias + ".go", t2.ServiceSRV},
-				{"pkg/dao/" + alias + ".go", t2.DaoHandler},
+				{"pkg/server/" + name + ".go", t2.SingleSRV},
+				{"pkg/service/" + name + ".go", t2.ServiceSRV},
+				{"pkg/dao/" + name + ".go", t2.DaoHandler},
 				{"deploy/Dockerfile", t2.DockerSRV},
-				{"deploy/" + alias + ".ini", t2.ConfSRV},
-				{"deploy/" + alias + ".service", t2.SystemedSRV},
-				{"deploy/Dockerfile", t2.DockerSRV},
+				{"deploy/" + name + ".ini", t2.ConfSRV},
+				{"deploy/" + name + ".service", t2.SystemedSRV},
 				{"proto/apis/apis.proto", t2.ProtoType},
-				{"proto/service/" + alias + "/" + alias + ".proto", t2.ProtoSRV},
-				{"Makefile", t2.SingleMakefile},
+				{"proto/service/" + name + "/" + name + ".proto", t2.ProtoSRV},
+				{"Makefile", t2.Makefile},
 				{"vine.toml", t2.TOML},
 				{"README.md", t2.Readme},
 				{".gitignore", t2.GitIgnore},
 			}
-		//case Gateway:
-		//	// create api config
-		//	c.Files = []file{
-		//		{"main.go", t2.MainAPI},
-		//		//{"plugin.go", t2.Plugin},
-		//		{"client/" + alias + ".go", t2.WrapperAPI},
-		//		{"handler/" + alias + ".go", t2.HandlerAPI},
-		//		{"proto/" + alias + "/" + alias + ".proto", t2.ProtoAPI},
-		//		{"Makefile", t2.SingleMakefile},
-		//		{"Dockerfile", t2.DockerSRV},
-		//		{"README.md", t2.Readme},
-		//		{".gitignore", t2.GitIgnore},
-		//	}
 		case Web:
 			// create service config
-			//c.Files = []file{
-			//	{"main.go", t2.MainWEB},
-			//	//{"plugin.go", t2.Plugin},
-			//	{"handler/handler.go", t2.HandlerWEB},
-			//	{"html/index.html", t2.HTMLWEB},
-			//	{"Dockerfile", t2.DockerWEB},
-			//	{"Makefile", t2.SingleMakefile},
-			//	{"README.md", t2.Readme},
-			//	{".gitignore", t2.GitIgnore},
-			//}
-			//c.Comments = []string{}
-			fmt.Println("todo list")
-			return
+			c.Files = []file{
+				{"cmd/main.go", t2.SingleCMD},
+				{"pkg/mod.go", t2.SingleMod},
+				{"pkg/plugin.go", t2.SinglePlugin},
+				{"pkg/app.go", t2.WebSRV},
+				{"pkg/default.go", t2.SingleDefault},
+				{"deploy/Dockerfile", t2.DockerSRV},
+				{"deploy/" + name + ".ini", t2.ConfSRV},
+				{"deploy/" + name + ".service", t2.SystemedSRV},
+				{"Makefile", t2.Makefile},
+				{"vine.toml", t2.TOML},
+				{"README.md", t2.Readme},
+				{".gitignore", t2.GitIgnore},
+			}
+			c.Comments = []string{}
 		default:
 			fmt.Printf("Unknown type %s, eg service, web\n", atype)
 			return
@@ -405,12 +479,8 @@ func Commands() []*cli.Command {
 					Usage: "create cluster package.",
 				},
 				&cli.StringFlag{
-					Name:  "fqdn",
-					Usage: "FQDN of service e.g com.example.service.service (defaults to namespace.type.alias)",
-				},
-				&cli.StringFlag{
-					Name:  "alias",
-					Usage: "Alias is the short name used as part of combined name if specified",
+					Name:  "dir",
+					Usage: "base dir of service e.g github.com/lack-io",
 				},
 				&cli.StringSliceFlag{
 					Name:  "plugin",

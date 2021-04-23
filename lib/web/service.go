@@ -34,6 +34,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/lack-io/cli"
 	svc "github.com/lack-io/vine"
 	"github.com/lack-io/vine/core/registry"
@@ -51,7 +53,7 @@ import (
 type service struct {
 	opts Options
 
-	mux *http.ServeMux
+	app *fiber.App
 	svc *regpb.Service
 
 	sync.RWMutex
@@ -64,7 +66,7 @@ func newService(opts ...Option) Service {
 	options := newOptions(opts...)
 	s := &service{
 		opts:   options,
-		mux:    http.NewServeMux(),
+		app:    fiber.New(fiber.Config{DisableStartupMessage: true}),
 		static: true,
 	}
 	s.svc = s.genSrv()
@@ -220,12 +222,12 @@ func (s *service) start() error {
 	svc.Endpoints = s.svc.Endpoints
 	s.svc = svc
 
-	var h http.Handler
+	var app *fiber.App
 
-	if s.opts.Handler != nil {
-		h = s.opts.Handler
+	if s.opts.App != nil {
+		app = s.opts.App
 	} else {
-		h = s.mux
+		app = s.app
 		var r sync.Once
 
 		// register the html dir
@@ -242,22 +244,13 @@ func (s *service) start() error {
 				_, err := os.Stat(static)
 				if err == nil {
 					logger.Infof("Enabling static file serving from %s", static)
-					s.mux.Handle("/", http.FileServer(http.Dir(static)))
+					s.app.Use("/", filesystem.New(filesystem.Config{Root: http.Dir(static)}))
 				}
 			}
 		})
 	}
 
-	var httpSrv *http.Server
-	if s.opts.Server != nil {
-		httpSrv = s.opts.Server
-	} else {
-		httpSrv = &http.Server{}
-	}
-
-	httpSrv.Handler = h
-
-	go httpSrv.Serve(l)
+	go app.Listener(l)
 
 	for _, fn := range s.opts.AfterStart {
 		if err := fn(); err != nil {
@@ -318,7 +311,7 @@ func (s *service) Client() *http.Client {
 	}
 }
 
-func (s *service) Handle(pattern string, handler http.Handler) {
+func (s *service) Handle(method, pattern string, handler fiber.Handler) {
 	var seen bool
 	s.RLock()
 	for _, ep := range s.svc.Endpoints {
@@ -333,7 +326,8 @@ func (s *service) Handle(pattern string, handler http.Handler) {
 	if !seen {
 		s.Lock()
 		s.svc.Endpoints = append(s.svc.Endpoints, &regpb.Endpoint{
-			Name: pattern,
+			Name:     pattern,
+			Metadata: map[string]string{"method": method},
 		})
 		s.Unlock()
 	}
@@ -346,37 +340,30 @@ func (s *service) Handle(pattern string, handler http.Handler) {
 	}
 
 	// register the handler
-	s.mux.Handle(pattern, handler)
-}
-
-func (s *service) HandleFunc(pattern string, handler func(http.ResponseWriter, *http.Request)) {
-
-	var seen bool
-	s.RLock()
-	for _, ep := range s.svc.Endpoints {
-		if ep.Name == pattern {
-			seen = true
-			break
-		}
+	switch method {
+	case MethodHead:
+		s.app.Head(pattern, handler)
+	case MethodGet:
+		s.app.Get(pattern, handler)
+	case MethodPut:
+		s.app.Put(pattern, handler)
+	case MethodPatch:
+		s.app.Patch(pattern, handler)
+	case MethodPost:
+		s.app.Post(pattern, handler)
+	case MethodDelete:
+		s.app.Delete(pattern, handler)
+	case MethodConnect:
+		s.app.Connect(pattern, handler)
+	case MethodOptions:
+		s.app.Options(pattern, handler)
+	case MethodTrace:
+		s.app.Trace(pattern, handler)
+	case MethodAny:
+		s.app.All(pattern, handler)
+	default:
+		s.app.All(pattern, handler)
 	}
-	s.RUnlock()
-
-	if !seen {
-		s.Lock()
-		s.svc.Endpoints = append(s.svc.Endpoints, &regpb.Endpoint{
-			Name: pattern,
-		})
-		s.Unlock()
-	}
-
-	// disable static serving
-	if pattern == "/" {
-		s.Lock()
-		s.static = false
-		s.Unlock()
-	}
-
-	s.mux.HandleFunc(pattern, handler)
 }
 
 func (s *service) Init(opts ...Option) error {

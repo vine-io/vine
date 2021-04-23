@@ -23,16 +23,16 @@
 package http
 
 import (
-	registry2 "github.com/lack-io/vine/core/registry"
+	"github.com/lack-io/vine/core/registry"
 )
 
 type Options struct {
-	Registry registry2.Registry
+	Registry registry.Registry
 }
 
 type Option func(*Options)
 
-func WithRegistry(r registry2.Registry) Option {
+func WithRegistry(r registry.Registry) Option {
 	return func(o *Options) {
 		o.Registry = r
 	}

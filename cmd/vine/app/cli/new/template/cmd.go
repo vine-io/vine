@@ -33,4 +33,15 @@ func main() {
 	pkg.Run()
 }
 `
+
+	ClusterCMD = `package main
+
+import (
+	"{{.Dir}}/pkg/{{.Name}}"
+)
+
+func main() {
+	{{.Name}}.Run()
+}
+`
 )

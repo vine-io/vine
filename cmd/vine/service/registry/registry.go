@@ -27,12 +27,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/cli"
-	cli3 "github.com/lack-io/vine/cmd/vine/app/cli"
-	registry2 "github.com/lack-io/vine/core/registry"
+	ccli "github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
+	"github.com/lack-io/vine/cmd/vine/app/cli"
 	"github.com/lack-io/vine/cmd/vine/service/registry/handler"
+	"github.com/lack-io/vine/core/registry"
 	log "github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	regsvcpb "github.com/lack-io/vine/proto/services/registry"
@@ -53,7 +53,7 @@ type subscriber struct {
 	// id is registry id
 	Id string
 	// registry is service registry
-	Registry registry2.Registry
+	Registry registry.Registry
 }
 
 // Process processes registry events
@@ -86,7 +86,7 @@ func (s *subscriber) Process(ctx context.Context, event *regpb.Event) error {
 	switch event.Type {
 	case regpb.EventType_Create, regpb.EventType_Update:
 		log.Debugf("registering service: %s", svc.Name)
-		if err := s.Registry.Register(svc, registry2.RegisterTTL(ttl)); err != nil {
+		if err := s.Registry.Register(svc, registry.RegisterTTL(ttl)); err != nil {
 			log.Debugf("failed to register service: %s", svc.Name)
 			return err
 		}
@@ -101,7 +101,7 @@ func (s *subscriber) Process(ctx context.Context, event *regpb.Event) error {
 	return nil
 }
 
-func Run(ctx *cli.Context, svcOpts ...vine.Option) {
+func Run(ctx *ccli.Context, svcOpts ...vine.Option) {
 
 	if len(ctx.String("server-name")) > 0 {
 		Name = ctx.String("server-name")
@@ -143,26 +143,26 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 }
 
-func Commands(options ...vine.Option) []*cli.Command {
-	command := &cli.Command{
+func Commands(options ...vine.Option) []*ccli.Command {
+	command := &ccli.Command{
 		Name:  "registry",
 		Usage: "Run the service registry",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
+		Flags: []ccli.Flag{
+			&ccli.StringFlag{
 				Name:    "address",
 				Usage:   "Set the registry http address e.g 0.0.0.0:8000",
 				EnvVars: []string{"VINE_SERVER_ADDRESS"},
 			},
 		},
-		Action: func(ctx *cli.Context) error {
+		Action: func(ctx *ccli.Context) error {
 			if err := helper.UnexpectedSubcommand(ctx); err != nil {
 				return err
 			}
 			Run(ctx, options...)
 			return nil
 		},
-		Subcommands: cli3.RegistryCommands(),
+		Subcommands: cli.RegistryCommands(),
 	}
 
-	return []*cli.Command{command}
+	return []*ccli.Command{command}
 }

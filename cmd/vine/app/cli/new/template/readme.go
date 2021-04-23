@@ -20,9 +20,9 @@ Generated with
 
 ## Configuration
 
-- FQDN: {{.FQDN}}
-- Type: {{.Type}}
 - Alias: {{.Alias}}
+- Type: {{.Type}}
+- Name: {{.Name}}
 
 ## Dependencies
 
@@ -53,7 +53,7 @@ make build
 Run the service
 ` + "```" +
 		`
-./{{.Alias}}
+./{{.Name}}
 ` + "```" + `
 
 Build a docker image

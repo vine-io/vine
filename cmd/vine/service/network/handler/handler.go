@@ -26,7 +26,7 @@ package handler
 import (
 	"context"
 
-	router2 "github.com/lack-io/vine/core/router"
+	"github.com/lack-io/vine/core/router"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/network"
 	"github.com/lack-io/vine/proto/apis/errors"
@@ -164,23 +164,23 @@ func (n *Network) Graph(ctx context.Context, req *pbNet.GraphRequest, resp *pbNe
 func (n *Network) Routes(ctx context.Context, req *pbNet.RoutesRequest, resp *pbNet.RoutesResponse) error {
 	// build query
 
-	var qOpts []router2.QueryOption
+	var qOpts []router.QueryOption
 
 	if q := req.Query; q != nil {
 		if len(q.Service) > 0 {
-			qOpts = append(qOpts, router2.QueryService(q.Service))
+			qOpts = append(qOpts, router.QueryService(q.Service))
 		}
 		if len(q.Address) > 0 {
-			qOpts = append(qOpts, router2.QueryAddress(q.Address))
+			qOpts = append(qOpts, router.QueryAddress(q.Address))
 		}
 		if len(q.Gateway) > 0 {
-			qOpts = append(qOpts, router2.QueryGateway(q.Gateway))
+			qOpts = append(qOpts, router.QueryGateway(q.Gateway))
 		}
 		if len(q.Router) > 0 {
-			qOpts = append(qOpts, router2.QueryRouter(q.Router))
+			qOpts = append(qOpts, router.QueryRouter(q.Router))
 		}
 		if len(q.Network) > 0 {
-			qOpts = append(qOpts, router2.QueryNetwork(q.Network))
+			qOpts = append(qOpts, router.QueryNetwork(q.Network))
 		}
 	}
 

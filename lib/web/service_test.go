@@ -33,6 +33,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/core/registry/memory"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
@@ -45,7 +46,7 @@ func TestService(t *testing.T) {
 		beforeStopCalled  bool
 		afterStopCalled   bool
 		str               = `<html><body><h1>Hello World</h1></body></html>`
-		fn                = func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, str) }
+		fn                = func(c *fiber.Ctx) error { return c.SendString(str) }
 		reg               = memory.NewRegistry()
 	)
 
@@ -191,7 +192,7 @@ func TestOptions(t *testing.T) {
 		reg              = memory.NewRegistry()
 		registerTTL      = 123 * time.Second
 		registerInterval = 456 * time.Second
-		handler          = http.NewServeMux()
+		app              = fiber.New()
 		metadata         = map[string]string{"key": "val"}
 		secure           = true
 	)
@@ -205,7 +206,7 @@ func TestOptions(t *testing.T) {
 		Registry(reg),
 		RegisterTTL(registerTTL),
 		RegisterInterval(registerInterval),
-		Handler(handler),
+		App(app),
 		Metadata(metadata),
 		Secure(secure),
 	)
@@ -225,7 +226,7 @@ func TestOptions(t *testing.T) {
 		{"registry", reg, opts.Registry},
 		{"registerTTL", registerTTL, opts.RegisterTTL},
 		{"registerInterval", registerInterval, opts.RegisterInterval},
-		{"handler", handler, opts.Handler},
+		{"handler", app, opts.App},
 		{"metadata", metadata["key"], opts.Metadata["key"]},
 		{"secure", secure, opts.Secure},
 	}
@@ -259,7 +260,7 @@ func eventually(pass func() bool, fail func(...interface{})) {
 func TestTLS(t *testing.T) {
 	var (
 		str    = `<html><body><h1>Hello World</h1></body></html>`
-		fn     = func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, str) }
+		fn     = func(c *fiber.Ctx) error { return c.SendString(str) }
 		secure = true
 		reg    = memory.NewRegistry()
 	)
