@@ -193,7 +193,7 @@ func (s *{{.Name}}) Stream(ctx context.Context, req *pb.StreamingRequest, stream
 
 	for i := 0; i < int(req.Count); i++ {
 		log.Infof("Responding: %d", i)
-		if err := stream.Send(&{{.Name}}.StreamingResponse{
+		if err := stream.Send(&pb.StreamingResponse{
 			Count: int64(i),
 		}); err != nil {
 			return err
@@ -223,7 +223,7 @@ func (s *{{.Name}}) PingPong(ctx context.Context, stream pb.{{title .Name}}_Ping
 
 func (s *{{.Name}}) Init(opts ...vine.Option) error {
 	s.Service.Init(opts...)
-	return pb.Register{{title .Alias}}Handler(s.Service.Server(), s)
+	return pb.Register{{title .Name}}Handler(s.Service.Server(), s)
 }
 
 func New(opts ...vine.Option) *{{.Name}} {
