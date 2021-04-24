@@ -26,9 +26,10 @@ import (
 	"context"
 	"crypto/tls"
 
-	"github.com/lack-io/vine/core/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
+
+	"github.com/lack-io/vine/core/client"
 )
 
 var (

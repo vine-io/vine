@@ -32,6 +32,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/encoding"
+	gmetadata "google.golang.org/grpc/metadata"
+
 	"github.com/lack-io/vine/core/broker"
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/client/selector"
@@ -40,10 +45,6 @@ import (
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	"github.com/lack-io/vine/util/context/metadata"
 	mnet "github.com/lack-io/vine/util/net"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/encoding"
-	gmetadata "google.golang.org/grpc/metadata"
 )
 
 type grpcClient struct {
@@ -166,10 +167,8 @@ func (g *grpcClient) call(ctx context.Context, node *regpb.Node, req client.Requ
 	if err != nil {
 		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error sending request: %v", err))
 	}
-	defer func() {
-		// defer execution of release
-		g.pool.release(address, cc, grr)
-	}()
+	// defer execution of release
+	defer g.pool.release(address, cc, grr)
 
 	ch := make(chan error, 1)
 

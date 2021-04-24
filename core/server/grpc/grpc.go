@@ -35,6 +35,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
 	"golang.org/x/net/netutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -44,7 +45,6 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/lack-io/vine/core/broker"
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/core/server"

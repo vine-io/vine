@@ -79,7 +79,7 @@ func TestService(t *testing.T) {
 		AfterStop(afterStop),
 	)
 
-	service.HandleFunc("/", fn)
+	service.Handle(MethodGet, "/", fn)
 
 	errCh := make(chan error, 1)
 	go func() {
@@ -271,7 +271,7 @@ func TestTLS(t *testing.T) {
 		Registry(reg),
 	)
 
-	service.HandleFunc("/", fn)
+	service.Handle(MethodGet, "/", fn)
 
 	errCh := make(chan error, 1)
 	go func() {

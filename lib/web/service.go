@@ -37,6 +37,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/lack-io/cli"
+
 	svc "github.com/lack-io/vine"
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/lib/logger"
