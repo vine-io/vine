@@ -136,10 +136,6 @@ func (s *service) Server() server.Server {
 	return s.opts.Server
 }
 
-func (s *service) String() string {
-	return "vine"
-}
-
 func (s *service) Start() error {
 	for _, fn := range s.opts.BeforeStart {
 		if err := fn(); err != nil {
@@ -226,4 +222,8 @@ func (s *service) Run() error {
 	}
 
 	return s.Stop()
+}
+
+func (s *service) String() string {
+	return "vine"
 }
