@@ -433,7 +433,7 @@ func (r *runtime) Logs(s *Service, options ...LogsOption) (LogStream, error) {
 
 	t, err := tail.TailFile(fpath, tail.Config{Follow: lopts.Stream, Location: &tail.SeekInfo{
 		Whence: whence,
-		Offset: int64(offset),
+		Offset: offset,
 	}, Logger: tail.DiscardingLogger})
 	if err != nil {
 		return nil, err

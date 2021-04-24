@@ -31,13 +31,13 @@ import (
 
 // Process manages a running process
 type Process interface {
-	// Executes a process to completion
+	// Exec executes a process to completion
 	Exec(*Executable) error
-	// Creates a new process
+	// Fork creates a new process
 	Fork(*Executable) (*PID, error)
-	// Kills the process
+	// Kill kills the process
 	Kill(*PID) error
-	// Waits for a process to exit
+	// Wait waits for a process to exit
 	Wait(*PID) error
 }
 

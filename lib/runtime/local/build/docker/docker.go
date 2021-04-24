@@ -32,9 +32,8 @@ import (
 
 	docker "github.com/fsouza/go-dockerclient"
 
-	"github.com/lack-io/vine/lib/runtime/local/build"
-
 	"github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/runtime/local/build"
 )
 
 type Builder struct {

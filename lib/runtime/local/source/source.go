@@ -29,7 +29,7 @@ type Source interface {
 	Fetch(url string) (*Repository, error)
 	// Commit and upload repo
 	Commit(*Repository) error
-	// The sourcerer
+	// String the sourcerer
 	String() string
 }
 
