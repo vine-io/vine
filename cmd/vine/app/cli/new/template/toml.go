@@ -26,19 +26,31 @@ var (
 	TOML = `[package]
 kind = "{{.Toml.Package.Kind}}"
 namespace = "{{.Toml.Package.Namespace}}"
-{{if .Toml.Mod }}{{range .Toml.Mod}}
+{{if .Toml.Mod}}{{range .Toml.Mod}}
 [[mod]]
 name = "{{.Name}}"
 alias = "{{.Alias}}"
 type = "{{.Type}}"
 version = "{{.Version}}"
 dir = "{{.Dir}}"
+output = ""
+flags = [
+	"-a",
+	"-installsuffix",
+	"cgo",
+	"-ldflags \"-s -W\""
+]
 {{end}}{{end}}
 {{if .Toml.Pkg}}[pkg]
 name = "{{.Toml.Pkg.Name}}"
 alias = "{{.Toml.Pkg.Alias}}"
 type = "{{.Toml.Pkg.Type}}"
 version = "{{.Toml.Pkg.Version}}"
-dir = "{{.Toml.Pkg.Dir}}"{{end}}
+dir = "{{.Toml.Pkg.Dir}}"
+{{end}}{{range .Toml.Proto}}
+[[proto]]
+name = "{{.Name}}"
+plugins = ["gogo"{{range .Plugins}}, "{{.}}"{{end}}]
+{{end}}
 `
 )

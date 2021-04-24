@@ -27,7 +27,13 @@ var (
 
 var (
 	Name = "{{.Alias}}"
+	Namespace = "{{.Namespace}}"
 	Version = "latest"
+
+	GitTag    string
+	GitCommit string
+	BuildDate string
+	Version = GitTag + "-" + GitCommit + "-" + BuildDate
 )
 `
 
@@ -35,7 +41,13 @@ var (
 
 var (
 	Name = "{{.Alias}}"
+	Namespace = "{{.Namespace}}"
 	Version = "latest"
+
+	GitTag    string
+	GitCommit string
+	BuildDate string
+	Version = GitTag + "-" + GitCommit + "-" + BuildDate
 )
 `
 

@@ -33,4 +33,20 @@ func (s *{{.Name}}) PingPong() {
 func New(s vine.Service) *{{.Name}} {
 	return &{{.Name}}{Service: s}
 }`
+
+	Wire = `// +build wireinject
+
+package service
+
+import (
+	"github.com/google/wire"
+
+	"github.com/lack-io/vine"
+)
+
+func NewStorage(s vine.Service) *storage {
+	wire.Build(New)
+	return nil
+}
+`
 )

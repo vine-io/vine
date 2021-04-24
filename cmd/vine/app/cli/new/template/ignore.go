@@ -1,8 +1,7 @@
 package template
 
 var (
-	GitIgnore = `
-.idea
+	GitIgnore = `.idea
 
 .DS_Store
 

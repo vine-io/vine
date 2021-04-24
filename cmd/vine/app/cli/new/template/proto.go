@@ -7,7 +7,7 @@ package apis;
 
 option go_package = "{{.Dir}}/proto/apis;apis";
 
-message Message {
+message {{.Name}}Message {
 	string name = 1;
 }
 `

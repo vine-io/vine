@@ -32,6 +32,7 @@ import (
 	ccli "github.com/lack-io/cli"
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/app/api"
+	cliBuild "github.com/lack-io/vine/cmd/vine/app/cli/build"
 	cliNew "github.com/lack-io/vine/cmd/vine/app/cli/new"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/util/helper"
@@ -333,19 +334,10 @@ func Setup(app *ccli.App, options ...vine.Option) {
 	//app.Commands = append(app.Commands, Commands(options...)...)
 	//app.Commands = append(app.Commands, web.Commands(options...)...)
 	app.Commands = append(app.Commands, cliNew.Commands()...)
+	app.Commands = append(app.Commands, cliBuild.Commands()...)
 	//app.Commands = append(app.Commands, auth.Commands()...)
 	//app.Commands = append(app.Commands, bot.Commands()...)
 	//app.Commands = append(app.Commands, cli.Commands()...)
-
-	// add the init command for our internal operator
-	//app.Commands = append(app.Commands, &ccli.Command{
-	//	Name:  "init",
-	//	Usage: "Run the vine operator",
-	//	Action: func(c *ccli.Context) error {
-	//		return nil
-	//	},
-	//	Flags: []ccli.Flag{},
-	//})
 
 	sort.Sort(commands(app.Commands))
 
