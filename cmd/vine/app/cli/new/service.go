@@ -172,11 +172,9 @@ func runSRV(ctx *cli.Context) {
 		c.Toml.Proto = append(
 			c.Toml.Proto,
 			tool.Proto{
-				Name:    filepath.Join(c.Dir, "proto", "apis", name+".proto"),
-				Plugins: []string{"validator", "dao", "deepcopy"},
-			},
-			tool.Proto{
-				Name:    "",
+				Name:    name,
+				Pb:      filepath.Join(c.Dir, "proto", "service", name, name+".proto"),
+				Type:    "service",
 				Plugins: []string{"vine", "validator"},
 			},
 		)
@@ -194,7 +192,6 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
 			{"deploy/config/" + name + ".ini", t2.ConfSRV},
 			{"deploy/systemed/" + name + ".service", t2.SystemedSRV},
-			{"proto/apis/" + name + ".proto", t2.ProtoType},
 			{"proto/service/" + name + "/" + name + ".proto", t2.ProtoSRV},
 			{"vine.toml", t2.TOML},
 		}
@@ -230,11 +227,9 @@ func runSRV(ctx *cli.Context) {
 		c.Toml.Proto = append(
 			c.Toml.Proto,
 			tool.Proto{
-				Name:    filepath.Join(c.Dir, "proto", "apis", name+".proto"),
-				Plugins: []string{"gogo", "validator", "dao", "deepcopy"},
-			},
-			tool.Proto{
-				Name:    "",
+				Name:    name,
+				Pb:      filepath.Join(c.Dir, "proto", "service", name, name+".proto"),
+				Type:    "service",
 				Plugins: []string{"gogo", "vine", "validator"},
 			},
 		)
@@ -253,7 +248,6 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/Dockerfile", t2.DockerSRV},
 			{"deploy/" + name + ".ini", t2.ConfSRV},
 			{"deploy/" + name + ".service", t2.SystemedSRV},
-			{"proto/apis/" + name + ".proto", t2.ProtoType},
 			{"proto/service/" + name + "/" + name + ".proto", t2.ProtoSRV},
 			{"vine.toml", t2.TOML},
 			{"README.md", t2.Readme},

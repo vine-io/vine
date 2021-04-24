@@ -119,7 +119,7 @@ func write(c config, file, tmpl string) error {
 }
 
 func create(c config) error {
-	fmt.Printf("Creating service %s in %s\n\n", c.Alias, c.GoDir)
+	fmt.Printf("Creating resource %s in %s\n\n", c.Name, c.GoDir)
 
 	t := treeprint.New()
 

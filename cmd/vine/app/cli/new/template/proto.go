@@ -52,4 +52,23 @@ message Pong {
 	int64 stroke = 1;
 }
 `
+
+	ProtoNew = `syntax = "proto3";
+
+package {{.Name}};
+
+option go_package = "{{.Dir}}/proto/service/{{.Name}};{{.Name}}";
+
+service {{title .Name}} {
+	rpc {{title .Name}}Call({{title .Name}}Request) returns ({{title .Name}}Response) {}
+}
+
+message {{title .Name}}Request {
+	string name = 1;
+}
+
+message {{title .Name}}Response {
+	string msg = 1;
+}
+`
 )

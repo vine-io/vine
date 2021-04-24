@@ -47,10 +47,19 @@ alias = "{{.Toml.Pkg.Alias}}"
 type = "{{.Toml.Pkg.Type}}"
 version = "{{.Toml.Pkg.Version}}"
 dir = "{{.Toml.Pkg.Dir}}"
+output = ""
+flags = [
+	"-a",
+	"-installsuffix",
+	"cgo",
+	"-ldflags \"-s -W\""
+]
 {{end}}{{range .Toml.Proto}}
 [[proto]]
 name = "{{.Name}}"
-plugins = ["gogo"{{range .Plugins}}, "{{.}}"{{end}}]
+pb = "{{.Pb}}"
+type = "{{.Type}}"
+plugins = ["gogo"{{range .Plugins}}{{if ne . "gogo"}}, "{{.}}"{{end}}{{end}}]
 {{end}}
 `
 )

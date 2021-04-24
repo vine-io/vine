@@ -32,7 +32,7 @@ type Config struct {
 	Package Package `json:"package" toml:"package"`
 	Mod     *Mods   `json:"mod" toml:"mod"`
 	Pkg     *Mod    `json:"pkg" toml:"pkg"`
-	Proto Protos `json:"proto" toml:"proto"`
+	Proto   Protos  `json:"proto" toml:"proto"`
 }
 
 type Package struct {
@@ -56,6 +56,8 @@ type Protos []Proto
 
 type Proto struct {
 	Name    string   `json:"name" toml:"name"`
+	Pb      string   `json:"pb" toml:"pb"`
+	Type    string   `json:"type" toml:"type"`
 	Plugins []string `json:"plugins" toml:"plugins"`
 }
 
