@@ -54,6 +54,7 @@ func runInit(ctx *cli.Context) {
 	c.Toml = &tool.Config{
 		Package: tool.Package{
 			Namespace: namespace,
+			Root:      dir,
 		},
 	}
 	if cluster {

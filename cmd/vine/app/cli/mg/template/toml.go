@@ -26,28 +26,31 @@ var (
 	TOML = `[package]
 kind = "{{.Toml.Package.Kind}}"
 namespace = "{{.Toml.Package.Namespace}}"
+root = "{{.Toml.Package.Root}}"
 {{if .Toml.Mod}}{{range .Toml.Mod}}
 [[mod]]
 name = "{{.Name}}"
 alias = "{{.Alias}}"
 type = "{{.Type}}"
 version = "{{.Version}}"
+main = "{{.Main}}"
 dir = "{{.Dir}}"
 output = "{{.Output}}"
 flags = [
-	{{range .Flags}}"{{quota .}}", {{end}}{{end}}
+	{{range .Flags}}"{{quota .}}", {{end}}
 ]{{end}}{{end}}
 {{if .Toml.Pkg}}[pkg]
 name = "{{.Toml.Pkg.Name}}"
 alias = "{{.Toml.Pkg.Alias}}"
 type = "{{.Toml.Pkg.Type}}"
 version = "{{.Toml.Pkg.Version}}"
+main = "{{.Toml.Pkg.Main}}"
 dir = "{{.Toml.Pkg.Dir}}"
 output = "{{.Toml.Pkg.Output}}"
 flags = [
-	"-a"{{range .Toml.Pkg.Flags}}{{if ne . "-a"}}, 
-	"{{quota .}}"{{end}}{{end}}
-]{{end}}{{range .Toml.Proto}}
+	{{range .Toml.Pkg.Flags}}"{{quota .}}", {{end}}
+]{{end}}
+{{range .Toml.Proto}}
 [[proto]]
 name = "{{.Name}}"
 pb = "{{.Pb}}"

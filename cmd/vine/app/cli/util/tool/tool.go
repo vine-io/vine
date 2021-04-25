@@ -38,6 +38,7 @@ type Config struct {
 type Package struct {
 	Kind      string `json:"kind" toml:"kind"`
 	Namespace string `json:"namespace" toml:"namespace"`
+	Root      string `json:"root" toml:"root"`
 }
 
 type Mods []Mod
@@ -47,6 +48,7 @@ type Mod struct {
 	Alias   string   `json:"alias" toml:"alias"`
 	Type    string   `json:"type" toml:"type"`
 	Version string   `json:"version" toml:"version"`
+	Main    string   `json:"main" toml:"main"`
 	Dir     string   `json:"dir" toml:"dir"`
 	Output  string   `json:"output" toml:"output"`
 	Flags   []string `json:"flags" toml:"flags"`

@@ -204,6 +204,7 @@ func (s *service) Run() error {
 
 	// start the profiler
 	logger.Infof("Starting [service] %s", s.Name())
+	logger.Infof("service [version] %s", s.Options().Server.Options().Version)
 
 	if err := s.Start(); err != nil {
 		return err

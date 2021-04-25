@@ -75,6 +75,8 @@ func runProto(ctx *cli.Context) {
 			}
 		}
 		args = append(args, pb.Pb)
+
+		fmt.Printf("protoc %s\n", strings.Join(args, " "))
 		cmd := exec.Command("protoc", args...)
 		cmd.Dir = dir
 		out, err := cmd.CombinedOutput()
@@ -82,7 +84,6 @@ func runProto(ctx *cli.Context) {
 			fmt.Printf("generate protobuf: %v: %v\n", err, string(out))
 			return
 		}
-		fmt.Printf("\tprotoc %s\n", strings.Join(args, " "))
 	}
 
 	if name != "" {

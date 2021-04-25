@@ -24,6 +24,15 @@ package build
 
 import (
 	"fmt"
+	"go/build"
+	"io/fs"
+	"os"
+	"os/exec"
+	"path"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"time"
 
 	"github.com/lack-io/cli"
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
@@ -31,26 +40,170 @@ import (
 
 func runSRV(ctx *cli.Context) {
 	cfg, err := tool.New("vine.toml")
-	if err != nil {
+	if err != nil && os.IsNotExist(err) {
 		fmt.Printf("invalid vine project: %v\n", err)
 		return
 	}
 
-	atype := ctx.String("type")
-	name := ctx.Args().First()
-
-	var pb *tool.Proto
-	for _, p := range cfg.Proto {
-		if p.Name == name && p.Type == atype {
-			pb = &p
-			break
+	switch cfg.Package.Namespace {
+	case "cluster":
+		if cfg.Mod == nil {
+			fmt.Println("invalid vine project: Please create a module first.")
+			return
+		}
+	case "single":
+		if cfg.Pkg == nil {
+			fmt.Println("invalid vine project: Please create a module first.")
+			return
 		}
 	}
 
-	if pb == nil {
-		fmt.Printf("file %s.proto not found\n", name)
+	wireEnable := ctx.Bool("wire")
+	flags := ctx.StringSlice("flags")
+	gos := ctx.String("os")
+	arch := ctx.String("arch")
+	output := ctx.String("output")
+	name := ctx.Args().First()
+	cluster := cfg.Package.Kind == "cluster"
+
+	goPath := build.Default.GOPATH
+	// attempt to split path if not windows
+	if runtime.GOOS == "windows" {
+		goPath = strings.Split(goPath, ";")[0]
+	} else {
+		goPath = strings.Split(goPath, ":")[0]
+	}
+
+	if name != "" {
+		var mod *tool.Mod
+		switch cfg.Package.Kind {
+		case "cluster":
+			for _, m := range *cfg.Mod {
+				if m.Name == name {
+					mod = &m
+					break
+				}
+			}
+		case "single":
+			mod = cfg.Pkg
+		}
+
+		if mod == nil {
+			fmt.Printf("module %s not found\n", name)
+			return
+		}
+
+		buildFunc(mod, gos, arch, output, flags, wireEnable, cluster)
+	} else {
+		switch cfg.Package.Kind {
+		case "cluster":
+			for _, mod := range *cfg.Mod {
+				buildFunc(&mod, gos, arch, output, flags, wireEnable, cluster)
+			}
+		case "single":
+			buildFunc(cfg.Pkg, gos, arch, output, flags, wireEnable, cluster)
+		}
+
+	}
+}
+
+func buildFunc(mod *tool.Mod, gos, arch, output string, flags []string, wire bool, cluster bool) {
+	if wire {
+		root := mod.Dir
+		wd, _ := os.Getwd()
+		if !cluster {
+			root = filepath.Join(wd, "pkg")
+		} else {
+			root = filepath.Join(wd, "pkg", mod.Name)
+		}
+		err := filepath.Walk(root, func(p string, _ fs.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
+			dir := path.Dir(p)
+			base := path.Base(p)
+			if base == "inject.go" {
+				cmd := exec.Command("wire", "gen")
+				cmd.Dir = dir
+				out, err := cmd.CombinedOutput()
+				if err != nil {
+					return fmt.Errorf("generate wire code: %v: %v", err, strings.TrimSuffix(string(out), "\n"))
+				}
+			}
+
+			return nil
+		})
+		if err != nil {
+			fmt.Printf("generate wire code: %v\n", err)
+			return
+		}
+	}
+
+	args := []string{"go", "build"}
+	if gos != "" {
+		args = append([]string{"GOOS=" + gos}, args...)
+	}
+	if arch != "" {
+		args = append([]string{"GOARCH=" + arch}, args...)
+	}
+
+	if output != "" {
+		args = append(args, "-o", output)
+	} else if mod.Output != "" {
+		args = append(args, "-o", mod.Output)
+	}
+	if len(flags) != 0 {
+		for _, flag := range flags {
+			args = append(args, parseFlag(flag))
+		}
+	} else {
+		for _, flag := range mod.Flags {
+			args = append(args, parseFlag(flag))
+		}
+	}
+
+	args = append(args, mod.Main)
+
+	fmt.Printf("%s\n", strings.Join(args, " "))
+	now := time.Now()
+
+	var out []byte
+	var err error
+	switch runtime.GOOS {
+	case "windows":
+		out, err = exec.Command("cmd", "/C", strings.Join(args, " ")).CombinedOutput()
+	default:
+		out, err = exec.Command("/bin/sh", "-c", strings.Join(args, " ")).CombinedOutput()
+	}
+	if err != nil {
+		fmt.Printf("build %s: %v\n", mod.Name, string(out))
 		return
 	}
+	fmt.Printf("speed: %v\n", time.Now().Sub(now))
+}
+
+func parseFlag(s string) string {
+	a := strings.Index(s, "$")
+	if a == -1 {
+		return s
+	}
+	b := strings.LastIndex(s, ")")
+	if b == -1 {
+		return s
+	}
+	sub := s[a+2 : b]
+	parts := strings.Split(sub, " ")
+	data, _ := exec.Command(parts[0], parts[1:]...).CombinedOutput()
+	var out string
+	switch runtime.GOOS {
+	case "windows":
+		out = strings.TrimSuffix(string(data), "\r\n")
+	default:
+		out = strings.TrimSuffix(string(data), "\n")
+
+	}
+	return s[:a] + out + s[b+1:]
 }
 
 func cmdSRV() *cli.Command {
@@ -58,11 +211,30 @@ func cmdSRV() *cli.Command {
 		Name:  "service",
 		Usage: "build vine project",
 		Flags: []cli.Flag{
-			//&cli.StringFlag{
-			//	Name:  "type",
-			//	Usage: "the type of protobuf file eg api, service.",
-			//	Value: "api",
-			//},
+			&cli.BoolFlag{
+				Name:    "wire",
+				Aliases: []string{"W"},
+				Usage:   "generate wire code before building vine project.",
+				Value:   true,
+			},
+			&cli.StringSliceFlag{
+				Name:    "flag",
+				Aliases: []string{"L"},
+				Usage:   "specify flags for go command.",
+			},
+			&cli.StringFlag{
+				Name:  "os",
+				Usage: "specify the target operation system.",
+			},
+			&cli.StringFlag{
+				Name:  "arch",
+				Usage: "specify the target architecture.",
+			},
+			&cli.StringFlag{
+				Name:    "output",
+				Aliases: []string{"O"},
+				Usage:   "specify the output path",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			runSRV(c)

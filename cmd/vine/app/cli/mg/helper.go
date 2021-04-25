@@ -35,7 +35,7 @@ import (
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
 
-var defaultFlag = []string{"-a", "-installsuffix", "cgo", `-ldflags "-s -W"`}
+var defaultFlag = []string{"-a", "-installsuffix", "cgo", `-ldflags "-s -w"`}
 
 func protoComments(goDir, name string) []string {
 	return []string{

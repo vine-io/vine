@@ -132,6 +132,7 @@ func runSRV(ctx *cli.Context) {
 			Alias:   c.Alias,
 			Type:    atype,
 			Version: "latest",
+			Main:    filepath.Join("cmd", name, "main.go"),
 			Dir:     filepath.Join(c.Dir, c.Name),
 			Flags:   defaultFlag,
 		})
@@ -171,7 +172,8 @@ func runSRV(ctx *cli.Context) {
 			Alias:   c.Alias,
 			Type:    atype,
 			Version: "latest",
-			Dir:     filepath.Join(c.Dir, c.Name),
+			Main:    filepath.Join("cmd", "main.go"),
+			Dir:     filepath.Join(c.Dir),
 			Flags:   defaultFlag,
 		}
 		c.Toml.Proto = append(
