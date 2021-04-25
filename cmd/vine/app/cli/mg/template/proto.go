@@ -1,8 +1,7 @@
 package template
 
 var (
-	ProtoType = `// +dao:output={{.Dir}}/pkg/dao;dao
-syntax = "proto3";
+	ProtoType = `syntax = "proto3";
 package apis;
 
 option go_package = "{{.Dir}}/proto/apis;apis";

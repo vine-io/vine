@@ -20,46 +20,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package template
+package mg
 
-var (
-	TOML = `[package]
-kind = "{{.Toml.Package.Kind}}"
-namespace = "{{.Toml.Package.Namespace}}"
-{{if .Toml.Mod}}{{range .Toml.Mod}}
-[[mod]]
-name = "{{.Name}}"
-alias = "{{.Alias}}"
-type = "{{.Type}}"
-version = "{{.Version}}"
-dir = "{{.Dir}}"
-output = ""
-flags = [
-	"-a",
-	"-installsuffix",
-	"cgo",
-	"-ldflags \"-s -W\""
-]
-{{end}}{{end}}
-{{if .Toml.Pkg}}[pkg]
-name = "{{.Toml.Pkg.Name}}"
-alias = "{{.Toml.Pkg.Alias}}"
-type = "{{.Toml.Pkg.Type}}"
-version = "{{.Toml.Pkg.Version}}"
-dir = "{{.Toml.Pkg.Dir}}"
-output = ""
-flags = [
-	"-a",
-	"-installsuffix",
-	"cgo",
-	"-ldflags \"-s -W\""
-]
-{{end}}{{range .Toml.Proto}}
-[[proto]]
-name = "{{.Name}}"
-pb = "{{.Pb}}"
-type = "{{.Type}}"
-plugins = ["gogo"{{range .Plugins}}{{if ne . "gogo"}}, "{{.}}"{{end}}{{end}}]
-{{end}}
-`
+import (
+	"fmt"
+	"go/build"
+	"os"
+	"strings"
+
+	"github.com/lack-io/cli"
+
+	t2 "github.com/lack-io/vine/cmd/vine/app/cli/mg/template"
+	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
+
+func runInit(ctx *cli.Context) {
+	cluster := ctx.Bool("cluster")
+	namespace := ctx.String("namespace")
+	useGoModule := os.Getenv("GO111MODULE")
+
+	dir, _ := os.Getwd()
+	c := config{
+		Namespace: namespace,
+		Cluster:   cluster,
+		Dir:       strings.TrimPrefix(dir, build.Default.GOPATH+"/src/"),
+		GoDir:     dir,
+	}
+
+	if _, err := os.Stat("vine.toml"); !os.IsNotExist(err) {
+		fmt.Println("vine.toml already exists")
+		return
+	}
+	c.Toml = &tool.Config{
+		Package: tool.Package{
+			Namespace: namespace,
+		},
+	}
+	if cluster {
+		c.Toml.Package.Kind = "cluster"
+	} else {
+		c.Toml.Package.Kind = "single"
+	}
+
+	c.Files = []file{
+		{"vine.toml", t2.TOML},
+		{"README.md", t2.Readme},
+		{".gitignore", t2.GitIgnore},
+	}
+
+	// set gomodule
+	if useGoModule != "off" {
+		c.Files = append(c.Files, file{"go.mod", t2.Module})
+	}
+
+	if err := create(c); err != nil {
+		fmt.Println(err)
+		return
+	}
+}

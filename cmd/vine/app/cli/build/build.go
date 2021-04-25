@@ -32,12 +32,11 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
-
-	"github.com/lack-io/vine/cmd/vine/app/cli/tool"
+	tool2 "github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
 
 func runBuild(c *cli.Context) {
-	cfg, err := tool.New("vine.toml")
+	cfg, err := tool2.New("vine.toml")
 	if err != nil && os.IsNotExist(err) {
 		fmt.Printf("invalid vine project: %v\n", err)
 		return

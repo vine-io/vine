@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package new
+package mg
 
 import (
 	"fmt"
@@ -30,8 +30,9 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
-	t2 "github.com/lack-io/vine/cmd/vine/app/cli/new/template"
-	"github.com/lack-io/vine/cmd/vine/app/cli/tool"
+
+	t2 "github.com/lack-io/vine/cmd/vine/app/cli/mg/template"
+	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
 
 func runProto(ctx *cli.Context) {
@@ -48,25 +49,27 @@ func runProto(ctx *cli.Context) {
 		return
 	}
 
-	dir, _ := os.Getwd()
-	c := config{
-		Name:    name,
-		Type:    atype,
-		Cluster: true,
-		Dir:     strings.TrimPrefix(dir, build.Default.GOPATH+"/src/"),
-		GoDir:   dir,
-	}
-
 	if _, err := os.Stat("vine.toml"); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	var err error
-	c.Toml, err = tool.New("vine.toml")
+	cfg, err := tool.New("vine.toml")
 	if err != nil {
 		fmt.Printf("invalid vine project: %v\n", err)
 		return
+	}
+
+	dir, _ := os.Getwd()
+	goDir := dir
+	dir = strings.TrimPrefix(dir, build.Default.GOPATH+"/src/")
+	c := config{
+		Name:    name,
+		Type:    atype,
+		Cluster: true,
+		Dir:     dir,
+		GoDir:   goDir,
+		Toml:    cfg,
 	}
 
 	for _, item := range c.Toml.Proto {
@@ -105,10 +108,9 @@ func runProto(ctx *cli.Context) {
 		fmt.Println(err)
 		return
 	}
-
 }
 
-func CmdProto() *cli.Command {
+func cmdProto() *cli.Command {
 	return &cli.Command{
 		Name:  "proto",
 		Usage: "Create a proto file",

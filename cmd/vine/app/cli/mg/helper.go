@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package new
+package mg
 
 import (
 	"fmt"
@@ -30,9 +30,16 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/lack-io/vine/cmd/vine/app/cli/tool"
 	"github.com/xlab/treeprint"
+
+	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
+
+var defaultFlag = []string{
+	"-installsuffix",
+	"cgo",
+	"-ldflags \"-s -W\"",
+}
 
 func protoComments(goDir, name string) []string {
 	return []string{
@@ -72,8 +79,6 @@ type config struct {
 	GoDir string
 	// $GOPATH
 	GoPath string
-	// UseGoPath
-	UseGoPath bool
 	// Files
 	Files []file
 	// Comments
@@ -92,6 +97,9 @@ type file struct {
 func write(c config, file, tmpl string) error {
 	fn := template.FuncMap{
 		"title": strings.Title,
+		"quota": func(s string) string {
+			return strings.ReplaceAll(s, `"`, `\"`)
+		},
 	}
 
 	var f *os.File

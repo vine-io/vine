@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2021 Lack
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,44 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package new generates vine service templates
-package new
+package template
 
-import (
-	"fmt"
-	"os"
-	"os/exec"
-
-	"github.com/lack-io/cli"
-	"github.com/lack-io/vine/util/helper"
+var (
+	TOML = `[package]
+kind = "{{.Toml.Package.Kind}}"
+namespace = "{{.Toml.Package.Namespace}}"
+{{if .Toml.Mod}}{{range .Toml.Mod}}
+[[mod]]
+name = "{{.Name}}"
+alias = "{{.Alias}}"
+type = "{{.Type}}"
+version = "{{.Version}}"
+dir = "{{.Dir}}"
+output = "{{.Output}}"
+flags = [
+	"-a"{{range .Flags}}{{if ne . "-a"}}, 
+	"{{quota .}}"{{end}}{{end}}
+]{{end}}{{end}}
+{{if .Toml.Pkg}}[pkg]
+name = "{{.Toml.Pkg.Name}}"
+alias = "{{.Toml.Pkg.Alias}}"
+type = "{{.Toml.Pkg.Type}}"
+version = "{{.Toml.Pkg.Version}}"
+dir = "{{.Toml.Pkg.Dir}}"
+output = "{{.Toml.Pkg.Output}}"
+flags = [
+	"-a"{{range .Toml.Pkg.Flags}}{{if ne . "-a"}}, 
+	"{{quota .}}"{{end}}{{end}}
+]{{end}}{{range .Toml.Proto}}
+[[proto]]
+name = "{{.Name}}"
+pb = "{{.Pb}}"
+type = "{{.Type}}"
+plugins = ["gogo"{{range .Plugins}}{{if ne . "gogo"}}, "{{.}}"{{end}}{{end}}]
+{{end}}
+`
 )
-
-func Commands() []*cli.Command {
-	return []*cli.Command{
-		{
-			Name:        "new",
-			Usage:       "Create vine resource template",
-			Subcommands: []*cli.Command{CmdSRV(), CmdGateway(), CmdWeb(), CmdProto()},
-			Action: func(c *cli.Context) error {
-				if c.Args().Len() > 0 {
-					command := c.Args().First()
-
-					v, err := exec.LookPath(command)
-					if err != nil {
-						fmt.Println(helper.UnexpectedCommand(c))
-						os.Exit(1)
-					}
-
-					// execute the command
-					ce := exec.Command(v, c.Args().Slice()[1:]...)
-					ce.Stdout = os.Stdout
-					ce.Stderr = os.Stderr
-					return ce.Run()
-				}
-				fmt.Println(helper.MissingCommand(c))
-				os.Exit(1)
-				return nil
-			},
-		},
-	}
-}

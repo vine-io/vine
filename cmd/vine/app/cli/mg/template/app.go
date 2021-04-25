@@ -28,12 +28,23 @@ var (
 var (
 	Name = "{{.Alias}}"
 	Namespace = "{{.Namespace}}"
-	Version = "latest"
 
 	GitTag    string
 	GitCommit string
 	BuildDate string
-	Version = GitTag + "-" + GitCommit + "-" + BuildDate
+	GetVersion = func() string {
+		v := GitTag
+		if GitCommit != "" {
+			v += "-" + GitCommit
+		}
+		if BuildDate != "" {
+			v += "-" + BuildDate
+		}
+		if v == "" {
+			return "latest"
+		}
+		return v
+	}
 )
 `
 
@@ -42,12 +53,23 @@ var (
 var (
 	Name = "{{.Alias}}"
 	Namespace = "{{.Namespace}}"
-	Version = "latest"
 
 	GitTag    string
 	GitCommit string
 	BuildDate string
-	Version = GitTag + "-" + GitCommit + "-" + BuildDate
+	GetVersion = func() string {
+		v := GitTag
+		if GitCommit != "" {
+			v += "-" + GitCommit
+		}
+		if BuildDate != "" {
+			v += "-" + BuildDate
+		}
+		if v == "" {
+			return "latest"
+		}
+		return v
+	}
 )
 `
 
@@ -91,7 +113,7 @@ import (
 func Run() {
 	s := server.New(
 		vine.Name(Name),
-		vine.Version(Version),
+		vine.Version(GetVersion()),
 	)
 
 	if err := s.Init(); err != nil {
@@ -115,7 +137,7 @@ import (
 func Run() {
 	s := server.New(
 		vine.Name(Name),
-		vine.Version(Version),
+		vine.Version(GetVersion()),
 	)
 
 	if err := s.Init(); err != nil {
@@ -128,7 +150,6 @@ func Run() {
 }`
 
 	GatewayApp = `package {{.Name}}
-
 
 import (
 	"mime"
@@ -280,30 +301,56 @@ func Run() {
 }
 `
 
-	WebSRV = `package {{.Name}}
+	SingleWebSRV = `package pkg
 
 import (
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/lack-io/vine/lib/web"
 	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/web"
 )
 
 func Run() {
-	srv := web.NewService(
+	s := web.NewService(
 		web.Name("go.vine.web.helloworld"),
 	)
 
-	//service.Handle("/", http.RedirectHandler("/index.html", 301))
+	s.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
+		return c.SendString("hello world")
+	})
+
+	if err := s.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := s.Run(); err != nil {
+		log.Fatal(err)
+	}
+}`
+
+	ClusterWebSRV = `package {{.Name}}
+
+import (
+	"github.com/gofiber/fiber/v2"
+
+	log "github.com/lack-io/vine/lib/logger"
+	"github.com/lack-io/vine/lib/web"
+)
+
+func Run() {
+	s := web.NewService(
+		web.Name("go.vine.web.helloworld"),
+	)
+
 	srv.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
 		return c.SendString("hello world")
 	})
 
-	if err := service.Init(); err != nil {
+	if err := s.Init(); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := service.Run(); err != nil {
+	if err := s.Run(); err != nil {
 		log.Fatal(err)
 	}
 }`

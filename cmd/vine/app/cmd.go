@@ -33,7 +33,7 @@ import (
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/app/api"
 	cliBuild "github.com/lack-io/vine/cmd/vine/app/cli/build"
-	cliNew "github.com/lack-io/vine/cmd/vine/app/cli/new"
+	cliMg "github.com/lack-io/vine/cmd/vine/app/cli/mg"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/util/helper"
 )
@@ -292,8 +292,7 @@ func Init(options ...vine.Option) {
 	)
 }
 
-//var commandOrder = []string{"server", "new", "env", "login", "run", "logs", "call", "update", "kill", "store", "config", "auth", "status", "stream", "file"}
-var commandOrder = []string{"api", "new"}
+var commandOrder = []string{"api", "new", "init", "build"}
 
 type commands []*ccli.Command
 
@@ -333,7 +332,7 @@ func Setup(app *ccli.App, options ...vine.Option) {
 	//app.Commands = append(app.Commands, server.Commands(options...)...)
 	//app.Commands = append(app.Commands, Commands(options...)...)
 	//app.Commands = append(app.Commands, web.Commands(options...)...)
-	app.Commands = append(app.Commands, cliNew.Commands()...)
+	app.Commands = append(app.Commands, cliMg.Commands()...)
 	app.Commands = append(app.Commands, cliBuild.Commands()...)
 	//app.Commands = append(app.Commands, auth.Commands()...)
 	//app.Commands = append(app.Commands, bot.Commands()...)
@@ -358,7 +357,7 @@ func Setup(app *ccli.App, options ...vine.Option) {
 			ce.Stderr = os.Stderr
 			return ce.Run()
 		}
-		fmt.Println(helper.MissingCommand(c))
+		fmt.Println("No command provided to vine. Please refer to 'vine help'")
 		os.Exit(1)
 		return nil
 	}

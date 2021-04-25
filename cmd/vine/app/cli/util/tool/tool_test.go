@@ -14,7 +14,7 @@ func TestNewMod(t *testing.T) {
 		t.Fatal("valid package kind")
 	}
 
-	if len(c.Mod) == 0 {
+	if len(*c.Mod) == 0 {
 		t.Fatal("no module")
 	}
 

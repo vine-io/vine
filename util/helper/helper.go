@@ -103,7 +103,3 @@ func UnexpectedCommand(ctx *cli.Context) error {
 	}
 	return fmt.Errorf("Unrecognized vine command: %s. Please refer to 'vine help'", commandName)
 }
-
-func MissingCommand(ctx *cli.Context) error {
-	return fmt.Errorf("No command provided to vine. Please refer to 'vine help'")
-}

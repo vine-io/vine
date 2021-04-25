@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package new
+package mg
 
 import (
 	"fmt"
@@ -32,35 +32,41 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
-	t2 "github.com/lack-io/vine/cmd/vine/app/cli/new/template"
-	"github.com/lack-io/vine/cmd/vine/app/cli/tool"
+
+	t2 "github.com/lack-io/vine/cmd/vine/app/cli/mg/template"
+	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
 
 func runSRV(ctx *cli.Context) {
-	namespace := ctx.String("namespace")
-	dir := ctx.String("dir")
-	cluster := ctx.Bool("cluster")
-	name := ctx.Args().First()
-	useGoPath := ctx.Bool("gopath")
-	useGoModule := os.Getenv("GO111MODULE")
+	cfg, err := tool.New("vine.toml")
+	if err != nil {
+		fmt.Printf("invalid vine project: %v\n", err)
+		return
+	}
+
 	var plugins []string
-
-	if len(name) == 0 {
-		fmt.Println("specify service name")
-		return
-	}
-
-	if len(namespace) == 0 {
-		fmt.Println("namespace not defined")
-		return
-	}
-
-	if strings.Contains(name, "/") || strings.Contains(name, "\\") {
-		fmt.Println("invalid service name: contains '/' or '\\'")
-		return
-	}
-
 	atype := "service"
+	dir, _ := os.Getwd()
+	namespace := cfg.Package.Namespace
+	cluster := cfg.Package.Kind == "cluster"
+
+	var name string
+	if cluster {
+		name = ctx.Args().First()
+
+		if len(name) == 0 {
+			fmt.Println("specify service name")
+			return
+		}
+
+		if strings.Contains(name, "/") || strings.Contains(name, "\\") {
+			fmt.Println("invalid service name: contains '/' or '\\'")
+			return
+		}
+	} else {
+		name = filepath.Base(dir)
+	}
+
 	alias := strings.Join([]string{namespace, atype, name}, ".")
 
 	// set the command
@@ -68,45 +74,17 @@ func runSRV(ctx *cli.Context) {
 	if len(namespace) > 0 {
 		command += " --namespace=" + namespace
 	}
-	if len(dir) > 0 {
-		command += " --dir=" + dir
-	}
-	if cluster {
-		command += " --cluster"
-	}
 	if plugins := ctx.StringSlice("plugin"); len(plugins) > 0 {
 		command += " --plugin=" + strings.Join(plugins, ":")
 	}
 	command += " " + name
 
-	// check if the path is absolute, we don't want this
-	// we want to a relative path so we can install in GOPATH
-	if path.IsAbs(dir) {
-		fmt.Println("require relative path as service will be installed in GOPATH")
-		return
-	}
-
-	var goPath string
-	var goDir string
-	// only set gopath if told to use it
-	if useGoPath {
-		goPath = build.Default.GOPATH
-
-		// don't know GOPATH, runaway....
-		if len(goPath) == 0 {
-			fmt.Println("unknown GOPATH")
-			return
-		}
-
-		// attempt to split path if not windows
-		if runtime.GOOS == "windows" {
-			goPath = strings.Split(goPath, ";")[0]
-		} else {
-			goPath = strings.Split(goPath, ":")[0]
-		}
-		goDir = filepath.Join(goPath, "src", path.Clean(dir))
+	goPath := build.Default.GOPATH
+	// attempt to split path if not windows
+	if runtime.GOOS == "windows" {
+		goPath = strings.Split(goPath, ";")[0]
 	} else {
-		goDir = path.Clean(dir)
+		goPath = strings.Split(goPath, ":")[0]
 	}
 
 	for _, plugin := range ctx.StringSlice("plugin") {
@@ -121,6 +99,8 @@ func runSRV(ctx *cli.Context) {
 		}
 	}
 
+	goDir := dir
+	dir = strings.TrimPrefix(dir, goPath+"/src/")
 	c := config{
 		Name:      name,
 		Command:   command,
@@ -129,46 +109,32 @@ func runSRV(ctx *cli.Context) {
 		Cluster:   cluster,
 		Alias:     alias,
 		Dir:       dir,
-		GoPath:    goPath,
 		GoDir:     goDir,
-		UseGoPath: useGoPath,
+		GoPath:    goPath,
 		Plugins:   plugins,
 		Comments:  protoComments(dir, name),
+		Toml:      cfg,
 	}
 
 	if cluster {
-		var exists bool
-		if _, err := os.Stat(c.Dir); !os.IsNotExist(err) {
-			var err error
-			c.Toml, err = tool.New(filepath.Join(c.GoDir, "vine.toml"))
-			if err != nil {
-				fmt.Printf("invalid vine project: %v\n", err)
-				return
+		if c.Toml.Mod != nil {
+			for _, item := range *c.Toml.Mod {
+				if item.Name == name {
+					fmt.Printf("service %s already exists\n", name)
+					return
+				}
 			}
-			*c.Toml.Mod = append(*c.Toml.Mod, tool.Mod{
-				Name:    c.Name,
-				Alias:   c.Alias,
-				Type:    atype,
-				Version: "latest",
-				Dir:     filepath.Join(c.Dir, c.Name),
-			})
-			exists = true
 		} else {
-			c.Toml = &tool.Config{
-				Package: tool.Package{
-					Kind:      "cluster",
-					Namespace: c.Namespace,
-				},
-				Mod: &tool.Mods{tool.Mod{
-					Name:    c.Name,
-					Alias:   c.Alias,
-					Type:    atype,
-					Version: "latest",
-					Dir:     filepath.Join(c.Dir, c.Name),
-				}},
-			}
-			exists = false
+			c.Toml.Mod = &tool.Mods{}
 		}
+		*c.Toml.Mod = append(*c.Toml.Mod, tool.Mod{
+			Name:    c.Name,
+			Alias:   c.Alias,
+			Type:    atype,
+			Version: "latest",
+			Dir:     filepath.Join(c.Dir, c.Name),
+			Flags:   defaultFlag,
+		})
 		c.Toml.Proto = append(
 			c.Toml.Proto,
 			tool.Proto{
@@ -195,34 +161,18 @@ func runSRV(ctx *cli.Context) {
 			{"proto/service/" + name + "/" + name + ".proto", t2.ProtoSRV},
 			{"vine.toml", t2.TOML},
 		}
-
-		if !exists {
-			c.Files = append(c.Files, file{"README.md", t2.Readme})
-			c.Files = append(c.Files, file{".gitignore", t2.GitIgnore})
-		}
-
-		// set gomodule
-		if useGoModule != "off" {
-			c.Files = append(c.Files, file{"go.mod", t2.Module})
-		}
 	} else {
-		c.GoDir = filepath.Join(c.GoDir, c.Name)
-		if _, err := os.Stat(c.GoDir); !os.IsNotExist(err) {
-			fmt.Printf("%s already exists\n", c.GoDir)
+		if c.Toml.Pkg != nil {
+			fmt.Printf("service %s already exists", name)
 			return
 		}
-		c.Toml = &tool.Config{
-			Package: tool.Package{
-				Kind:      "single",
-				Namespace: c.Namespace,
-			},
-			Pkg: &tool.Mod{
-				Name:    c.Name,
-				Alias:   c.Alias,
-				Type:    atype,
-				Version: "latest",
-				Dir:     filepath.Join(c.Dir, c.Name),
-			},
+		c.Toml.Pkg = &tool.Mod{
+			Name:    c.Name,
+			Alias:   c.Alias,
+			Type:    atype,
+			Version: "latest",
+			Dir:     filepath.Join(c.Dir, c.Name),
+			Flags:   defaultFlag,
 		}
 		c.Toml.Proto = append(
 			c.Toml.Proto,
@@ -233,7 +183,6 @@ func runSRV(ctx *cli.Context) {
 				Plugins: []string{"gogo", "vine", "validator"},
 			},
 		)
-		c.Dir = filepath.Join(c.Dir, c.Name)
 		// create service config
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
@@ -250,13 +199,6 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/" + name + ".service", t2.SystemedSRV},
 			{"proto/service/" + name + "/" + name + ".proto", t2.ProtoSRV},
 			{"vine.toml", t2.TOML},
-			{"README.md", t2.Readme},
-			{".gitignore", t2.GitIgnore},
-		}
-
-		// set gomodule
-		if useGoModule != "off" {
-			c.Files = append(c.Files, file{"go.mod", t2.Module})
 		}
 	}
 
@@ -264,35 +206,16 @@ func runSRV(ctx *cli.Context) {
 		fmt.Println(err)
 		return
 	}
-
 }
 
-func CmdSRV() *cli.Command {
+func cmdSRV() *cli.Command {
 	return &cli.Command{
 		Name:  "service",
 		Usage: "Create a service template",
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "namespace",
-				Usage: "Namespace for the project e.g com.example",
-				Value: "go.vine",
-			},
-			&cli.BoolFlag{
-				Name:  "cluster",
-				Usage: "create cluster package.",
-			},
-			&cli.StringFlag{
-				Name:  "dir",
-				Usage: "base dir of service e.g github.com/lack-io",
-			},
 			&cli.StringSliceFlag{
 				Name:  "plugin",
 				Usage: "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times",
-			},
-			&cli.BoolFlag{
-				Name:  "gopath",
-				Usage: "Create the service in the gopath.",
-				Value: true,
 			},
 		},
 		Action: func(c *cli.Context) error {
