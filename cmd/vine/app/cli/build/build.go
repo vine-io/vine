@@ -32,11 +32,13 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
-	tool2 "github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
+
+	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
+	"github.com/lack-io/vine/util/helper"
 )
 
 func runBuild(c *cli.Context) {
-	cfg, err := tool2.New("vine.toml")
+	cfg, err := tool.New("vine.toml")
 	if err != nil && os.IsNotExist(err) {
 		fmt.Printf("invalid vine project: %v\n", err)
 		return
@@ -100,7 +102,8 @@ func Commands() []*cli.Command {
 	return []*cli.Command{
 		{
 			Name:  "build",
-			Usage: "build vine project",
+			Usage: "build vine project or resource",
+			Subcommands: []*cli.Command{cmdProto(), cmdSRV()},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:  "wire",
@@ -109,7 +112,23 @@ func Commands() []*cli.Command {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				runBuild(c)
+				if c.Args().Len() > 0 {
+					command := c.Args().First()
+
+					v, err := exec.LookPath(command)
+					if err != nil {
+						fmt.Println(helper.UnexpectedSubcommand(c))
+						os.Exit(1)
+					}
+
+					// execute the command
+					ce := exec.Command(v, c.Args().Slice()[1:]...)
+					ce.Stdout = os.Stdout
+					ce.Stderr = os.Stderr
+					return ce.Run()
+				}
+				fmt.Println("No command provided to vine. Please refer to 'vine build help'")
+				os.Exit(1)
 				return nil
 			},
 		},

@@ -20,39 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package template
+package build
 
-var (
-	TOML = `[package]
-kind = "{{.Toml.Package.Kind}}"
-namespace = "{{.Toml.Package.Namespace}}"
-{{if .Toml.Mod}}{{range .Toml.Mod}}
-[[mod]]
-name = "{{.Name}}"
-alias = "{{.Alias}}"
-type = "{{.Type}}"
-version = "{{.Version}}"
-dir = "{{.Dir}}"
-output = "{{.Output}}"
-flags = [
-	{{range .Flags}}"{{quota .}}", {{end}}{{end}}
-]{{end}}{{end}}
-{{if .Toml.Pkg}}[pkg]
-name = "{{.Toml.Pkg.Name}}"
-alias = "{{.Toml.Pkg.Alias}}"
-type = "{{.Toml.Pkg.Type}}"
-version = "{{.Toml.Pkg.Version}}"
-dir = "{{.Toml.Pkg.Dir}}"
-output = "{{.Toml.Pkg.Output}}"
-flags = [
-	"-a"{{range .Toml.Pkg.Flags}}{{if ne . "-a"}}, 
-	"{{quota .}}"{{end}}{{end}}
-]{{end}}{{range .Toml.Proto}}
-[[proto]]
-name = "{{.Name}}"
-pb = "{{.Pb}}"
-type = "{{.Type}}"
-plugins = ["gogo"{{range .Plugins}}{{if ne . "gogo"}}, "{{.}}"{{end}}{{end}}]
-{{end}}
-`
+import (
+	"fmt"
+
+	"github.com/lack-io/cli"
+	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
+
+func runSRV(ctx *cli.Context) {
+	cfg, err := tool.New("vine.toml")
+	if err != nil {
+		fmt.Printf("invalid vine project: %v\n", err)
+		return
+	}
+
+	atype := ctx.String("type")
+	name := ctx.Args().First()
+
+	var pb *tool.Proto
+	for _, p := range cfg.Proto {
+		if p.Name == name && p.Type == atype {
+			pb = &p
+			break
+		}
+	}
+
+	if pb == nil {
+		fmt.Printf("file %s.proto not found\n", name)
+		return
+	}
+}
+
+func cmdSRV() *cli.Command {
+	return &cli.Command{
+		Name:  "service",
+		Usage: "build vine project",
+		Flags: []cli.Flag{
+			//&cli.StringFlag{
+			//	Name:  "type",
+			//	Usage: "the type of protobuf file eg api, service.",
+			//	Value: "api",
+			//},
+		},
+		Action: func(c *cli.Context) error {
+			runSRV(c)
+			return nil
+		},
+	}
+}

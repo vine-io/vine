@@ -44,7 +44,7 @@ func Commands() []*cli.Command {
 
 					v, err := exec.LookPath(command)
 					if err != nil {
-						fmt.Println(helper.UnexpectedCommand(c))
+						fmt.Println(helper.UnexpectedSubcommand(c))
 						os.Exit(1)
 					}
 
