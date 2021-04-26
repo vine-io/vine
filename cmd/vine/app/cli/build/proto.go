@@ -111,7 +111,7 @@ func runProto(ctx *cli.Context) {
 func cmdProto() *cli.Command {
 	return &cli.Command{
 		Name:  "proto",
-		Usage: "generate protobuf file",
+		Usage: "Generate protobuf file",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "type",

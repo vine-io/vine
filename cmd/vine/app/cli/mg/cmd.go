@@ -61,7 +61,7 @@ func Commands() []*cli.Command {
 		},
 		{
 			Name:  "init",
-			Usage: "create a vine project",
+			Usage: "Initialize a vine project",
 			Flags: []cli.Flag{
 				&cli.StringFlag{
 					Name:  "namespace",

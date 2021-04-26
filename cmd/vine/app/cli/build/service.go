@@ -209,7 +209,7 @@ func parseFlag(s string) string {
 func cmdSRV() *cli.Command {
 	return &cli.Command{
 		Name:  "service",
-		Usage: "build vine project",
+		Usage: "Build vine project",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "wire",

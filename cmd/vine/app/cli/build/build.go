@@ -24,85 +24,19 @@ package build
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 	"os/exec"
-	"path"
-	"path/filepath"
-	"strings"
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 	"github.com/lack-io/vine/util/helper"
 )
-
-func runBuild(c *cli.Context) {
-	cfg, err := tool.New("vine.toml")
-	if err != nil && os.IsNotExist(err) {
-		fmt.Printf("invalid vine project: %v\n", err)
-		return
-	}
-
-	var exists bool
-	name := c.Args().First()
-	wireEnable := c.Bool("wire")
-
-	switch cfg.Package.Kind {
-	case "single":
-		exists = cfg.Pkg.Name == name
-	case "cluster":
-		for _, mod := range *cfg.Mod {
-			if mod.Name == name {
-				exists = true
-				break
-			}
-		}
-	}
-	if !exists {
-		fmt.Printf("package %s not exists\n", name)
-		return
-	}
-
-	if wireEnable {
-		pwd, err := os.Getwd()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		root := filepath.Join(pwd, "pkg")
-		err = filepath.Walk(root, func(p string, _ fs.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			dir := path.Dir(p)
-			base := path.Base(p)
-			if base == "inject.go" {
-				cmd := exec.Command("wire", "gen")
-				cmd.Dir = dir
-				out, err := cmd.CombinedOutput()
-				if err != nil {
-					return fmt.Errorf("generate wire code: %v: %v", err, strings.TrimSuffix(string(out), "\n"))
-				}
-			}
-
-			return nil
-		})
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
-
-	exec.Command("make", "build-"+name)
-}
 
 func Commands() []*cli.Command {
 	return []*cli.Command{
 		{
-			Name:  "build",
-			Usage: "build vine project or resource",
+			Name:        "build",
+			Usage:       "Build vine project or resource",
 			Subcommands: []*cli.Command{cmdProto(), cmdSRV()},
 			Flags: []cli.Flag{
 				&cli.BoolFlag{

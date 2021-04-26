@@ -105,7 +105,7 @@ func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) er
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
 func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}_StreamStream) error {
-	log.Infof("Received {{title .Alias}}.Stream request with count: %d", req.Count)
+	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
 	s.h.Stream()
@@ -178,14 +178,14 @@ func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) er
 	// TODO: Validate
 	s.h.Call()
 	// FIXME: fix call method
-	log.Info("Received {{title .Alias}}.Call request")
+	log.Info("Received {{title .Name}}.Call request")
 	rsp.Msg = "Hello " + req.Name
 	return nil
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
 func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}_StreamStream) error {
-	log.Infof("Received {{title .Alias}}.Stream request with count: %d", req.Count)
+	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
 	s.h.Stream()
