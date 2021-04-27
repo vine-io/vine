@@ -84,7 +84,7 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/service"
-	pb "{{.Dir}}/proto/service/{{.Name}}"
+	pb "{{.Dir}}/proto/service/{{.Version}}/{{.Name}}"
 )
 
 type server struct{
@@ -164,7 +164,7 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/{{.Name}}/service"
-	pb "{{.Dir}}/proto/service/{{.Name}}"
+	pb "{{.Dir}}/proto/service/{{.Version}}/{{.Name}}"
 )
 
 type server struct{

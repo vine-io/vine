@@ -42,6 +42,7 @@ func runProto(ctx *cli.Context) {
 	}
 
 	atype := ctx.String("type")
+	version := ctx.String("proto-version")
 	dir := ctx.String("dir")
 	paths := ctx.StringSlice("path")
 	plugins := ctx.StringSlice("plugins")
@@ -57,13 +58,14 @@ func runProto(ctx *cli.Context) {
 	if dir == "" {
 		dir = filepath.Join(goPath, "src")
 	}
-	fmt.Printf("change directory %s: \n", dir)
 
-	gen := func(pb *tool.Proto, paths, plugins []string) {
-		paths = append([]string{dir}, paths...)
+	gen := func(pb *tool.Proto, root string, paths, plugins []string) {
+		fmt.Printf("change directory %s: \n", root)
+
+		paths = append([]string{root}, paths...)
 		args := make([]string, 0)
 		for _, p := range paths {
-			args = append(args, "-I=" + p)
+			args = append(args, "-I="+p)
 		}
 		if len(plugins) == 0 {
 			for _, p := range pb.Plugins {
@@ -78,7 +80,7 @@ func runProto(ctx *cli.Context) {
 
 		fmt.Printf("protoc %s\n", strings.Join(args, " "))
 		cmd := exec.Command("protoc", args...)
-		cmd.Dir = dir
+		cmd.Dir = root
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			fmt.Printf("generate protobuf: %v: %v\n", err, string(out))
@@ -89,21 +91,21 @@ func runProto(ctx *cli.Context) {
 	if name != "" {
 		var pb *tool.Proto
 		for _, p := range cfg.Proto {
-			if p.Name == name && p.Type == atype {
+			if p.Name == name && p.Type == atype && p.Version == version {
 				pb = &p
 				break
 			}
 		}
 
 		if pb == nil {
-			fmt.Printf("file %s.proto not found\n", name)
+			fmt.Printf("file %s/%s.proto not found\n", version, name)
 			return
 		}
 
-		gen(pb, paths, plugins)
+		gen(pb, dir, paths, plugins)
 	} else {
 		for _, p := range cfg.Proto {
-			gen(&p, paths, plugins)
+			gen(&p, dir, paths, plugins)
 		}
 	}
 }
@@ -117,6 +119,12 @@ func cmdProto() *cli.Command {
 				Name:  "type",
 				Usage: "the type of protobuf file eg api, service.",
 				Value: "api",
+			},
+			&cli.StringFlag{
+				Name:    "proto-version",
+				Aliases: []string{"v"},
+				Usage:   "the version of protobuf file.",
+				Value:   "v1",
 			},
 			&cli.StringFlag{
 				Name:  "dir",

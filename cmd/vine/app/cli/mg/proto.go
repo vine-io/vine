@@ -37,6 +37,7 @@ import (
 
 func runProto(ctx *cli.Context) {
 	atype := ctx.String("type")
+	version := ctx.String("proto-version")
 	name := ctx.Args().First()
 
 	if len(name) == 0 {
@@ -69,12 +70,13 @@ func runProto(ctx *cli.Context) {
 		Cluster: true,
 		Dir:     dir,
 		GoDir:   goDir,
+		Version: version,
 		Toml:    cfg,
 	}
 
 	for _, item := range c.Toml.Proto {
-		if item.Type == atype && item.Name == name {
-			fmt.Printf("%s %s.proto exists\n", atype, name)
+		if item.Type == atype && item.Name == name && item.Version == version {
+			fmt.Printf("%s %s/%s.proto exists\n", atype, version, name)
 			return
 		}
 	}
@@ -82,23 +84,23 @@ func runProto(ctx *cli.Context) {
 	switch atype {
 	case "service":
 		c.Files = []file{
-			{"proto/service/" + name + "/" + name + ".proto", t2.ProtoNew},
+			{"proto/service/" + version + "/" + name + "/" + name + ".proto", t2.ProtoNew},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "proto", "service", name, name+".proto"),
+			Pb:      filepath.Join(c.Dir, "proto", "service", version, name, name+".proto"),
 			Type:    "service",
 			Plugins: []string{"vine", "validator"},
 		})
 	case "api":
 		c.Files = []file{
-			{"proto/apis/" + name + ".proto", t2.ProtoType},
+			{"proto/apis/" + version + "/" + name + ".proto", t2.ProtoType},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "proto", "apis", name+".proto"),
+			Pb:      filepath.Join(c.Dir, "proto", "apis", version, name+".proto"),
 			Type:    "api",
 			Plugins: []string{"validator", "dao", "deepcopy"},
 		})
@@ -116,9 +118,15 @@ func cmdProto() *cli.Command {
 		Usage: "Create a proto file",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "type",
-				Usage: "type of proto eg service, api",
-				Value: "api",
+				Name:    "type",
+				Usage:   "type of proto eg service, api",
+				Value:   "api",
+			},
+			&cli.StringFlag{
+				Name:    "proto-version",
+				Aliases: []string{"v"},
+				Usage:   "specify proto version",
+				Value:   "v1",
 			},
 		},
 		Action: func(c *cli.Context) error {

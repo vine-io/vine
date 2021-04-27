@@ -4,7 +4,7 @@ var (
 	ProtoType = `syntax = "proto3";
 package apis;
 
-option go_package = "{{.Dir}}/proto/apis;apis";
+option go_package = "{{.Dir}}/proto/apis/{{.Version}};apis";
 
 message {{.Name}}Message {
 	string name = 1;
@@ -15,7 +15,7 @@ message {{.Name}}Message {
 
 package {{.Name}};
 
-option go_package = "{{.Dir}}/proto/service/{{.Name}};{{.Name}}";
+option go_package = "{{.Dir}}/proto/service/{{.Version}}/{{.Name}};{{.Name}}";
 
 service {{title .Name}} {
 	rpc Call(Request) returns (Response) {}
@@ -56,7 +56,7 @@ message Pong {
 
 package {{.Name}};
 
-option go_package = "{{.Dir}}/proto/service/{{.Name}};{{.Name}}";
+option go_package = "{{.Dir}}/proto/service/{{.Version}}/{{.Name}};{{.Name}}";
 
 service {{title .Name}} {
 	rpc {{title .Name}}Call({{title .Name}}Request) returns ({{title .Name}}Response) {}

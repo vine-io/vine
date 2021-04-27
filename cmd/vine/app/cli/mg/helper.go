@@ -77,6 +77,8 @@ type config struct {
 	GoPath string
 	// Files
 	Files []file
+	// v1
+	Version string
 	// Comments
 	Comments []string
 	// Plugins registry=etcd:broker=nats
