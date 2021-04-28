@@ -131,6 +131,7 @@ func Queue(name string) SubscribeOption {
 	}
 }
 
+// Registry sets the registry for broker
 func Registry(r registry.Registry) Option {
 	return func(o *Options) {
 		o.Registry = r
@@ -144,7 +145,7 @@ func Secure(b bool) Option {
 	}
 }
 
-// Specify TLS Config
+// TLSConfig specify TLS Config
 func TLSConfig(t *tls.Config) Option {
 	return func(o *Options) {
 		o.TLSConfig = t
