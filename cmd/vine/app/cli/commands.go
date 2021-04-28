@@ -30,6 +30,6 @@ func help(c *cli.Context, args []string) ([]byte, error) {
 		fmt.Fprintln(w, "\t", cmd.name, "\t\t", cmd.usage)
 	}
 
-	w.Flush()
+	_ = w.Flush()
 	return nil, nil
 }

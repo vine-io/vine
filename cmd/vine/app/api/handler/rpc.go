@@ -162,9 +162,9 @@ func RPC(c *fiber.Ctx) error {
 			ce.Id = "go.vine.rpc"
 			ce.Status = http.StatusText(500)
 			ce.Detail = "error during request: " + ce.Detail
-			c.Response().SetStatusCode(500)
+			c.Status(500)
 		default:
-			c.Response().SetStatusCode(int(ce.Code))
+			c.Status(int(ce.Code))
 		}
 		_, err = c.Write([]byte(ce.Error()))
 		return err
