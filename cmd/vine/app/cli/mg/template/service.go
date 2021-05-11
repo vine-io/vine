@@ -30,7 +30,7 @@ func (s *{{.Name}}) PingPong() {
 	panic("implement me")
 }
 
-func New(s vine.Service) *{{.Name}} {
+func new{{title .Name}}(s vine.Service) *{{.Name}} {
 	return &{{.Name}}{Service: s}
 }`
 
@@ -44,8 +44,8 @@ import (
 	"github.com/lack-io/vine"
 )
 
-func NewStorage(s vine.Service) *storage {
-	wire.Build(New)
+func New(s vine.Service) *{{.Name}} {
+	wire.Build(new{{title .Name}})
 	return nil
 }
 `

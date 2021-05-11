@@ -74,13 +74,6 @@ func runSRV(ctx *cli.Context) {
 		goPath = strings.Split(goPath, ":")[0]
 	}
 
-	if output == "" {
-		output = "storage"
-		if runtime.GOOS == "windows" {
-			output = output + ".exe"
-		}
-	}
-
 	if name != "" {
 		var mod *tool.Mod
 		switch cfg.Package.Kind {
@@ -130,7 +123,7 @@ func buildFunc(mod *tool.Mod, gos, arch, output string, flags []string, wire boo
 
 			dir := path.Dir(p)
 			base := path.Base(p)
-			if base == "inject.go" {
+			if base == "wire.go" {
 				cmd := exec.Command("wire", "gen")
 				cmd.Dir = dir
 				out, err := cmd.CombinedOutput()
