@@ -195,7 +195,7 @@ func (p *pool) release(addr string, conn *poolConn, err error) {
 	// if streams == 0, we can do something
 	if conn.streams == 0 {
 		// 1. it has errored
-		// . too many idle conn or
+		// 2. too many idle conn or
 		// 3. conn is too old
 		now := time.Now().Unix()
 		if err != nil || sp.idle >= p.maxIdle || now-created > p.ttl {

@@ -74,6 +74,13 @@ func runSRV(ctx *cli.Context) {
 		goPath = strings.Split(goPath, ":")[0]
 	}
 
+	if output == "" {
+		output = "storage"
+		if runtime.GOOS == "windows" {
+			output = output + ".exe"
+		}
+	}
+
 	if name != "" {
 		var mod *tool.Mod
 		switch cfg.Package.Kind {

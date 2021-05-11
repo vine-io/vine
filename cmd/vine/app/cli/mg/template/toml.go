@@ -26,7 +26,6 @@ var (
 	TOML = `[package]
 kind = "{{.Toml.Package.Kind}}"
 namespace = "{{.Toml.Package.Namespace}}"
-root = "{{.Toml.Package.Root}}"
 {{if .Toml.Mod}}{{range .Toml.Mod}}
 [[mod]]
 name = "{{.Name}}"
