@@ -37,8 +37,8 @@ dir = "{{.Dir}}"
 output = "{{.Output}}"
 flags = [
 	{{range .Flags}}"{{quota .}}", {{end}}
-]{{end}}
-{{end}}{{if .Toml.Pkg}}[pkg]
+]
+{{end}}{{end}}{{if .Toml.Pkg}}[pkg]
 name = "{{.Toml.Pkg.Name}}"
 alias = "{{.Toml.Pkg.Alias}}"
 type = "{{.Toml.Pkg.Type}}"
