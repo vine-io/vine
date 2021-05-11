@@ -37,8 +37,8 @@ dir = "{{.Dir}}"
 output = "{{.Output}}"
 flags = [
 	{{range .Flags}}"{{quota .}}", {{end}}
-]{{end}}{{end}}
-{{if .Toml.Pkg}}[pkg]
+]{{end}}
+{{end}}{{if .Toml.Pkg}}[pkg]
 name = "{{.Toml.Pkg.Name}}"
 alias = "{{.Toml.Pkg.Alias}}"
 type = "{{.Toml.Pkg.Type}}"
@@ -48,8 +48,8 @@ dir = "{{.Toml.Pkg.Dir}}"
 output = "{{.Toml.Pkg.Output}}"
 flags = [
 	{{range .Toml.Pkg.Flags}}"{{quota .}}", {{end}}
-]{{end}}
-{{range .Toml.Proto}}
+]
+{{end}}{{range .Toml.Proto}}
 [[proto]]
 name = "{{.Name}}"
 pb = "{{.Pb}}"
