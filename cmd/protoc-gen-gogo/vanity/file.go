@@ -192,6 +192,14 @@ func TurnOnMessageNameAll(file *descriptor.FileDescriptorProto) {
 	SetBoolFileOption(gogoproto.E_MessagenameAll, true)(file)
 }
 
+func TurnOffMessageNameAll(file *descriptor.FileDescriptorProto) {
+	SetBoolFileOption(gogoproto.E_MessagenameAll, false)(file)
+}
+
 func TurnOnGoRegistration(file *descriptor.FileDescriptorProto) {
 	SetBoolFileOption(gogoproto.E_GoprotoRegistration, true)(file)
+}
+
+func TurnOffTypeDesc(file *descriptor.FileDescriptorProto) {
+	SetBoolFileOption(gogoproto.E_TypedeclAll, false)(file)
 }
