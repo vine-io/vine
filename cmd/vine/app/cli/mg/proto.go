@@ -90,6 +90,7 @@ func runProto(ctx *cli.Context) {
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
 			Pb:      filepath.Join(c.Dir, "proto", "service", version, name, name+".proto"),
+			Version: version,
 			Type:    "service",
 			Plugins: []string{"vine", "validator"},
 		})
@@ -101,6 +102,7 @@ func runProto(ctx *cli.Context) {
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
 			Pb:      filepath.Join(c.Dir, "proto", "apis", version, name+".proto"),
+			Version: version,
 			Type:    "api",
 			Plugins: []string{"validator", "dao", "deepcopy"},
 		})
@@ -118,9 +120,9 @@ func cmdProto() *cli.Command {
 		Usage: "Create a proto file",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "type",
-				Usage:   "type of proto eg service, api",
-				Value:   "api",
+				Name:  "type",
+				Usage: "type of proto eg service, api",
+				Value: "api",
 			},
 			&cli.StringFlag{
 				Name:    "proto-version",
