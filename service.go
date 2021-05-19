@@ -121,6 +121,7 @@ func (s *service) Init(opts ...Option) {
 		// Explicitly set the table name to the service name
 		name := s.opts.Server.Options().Name
 		_ = s.opts.Store.Init(store.Table(name))
+		_ = s.opts.Dialect.Init()
 	})
 }
 

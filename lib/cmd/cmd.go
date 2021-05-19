@@ -233,11 +233,6 @@ var (
 			Usage:   "Selector used to pick nodes for querying",
 		},
 		&cli.StringFlag{
-			Name:    "dao",
-			EnvVars: []string{"VINE_DAO"},
-			Usage:   "Dao used for database service",
-		},
-		&cli.StringFlag{
 			Name:    "dao-dialect",
 			EnvVars: []string{"VINE_DAO_DIALECT"},
 			Usage:   "Database option for the underlying dao",
@@ -528,6 +523,15 @@ func (c *cmd) Before(ctx *cli.Context) error {
 
 		*c.opts.Store = s(store.WithClient(vineClient))
 	}
+	// Set the dialect
+	if name := ctx.String("dao-dialect"); len(name) > 0 {
+		d, ok := c.opts.Dialects[name]
+		if !ok {
+			return fmt.Errorf("unsuported dialect: %s", name)
+		}
+
+		*c.opts.Dialect = d()
+	}
 
 	// Set the runtime
 	if name := ctx.String("runtime"); len(name) > 0 {
@@ -722,6 +726,12 @@ func (c *cmd) Before(ctx *cli.Context) error {
 	if addrs := ctx.String("transport-address"); len(addrs) > 0 {
 		if err := (*c.opts.Transport).Init(transport.Addrs(strings.Split(addrs, ",")...)); err != nil {
 			log.Fatalf("Error configuring store: %v", err)
+		}
+	}
+
+	if dsn := ctx.String("dao-dsn"); len(dsn) > 0 {
+		if err := (*c.opts.Dialect).Init(dao.DSN(dsn)); err != nil {
+			log.Fatalf("Error configuring dialect dsn: %v", err)
 		}
 	}
 
