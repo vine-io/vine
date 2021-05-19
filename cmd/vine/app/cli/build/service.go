@@ -60,8 +60,6 @@ func runSRV(ctx *cli.Context) {
 
 	wireEnable := ctx.Bool("wire")
 	flags := ctx.StringSlice("flags")
-	gos := ctx.String("os")
-	arch := ctx.String("arch")
 	output := ctx.String("output")
 	name := ctx.Args().First()
 	cluster := cfg.Package.Kind == "cluster"
@@ -93,21 +91,21 @@ func runSRV(ctx *cli.Context) {
 			return
 		}
 
-		buildFunc(mod, gos, arch, output, flags, wireEnable, cluster)
+		buildFunc(mod, output, flags, wireEnable, cluster)
 	} else {
 		switch cfg.Package.Kind {
 		case "cluster":
 			for _, mod := range *cfg.Mod {
-				buildFunc(&mod, gos, arch, output, flags, wireEnable, cluster)
+				buildFunc(&mod, output, flags, wireEnable, cluster)
 			}
 		case "single":
-			buildFunc(cfg.Pkg, gos, arch, output, flags, wireEnable, cluster)
+			buildFunc(cfg.Pkg, output, flags, wireEnable, cluster)
 		}
 
 	}
 }
 
-func buildFunc(mod *tool.Mod, gos, arch, output string, flags []string, wire bool, cluster bool) {
+func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster bool) {
 	if wire {
 		root := mod.Dir
 		wd, _ := os.Getwd()
@@ -140,29 +138,30 @@ func buildFunc(mod *tool.Mod, gos, arch, output string, flags []string, wire boo
 		}
 	}
 
-	args := []string{"go", "build"}
-	if gos != "" {
-		args = append([]string{"GOOS=" + gos}, args...)
-	}
-	if arch != "" {
-		args = append([]string{"GOARCH=" + arch}, args...)
+	flags1, flags2 := []string{}, []string{}
+	if len(flags) == 0 {
+		flags = mod.Flags
 	}
 
+	for _, flag := range flags {
+		if strings.TrimSpace(flag) == "" {
+			continue
+		}
+		prefix := strings.Split(flag, "=")[0]
+		if strings.Contains(flag, "=") && isUp(prefix) {
+			flags1 = append(flags1, parseFlag(flag))
+		} else {
+			flags2 = append(flags2, parseFlag(flag))
+		}
+	}
+
+	args := append(flags1, "go", "build")
 	if output != "" {
 		args = append(args, "-o", output)
 	} else if mod.Output != "" {
 		args = append(args, "-o", mod.Output)
 	}
-	if len(flags) != 0 {
-		for _, flag := range flags {
-			args = append(args, parseFlag(flag))
-		}
-	} else {
-		for _, flag := range mod.Flags {
-			args = append(args, parseFlag(flag))
-		}
-	}
-
+	args = append(args, flags2...)
 	args = append(args, mod.Main)
 
 	fmt.Printf("%s\n", strings.Join(args, " "))
@@ -206,6 +205,15 @@ func parseFlag(s string) string {
 	return s[:a] + out + s[b+1:]
 }
 
+func isUp(text string) bool {
+	for _, c := range text {
+		if !(c >= 'A' && c <= 'Z') {
+			return false
+		}
+	}
+	return true
+}
+
 func cmdSRV() *cli.Command {
 	return &cli.Command{
 		Name:  "service",
@@ -221,14 +229,6 @@ func cmdSRV() *cli.Command {
 				Name:    "flag",
 				Aliases: []string{"L"},
 				Usage:   "specify flags for go command.",
-			},
-			&cli.StringFlag{
-				Name:  "os",
-				Usage: "specify the target operation system.",
-			},
-			&cli.StringFlag{
-				Name:  "arch",
-				Usage: "specify the target architecture.",
 			},
 			&cli.StringFlag{
 				Name:    "output",
