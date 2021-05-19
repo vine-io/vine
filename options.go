@@ -241,6 +241,13 @@ func Name(n string) Option {
 	}
 }
 
+// Id of the service
+func Id(id string) Option {
+	return func(o *Options) {
+		_ = o.Server.Init(server.Id(id))
+	}
+}
+
 // Version of the service
 func Version(v string) Option {
 	return func(o *Options) {
@@ -279,7 +286,7 @@ func RegisterTTL(t time.Duration) Option {
 // RegisterInterval specifies the interval on which to re-register
 func RegisterInterval(t time.Duration) Option {
 	return func(o *Options) {
-		_ =o.Server.Init(server.RegisterInterval(t))
+		_ = o.Server.Init(server.RegisterInterval(t))
 	}
 }
 
