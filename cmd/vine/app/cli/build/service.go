@@ -30,6 +30,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"time"
@@ -206,12 +207,8 @@ func parseFlag(s string) string {
 }
 
 func isUp(text string) bool {
-	for _, c := range text {
-		if !(c >= 'A' && c <= 'Z') {
-			return false
-		}
-	}
-	return true
+	b, _ := regexp.MatchString(`[A-Z_]+`, text)
+	return b
 }
 
 func cmdSRV() *cli.Command {
