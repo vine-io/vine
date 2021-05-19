@@ -42,7 +42,7 @@ Vine 遵守 Apache 2.0 开源许可.
 go get github.com/gogo/protobuf
 go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 go get github.com/lack-io/vine/cmd/protoc-gen-vine
-go get github.com/lack-io/cmd/vine
+go get github.com/lack-io/vine/cmd/vine
 ```
 
 ### proto 文件
