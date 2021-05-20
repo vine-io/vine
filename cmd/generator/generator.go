@@ -1500,6 +1500,7 @@ func (g *Generator) generateImports() {
 	}
 	g.P("var _ = ", g.Pkg["fmt"], ".Errorf")
 	g.P("var _ = ", g.Pkg["math"], ".Inf")
+	g.P("var _ = ", "ebinary.BigEndian")
 	for _, cimport := range g.customImports {
 		if cimport == "time" {
 			g.P("var _ = time.Kitchen")

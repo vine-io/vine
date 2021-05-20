@@ -144,7 +144,6 @@ func runGateway(ctx *cli.Context) {
 		{"pkg/" + name + "/mod.go", t2.ClusterMod},
 		{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
 		{"pkg/" + name + "/app.go", t2.GatewayApp},
-		{"pkg/" + name + "/default.go", t2.ClusterDefault},
 		{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
 		{"deploy/config/" + name + ".ini", t2.ConfSRV},
 		{"deploy/systemed/" + name + ".service", t2.SystemedSRV},

@@ -41,7 +41,6 @@ type condExpr struct {
 	op EOp
 }
 
-// Raw().Op(EqOp).Set("id", 1).Build()
 func Cond() *condExpr {
 	return &condExpr{op: EqOp}
 }

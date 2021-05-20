@@ -87,20 +87,6 @@ import ({{range .Plugins}}
 ){{end}}
 `
 
-	SingleDefault = `package pkg
-
-func init() {
-	// TODO: setup default lib
-}
-`
-
-	ClusterDefault = `package {{.Name}}
-
-func init() {
-	// TODO: setup default lib
-}
-`
-
 	SingleApp = `package pkg
 
 import (
