@@ -6,7 +6,7 @@ var (
 go 1.15
 
 require (
-	github.com/lack-io/vine v0.15.0
+	github.com/lack-io/vine v0.16.0
 )
 
 // This can be removed once etcd becomes go gettable, version 3.4 and 3.5 is not,
