@@ -34,7 +34,6 @@ require (
 	github.com/lack-io/cli v1.2.2
 	github.com/lack-io/gscheduler v0.1.0
 	github.com/lucas-clemente/quic-go v0.19.3
-	github.com/mattn/go-sqlite3 v1.14.6
 	github.com/miekg/dns v1.1.35
 	github.com/mitchellh/hashstructure v1.1.0
 	github.com/nlopes/slack v0.6.0
