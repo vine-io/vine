@@ -27,7 +27,6 @@ import (
 	"sync"
 
 	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/sqlite"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/lack-io/vine/lib/auth"
@@ -72,9 +71,9 @@ func (a *Auth) Init(opts ...auth.Option) {
 	}
 
 	// noop will not work for auth
-	if a.Options.Dialect.String() == "noop" {
-		a.Options.Dialect = sqlite.NewDialect()
-	}
+	//if a.Options.Dialect.String() == "noop" {
+	//	a.Options.Dialect = sqlite.NewDialect()
+	//}
 
 	// setup a token provider
 	if a.TokenProvider == nil {

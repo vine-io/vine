@@ -27,7 +27,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/sqlite"
 
 	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/lib/auth/token"
@@ -47,9 +46,9 @@ var (
 func NewTokenProvider(opts ...token.Option) token.Provider {
 	options := token.NewOptions(opts...)
 
-	if options.Dialect == nil {
-		options.Dialect = sqlite.NewDialect()
-	}
+	//if options.Dialect == nil {
+	//	options.Dialect = sqlite.NewDialect()
+	//}
 
 	return &Basic{
 		dialect: options.Dialect,

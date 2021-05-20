@@ -50,6 +50,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/net v0.0.0-20210226101413-39120d07d75e
 	google.golang.org/grpc v1.35.0
+	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/telegram-bot-api.v4 v4.6.4
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
