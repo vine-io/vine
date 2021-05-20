@@ -433,6 +433,7 @@ func newCmd(opts ...Option) Cmd {
 		Transport: &transport.DefaultTransport,
 		Runtime:   &runtime.DefaultRuntime,
 		Store:     &store.DefaultStore,
+		Dialect:   &dao.DefaultDialect,
 		Tracer:    &trace.DefaultTracer,
 		Profile:   &profile.DefaultProfile,
 		Config:    &config.DefaultConfig,

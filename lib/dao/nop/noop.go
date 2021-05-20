@@ -53,7 +53,7 @@ func (noopDialect) DefaultValueOf(field *schema.Field) clause.Expression {
 }
 
 func (noopDialect) Migrator() dao.Migrator {
-	return nil
+	return &Migrator{}
 }
 
 func (noopDialect) BindVarTo(writer clause.Writer, _ *dao.Statement, v interface{}) {

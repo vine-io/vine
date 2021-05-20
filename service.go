@@ -105,8 +105,8 @@ func (s *service) Init(opts ...Option) {
 				cmd.Client(&s.opts.Client),
 				cmd.Config(&s.opts.Config),
 				cmd.Server(&s.opts.Server),
-				cmd.Dialect(&s.opts.Dialect),
 				cmd.Store(&s.opts.Store),
+				cmd.Dialect(&s.opts.Dialect),
 				cmd.Profile(&s.opts.Profile),
 			); err != nil {
 				logger.Fatal(err)
@@ -121,7 +121,6 @@ func (s *service) Init(opts ...Option) {
 		// Explicitly set the table name to the service name
 		name := s.opts.Server.Options().Name
 		_ = s.opts.Store.Init(store.Table(name))
-		_ = s.opts.Dialect.Init()
 	})
 }
 
