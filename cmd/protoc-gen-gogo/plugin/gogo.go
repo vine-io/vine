@@ -125,6 +125,7 @@ func (g *gogo) Generate(file *generator.FileDescriptor) {
 	g.bitsPkg = g.NewImport("math/bits", "bits")
 	g.fmtPkg = g.NewImport("fmt", "fmt")
 
+	g.P("var _ =", g.binaryPkg.Use(), ".BigEndian")
 	g.P()
 
 	// Assert version compatibility.
