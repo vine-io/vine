@@ -193,6 +193,7 @@ func Run() {
 	// initialise service
 	svc := vine.NewService(
 		vine.Name(Name),
+		vine.Version(GetVersion()),
 		vine.Metadata(map[string]string{"api-address": Address}),
 		vine.Flags(flags...),
 		vine.Action(func(ctx *cli.Context) error {
@@ -227,14 +228,14 @@ func Run() {
 
 	if enableOpenAPI {
 		openAPI := openapi.New(svc)
-		mime.AddExtensionType(".svg", "image/svg+xml")
-		statikFs, err := fs.New()
+		_ = mime.AddExtensionType(".svg", "image/svg+xml")
+		sfs, err := fs.New()
 		if err != nil {
 			log.Fatalf("Starting OpenAPI: %v", err)
 		}
 		prefix := "/openapi-ui/"
 		app.All(prefix, openAPI.OpenAPIHandler)
-		app.Use(prefix, filesystem.New(filesystem.Config{Root: statikFs}))
+		app.Use(prefix, filesystem.New(filesystem.Config{Root: sfs}))
 		app.Get("/openapi.json", openAPI.OpenAPIJOSNHandler)
 		app.Get("/services", openAPI.OpenAPIServiceHandler)
 		log.Infof("Starting OpenAPI at %v", prefix)
@@ -267,7 +268,9 @@ func Run() {
 	authWrapper := auth.Wrapper(rr, nsResolver)
 	api := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
 
-	api.Init(opts...)
+	if err := api.Init(opts...); err != nil {
+		log.Fatal(err)
+    }
 	api.Handle("/", app)
 
 	// Start API
