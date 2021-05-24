@@ -104,7 +104,7 @@ func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) er
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}_StreamStream) error {
+func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -124,7 +124,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}_PingPongStream) error {
+func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.h.PingPong()
 	// FIXME: fix stream pingpong
@@ -184,7 +184,7 @@ func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) er
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}_StreamStream) error {
+func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -204,7 +204,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}_PingPongStream) error {
+func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.h.PingPong()
 	// FIXME: fix stream pingpong
