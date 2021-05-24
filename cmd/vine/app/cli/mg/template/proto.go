@@ -13,7 +13,7 @@ message {{.Name}}Message {
 
 	ProtoSRV = `syntax = "proto3";
 
-package {{.Name}};
+package {{.Name}}Service;
 
 option go_package = "{{.Dir}}/proto/service/{{.Version}}/{{.Name}};{{.Name}}";
 

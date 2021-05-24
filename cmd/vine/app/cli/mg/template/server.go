@@ -143,7 +143,7 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}_PingPon
 
 func (s *server) Init(opts ...vine.Option) error {
 	s.Service.Init(opts...)
-	return pb.Register{{title .Name}}Handler(s.Service.Server(), s)
+	return pb.Register{{title .Name}}ServiceHandler(s.Service.Server(), s)
 }
 
 func New(opts ...vine.Option) *server {
@@ -223,7 +223,7 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}_PingPon
 
 func (s *server) Init(opts ...vine.Option) error {
 	s.Service.Init(opts...)
-	return pb.Register{{title .Name}}Handler(s.Service.Server(), s)
+	return pb.Register{{title .Name}}ServiceHandler(s.Service.Server(), s)
 }
 
 func New(opts ...vine.Option) *server {

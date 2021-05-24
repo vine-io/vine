@@ -804,7 +804,6 @@ func (n *network) processNetChan(listener tunnel.Listener) {
 				// and wants to either connect or reconnect to the network
 				// The faster it gets the network config (routes and peer graph)
 				// the faster the network converges to a stable state
-
 				go func() {
 					// get node peer graph to send back to the connecting node
 					node := PeersToProto(n.node, MaxDepth)
