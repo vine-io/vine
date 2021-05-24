@@ -1328,12 +1328,12 @@ func (g *Generator) generate(file *FileDescriptor) {
 			g.Fail("formatted generated Go source code could not be mapped back to the original code:", err.Error())
 		}
 		for _, anno := range g.annotations {
-			new, ok := m.Find(int(*anno.Begin), int(*anno.End))
+			new_, ok := m.Find(int(*anno.Begin), int(*anno.End))
 			if !ok {
 				g.Fail("span in formatted generated Go source code could not be mapped back to the original code")
 			}
-			*anno.Begin = int32(new.Pos)
-			*anno.End = int32(new.End)
+			*anno.Begin = int32(new_.Pos)
+			*anno.End = int32(new_.End)
 		}
 	}
 }
@@ -2858,7 +2858,7 @@ func (g *Generator) generateCommonMethods(mc *msgCtx) {
 	g.P("var xxx_messageInfo_", mc.goName, " ", g.Pkg["proto"], ".InternalMessageInfo")
 }
 
-// Generate the type and default constant definitions for this Descriptor.
+// GenerateMessage generates the type and default constant definitions for this Descriptor.
 func (g *Generator) GenerateMessage(message *Descriptor) {
 	topLevelFields := []topLevelField{}
 	oFields := make(map[int32]*oneofField)
