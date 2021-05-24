@@ -60,10 +60,6 @@ type Event interface {
 
 type Option func(*Options)
 
-var (
-	HeaderPrefix = "Vine-"
-)
-
 // NewService creates and returns a new Service based on the packages within.
 func NewService(opts ...Option) Service {
 	return newService(opts...)
