@@ -142,12 +142,12 @@ func newNetwork(opts ...Option) Network {
 	}
 
 	// init tunnel address to the network bind address
-	options.Tunnel.Init(
+	_ = options.Tunnel.Init(
 		tunnel.Address(options.Address),
 	)
 
 	// init router Id to the network id
-	options.Router.Init(
+	_ = options.Router.Init(
 		router.Id(options.Id),
 		router.Address(peerAddress),
 	)
@@ -163,7 +163,7 @@ func newNetwork(opts ...Option) Network {
 	)
 
 	// server is network server
-	server := smucp.NewServer(
+	svc := smucp.NewServer(
 		server.Id(options.Id),
 		server.Address(peerAddress),
 		server.Advertise(advertise),
@@ -173,7 +173,7 @@ func newNetwork(opts ...Option) Network {
 	)
 
 	// client is network client
-	client := mucp.NewClient(
+	cli := mucp.NewClient(
 		client.Broker(tunBroker),
 		client.Transport(tunTransport),
 		client.Selector(
@@ -194,8 +194,8 @@ func newNetwork(opts ...Option) Network {
 		router:     options.Router,
 		proxy:      options.Proxy,
 		tunnel:     options.Tunnel,
-		server:     server,
-		client:     client,
+		server:     svc,
+		client:     cli,
 		tunClient:  make(map[string]tunnel.Session),
 		peerLinks:  make(map[string]tunnel.Link),
 		discovered: make(chan bool, 1),
@@ -459,12 +459,12 @@ func (n *network) resolveNodes() ([]string, error) {
 	}
 
 	// use the DNS resolver to expand peers
-	dns := &dns.Resolver{}
+	d := &dns.Resolver{}
 
 	// append seed nodes if we have them
 	for _, node := range n.options.Nodes {
 		// resolve anything that looks like a host name
-		records, err := dns.Resolve(node)
+		records, err := d.Resolve(node)
 		if err != nil {
 			log.Debugf("Failed to resolve %v %v", node, err)
 			continue
@@ -1442,8 +1442,8 @@ func (n *network) sendMsg(method, channel string, msg proto.Message) error {
 
 	// check if the channel client is initialized
 	n.RLock()
-	client, ok := n.tunClient[channel]
-	if !ok || client == nil {
+	cli, ok := n.tunClient[channel]
+	if !ok || cli == nil {
 		n.RUnlock()
 		return ErrClientNotFound
 	}
@@ -1451,7 +1451,7 @@ func (n *network) sendMsg(method, channel string, msg proto.Message) error {
 
 	log.Debugf("Network sending %s message from: %s", method, n.options.Id)
 
-	return client.Send(&transport.Message{
+	return cli.Send(&transport.Message{
 		Header: map[string]string{
 			"Vine-Method": method,
 		},
@@ -1612,7 +1612,7 @@ func (n *network) Connect() error {
 	// set our internal node address
 	// if advertise address is not set
 	if len(n.options.Advertise) == 0 {
-		n.server.Init(server.Advertise(n.tunnel.Address()))
+		_ = n.server.Init(server.Advertise(n.tunnel.Address()))
 	}
 
 	// listen on NetworkChannel
