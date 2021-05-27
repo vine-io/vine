@@ -32,6 +32,7 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
+	"github.com/lack-io/vine/cmd/vine/version"
 
 	t2 "github.com/lack-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
@@ -116,6 +117,9 @@ func runSRV(ctx *cli.Context) {
 		Comments:  protoComments(dir, name),
 		Toml:      cfg,
 	}
+
+	c.GoVersion = version.GoV()
+	c.VineVersion = version.GitTag
 
 	if cluster {
 		if c.Toml.Mod != nil {

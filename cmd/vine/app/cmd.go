@@ -30,6 +30,7 @@ import (
 	"sort"
 
 	ccli "github.com/lack-io/cli"
+	"github.com/lack-io/vine/cmd/vine/version"
 
 	"github.com/lack-io/vine"
 	"github.com/lack-io/vine/cmd/vine/app/api"
@@ -41,10 +42,6 @@ import (
 )
 
 var (
-	GitCommit string
-	GitTag    string
-	BuildDate string
-
 	name        = "vine"
 	description = `A vine service runtime
         _
@@ -259,28 +256,6 @@ func setup(app *ccli.App) {
 	}
 }
 
-func buildVersion() string {
-	var vineVersion string
-
-	if GitTag != "" {
-		vineVersion = GitTag
-	}
-
-	if GitCommit != "" {
-		vineVersion += fmt.Sprintf("-%s", GitCommit)
-	}
-
-	if BuildDate != "" {
-		vineVersion += fmt.Sprintf("-%s", BuildDate)
-	}
-
-	if vineVersion == "" {
-		vineVersion = "latest"
-	}
-
-	return vineVersion
-}
-
 // Init initialised the command line
 func Init(options ...vine.Option) {
 	app := ccli.NewApp()
@@ -289,7 +264,7 @@ func Init(options ...vine.Option) {
 	cmd.Init(
 		cmd.Name(name),
 		cmd.Description(description),
-		cmd.Version(buildVersion()),
+		cmd.Version(version.Version()),
 		cmd.CliApp(app),
 	)
 }

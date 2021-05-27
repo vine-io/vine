@@ -75,6 +75,10 @@ type config struct {
 	GoDir string
 	// $GOPATH
 	GoPath string
+	// the version of go binary
+	GoVersion string
+	// the version of vine
+	VineVersion string
 	// Files
 	Files []file
 	// v1

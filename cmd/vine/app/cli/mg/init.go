@@ -29,6 +29,7 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
+	"github.com/lack-io/vine/cmd/vine/version"
 
 	t2 "github.com/lack-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
@@ -46,6 +47,9 @@ func runInit(ctx *cli.Context) {
 		Dir:       strings.TrimPrefix(dir, build.Default.GOPATH+"/src/"),
 		GoDir:     dir,
 	}
+
+	c.GoVersion = version.GoV()
+	c.VineVersion = version.GitTag
 
 	if _, err := os.Stat("vine.toml"); !os.IsNotExist(err) {
 		fmt.Println("vine.toml already exists")

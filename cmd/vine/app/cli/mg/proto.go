@@ -30,6 +30,7 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
+	"github.com/lack-io/vine/cmd/vine/version"
 
 	t2 "github.com/lack-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
@@ -37,7 +38,7 @@ import (
 
 func runProto(ctx *cli.Context) {
 	atype := ctx.String("type")
-	version := ctx.String("proto-version")
+	pv := ctx.String("proto-version")
 	name := ctx.Args().First()
 
 	if len(name) == 0 {
@@ -70,13 +71,16 @@ func runProto(ctx *cli.Context) {
 		Cluster: true,
 		Dir:     dir,
 		GoDir:   goDir,
-		Version: version,
+		Version: pv,
 		Toml:    cfg,
 	}
 
+	c.GoVersion = version.GoV()
+	c.VineVersion = version.GitTag
+
 	for _, item := range c.Toml.Proto {
-		if item.Type == atype && item.Name == name && item.Version == version {
-			fmt.Printf("%s %s/%s.proto exists\n", atype, version, name)
+		if item.Type == atype && item.Name == name && item.Version == pv {
+			fmt.Printf("%s %s/%s.proto exists\n", atype, pv, name)
 			return
 		}
 	}
@@ -84,25 +88,25 @@ func runProto(ctx *cli.Context) {
 	switch atype {
 	case "service":
 		c.Files = []file{
-			{"proto/service/" + version + "/" + name + "/" + name + ".proto", t2.ProtoNew},
+			{"proto/service/" + pv + "/" + name + "/" + name + ".proto", t2.ProtoNew},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "proto", "service", version, name, name+".proto"),
-			Version: version,
+			Pb:      filepath.Join(c.Dir, "proto", "service", pv, name, name+".proto"),
+			Version: pv,
 			Type:    "service",
 			Plugins: []string{"vine", "validator"},
 		})
 	case "api":
 		c.Files = []file{
-			{"proto/apis/" + version + "/" + name + ".proto", t2.ProtoType},
+			{"proto/apis/" + pv + "/" + name + ".proto", t2.ProtoType},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "proto", "apis", version, name+".proto"),
-			Version: version,
+			Pb:      filepath.Join(c.Dir, "proto", "apis", pv, name+".proto"),
+			Version: pv,
 			Type:    "api",
 			Plugins: []string{"validator", "dao", "deepcopy"},
 		})

@@ -3,10 +3,10 @@ package template
 var (
 	Module = `module {{.Dir}}
 
-go 1.15
+go {{.GoVersion}}
 
 require (
-	github.com/lack-io/vine v0.16.3
+	github.com/lack-io/vine {{.VineVersion}}
 )
 
 // This can be removed once etcd becomes go gettable, version 3.4 and 3.5 is not,
