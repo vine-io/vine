@@ -25,7 +25,6 @@ package server
 import (
 	"context"
 	"crypto/tls"
-	"runtime"
 	"sync"
 	"time"
 
