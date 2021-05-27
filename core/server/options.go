@@ -111,10 +111,6 @@ func NewOptions(opt ...Option) Options {
 		opts.Version = DefaultVersion
 	}
 
-	opts.Metadata["os"] = runtime.GOOS
-	opts.Metadata["arch"] = runtime.GOARCH
-	opts.Metadata["go-version"] = runtime.Version()
-
 	return opts
 }
 
