@@ -94,7 +94,7 @@ func init() {
 }
 
 func newGRPCServer(opts ...server.Option) server.Server {
-	options := newOptions(opts...)
+	options := server.NewOptions(opts...)
 
 	// create a grpc server
 	svc := &grpcServer{

@@ -30,11 +30,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/core/codec"
-	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/core/transport"
 )
 
 type codecsKey struct{}
@@ -44,7 +40,7 @@ type maxMsgSizeKey struct{}
 type maxConnKey struct{}
 type tlsAuth struct{}
 
-// gRPC Codec to be used to encode/decode requests for a given content type
+// Codec gRPC Codec to be used to encode/decode requests for a given content type
 func Codec(contentType string, c encoding.Codec) server.Option {
 	return func(o *server.Options) {
 		codecs := make(map[string]encoding.Codec)
@@ -83,24 +79,4 @@ func Options(opts ...grpc.ServerOption) server.Option {
 // send. Default maximum message size is 4 MB
 func MaxMsgSize(s int) server.Option {
 	return setServerOption(maxMsgSizeKey{}, s)
-}
-
-func newOptions(opt ...server.Option) server.Options {
-	opts := server.Options{
-		Codecs:    make(map[string]codec.NewCodec),
-		Metadata:  map[string]string{},
-		Broker:    broker.DefaultBroker,
-		Registry:  registry.DefaultRegistry,
-		Transport: transport.DefaultTransport,
-		Address:   server.DefaultAddress,
-		Name:      server.DefaultName,
-		Id:        server.DefaultId,
-		Version:   server.DefaultVersion,
-	}
-
-	for _, o := range opt {
-		o(&opts)
-	}
-
-	return opts
 }

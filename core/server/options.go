@@ -25,6 +25,7 @@ package server
 import (
 	"context"
 	"crypto/tls"
+	"runtime"
 	"sync"
 	"time"
 
@@ -109,6 +110,10 @@ func NewOptions(opt ...Option) Options {
 	if len(opts.Version) == 0 {
 		opts.Version = DefaultVersion
 	}
+
+	opts.Metadata["os"] = runtime.GOOS
+	opts.Metadata["arch"] = runtime.GOARCH
+	opts.Metadata["go-version"] = runtime.Version()
 
 	return opts
 }
