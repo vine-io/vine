@@ -37,7 +37,7 @@ func TestHash(t *testing.T) {
 	route2 := route1
 
 	route1Hash := route1.Hash()
-	route2Hash := route.Hash()
+	route2Hash := route2.Hash()
 
 	// we should get the same hash
 	if route1Hash != route2Hash {
