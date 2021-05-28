@@ -31,7 +31,7 @@ require (
 	github.com/jinzhu/now v1.1.1
 	github.com/json-iterator/go v1.1.10
 	github.com/kr/pretty v0.2.1
-	github.com/lack-io/cli v1.2.3
+	github.com/lack-io/cli v1.2.4
 	github.com/lack-io/gscheduler v0.1.0
 	github.com/lucas-clemente/quic-go v0.19.3
 	github.com/miekg/dns v1.1.35

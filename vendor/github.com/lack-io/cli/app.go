@@ -284,7 +284,7 @@ func (a *App) RunContext(ctx context.Context, arguments []string) (err error) {
 
 	if !a.HideHelp && checkHelp(context) {
 		_ = ShowAppHelp(context)
-		//os.Exit(0)
+		os.Exit(0)
 		return nil
 	}
 
