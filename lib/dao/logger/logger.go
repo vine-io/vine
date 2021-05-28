@@ -67,32 +67,15 @@ var (
 )
 
 func New(opt Options) Interface {
-	var (
-		infoStr      = ""
-		warnStr      = ""
-		errStr       = ""
-		traceStr     = "[%.3fms] [rows:%v] %s"
-		traceWarnStr = "%s [%.3fms] [rows:%v] %s"
-		traceErrStr  = "%s [%.3fms] [rows:%v] %s"
-	)
-
 	return &logger{
 		Helper:       log.NewHelper(log.DefaultLogger),
 		Options:      opt,
-		infoStr:      infoStr,
-		warnStr:      warnStr,
-		errStr:       errStr,
-		traceStr:     traceStr,
-		traceWarnStr: traceWarnStr,
-		traceErrStr:  traceErrStr,
 	}
 }
 
 type logger struct {
 	*log.Helper
 	Options
-	infoStr, warnStr, errStr            string
-	traceStr, traceErrStr, traceWarnStr string
 }
 
 // LogMode log mode
@@ -124,29 +107,32 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 	}
 	if l.LogLevel > Silent {
 		elapsed := time.Since(begin)
+		sql, rows := fc()
+		fields["sql"] = sql
+		fields["elapsed"] = float64(elapsed.Nanoseconds())/1e6
 		switch {
 		case err != nil && l.LogLevel >= Error:
-			sql, rows := fc()
 			if rows == -1 {
-				l.Fields(fields).Logf(log.ErrorLevel, l.traceErrStr, err, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+				fields["rows"] = "-"
 			} else {
-				l.Fields(fields).Logf(log.ErrorLevel, l.traceErrStr, err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+				fields["rows"] = rows
 			}
+			l.Fields(fields).Log(log.ErrorLevel, err)
 		case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= Warn:
-			sql, rows := fc()
 			slowLog := fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold)
 			if rows == -1 {
-				l.Fields(fields).Logf(log.WarnLevel, l.traceWarnStr, slowLog, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+				fields["rows"] = "-"
 			} else {
-				l.Fields(fields).Logf(log.WarnLevel, l.traceWarnStr, slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+				fields["rows"] = rows
 			}
+			l.Fields(fields).Log(log.WarnLevel, slowLog)
 		case l.LogLevel == Info:
-			sql, rows := fc()
 			if rows == -1 {
-				l.Fields(fields).Logf(log.InfoLevel, l.traceStr, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+				fields["rows"] = "-"
 			} else {
-				l.Fields(fields).Logf(log.InfoLevel, l.traceStr, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+				fields["rows"] = rows
 			}
+			l.Fields(fields).Log(log.WarnLevel, "")
 		}
 	}
 }
