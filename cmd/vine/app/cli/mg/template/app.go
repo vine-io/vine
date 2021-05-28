@@ -100,6 +100,9 @@ func Run() {
 	s := server.New(
 		vine.Name(Name),
 		vine.Version(GetVersion()),
+		vine.Metadata(map[string]string{
+			"namespace": Namespace,
+		}),
 	)
 
 	if err := s.Init(); err != nil {
@@ -124,6 +127,9 @@ func Run() {
 	s := server.New(
 		vine.Name(Name),
 		vine.Version(GetVersion()),
+		vine.Metadata(map[string]string{
+			"namespace": Namespace,
+		}),
 	)
 
 	if err := s.Init(); err != nil {
@@ -194,7 +200,10 @@ func Run() {
 	svc := vine.NewService(
 		vine.Name(Name),
 		vine.Version(GetVersion()),
-		vine.Metadata(map[string]string{"api-address": Address}),
+		vine.Metadata(map[string]string{
+			"api-address": Address,
+			"namespace": Namespace,
+		}),
 		vine.Flags(flags...),
 		vine.Action(func(ctx *cli.Context) error {
 			if len(ctx.String("server-name")) > 0 {
@@ -302,6 +311,9 @@ import (
 func Run() {
 	s := web.NewService(
 		web.Name("go.vine.web.helloworld"),
+		vine.Metadata(map[string]string{
+			"namespace": Namespace,
+		}),
 	)
 
 	s.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
@@ -329,6 +341,9 @@ import (
 func Run() {
 	s := web.NewService(
 		web.Name("go.vine.web.helloworld"),
+		vine.Metadata(map[string]string{
+			"namespace": Namespace,
+		}),
 	)
 
 	srv.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
