@@ -24,11 +24,11 @@ package openapi
 
 import (
 	"bytes"
+	"encoding/json"
 	"html/template"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	json "github.com/json-iterator/go"
 	"github.com/lack-io/vine"
 	openapipb "github.com/lack-io/vine/proto/apis/openapi"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
