@@ -26,14 +26,18 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"regexp"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	dlog "github.com/lack-io/vine/lib/debug/log"
 )
+
+var logSourceDir string
 
 func init() {
 	lvl, err := GetLevel(os.Getenv("VINE_LOG_LEVEL"))
@@ -42,6 +46,8 @@ func init() {
 	}
 
 	DefaultLogger = NewHelper(NewLogger(WithLevel(lvl)))
+	_, file, _, _ := runtime.Caller(0)
+	logSourceDir = regexp.MustCompile(`default\.go`).ReplaceAllString(file, "")
 }
 
 type defaultLogger struct {
@@ -74,6 +80,17 @@ func copyFields(src map[string]interface{}) map[string]interface{} {
 		dst[k] = v
 	}
 	return dst
+}
+
+func fileWithLineNum() string {
+	for i := 2; i < 15; i++ {
+		_, file, line, ok := runtime.Caller(i)
+
+		if ok && (!strings.HasPrefix(file, logSourceDir) || strings.HasSuffix(file, "_test.go")) {
+			return logCallerfilePath(file) + ":" + strconv.FormatInt(int64(line), 10)
+		}
+	}
+	return ""
 }
 
 // logCallerfilePath returns a package/file:line description of the caller,
@@ -111,10 +128,7 @@ func (l *defaultLogger) Log(level Level, v ...interface{}) {
 	l.RUnlock()
 
 	fields["level"] = level.String()
-
-	if _, file, line, ok := runtime.Caller(l.opts.CallerSkipCount); ok {
-		fields["file"] = fmt.Sprintf("%s:%d", logCallerfilePath(file), line)
-	}
+	fields["file"] = fileWithLineNum()
 
 	rec := dlog.Record{
 		Timestamp: time.Now(),
@@ -152,10 +166,7 @@ func (l *defaultLogger) Logf(level Level, format string, v ...interface{}) {
 	l.RUnlock()
 
 	fields["level"] = level.String()
-
-	if _, file, line, ok := runtime.Caller(l.opts.CallerSkipCount); ok {
-		fields["file"] = fmt.Sprintf("%s:%d", logCallerfilePath(file), line)
-	}
+	fields["file"] = fileWithLineNum()
 
 	rec := dlog.Record{
 		Timestamp: time.Now(),
@@ -195,11 +206,10 @@ func (n *defaultLogger) Options() Options {
 func NewLogger(opts ...Option) Logger {
 	// Default options
 	options := Options{
-		Level:           InfoLevel,
-		Fields:          make(map[string]interface{}),
-		Out:             os.Stderr,
-		CallerSkipCount: 2,
-		Context:         context.Background(),
+		Level:   InfoLevel,
+		Fields:  make(map[string]interface{}),
+		Out:     os.Stderr,
+		Context: context.Background(),
 	}
 
 	l := &defaultLogger{opts: options}
