@@ -128,7 +128,9 @@ func (l *defaultLogger) Log(level Level, v ...interface{}) {
 	l.RUnlock()
 
 	fields["level"] = level.String()
-	fields["file"] = fileWithLineNum()
+	if fields["file"] == "" {
+		fields["file"] = fileWithLineNum()
+	}
 
 	rec := dlog.Record{
 		Timestamp: time.Now(),
@@ -166,7 +168,9 @@ func (l *defaultLogger) Logf(level Level, format string, v ...interface{}) {
 	l.RUnlock()
 
 	fields["level"] = level.String()
-	fields["file"] = fileWithLineNum()
+	if fields["file"] == "" {
+		fields["file"] = fileWithLineNum()
+	}
 
 	rec := dlog.Record{
 		Timestamp: time.Now(),
