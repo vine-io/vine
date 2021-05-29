@@ -128,7 +128,7 @@ func (l *defaultLogger) Log(level Level, v ...interface{}) {
 	l.RUnlock()
 
 	fields["level"] = level.String()
-	if fields["file"] == "" {
+	if fields["file"] == "" || fields["file"] == nil {
 		fields["file"] = fileWithLineNum()
 	}
 
@@ -168,7 +168,7 @@ func (l *defaultLogger) Logf(level Level, format string, v ...interface{}) {
 	l.RUnlock()
 
 	fields["level"] = level.String()
-	if fields["file"] == "" {
+	if fields["file"] == "" || fields["file"] == nil {
 		fields["file"] = fileWithLineNum()
 	}
 

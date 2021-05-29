@@ -271,3 +271,12 @@ func isInline(text string) bool {
 	}
 	return inline
 }
+
+func isMeta(comments []*Comment) bool {
+	for _, c := range comments {
+		if c.Tag == "gen" && c.Text == "meta" {
+			return true
+		}
+	}
+	return false
+}

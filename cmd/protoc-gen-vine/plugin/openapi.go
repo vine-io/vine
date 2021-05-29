@@ -714,9 +714,9 @@ func (g *vine) generateSchema(svcName string, field *generator.FieldDescriptor, 
 		for _, item := range enums.Value {
 			val = append(val, fmt.Sprintf("%d", item.GetNumber()))
 		}
-		tt := tags
+		tt := map[string]*Tag{}
 		tt[_enum] = &Tag{Key: _enum, Value: "[" + strings.Join(val, ", ") + "]"}
-		generateNumber(g, field, tags)
+		generateNumber(g, field, tt)
 	case descriptor.FieldDescriptorProto_TYPE_FIXED64:
 		g.P(`Type: "integer",`)
 		g.P(`Format: "int32",`)
