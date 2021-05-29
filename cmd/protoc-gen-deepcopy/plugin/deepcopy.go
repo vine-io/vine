@@ -39,7 +39,7 @@ const (
 	_deepcopy = "deepcopy"
 
 	// field common tag
-	_inline   = "inline"
+	_inline = "inline"
 )
 
 type Tag struct {
@@ -103,7 +103,7 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 		return
 	}
 
-	mname:= msg.Proto.GetName()
+	mname := msg.Proto.GetName()
 	g.P(fmt.Sprintf(`// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.`))
 	g.P(fmt.Sprintf(`func (in *%s) DeepCopyInto(out *%s) {`, mname, mname))
 	g.P(`*out = *in`)
@@ -125,8 +125,22 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 		return
 	}
 
+	pkg := tags[_deepcopy].Value
 	g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
-	g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
+	if pkg != "" {
+		i := strings.LastIndex(pkg, "/")
+		if i == -1 {
+			g.gen.Fail("invalid deepcopy path: " + pkg)
+		}
+		j := strings.LastIndex(pkg, ".")
+		if j == -1 {
+			g.gen.Fail("invalid deepcopy path: " + pkg)
+		}
+		g.NewImport(pkg[:j], pkg[i+1:j]).Use()
+		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() %s {`, mname, pkg[i+1:]))
+	} else {
+		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
+	}
 	g.P(`if in == nil {`)
 	g.P(`return nil`)
 	g.P(`}`)
@@ -206,7 +220,6 @@ func (g *deepcopy) generateMessageField(field *generator.FieldDescriptor) {
 		g.P(`}`)
 	}
 }
-
 
 func (g *deepcopy) buildFieldGoType(file *generator.FileDescriptor, field *descriptor.FieldDescriptorProto) (string, error) {
 	switch field.GetType() {

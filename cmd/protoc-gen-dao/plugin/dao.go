@@ -25,6 +25,11 @@ package plugin
 import (
 	"errors"
 	"fmt"
+	"go/build"
+	"go/parser"
+	"go/token"
+	"io/fs"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -140,6 +145,11 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	}
 	sort.Slice(aFields, func(i, j int) bool { return aFields[i].Num < aFields[j].Num })
 	for _, value := range aFields {
+		f := strings.TrimSuffix(filepath.Clean(file.GetName()), ".proto")
+		// ignore unique alias
+		if g.isContains(filepath.Join(build.Default.GOPATH, "src", g.gen.OutPut.Out), f, value.Alias) {
+			continue
+		}
 		g.generateAliasField(file, value)
 	}
 
@@ -1006,4 +1016,26 @@ func toColumnName(text string) string {
 
 func toQuoted(text string) string {
 	return "`" + text + "`"
+}
+
+func (g *dao) isContains(dir, source, typ string) (ok bool) {
+	_ = filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
+		if info.IsDir() || !strings.HasSuffix(info.Name(), ".go") {
+			return nil
+		}
+		fset := token.NewFileSet()
+		f, err := parser.ParseFile(fset, path, nil, parser.AllErrors)
+		if err != nil {
+			return nil
+		}
+		for _, i := range f.Scope.Objects {
+			if i.Kind.String() == "type" && i.Name == typ && source != info.Name() {
+				g.P("// ", typ)
+				ok = true
+				return nil
+			}
+		}
+		return nil
+	})
+	return
 }
