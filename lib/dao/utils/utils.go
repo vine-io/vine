@@ -45,6 +45,10 @@ func FileWithLineNum() string {
 		_, file, line, ok := runtime.Caller(i)
 
 		if ok && (!strings.HasPrefix(file, daoSourceDir) || strings.HasSuffix(file, "_test.go")) {
+			idx := strings.Index(file, "src/")
+			if idx != -1 {
+				file = file[idx+4:]
+			}
 			return file + ":" + strconv.FormatInt(int64(line), 10)
 		}
 	}
