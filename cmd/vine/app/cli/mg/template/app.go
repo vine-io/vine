@@ -151,7 +151,6 @@ import (
 	"github.com/lack-io/cli"
 
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/cmd/vine/app/api/auth"
 	ahandler "github.com/lack-io/vine/lib/api/handler"
 	"github.com/lack-io/vine/lib/api/handler/openapi"
 	arpc "github.com/lack-io/vine/lib/api/handler/rpc"
@@ -272,10 +271,7 @@ func Run() {
 	)
 	app.Group(APIPath, rp.Handle)
 
-	// create the auth wrapper and the server
-	// TODO: app middleware
-	authWrapper := auth.Wrapper(rr, nsResolver)
-	api := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
+	api := httpapi.NewServer(Address)
 
 	if err := api.Init(opts...); err != nil {
 		log.Fatal(err)
