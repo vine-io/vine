@@ -34,15 +34,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/cli"
 	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
-	auth3 "github.com/lack-io/vine/cmd/vine/app/api/auth"
 	"github.com/lack-io/vine/cmd/vine/app/api/handler"
+	"github.com/lack-io/vine/cmd/vine/client/resolver/web"
 	"github.com/lack-io/vine/core/client/selector"
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/lib/api/server"
 	"github.com/lack-io/vine/lib/api/server/cors"
 	httpapi "github.com/lack-io/vine/lib/api/server/http"
-	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
@@ -87,8 +85,6 @@ type service struct {
 	nsResolver *namespace.Resolver
 	// the proxy server
 	prx *proxy
-	// auth service
-	auth auth.Auth
 }
 
 type reg struct {
@@ -498,7 +494,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 				selector.Registry(reg),
 			),
 		},
-		auth: *cmd.DefaultOptions().Auth,
 	}
 
 	if ctx.Bool("enable-stats") {
@@ -539,19 +534,12 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// create the namespace resolver and the auth wrapper
 	s.nsResolver = namespace.NewResolver(Type, Namespace)
-	authWrapper := auth3.Wrapper(s.resolver, s.nsResolver)
 
 	// create the service and add the auth wrapper
-	server := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
+	server := httpapi.NewServer(Address)
 
 	server.Init(opts...)
 	server.Handle("/", s.app)
-
-	// Setup auth redirect
-	if len(ctx.String("auth-login-url")) > 0 {
-		loginURL = ctx.String("auth-login-url")
-		svc.Options().Auth.Init(auth.LoginURL(loginURL))
-	}
 
 	if err := server.Start(); err != nil {
 		log.Fatal(err)

@@ -40,15 +40,12 @@ import (
 	"github.com/lack-io/vine/core/server"
 	sgrpc "github.com/lack-io/vine/core/server/grpc"
 	mucpServer "github.com/lack-io/vine/core/server/mucp"
-	"github.com/lack-io/vine/lib/auth"
-	"github.com/lack-io/vine/lib/cmd"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/proxy"
 	"github.com/lack-io/vine/lib/proxy/http"
 	pmucp "github.com/lack-io/vine/lib/proxy/mucp"
 	"github.com/lack-io/vine/util/helper"
 	"github.com/lack-io/vine/util/muxer"
-	"github.com/lack-io/vine/util/wrapper"
 )
 
 var (
@@ -162,21 +159,6 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		}
 		serverOpts = append(serverOpts, server.TLSConfig(config))
 	}
-
-	// add auth wrapper to server
-	var authOpts []auth.Option
-	if ctx.IsSet("auth-public-key") {
-		authOpts = append(authOpts, auth.PublicKey(ctx.String("auth-public-key")))
-	}
-	if ctx.IsSet("auth-private-key") {
-		authOpts = append(authOpts, auth.PublicKey(ctx.String("auth-private-key")))
-	}
-
-	a := *cmd.DefaultOptions().Auth
-	a.Init(authOpts...)
-	authFn := func() auth.Auth { return a }
-	authOpt := server.WrapHandler(wrapper.AuthHandler(authFn))
-	serverOpts = append(serverOpts, authOpt)
 
 	// set proxy
 	switch Protocol {

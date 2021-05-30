@@ -29,7 +29,6 @@ import (
 
 	"github.com/lack-io/vine"
 	 "github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/lib/auth"
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/proto/apis/errors"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
@@ -44,8 +43,6 @@ type Registry struct {
 	Publisher vine.Event
 	// internal registry
 	Registry registry.Registry
-	// auth to verify clients
-	Auth auth.Auth
 }
 
 func ActionToEventType(action string) regpb.EventType {

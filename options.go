@@ -35,7 +35,6 @@ import (
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/core/transport"
-	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/config"
 	"github.com/lack-io/vine/lib/dao"
@@ -47,7 +46,6 @@ import (
 
 // Options for vine service
 type Options struct {
-	Auth      auth.Auth
 	Broker    broker.Broker
 	Cmd       cmd.Cmd
 	Client    client.Client
@@ -77,7 +75,6 @@ type Options struct {
 
 func newOptions(opts ...Option) Options {
 	opt := Options{
-		Auth:      auth.DefaultAuth,
 		Broker:    broker.DefaultBroker,
 		Cmd:       cmd.DefaultCmd,
 		Config:    config.DefaultConfig,
@@ -185,13 +182,6 @@ func Registry(r registry.Registry) Option {
 func Tracer(t trace.Tracer) Option {
 	return func(o *Options) {
 		o.Trace = t
-	}
-}
-
-// Auth sets the auth for the service
-func Auth(a auth.Auth) Option {
-	return func(o *Options) {
-		o.Auth = a
 	}
 }
 

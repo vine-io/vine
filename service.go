@@ -30,7 +30,6 @@ import (
 
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/debug/handler"
 	"github.com/lack-io/vine/lib/debug/stats"
@@ -54,19 +53,14 @@ func newService(opts ...Option) Service {
 	// service name
 	serviceName := options.Server.Options().Name
 
-	// we pass functions to the wrappers since the values can change during initialisation
-	authFn := func() auth.Auth { return options.Auth }
-
 	// wrap client to inject From-Service header on any calls
 	options.Client = wrapper.FromService(serviceName, options.Client)
 	options.Client = wrapper.TraceCall(serviceName, trace.DefaultTracer, options.Client)
-	options.Client = wrapper.AuthClient(authFn, options.Client)
 
 	// wrap the server to provided handler stats
 	_ = options.Server.Init(
 		server.WrapHandler(wrapper.HandlerStats(stats.DefaultStats)),
 		server.WrapHandler(wrapper.TraceHandler(trace.DefaultTracer)),
-		server.WrapHandler(wrapper.AuthHandler(authFn)),
 	)
 
 	// set opts
@@ -97,7 +91,6 @@ func (s *service) Init(opts ...Option) {
 
 			// Initialise the command flags, overriding new service
 			if err := s.opts.Cmd.Init(
-				cmd.Auth(&s.opts.Auth),
 				cmd.Broker(&s.opts.Broker),
 				cmd.Registry(&s.opts.Registry),
 				cmd.Runtime(&s.opts.Runtime),

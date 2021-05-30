@@ -67,12 +67,12 @@ func filterServiceSpans(service string, snapshots []*trace.Snapshot) []*trace.Sp
 	// trace id -> span id -> span
 	groupByTrace := map[string]map[string]*trace.Span{}
 	for _, snapshot := range snapshots {
-		for _, span := range snapshot.GetSpans() {
-			_, ok := groupByTrace[span.GetTrace()]
+		for _, span := range snapshot.Spans {
+			_, ok := groupByTrace[span.Trace]
 			if !ok {
-				groupByTrace[span.GetTrace()] = map[string]*trace.Span{}
+				groupByTrace[span.Trace] = map[string]*trace.Span{}
 			}
-			groupByTrace[span.GetTrace()][span.GetId()] = span
+			groupByTrace[span.Trace][span.Id] = span
 		}
 	}
 	ret := []*trace.Span{}
@@ -81,7 +81,7 @@ func filterServiceSpans(service string, snapshots []*trace.Snapshot) []*trace.Sp
 		shouldAppend := false
 		for _, span := range spanMap {
 			spans = append(spans, span)
-			if strings.Contains(span.GetName(), service) {
+			if strings.Contains(span.Name, service) {
 				shouldAppend = true
 			}
 			if shouldAppend {
@@ -95,7 +95,7 @@ func filterServiceSpans(service string, snapshots []*trace.Snapshot) []*trace.Sp
 func dedupeSpans(spans []*trace.Span) []*trace.Span {
 	m := map[string]*trace.Span{}
 	for _, span := range spans {
-		m[span.GetId()] = span
+		m[span.Id] = span
 	}
 	ret := []*trace.Span{}
 	for _, span := range m {
@@ -107,7 +107,7 @@ func dedupeSpans(spans []*trace.Span) []*trace.Span {
 func snapshotsToSpans(snapshots []*trace.Snapshot) []*trace.Span {
 	ret := []*trace.Span{}
 	for _, snapshot := range snapshots {
-		ret = append(ret, snapshot.GetSpans()...)
+		ret = append(ret, snapshot.Spans...)
 	}
 	return ret
 }
@@ -142,17 +142,17 @@ func (s *Trace) Read(ctx context.Context, req *trace.ReadRequest, rsp *trace.Rea
 	if req.Service == nil {
 		spans = dedupeSpans(snapshotsToSpans(allSnapshots))
 	} else {
-		spans = filterServiceSpans(req.GetService().GetName(), allSnapshots)
+		spans = filterServiceSpans(req.Service.Name, allSnapshots)
 	}
 
 	// no limit return all
-	if req.GetLimit() == 0 {
+	if req.Limit == 0 {
 		rsp.Spans = spans
 		return nil
 	}
 
 	// get the limit of spans
-	lim := req.GetLimit()
+	lim := req.Limit
 	if lim >= int64(len(spans)) {
 		lim = int64(len(spans))
 	}
@@ -252,14 +252,14 @@ func (s *Trace) scrape() {
 
 				var spans []*trace.Span
 
-				for _, v := range rsp.GetSpans() {
+				for _, v := range rsp.Spans {
 					// we already have the span
-					if ids[v.GetId()] {
+					if ids[v.Id] {
 						continue
 					}
 
 					var typ trace.SpanType
-					switch v.GetType() {
+					switch v.Type {
 					case debug.SpanType_INBOUND:
 						typ = trace.SpanType_INBOUND
 					case debug.SpanType_OUTBOUND:
@@ -267,13 +267,13 @@ func (s *Trace) scrape() {
 					}
 
 					spans = append(spans, &trace.Span{
-						Trace:    v.GetTrace(),
-						Id:       v.GetId(),
-						Parent:   v.GetParent(),
-						Name:     v.GetName(),
-						Started:  v.GetStarted(),
-						Duration: v.GetDuration(),
-						Metadata: v.GetMetadata(),
+						Trace:    v.Trace,
+						Id:       v.Id,
+						Parent:   v.Parent,
+						Name:     v.Name,
+						Started:  v.Started,
+						Duration: v.Duration,
+						Metadata: v.Metadata,
 						Type:     typ,
 					})
 				}

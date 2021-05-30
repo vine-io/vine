@@ -134,15 +134,15 @@ func (r *Runtime) Logs(ctx context.Context, req *pb.LogsRequest, stream pb.Runti
 	opts := toLogsOptions(ctx, req.Options)
 
 	// options passed in the request
-	if req.GetCount() > 0 {
-		opts = append(opts, runtime.LogsCount(req.GetCount()))
+	if req.Count > 0 {
+		opts = append(opts, runtime.LogsCount(req.Count))
 	}
-	if req.GetStream() {
-		opts = append(opts, runtime.LogsStream(req.GetStream()))
+	if req.Stream {
+		opts = append(opts, runtime.LogsStream(req.Stream))
 	}
 
 	logStream, err := r.Runtime.Logs(&runtime.Service{
-		Name: req.GetService(),
+		Name: req.Service,
 	}, opts...)
 	if err != nil {
 		return err
