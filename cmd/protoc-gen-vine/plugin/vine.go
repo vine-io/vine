@@ -293,7 +293,14 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 		g.P("&", g.apiPbPkg.Use(), ".Endpoint{")
 		defer g.P("},")
 	}
+
+	desc := extractDesc(method.Comments)
+	if len(desc) == 0 {
+		desc = []string{servName + "." + method.Proto.GetName()}
+	}
+
 	g.P("Name:", fmt.Sprintf(`"%s.%s",`, servName, method.Proto.GetName()))
+	g.P("Description:", fmt.Sprintf(`"%s",`, strings.Join(desc, " ")))
 	g.P("Path:", fmt.Sprintf(`[]string{"%s"},`, path))
 	g.P("Method:", fmt.Sprintf(`[]string{"%s"},`, meth))
 	if v, ok := tags[_body]; ok {

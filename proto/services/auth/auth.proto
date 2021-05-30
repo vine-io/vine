@@ -5,20 +5,20 @@ package auth;
 option go_package = "github.com/lack-io/vine/proto/services/auth;auth";
 
 service Auth {
-	rpc Generate(GenerateRequest) returns (GenerateResponse) {};
-	rpc Inspect(InspectRequest) returns (InspectResponse) {};		
-	rpc Token(TokenRequest) returns (TokenResponse) {};
-	rpc Verify(VerifyRequest) returns (VerifyResponse) {};
+	rpc Generate(GenerateRequest) returns (GenerateResponse);
+	rpc Inspect(InspectRequest) returns (InspectResponse);
+	rpc Token(TokenRequest) returns (TokenResponse);
+	rpc Verify(VerifyRequest) returns (VerifyResponse);
 }
 
 service Accounts {
-	rpc List(ListAccountsRequest) returns (ListAccountsResponse) {};
+	rpc List(ListAccountsRequest) returns (ListAccountsResponse);
 }
 
 service Rules {
-	rpc Create(CreateRequest) returns (CreateResponse) {};
-	rpc Delete(DeleteRequest) returns (DeleteResponse) {};
-	rpc List(ListRequest) returns (ListResponse) {};
+	rpc Create(CreateRequest) returns (CreateResponse);
+	rpc Delete(DeleteRequest) returns (DeleteResponse);
+	rpc List(ListRequest) returns (ListResponse);
 }
 
 message ListAccountsRequest {
@@ -44,7 +44,7 @@ message Account {
 	string secret = 7;
 }
 
-message Resource{
+message Resource {
 	string name = 1;
 	string type = 2;
 	string endpoint = 3;

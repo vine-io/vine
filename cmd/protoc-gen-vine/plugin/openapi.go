@@ -164,10 +164,10 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods [
 		methodsMap[path][meth] = method
 	}
 
-	for path, methods := range methodsMap {
+	for path, ms := range methodsMap {
 		pathParams := g.extractPathParams(path)
 		g.P(fmt.Sprintf(`"%s": &%s.OpenAPIPath{`, path, g.openApiPkg.Use()))
-		for meth, method := range methods {
+		for meth, method := range ms {
 			methodName := method.Proto.GetName()
 			tags := g.extractTags(method.Comments)
 
