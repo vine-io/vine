@@ -43,9 +43,9 @@ var TagString = "gen"
 const (
 	// message tags
 	// dao generate flag
-	_dao      = "dao"
-	_table    = "table"
-	_deepcopy = "deepcopy"
+	_dao     = "dao"
+	_table   = "table"
+	_runtime = "runtime"
 
 	// field tags
 	// inline
@@ -189,7 +189,7 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 		Table:   table,
 	}
 
-	if v, ok := tags[_deepcopy]; ok && len(v.Value) != 0 {
+	if _, ok := tags[_runtime]; ok {
 		g.regTables[msg.Proto.GetName()] = s.Name
 		s.Deep = true
 	}
@@ -282,7 +282,7 @@ func (g *dao) generateRegTables(_ *generator.FileDescriptor) {
 	for k, _ := range g.regTables {
 		name := g.wrapPkg(k)
 		pkg := g.runtimePkg.Use()
-		g.P(fmt.Sprintf(`sets.RegistrySchema(new(%s).GetAPIGroup(), func(in %s.Object) %s.Schema {`, name, pkg, pkg))
+		g.P(fmt.Sprintf(`sets.RegistrySchema(new(%s).APIGroup(), func(in %s.Object) %s.Schema {`, name, pkg, pkg))
 		g.P(fmt.Sprintf(`return From%s(in.(*%s))`, k, name))
 		g.P(`})`)
 	}

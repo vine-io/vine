@@ -37,6 +37,7 @@ var TagString = "gen"
 const (
 	// message tag
 	_deepcopy = "deepcopy"
+	_runtime  = "runtime"
 
 	// field common tag
 	_inline = "inline"
@@ -121,30 +122,37 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 	g.P()
 
 	tags := g.extractTags(msg.Comments)
-	if _, ok := tags[_deepcopy]; !ok {
+	_, ok1 := tags[_deepcopy]
+	_, ok2 := tags[_runtime]
+	if !ok1 && !ok2 {
 		return
 	}
 
-	v := tags[_deepcopy].Value
-	if v != "" {
+	v, ok := tags[_runtime]
+	if !ok {
+		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
+		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
+	} else {
+		vv := v.Value
 		pkg := g.NewImport("github.com/lack-io/vine/util/runtime", "runtime")
-		g.P(`// GetAPIGroup is an auto-generated APIGroup function, get the information like group, version and name of %s.`, mname)
+		g.P(`// APIGroup is an auto-generated APIGroup function, get the information like group, version and name of %s.`, mname)
 		var group, version string
-		parts := strings.Split(v, "/")
-		version = parts[0]
-		if len(parts) > 1 {
-			group = parts[0]
-			version = parts[1]
+		if vv != "" {
+			parts := strings.Split(vv, "/")
+			version = parts[0]
+			if len(parts) > 1 {
+				group = parts[0]
+				version = parts[1]
+			}
+		} else {
+			version = "v1"
 		}
-		g.P(fmt.Sprintf(`func (in *%s) GetAPIGroup() *%s.APIGroup {`, mname, pkg.Use()))
-		g.P(fmt.Sprintf(`return &%s.APIGroup{Group: "%s", Version: "%s", Name: "%s"}`, pkg.Use(), group, version, mname))
+		g.P(fmt.Sprintf(`func (in *%s) APIGroup() *%s.GroupVersionKind {`, mname, pkg.Use()))
+		g.P(fmt.Sprintf(`return &%s.GroupVersionKind{Group: "%s", Version: "%s", Kind: "%s"}`, pkg.Use(), group, version, mname))
 		g.P("}")
 		g.P()
 		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
 		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() %s.Object {`, mname, pkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
-		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
 	}
 	g.P(`if in == nil {`)
 	g.P(`return nil`)

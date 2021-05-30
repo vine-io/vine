@@ -30,33 +30,91 @@ import (
 	"github.com/lack-io/vine/lib/dao/clause"
 )
 
-// APIGroup contains the information of Object, etc Group, Version, Name
-type APIGroup struct {
+// GroupVersionKind contains the information of Object, etc Group, Version, Name
+type GroupVersionKind struct {
 	Group   string
 	Version string
-	Name    string
+	Kind    string
 }
 
-func (g *APIGroup) String() string {
+func (gvk *GroupVersionKind) String() string {
 	var s string
-	if g.Group != "" {
-		s = g.Group + "/"
+	if gvk.Group != "" {
+		s = gvk.Group + "/"
 	}
-	if g.Version != "" {
-		s = g.Version + "."
+	if gvk.Version != "" {
+		s = gvk.Version + "."
 	}
-	return s + g.Name
+	return s + gvk.Kind
 }
 
 // Object is an interface that describes protocol message
 type Object interface {
-	// GetAPIGroup get the APIGroup of Object
-	GetAPIGroup() *APIGroup
+	// APIGroup get the GroupVersionKind of Object
+	APIGroup() *GroupVersionKind
 	// DeepCopy deep copy the struct
 	DeepCopy() Object
 }
 
+var oset = NewObjectSet()
 
+type ObjectSet struct {
+	sync.RWMutex
+
+	sets    map[string]Object
+	gvkSets map[*GroupVersionKind]Object
+
+	OnCreate func(in Object) Object
+}
+
+// NewObj creates a new object
+func (os *ObjectSet) NewObj(name string) (Object, bool) {
+	os.RLock()
+	defer os.RUnlock()
+	out, ok := os.sets[name]
+	if !ok {
+		return nil, false
+	}
+	return os.OnCreate(out.DeepCopy()), true
+}
+
+func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
+	os.RLock()
+	defer os.RUnlock()
+	out, ok := os.gvkSets[gvk]
+	if !ok {
+		return nil, false
+	}
+	return os.OnCreate(out.DeepCopy()), true
+}
+
+func (os *ObjectSet) AddObj(in Object) {
+	os.Lock()
+	os.gvkSets[in.APIGroup()] = in
+	os.sets[in.APIGroup().String()] = in
+	os.Unlock()
+}
+
+// NewObj creates a new object
+func NewObj(name string) (Object, bool) {
+	return oset.NewObj(name)
+}
+
+func NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
+	return oset.NewObjWithGVK(gvk)
+}
+
+func AddObj(in Object) {
+	oset.AddObj(in)
+}
+
+func NewObjectSet() *ObjectSet {
+	return &ObjectSet{
+		sets:     map[string]Object{},
+		gvkSets:  map[*GroupVersionKind]Object{},
+		OnCreate: func(in Object) Object { return in },
+	}
+}
 
 type Schema interface {
 	FindPage(ctx context.Context, page, size int) ([]Object, int64, error)
@@ -73,14 +131,14 @@ type Schema interface {
 	Tx(ctx context.Context) *dao.DB
 }
 
-var schemaSet = SchemaSet{sets: map[*APIGroup]func(Object) Schema{}}
+var sset = SchemaSet{sets: map[*GroupVersionKind]func(Object) Schema{}}
 
 type SchemaSet struct {
 	sync.RWMutex
-	sets map[*APIGroup]func(Object) Schema
+	sets map[*GroupVersionKind]func(Object) Schema
 }
 
-func (s *SchemaSet) RegistrySchema(g *APIGroup, fn func(Object) Schema) {
+func (s *SchemaSet) RegistrySchema(g *GroupVersionKind, fn func(Object) Schema) {
 	s.Lock()
 	s.sets[g] = fn
 	s.Unlock()
@@ -89,7 +147,7 @@ func (s *SchemaSet) RegistrySchema(g *APIGroup, fn func(Object) Schema) {
 func (s *SchemaSet) NewSchema(in Object) (Schema, bool) {
 	s.RLock()
 	defer s.RUnlock()
-	fn, ok := s.sets[in.GetAPIGroup()]
+	fn, ok := s.sets[in.APIGroup()]
 	if !ok {
 		return nil, false
 	}
@@ -97,13 +155,13 @@ func (s *SchemaSet) NewSchema(in Object) (Schema, bool) {
 }
 
 func NewSchemaSet() *SchemaSet {
-	return &SchemaSet{sets: map[*APIGroup]func(Object) Schema{}}
+	return &SchemaSet{sets: map[*GroupVersionKind]func(Object) Schema{}}
 }
 
-func RegistrySchema(g *APIGroup, fn func(Object) Schema) {
-	schemaSet.RegistrySchema(g, fn)
+func RegistrySchema(g *GroupVersionKind, fn func(Object) Schema) {
+	sset.RegistrySchema(g, fn)
 }
 
 func NewSchema(in Object) (Schema, bool) {
-	return schemaSet.NewSchema(in)
+	return sset.NewSchema(in)
 }
