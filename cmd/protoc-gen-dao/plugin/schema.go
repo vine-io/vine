@@ -72,6 +72,7 @@ type Schema struct {
 	SDField *Field
 	Desc    *generator.MessageDescriptor
 	Table   string
+	Deep  bool
 }
 
 type FieldTag struct {

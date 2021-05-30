@@ -127,20 +127,21 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 
 	v := tags[_deepcopy].Value
 	if v != "" {
+		pkg := g.NewImport("github.com/lack-io/vine/util/runtime", "runtime")
 		g.P(`// GetAPIGroup is an auto-generated APIGroup function, get the information like group, version and name of %s.`, mname)
 		var group, version string
 		parts := strings.Split(v, "/")
-		group = parts[0]
+		version = parts[0]
 		if len(parts) > 1 {
+			group = parts[0]
 			version = parts[1]
 		}
-		g.P(fmt.Sprintf(`func (in *%s) GetAPIGroup() *vine.APIGroup {`, mname))
-		g.P(fmt.Sprintf(`return &vine.APIGroup{Group: "%s", Version: "%s", Name: "%s"}`, group, version, mname))
+		g.P(fmt.Sprintf(`func (in *%s) GetAPIGroup() *%s.APIGroup {`, mname, pkg.Use()))
+		g.P(fmt.Sprintf(`return &%s.APIGroup{Group: "%s", Version: "%s", Name: "%s"}`, pkg.Use(), group, version, mname))
 		g.P("}")
 		g.P()
 		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
-		g.NewImport("github.com/lack-io/vine", "vine").Use()
-		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() vine.Object {`, mname))
+		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() %s.Object {`, mname, pkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
 		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))

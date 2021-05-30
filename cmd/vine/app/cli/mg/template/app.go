@@ -355,5 +355,10 @@ func Run() {
 	}
 }`
 
-	DaoHandler = `package dao`
+	DaoHandler = `package dao
+
+import "github.com/lack-io/vine/util/runtime"
+
+var sets = runtime.NewSchemaSet()
+`
 )

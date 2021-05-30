@@ -34,7 +34,6 @@ import (
 	"strings"
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-
 	"github.com/lack-io/vine/cmd/generator"
 	"github.com/lack-io/vine/lib/dao/schema"
 )
@@ -44,8 +43,9 @@ var TagString = "gen"
 const (
 	// message tags
 	// dao generate flag
-	_dao   = "dao"
-	_table = "table"
+	_dao      = "dao"
+	_table    = "table"
+	_deepcopy = "deepcopy"
 
 	// field tags
 	// inline
@@ -66,23 +66,26 @@ type dao struct {
 	gen *generator.Generator
 
 	schemas     []*Schema
+	regTables   map[string]string
 	aliasTypes  map[string]string
 	aliasFields map[string]*Field
 
-	sourcePkg string
-	ctxPkg    generator.Single
-	timePkg   generator.Single
-	stringPkg generator.Single
-	errPkg    generator.Single
-	DriverPkg generator.Single
-	jsonPkg   generator.Single
-	daoPkg    generator.Single
-	clausePkg generator.Single
+	sourcePkg  string
+	ctxPkg     generator.Single
+	timePkg    generator.Single
+	stringPkg  generator.Single
+	errPkg     generator.Single
+	DriverPkg  generator.Single
+	jsonPkg    generator.Single
+	daoPkg     generator.Single
+	clausePkg  generator.Single
+	runtimePkg generator.Single
 }
 
 func New() *dao {
 	return &dao{
 		schemas:     []*Schema{},
+		regTables:   map[string]string{},
 		aliasTypes:  map[string]string{},
 		aliasFields: map[string]*Field{},
 	}
@@ -128,6 +131,7 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	g.errPkg = g.NewImport("errors", "errors")
 	g.daoPkg = g.NewImport("github.com/lack-io/vine/lib/dao", "dao")
 	g.clausePkg = g.NewImport("github.com/lack-io/vine/lib/dao/clause", "clause")
+	g.runtimePkg = g.NewImport("github.com/lack-io/vine/util/runtime", "runtime")
 	if g.gen.OutPut.Load {
 		g.sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
 	}
@@ -135,6 +139,8 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	for _, msg := range file.Messages() {
 		g.wrapSchemas(file, msg)
 	}
+
+	g.generateRegTables(file)
 
 	aFields := make([]*Field, 0)
 	for _, value := range g.aliasFields {
@@ -145,9 +151,9 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	}
 	sort.Slice(aFields, func(i, j int) bool { return aFields[i].Num < aFields[j].Num })
 	for _, value := range aFields {
-		f := strings.TrimSuffix(filepath.Clean(file.GetName()), ".proto")
+		f := strings.TrimSuffix(filepath.Base(file.GetName()), ".proto") + ".pb.dao.go"
 		// ignore unique alias
-		if g.isContains(filepath.Join(build.Default.GOPATH, "src", g.gen.OutPut.Out), f, value.Alias) {
+		if g.isContains(filepath.Join(build.Default.GOPATH, "src", g.gen.OutPut.Out), f, "type", value.Alias) {
 			continue
 		}
 		g.generateAliasField(file, value)
@@ -182,6 +188,12 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 		MFields: map[string]*Field{},
 		Table:   table,
 	}
+
+	if v, ok := tags[_deepcopy]; ok && len(v.Value) != 0 {
+		g.regTables[msg.Proto.GetName()] = s.Name
+		s.Deep = true
+	}
+
 	n := 0
 	g.buildFields(file, msg, s, &n)
 	if s.PK == nil {
@@ -260,6 +272,21 @@ func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDe
 		*n += 1
 		s.MFields[field.Name] = field
 	}
+}
+
+func (g *dao) generateRegTables(_ *generator.FileDescriptor) {
+	if len(g.regTables) == 0 {
+		return
+	}
+	g.P(`func init() {`)
+	for k, _ := range g.regTables {
+		name := g.wrapPkg(k)
+		pkg := g.runtimePkg.Use()
+		g.P(fmt.Sprintf(`sets.RegistrySchema(new(%s).GetAPIGroup(), func(in %s.Object) %s.Schema {`, name, pkg, pkg))
+		g.P(fmt.Sprintf(`return From%s(in.(*%s))`, name, name))
+		g.P(`})`)
+	}
+	g.P(`}`)
 }
 
 func (g *dao) generateAliasField(file *generator.FileDescriptor, field *Field) {
@@ -579,7 +606,11 @@ func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *
 
 func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *Schema) {
 	source, target := schema.Name, schema.Desc.Proto.GetName()
-	g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]*%s, int64, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]%s.Object, int64, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]*%s, int64, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
 	g.P(`pk, _, _ := m.PrimaryKey()`)
 	g.P()
 	g.P(`m.exprs = append(m.exprs,`)
@@ -598,18 +629,30 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
 	g.P(fmt.Sprintf(`m.exprs = append(m.exprs, %s.Cond().Build("deletion_timestamp", 0))`, g.clausePkg.Use()))
 	g.P(`return m.findAll(ctx)`)
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
 	g.P(`return m.findAll(ctx)`)
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
 	g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
 	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
@@ -618,7 +661,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`outs := make([]*%s, len(dest))`, g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`outs := make([]%s.Object, len(dest))`, g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`outs := make([]*%s, len(dest))`, g.wrapPkg(target)))
+	}
 	g.P(`for i := range dest {`)
 	g.P(fmt.Sprintf(`outs[i] = dest[i].To%s()`, target))
 	g.P("}")
@@ -638,7 +685,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
 	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
 	g.P(fmt.Sprintf(`clauses := append(m.extractClauses(tx), %s.Cond().Build("deletion_timestamp", 0))`, g.clausePkg.Use()))
@@ -652,7 +703,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) *%s {`, source, g.clausePkg.Use(), source))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) %s.Schema {`, source, g.clausePkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) *%s {`, source, g.clausePkg.Use(), source))
+	}
 	g.P(`m.exprs = append(m.exprs, exprs...)`)
 	g.P(`return m`)
 	g.P(`}`)
@@ -723,7 +778,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
 	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
 	g.P()
 	g.P(`if err := tx.Create(m).Error; err != nil {`)
@@ -771,7 +830,11 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(fmt.Sprintf(`return nil, %s.New("missing primary key")`, g.errPkg.Use()))
@@ -1018,8 +1081,11 @@ func toQuoted(text string) string {
 	return "`" + text + "`"
 }
 
-func (g *dao) isContains(dir, source, typ string) (ok bool) {
+func (g *dao) isContains(dir, source, kind, name string) (ok bool) {
 	_ = filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
+		if ok {
+			return nil
+		}
 		if info.IsDir() || !strings.HasSuffix(info.Name(), ".go") {
 			return nil
 		}
@@ -1028,12 +1094,13 @@ func (g *dao) isContains(dir, source, typ string) (ok bool) {
 		if err != nil {
 			return nil
 		}
-		for _, i := range f.Scope.Objects {
-			if i.Kind.String() == "type" && i.Name == typ && source != info.Name() {
-				g.P("// ", typ)
-				ok = true
-				return nil
-			}
+		obj := f.Scope.Lookup(name)
+		if obj == nil {
+			return nil
+		}
+		if obj.Kind.String() == kind && source != info.Name() {
+			ok = true
+			return nil
 		}
 		return nil
 	})
