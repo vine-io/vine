@@ -130,11 +130,10 @@ func Run(ctx *ccli.Context, svcOpts ...vine.Option) {
 	id := svc.Server().Options().Id
 
 	// register the handler
-	regsvcpb.RegisterRegistryHandler(svc.Server(), &handler.Registry{
+	_ = regsvcpb.RegisterRegistryHandler(svc.Server(), &handler.Registry{
 		Id:        id,
 		Publisher: vine.NewEvent(Topic, svc.Client()),
 		Registry:  svc.Options().Registry,
-		Auth:      svc.Options().Auth,
 	})
 
 	// run the service

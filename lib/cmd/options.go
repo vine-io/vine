@@ -33,7 +33,6 @@ import (
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/core/transport"
-	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/lib/config"
 	"github.com/lack-io/vine/lib/dao"
 	"github.com/lack-io/vine/lib/debug/profile"
@@ -62,7 +61,6 @@ type Options struct {
 	Dialect   *dao.Dialect
 	Store     *store.Store
 	Tracer    *trace.Tracer
-	Auth      *auth.Auth
 	Profile   *profile.Profile
 
 	Brokers    map[string]func(...broker.Option) broker.Broker
@@ -76,7 +74,6 @@ type Options struct {
 	Dialects   map[string]func(...dao.Option) dao.Dialect
 	Stores     map[string]func(...store.Option) store.Store
 	Tracers    map[string]func(...trace.Option) trace.Tracer
-	Auths      map[string]func(...auth.Option) auth.Auth
 	Profiles   map[string]func(...profile.Option) profile.Profile
 
 	// Other options for implementations of the interfaces
@@ -179,12 +176,6 @@ func Tracer(t *trace.Tracer) Option {
 	}
 }
 
-func Auth(a *auth.Auth) Option {
-	return func(o *Options) {
-		o.Auth = a
-	}
-}
-
 func Profile(p *profile.Profile) Option {
 	return func(o *Options) {
 		o.Profile = p
@@ -244,13 +235,6 @@ func NewRuntime(name string, r func(...runtime.Option) runtime.Runtime) Option {
 func NewTracer(name string, t func(...trace.Option) trace.Tracer) Option {
 	return func(o *Options) {
 		o.Tracers[name] = t
-	}
-}
-
-// NewAuth new auth func
-func NewAuth(name string, t func(...auth.Option) auth.Auth) Option {
-	return func(o *Options) {
-		o.Auths[name] = t
 	}
 }
 

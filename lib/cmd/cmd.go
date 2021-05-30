@@ -46,8 +46,6 @@ import (
 	regMemory "github.com/lack-io/vine/core/registry/memory"
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/core/transport"
-	"github.com/lack-io/vine/lib/auth"
-	"github.com/lack-io/vine/lib/auth/provider"
 	"github.com/lack-io/vine/lib/config"
 	configMemory "github.com/lack-io/vine/lib/config/memory"
 	configSrc "github.com/lack-io/vine/lib/config/source"
@@ -59,8 +57,6 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/runtime"
 	"github.com/lack-io/vine/lib/store"
-	authutil "github.com/lack-io/vine/util/auth"
-	"github.com/lack-io/vine/util/wrapper"
 
 	// servers
 	sgrpc "github.com/lack-io/vine/core/server/grpc"
@@ -84,14 +80,6 @@ import (
 
 	// tracers
 	memTracer "github.com/lack-io/vine/lib/debug/trace/memory"
-
-	// auth
-	svcAuth "github.com/lack-io/vine/lib/auth/grpc"
-	jwtAuth "github.com/lack-io/vine/lib/auth/jwt"
-
-	// auth providers
-	"github.com/lack-io/vine/lib/auth/provider/basic"
-	"github.com/lack-io/vine/lib/auth/provider/oauth"
 )
 
 func init() {
@@ -402,16 +390,6 @@ var (
 		// "jaeger": jTracer.NewTracer,
 	}
 
-	DefaultAuths = map[string]func(...auth.Option) auth.Auth{
-		"service": svcAuth.NewAuth,
-		"jwt":     jwtAuth.NewAuth,
-	}
-
-	DefaultAuthProviders = map[string]func(...provider.Option) provider.Provider{
-		"oauth": oauth.NewProvider,
-		"basic": basic.NewProvider,
-	}
-
 	DefaultProfiles = map[string]func(...profile.Option) profile.Profile{
 		"http":  http.NewProfile,
 		"pprof": pprof.NewProfile,
@@ -424,7 +402,6 @@ var (
 
 func newCmd(opts ...Option) Cmd {
 	options := Options{
-		Auth:      &auth.DefaultAuth,
 		Broker:    &broker.DefaultBroker,
 		Client:    &client.DefaultClient,
 		Registry:  &registry.DefaultRegistry,
@@ -448,7 +425,6 @@ func newCmd(opts ...Option) Cmd {
 		Dialects:   DefaultDialects,
 		Stores:     DefaultStores,
 		Tracers:    DefaultTracers,
-		Auths:      DefaultAuths,
 		Profiles:   DefaultProfiles,
 		Configs:    DefaultConfigs,
 	}
@@ -511,9 +487,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 
 	// setup a client to use when calling the runtime. It is important the auth client is wrapped
 	// after the cache client since the wrappers are applied in reverse order and the cache will use
-	// some of the headers set by the auth client.
-	authFn := func() auth.Auth { return *c.opts.Auth }
-	vineClient := wrapper.AuthClient(authFn, client.DefaultClient)
+	vineClient := client.DefaultClient
 
 	// Set the store
 	if name := ctx.String("store"); len(name) > 0 {
@@ -570,57 +544,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 	}
 
-	// Set auth
-	authOpts := []auth.Option{auth.WithClient(vineClient)}
-
-	if authId, authSecret := ctx.String("auth-id"), ctx.String("auth-secret"); len(authId) > 0 || len(authSecret) > 0 {
-		authOpts = append(authOpts, auth.Credentials(authId, authSecret))
-	}
-	if key := ctx.String("auth-public-key"); len(key) > 0 {
-		authOpts = append(authOpts, auth.PublicKey(key))
-	}
-	if key := ctx.String("auth-private-key"); len(key) > 0 {
-		authOpts = append(authOpts, auth.PrivateKey(key))
-	}
-	if ns := ctx.String("auth-namespace"); len(ns) > 0 {
-		authOpts = append(authOpts, auth.Namespace(ns))
-	}
-	if name := ctx.String("auth-provider"); len(name) > 0 {
-		p, ok := DefaultAuthProviders[name]
-		if !ok {
-			return fmt.Errorf("AuthProvider %s not found", name)
-		}
-
-		var provOpts []provider.Option
-		clientID := ctx.String("auth-provider-client-id")
-		clientSecret := ctx.String("auth-provider-client-secret")
-		if len(clientID) > 0 || len(clientSecret) > 0 {
-			provOpts = append(provOpts, provider.Credentials(clientID, clientSecret))
-		}
-		if e := ctx.String("auth-provider-endpoint"); len(e) > 0 {
-			provOpts = append(provOpts, provider.Endpoint(e))
-		}
-		if r := ctx.String("auth-provider-redirect"); len(r) > 0 {
-			provOpts = append(provOpts, provider.Redirect(r))
-		}
-		if s := ctx.String("auth-provider-scope"); len(s) > 0 {
-			provOpts = append(provOpts, provider.Scope(s))
-		}
-
-		authOpts = append(authOpts, auth.Provider(p(provOpts...)))
-	}
-
-	// Set the auth
-	if name := ctx.String("auth"); len(name) > 0 {
-		a, ok := c.opts.Auths[name]
-		if !ok {
-			return fmt.Errorf("unsupported auth: %s", name)
-		}
-		*c.opts.Auth = a(authOpts...)
-	} else {
-		(*c.opts.Auth).Init(authOpts...)
-	}
-
 	// Set the registry
 	if name := ctx.String("registry"); len(name) > 0 && (*c.opts.Registry).String() != name {
 		r, ok := c.opts.Registries[name]
@@ -641,12 +564,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		if err := (*c.opts.Broker).Init(broker.Registry(*c.opts.Registry)); err != nil {
 			log.Errorf("Error configuring broker: %v", err)
 		}
-	}
-
-	// generate the services auth account
-	serverID := (*c.opts.Server).Options().Id
-	if err := authutil.Generate(serverID, c.App().Name, *c.opts.Auth); err != nil {
-		return err
 	}
 
 	// Set the profile

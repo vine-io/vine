@@ -103,7 +103,7 @@ func (a *apiHandler) Handle(c *fiber.Ctx) error {
 		rsp.StatusCode = http.StatusOK
 	}
 
-	for _, header := range rsp.GetHeader() {
+	for _, header := range rsp.Header {
 		for _, val := range header.Values {
 			r.Request().Header.Add(header.Key, val)
 		}

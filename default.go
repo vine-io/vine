@@ -35,8 +35,6 @@ import (
 	serverGrpc "github.com/lack-io/vine/core/server/grpc"
 	"github.com/lack-io/vine/core/transport"
 	transportHTTP "github.com/lack-io/vine/core/transport/http"
-	"github.com/lack-io/vine/lib/auth"
-	authNoop "github.com/lack-io/vine/lib/auth/noop"
 	"github.com/lack-io/vine/lib/config"
 	configMemory "github.com/lack-io/vine/lib/config/memory"
 	"github.com/lack-io/vine/lib/dao"
@@ -60,8 +58,6 @@ func init() {
 	server.DefaultServer = serverGrpc.NewServer()
 	// default router
 	router.DefaultRouter = rreg.NewRouter()
-	// default auth
-	auth.DefaultAuth = authNoop.NewAuth()
 	// default config
 	config.DefaultConfig = configMemory.NewConfig()
 	// default dao

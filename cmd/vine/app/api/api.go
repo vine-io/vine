@@ -31,7 +31,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/lack-io/cli"
-	"github.com/lack-io/vine/cmd/vine/app/api/auth"
 	"github.com/lack-io/vine/cmd/vine/app/api/handler"
 	"github.com/rakyll/statik/fs"
 
@@ -268,8 +267,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	// create the auth wrapper and the server
 	// TODO: app middleware
-	authWrapper := auth.Wrapper(rr, nsResolver)
-	api := httpapi.NewServer(Address, server.WrapHandler(authWrapper))
+	api := httpapi.NewServer(Address)
 
 	api.Init(opts...)
 	api.Handle("/", app)
