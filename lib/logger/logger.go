@@ -32,7 +32,7 @@ var (
 type Logger interface {
 	// Init initialises options
 	Init(options ...Option) error
-	// The Logger options
+	// Options the Logger options
 	Options() Options
 	// Fields set fields to always be logged
 	Fields(fields map[string]interface{}) Logger

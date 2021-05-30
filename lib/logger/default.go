@@ -117,7 +117,7 @@ func logCallerfilePath(loggingFilePath string) string {
 	return loggingFilePath[idx+1:]
 }
 
-func (l *defaultLogger) Log(level Level, v ...interface{}) {
+func (l *defaultLogger) Log(level Level, args ...interface{}) {
 	// TODO decide does we need to write message if log level not used?
 	if !l.opts.Level.Enabled(level) {
 		return
@@ -134,7 +134,7 @@ func (l *defaultLogger) Log(level Level, v ...interface{}) {
 
 	rec := dlog.Record{
 		Timestamp: time.Now(),
-		Message:   fmt.Sprint(v...),
+		Message:   fmt.Sprint(args...),
 		Metadata:  make(map[string]string, len(fields)),
 	}
 
@@ -157,7 +157,7 @@ func (l *defaultLogger) Log(level Level, v ...interface{}) {
 	fmt.Printf("%s %s %v\n", t, metadata, rec.Message)
 }
 
-func (l *defaultLogger) Logf(level Level, format string, v ...interface{}) {
+func (l *defaultLogger) Logf(level Level, format string, args ...interface{}) {
 	//	 TODO decide does we need to write message if log level not used?
 	if level < l.opts.Level {
 		return
@@ -174,7 +174,7 @@ func (l *defaultLogger) Logf(level Level, format string, v ...interface{}) {
 
 	rec := dlog.Record{
 		Timestamp: time.Now(),
-		Message:   fmt.Sprintf(format, v...),
+		Message:   fmt.Sprintf(format, args...),
 		Metadata:  make(map[string]string, len(fields)),
 	}
 
@@ -197,12 +197,12 @@ func (l *defaultLogger) Logf(level Level, format string, v ...interface{}) {
 	fmt.Printf("%s %s %v\n", t, metadata, rec.Message)
 }
 
-func (n *defaultLogger) Options() Options {
+func (l *defaultLogger) Options() Options {
 	// not guard against options Context values
-	n.RLock()
-	opts := n.opts
-	opts.Fields = copyFields(n.opts.Fields)
-	n.RUnlock()
+	l.RLock()
+	opts := l.opts
+	opts.Fields = copyFields(l.opts.Fields)
+	l.RUnlock()
 	return opts
 }
 
