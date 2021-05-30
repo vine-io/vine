@@ -52,6 +52,32 @@ type Service interface {
 	String() string
 }
 
+// APIGroup contains the information of Object, etc Group, Version, Name
+type APIGroup struct {
+	Group   string
+	Version string
+	Name    string
+}
+
+func (g APIGroup) String() string {
+	var s string
+	if g.Group != "" {
+		s = g.Group + "/"
+	}
+	if g.Version != "" {
+		s = g.Version + "."
+	}
+	return s + g.Name
+}
+
+// Object is an interface that describes protocol message
+type Object interface {
+	// GetAPIGroup get the APIGroup of Object
+	GetAPIGroup() *APIGroup
+	// DeepCopy deep copy the struct
+	DeepCopy() Object
+}
+
 // Event is used to publish messages to topic
 type Event interface {
 	// Publish publishes a message to the event topic
