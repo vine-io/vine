@@ -42,6 +42,7 @@ func runProto(ctx *cli.Context) {
 	}
 
 	atype := ctx.String("type")
+	group := ctx.String("group")
 	version := ctx.String("proto-version")
 	dir := ctx.String("dir")
 	paths := ctx.StringSlice("path")
@@ -91,14 +92,14 @@ func runProto(ctx *cli.Context) {
 	if name != "" {
 		var pb *tool.Proto
 		for _, p := range cfg.Proto {
-			if p.Name == name && p.Type == atype && p.Version == version {
+			if p.Name == name && p.Type == atype && p.Group == group && p.Version == version {
 				pb = &p
 				break
 			}
 		}
 
 		if pb == nil {
-			fmt.Printf("file %s/%s.proto not found\n", version, name)
+			fmt.Printf("file %s/%s/%s.proto not found\n", group, version, name)
 			return
 		}
 
@@ -125,6 +126,11 @@ func cmdProto() *cli.Command {
 				Aliases: []string{"v"},
 				Usage:   "the version of protobuf file.",
 				Value:   "v1",
+			},
+			&cli.StringFlag{
+				Name:  "group",
+				Usage: "specify the group",
+				Value: "core",
 			},
 			&cli.StringFlag{
 				Name:  "dir",

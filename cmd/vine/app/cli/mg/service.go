@@ -112,6 +112,7 @@ func runSRV(ctx *cli.Context) {
 		Dir:       dir,
 		GoDir:     goDir,
 		GoPath:    goPath,
+		Group:     name,
 		Version:   "v1",
 		Plugins:   plugins,
 		Comments:  protoComments(dir, name),
@@ -145,7 +146,8 @@ func runSRV(ctx *cli.Context) {
 			c.Toml.Proto,
 			tool.Proto{
 				Name:    name,
-				Pb:      filepath.Join(c.Dir, "proto", "service", "v1", name, name+".proto"),
+				Pb:      filepath.Join(c.Dir, "proto", "service", name, "v1", name+".proto"),
+				Group:   name,
 				Version: "v1",
 				Type:    "service",
 				Plugins: []string{"vine", "validator"},
@@ -164,7 +166,7 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
 			{"deploy/config/" + name + ".ini", t2.ConfSRV},
 			{"deploy/systemed/" + name + ".service", t2.SystemedSRV},
-			{"proto/service/v1/" + name + "/" + name + ".proto", t2.ProtoSRV},
+			{"proto/service/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
 			{"vine.toml", t2.TOML},
 		}
 	} else {
@@ -185,7 +187,8 @@ func runSRV(ctx *cli.Context) {
 			c.Toml.Proto,
 			tool.Proto{
 				Name:    name,
-				Pb:      filepath.Join(c.Dir, "proto", "service", "v1", name, name+".proto"),
+				Pb:      filepath.Join(c.Dir, "proto", "service", name, "v1", name+".proto"),
+				Group:   name,
 				Version: "v1",
 				Type:    "service",
 				Plugins: []string{"gogo", "vine", "validator"},
@@ -204,7 +207,7 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/Dockerfile", t2.DockerSRV},
 			{"deploy/" + name + ".ini", t2.ConfSRV},
 			{"deploy/" + name + ".service", t2.SystemedSRV},
-			{"proto/service/v1/" + name + "/" + name + ".proto", t2.ProtoSRV},
+			{"proto/service/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
 			{"vine.toml", t2.TOML},
 		}
 	}

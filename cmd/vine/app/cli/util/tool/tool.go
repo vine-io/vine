@@ -58,6 +58,7 @@ type Protos []Proto
 type Proto struct {
 	Name    string   `json:"name" toml:"name"`
 	Pb      string   `json:"pb" toml:"pb"`
+	Group   string   `json:"group" toml:"group"`
 	Version string   `json:"version" toml:"version"`
 	Type    string   `json:"type" toml:"type"`
 	Plugins []string `json:"plugins" toml:"plugins"`

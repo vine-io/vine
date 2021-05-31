@@ -81,6 +81,8 @@ type config struct {
 	VineVersion string
 	// Files
 	Files []file
+	// api group
+	Group string
 	// v1
 	Version string
 	// Comments

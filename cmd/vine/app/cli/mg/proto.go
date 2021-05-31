@@ -39,6 +39,7 @@ import (
 func runProto(ctx *cli.Context) {
 	atype := ctx.String("type")
 	pv := ctx.String("proto-version")
+	group := ctx.String("group")
 	name := ctx.Args().First()
 
 	if len(name) == 0 {
@@ -70,6 +71,7 @@ func runProto(ctx *cli.Context) {
 		Type:    atype,
 		Cluster: true,
 		Dir:     dir,
+		Group:   group,
 		GoDir:   goDir,
 		Version: pv,
 		Toml:    cfg,
@@ -88,24 +90,26 @@ func runProto(ctx *cli.Context) {
 	switch atype {
 	case "service":
 		c.Files = []file{
-			{"proto/service/" + pv + "/" + name + "/" + name + ".proto", t2.ProtoNew},
+			{"proto/service/" + group + "/" + pv + "/" + name + ".proto", t2.ProtoNew},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "proto", "service", pv, name, name+".proto"),
+			Pb:      filepath.Join(c.Dir, "proto", "service", group, pv, name+".proto"),
+			Group:   group,
 			Version: pv,
 			Type:    "service",
 			Plugins: []string{"vine", "validator"},
 		})
 	case "api":
 		c.Files = []file{
-			{"proto/apis/" + pv + "/" + name + ".proto", t2.ProtoType},
+			{"proto/apis/" + group + "/" + pv + "/" + name + ".proto", t2.ProtoType},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "proto", "apis", pv, name+".proto"),
+			Pb:      filepath.Join(c.Dir, "proto", "apis", group, pv, name+".proto"),
+			Group:   group,
 			Version: pv,
 			Type:    "api",
 			Plugins: []string{"validator", "dao", "deepcopy"},
@@ -133,6 +137,11 @@ func cmdProto() *cli.Command {
 				Aliases: []string{"v"},
 				Usage:   "specify proto version",
 				Value:   "v1",
+			},
+			&cli.StringFlag{
+				Name:  "group",
+				Usage: "specify the group",
+				Value: "core",
 			},
 		},
 		Action: func(c *cli.Context) error {

@@ -54,6 +54,7 @@ flags = [
 name = "{{.Name}}"
 pb = "{{.Pb}}"
 type = "{{.Type}}"
+group = "{{.Group}}"
 version = "{{.Version}}"
 plugins = ["gogo"{{range .Plugins}}{{if ne . "gogo"}}, "{{.}}"{{end}}{{end}}]
 {{end}}

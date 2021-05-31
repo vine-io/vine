@@ -88,10 +88,12 @@ func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	return os.OnCreate(out.DeepCopy()), true
 }
 
-func (os *ObjectSet) AddObj(in Object) {
+func (os *ObjectSet) AddObj(v ...Object) {
 	os.Lock()
-	os.gvkSets[in.APIGroup()] = in
-	os.sets[in.APIGroup().String()] = in
+	for _, in := range v {
+		os.gvkSets[in.APIGroup()] = in
+		os.sets[in.APIGroup().String()] = in
+	}
 	os.Unlock()
 }
 
@@ -104,8 +106,8 @@ func NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	return oset.NewObjWithGVK(gvk)
 }
 
-func AddObj(in Object) {
-	oset.AddObj(in)
+func AddObj(v ...Object) {
+	oset.AddObj(v...)
 }
 
 func NewObjectSet() *ObjectSet {
