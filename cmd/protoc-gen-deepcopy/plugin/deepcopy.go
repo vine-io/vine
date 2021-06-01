@@ -216,7 +216,7 @@ func (g *deepcopy) generateRepeatedField(file *generator.FileDescriptor, msg *ge
 func (g *deepcopy) generateMessageField(file *generator.FileDescriptor, field *generator.FieldDescriptor) {
 	fname := generator.CamelCase(field.Proto.GetName())
 	subMsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
-	fpkg := subMsg.Proto.GetName()
+	fpkg := subMsg.Proto.TypeName()[0]
 	if file != subMsg.Proto.File() {
 		pkg := string(g.gen.AddImport(subMsg.Proto.GoImportPath()))
 		fpkg = pkg + "." + fpkg
@@ -224,6 +224,7 @@ func (g *deepcopy) generateMessageField(file *generator.FileDescriptor, field *g
 	tags := g.extractTags(field.Comments)
 	_, isInline := tags[_inline]
 	if isInline {
+		fname = subMsg.Proto.TypeName()[0]
 		g.P(`{`)
 		g.P(fmt.Sprintf(`in, out := &in.%s, &out.%s`, fname, fname))
 		g.P(fmt.Sprintf(`out = new(%s)`, fpkg))

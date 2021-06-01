@@ -64,7 +64,7 @@ func (m *Usage) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Usage.Merge(m, src)
 }
 func (m *Usage) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Usage) XXX_DiscardUnknown() {
 	xxx_messageInfo_Usage.DiscardUnknown(m)
@@ -102,7 +102,7 @@ func (m *Metrics) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Metrics.Merge(m, src)
 }
 func (m *Metrics) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Metrics) XXX_DiscardUnknown() {
 	xxx_messageInfo_Metrics.DiscardUnknown(m)
@@ -143,7 +143,7 @@ var fileDescriptor_c468d55ab4d25333 = []byte{
 	0x01, 0x00, 0x00, 0xff, 0xff, 0xc4, 0x70, 0x27, 0xcb, 0xb1, 0x01, 0x00, 0x00,
 }
 
-func (m *Usage) Size() (n int) {
+func (m *Usage) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -168,13 +168,13 @@ func (m *Usage) Size() (n int) {
 		n += 1 + sovUsage(uint64(m.Window))
 	}
 	if m.Metrics != nil {
-		l = m.Metrics.Size()
+		l = m.Metrics.XSize()
 		n += 1 + l + sovUsage(uint64(l))
 	}
 	return n
 }
 
-func (m *Metrics) Size() (n int) {
+func (m *Metrics) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -198,7 +198,7 @@ func sozUsage(x uint64) (n int) {
 	return sovUsage(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Usage) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -208,7 +208,7 @@ func (m *Usage) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Usage) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -264,7 +264,7 @@ func (m *Usage) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Metrics) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -274,7 +274,7 @@ func (m *Metrics) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Metrics) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

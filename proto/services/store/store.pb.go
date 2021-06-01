@@ -59,7 +59,7 @@ func (m *Field) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Field.Merge(m, src)
 }
 func (m *Field) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Field) XXX_DiscardUnknown() {
 	xxx_messageInfo_Field.DiscardUnknown(m)
@@ -103,7 +103,7 @@ func (m *Record) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Record.Merge(m, src)
 }
 func (m *Record) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Record) XXX_DiscardUnknown() {
 	xxx_messageInfo_Record.DiscardUnknown(m)
@@ -145,7 +145,7 @@ func (m *ReadOptions) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ReadOptions.Merge(m, src)
 }
 func (m *ReadOptions) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ReadOptions) XXX_DiscardUnknown() {
 	xxx_messageInfo_ReadOptions.DiscardUnknown(m)
@@ -183,7 +183,7 @@ func (m *ReadRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ReadRequest.Merge(m, src)
 }
 func (m *ReadRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ReadRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ReadRequest.DiscardUnknown(m)
@@ -220,7 +220,7 @@ func (m *ReadResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ReadResponse.Merge(m, src)
 }
 func (m *ReadResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ReadResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_ReadResponse.DiscardUnknown(m)
@@ -262,7 +262,7 @@ func (m *WriteOptions) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_WriteOptions.Merge(m, src)
 }
 func (m *WriteOptions) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *WriteOptions) XXX_DiscardUnknown() {
 	xxx_messageInfo_WriteOptions.DiscardUnknown(m)
@@ -300,7 +300,7 @@ func (m *WriteRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_WriteRequest.Merge(m, src)
 }
 func (m *WriteRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *WriteRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_WriteRequest.DiscardUnknown(m)
@@ -336,7 +336,7 @@ func (m *WriteResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_WriteResponse.Merge(m, src)
 }
 func (m *WriteResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *WriteResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_WriteResponse.DiscardUnknown(m)
@@ -374,7 +374,7 @@ func (m *DeleteOptions) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_DeleteOptions.Merge(m, src)
 }
 func (m *DeleteOptions) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *DeleteOptions) XXX_DiscardUnknown() {
 	xxx_messageInfo_DeleteOptions.DiscardUnknown(m)
@@ -412,7 +412,7 @@ func (m *DeleteRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_DeleteRequest.Merge(m, src)
 }
 func (m *DeleteRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *DeleteRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_DeleteRequest.DiscardUnknown(m)
@@ -448,7 +448,7 @@ func (m *DeleteResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_DeleteResponse.Merge(m, src)
 }
 func (m *DeleteResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *DeleteResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_DeleteResponse.DiscardUnknown(m)
@@ -490,7 +490,7 @@ func (m *ListOptions) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ListOptions.Merge(m, src)
 }
 func (m *ListOptions) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ListOptions) XXX_DiscardUnknown() {
 	xxx_messageInfo_ListOptions.DiscardUnknown(m)
@@ -527,7 +527,7 @@ func (m *ListRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ListRequest.Merge(m, src)
 }
 func (m *ListRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ListRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ListRequest.DiscardUnknown(m)
@@ -564,7 +564,7 @@ func (m *ListResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ListResponse.Merge(m, src)
 }
 func (m *ListResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ListResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_ListResponse.DiscardUnknown(m)
@@ -600,7 +600,7 @@ func (m *DatabasesRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_DatabasesRequest.Merge(m, src)
 }
 func (m *DatabasesRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *DatabasesRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_DatabasesRequest.DiscardUnknown(m)
@@ -637,7 +637,7 @@ func (m *DatabasesResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_DatabasesResponse.Merge(m, src)
 }
 func (m *DatabasesResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *DatabasesResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_DatabasesResponse.DiscardUnknown(m)
@@ -674,7 +674,7 @@ func (m *TablesRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_TablesRequest.Merge(m, src)
 }
 func (m *TablesRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *TablesRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_TablesRequest.DiscardUnknown(m)
@@ -711,7 +711,7 @@ func (m *TablesResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_TablesResponse.Merge(m, src)
 }
 func (m *TablesResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *TablesResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_TablesResponse.DiscardUnknown(m)
@@ -794,7 +794,7 @@ var fileDescriptor_5e7adf7a0b27a58c = []byte{
 	0x00, 0x00,
 }
 
-func (m *Field) Size() (n int) {
+func (m *Field) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -811,7 +811,7 @@ func (m *Field) Size() (n int) {
 	return n
 }
 
-func (m *Record) Size() (n int) {
+func (m *Record) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -834,7 +834,7 @@ func (m *Record) Size() (n int) {
 			_ = v
 			l = 0
 			if v != nil {
-				l = v.Size()
+				l = v.XSize()
 				l += 1 + sovStore(uint64(l))
 			}
 			mapEntrySize := 1 + len(k) + sovStore(uint64(len(k))) + l
@@ -844,7 +844,7 @@ func (m *Record) Size() (n int) {
 	return n
 }
 
-func (m *ReadOptions) Size() (n int) {
+func (m *ReadOptions) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -873,7 +873,7 @@ func (m *ReadOptions) Size() (n int) {
 	return n
 }
 
-func (m *ReadRequest) Size() (n int) {
+func (m *ReadRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -884,13 +884,13 @@ func (m *ReadRequest) Size() (n int) {
 		n += 1 + l + sovStore(uint64(l))
 	}
 	if m.Options != nil {
-		l = m.Options.Size()
+		l = m.Options.XSize()
 		n += 1 + l + sovStore(uint64(l))
 	}
 	return n
 }
 
-func (m *ReadResponse) Size() (n int) {
+func (m *ReadResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -898,14 +898,14 @@ func (m *ReadResponse) Size() (n int) {
 	_ = l
 	if len(m.Records) > 0 {
 		for _, e := range m.Records {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovStore(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *WriteOptions) Size() (n int) {
+func (m *WriteOptions) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -928,24 +928,24 @@ func (m *WriteOptions) Size() (n int) {
 	return n
 }
 
-func (m *WriteRequest) Size() (n int) {
+func (m *WriteRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Record != nil {
-		l = m.Record.Size()
+		l = m.Record.XSize()
 		n += 1 + l + sovStore(uint64(l))
 	}
 	if m.Options != nil {
-		l = m.Options.Size()
+		l = m.Options.XSize()
 		n += 1 + l + sovStore(uint64(l))
 	}
 	return n
 }
 
-func (m *WriteResponse) Size() (n int) {
+func (m *WriteResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -954,7 +954,7 @@ func (m *WriteResponse) Size() (n int) {
 	return n
 }
 
-func (m *DeleteOptions) Size() (n int) {
+func (m *DeleteOptions) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -971,7 +971,7 @@ func (m *DeleteOptions) Size() (n int) {
 	return n
 }
 
-func (m *DeleteRequest) Size() (n int) {
+func (m *DeleteRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -982,13 +982,13 @@ func (m *DeleteRequest) Size() (n int) {
 		n += 1 + l + sovStore(uint64(l))
 	}
 	if m.Options != nil {
-		l = m.Options.Size()
+		l = m.Options.XSize()
 		n += 1 + l + sovStore(uint64(l))
 	}
 	return n
 }
 
-func (m *DeleteResponse) Size() (n int) {
+func (m *DeleteResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -997,7 +997,7 @@ func (m *DeleteResponse) Size() (n int) {
 	return n
 }
 
-func (m *ListOptions) Size() (n int) {
+func (m *ListOptions) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1028,20 +1028,20 @@ func (m *ListOptions) Size() (n int) {
 	return n
 }
 
-func (m *ListRequest) Size() (n int) {
+func (m *ListRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Options != nil {
-		l = m.Options.Size()
+		l = m.Options.XSize()
 		n += 1 + l + sovStore(uint64(l))
 	}
 	return n
 }
 
-func (m *ListResponse) Size() (n int) {
+func (m *ListResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1056,7 +1056,7 @@ func (m *ListResponse) Size() (n int) {
 	return n
 }
 
-func (m *DatabasesRequest) Size() (n int) {
+func (m *DatabasesRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1065,7 +1065,7 @@ func (m *DatabasesRequest) Size() (n int) {
 	return n
 }
 
-func (m *DatabasesResponse) Size() (n int) {
+func (m *DatabasesResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1080,7 +1080,7 @@ func (m *DatabasesResponse) Size() (n int) {
 	return n
 }
 
-func (m *TablesRequest) Size() (n int) {
+func (m *TablesRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1093,7 +1093,7 @@ func (m *TablesRequest) Size() (n int) {
 	return n
 }
 
-func (m *TablesResponse) Size() (n int) {
+func (m *TablesResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1115,7 +1115,7 @@ func sozStore(x uint64) (n int) {
 	return sovStore(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Field) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1125,7 +1125,7 @@ func (m *Field) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Field) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1152,7 +1152,7 @@ func (m *Field) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Record) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1162,7 +1162,7 @@ func (m *Record) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Record) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1220,7 +1220,7 @@ func (m *Record) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ReadOptions) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1230,7 +1230,7 @@ func (m *ReadOptions) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ReadOptions) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1287,7 +1287,7 @@ func (m *ReadOptions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ReadRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1297,7 +1297,7 @@ func (m *ReadRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ReadRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1329,7 +1329,7 @@ func (m *ReadRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ReadResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1339,7 +1339,7 @@ func (m *ReadResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ReadResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1366,7 +1366,7 @@ func (m *ReadResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *WriteOptions) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1376,7 +1376,7 @@ func (m *WriteOptions) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *WriteOptions) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1413,7 +1413,7 @@ func (m *WriteOptions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *WriteRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1423,7 +1423,7 @@ func (m *WriteRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *WriteRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1460,7 +1460,7 @@ func (m *WriteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *WriteResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1470,7 +1470,7 @@ func (m *WriteResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *WriteResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1483,7 +1483,7 @@ func (m *WriteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *DeleteOptions) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1493,7 +1493,7 @@ func (m *DeleteOptions) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DeleteOptions) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1520,7 +1520,7 @@ func (m *DeleteOptions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *DeleteRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1530,7 +1530,7 @@ func (m *DeleteRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DeleteRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1562,7 +1562,7 @@ func (m *DeleteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *DeleteResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1572,7 +1572,7 @@ func (m *DeleteResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DeleteResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1585,7 +1585,7 @@ func (m *DeleteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ListOptions) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1595,7 +1595,7 @@ func (m *ListOptions) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ListOptions) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1646,7 +1646,7 @@ func (m *ListOptions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ListRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1656,7 +1656,7 @@ func (m *ListRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ListRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1681,7 +1681,7 @@ func (m *ListRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ListResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1691,7 +1691,7 @@ func (m *ListResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ListResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1713,7 +1713,7 @@ func (m *ListResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *DatabasesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1723,7 +1723,7 @@ func (m *DatabasesRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DatabasesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1736,7 +1736,7 @@ func (m *DatabasesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *DatabasesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1746,7 +1746,7 @@ func (m *DatabasesResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *DatabasesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1768,7 +1768,7 @@ func (m *DatabasesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *TablesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1778,7 +1778,7 @@ func (m *TablesRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *TablesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1798,7 +1798,7 @@ func (m *TablesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *TablesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1808,7 +1808,7 @@ func (m *TablesResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *TablesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

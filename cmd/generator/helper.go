@@ -59,10 +59,11 @@ func (g *Generator) TypeNameByObject(typeName string) Object {
 	return o
 }
 
-func (g *Generator) OneOfTypeName(message *Descriptor, field *descriptor.FieldDescriptorProto) string {
+func (g *Generator) OneOfTypeName(msg *MessageDescriptor, field *FieldDescriptor) string {
+	message := msg.Proto
 	typeName := message.TypeName()
 	ccTypeName := CamelCaseSlice(typeName)
-	fieldName := g.GetOneOfFieldName(message, field)
+	fieldName := g.GetOneOfFieldName(msg, field)
 	tname := ccTypeName + "_" + fieldName
 	// It is possible for this to collide with a message or enum
 	// nested in this message. Check for collisions.
@@ -161,7 +162,8 @@ func (this *importedPackage) Location() string {
 	return this.importPrefix + this.pkg
 }
 
-func (g *Generator) GetFieldName(message *Descriptor, field *descriptor.FieldDescriptorProto) string {
+func (g *Generator) GetFieldName(message *Descriptor, f *FieldDescriptor) string {
+	field := f.Proto
 	goTyp, _ := g.GoType(message, field)
 	fieldname := CamelCase(*field.Name)
 	if gogoproto.IsCustomName(field) {
@@ -184,12 +186,16 @@ func (g *Generator) GetFieldName(message *Descriptor, field *descriptor.FieldDes
 			return fieldname + "_"
 		}
 	}
+	if isInlineField(f.Comments) {
+		return g.ExtractMessage(f.Proto.GetTypeName()).Proto.TypeName()[0]
+	}
 	return fieldname
 }
 
-func (g *Generator) GetOneOfFieldName(message *Descriptor, field *descriptor.FieldDescriptorProto) string {
-	goTyp, _ := g.GoType(message, field)
-	fieldname := CamelCase(*field.Name)
+func (g *Generator) GetOneOfFieldName(msg *MessageDescriptor, f *FieldDescriptor) string {
+	field := f.Proto
+	goTyp, _ := g.GoType(msg.Proto, field)
+	fieldname := CamelCase(field.GetName())
 	if gogoproto.IsCustomName(field) {
 		fieldname = gogoproto.GetCustomName(field)
 	}
@@ -201,10 +207,13 @@ func (g *Generator) GetOneOfFieldName(message *Descriptor, field *descriptor.Fie
 			return fieldname + "_"
 		}
 	}
-	if !gogoproto.IsProtoSizer(message.file.FileDescriptorProto, message.DescriptorProto) {
+	if !gogoproto.IsProtoSizer(msg.Proto.file.FileDescriptorProto, msg.Proto.DescriptorProto) {
 		if fieldname == "XSize" {
 			return fieldname + "_"
 		}
+	}
+	if isInlineField(f.Comments) {
+		return g.ExtractMessage(f.Proto.GetTypeName()).Proto.TypeName()[0]
 	}
 	return fieldname
 }

@@ -59,7 +59,7 @@ protoc:
 	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/transport/transport.proto
 
 
-	sed -i "" "s/ref,omitempty/$$\ref,omitempty/g" proto/apis/openapi/openapi.pb.go
+	sed -i "" "s/ref,omitempty/\$$ref,omitempty/g" proto/apis/openapi/openapi.pb.go
 	sed -i "" "s/applicationJson,omitempty/application\/json,omitempty/g" proto/apis/openapi/openapi.pb.go
 	sed -i "" "s/applicationXml,omitempty/application\/xml,omitempty/g" proto/apis/openapi/openapi.pb.go
 

@@ -57,7 +57,7 @@ func (m *Message) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Message.Merge(m, src)
 }
 func (m *Message) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Message) XXX_DiscardUnknown() {
 	xxx_messageInfo_Message.DiscardUnknown(m)
@@ -95,7 +95,7 @@ var fileDescriptor_0bcfb6e0e20ff9db = []byte{
 	0x87, 0x01, 0x00, 0x00,
 }
 
-func (m *Message) Size() (n int) {
+func (m *Message) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -123,7 +123,7 @@ func sozTransport(x uint64) (n int) {
 	return sovTransport(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Message) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -133,7 +133,7 @@ func (m *Message) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Message) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

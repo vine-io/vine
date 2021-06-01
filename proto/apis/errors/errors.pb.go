@@ -59,7 +59,7 @@ func (m *Error) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Error.Merge(m, src)
 }
 func (m *Error) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Error) XXX_DiscardUnknown() {
 	xxx_messageInfo_Error.DiscardUnknown(m)
@@ -97,7 +97,7 @@ func (m *Child) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Child.Merge(m, src)
 }
 func (m *Child) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Child) XXX_DiscardUnknown() {
 	xxx_messageInfo_Child.DiscardUnknown(m)
@@ -136,7 +136,7 @@ func (m *Stack) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Stack.Merge(m, src)
 }
 func (m *Stack) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Stack) XXX_DiscardUnknown() {
 	xxx_messageInfo_Stack.DiscardUnknown(m)
@@ -176,7 +176,7 @@ var fileDescriptor_1c33674bd5d75a1e = []byte{
 	0x8b, 0xff, 0x35, 0x15, 0xe4, 0x01, 0x00, 0x00,
 }
 
-func (m *Error) Size() (n int) {
+func (m *Error) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -202,19 +202,19 @@ func (m *Error) Size() (n int) {
 		n += 1 + l + sovErrors(uint64(l))
 	}
 	if m.Child != nil {
-		l = m.Child.Size()
+		l = m.Child.XSize()
 		n += 1 + l + sovErrors(uint64(l))
 	}
 	if len(m.Stacks) > 0 {
 		for _, e := range m.Stacks {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovErrors(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *Child) Size() (n int) {
+func (m *Child) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -230,7 +230,7 @@ func (m *Child) Size() (n int) {
 	return n
 }
 
-func (m *Stack) Size() (n int) {
+func (m *Stack) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -257,7 +257,7 @@ func sozErrors(x uint64) (n int) {
 	return sovErrors(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Error) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -267,7 +267,7 @@ func (m *Error) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Error) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -339,7 +339,7 @@ func (m *Error) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Child) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -349,7 +349,7 @@ func (m *Child) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Child) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -374,7 +374,7 @@ func (m *Child) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Stack) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -384,7 +384,7 @@ func (m *Stack) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Stack) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

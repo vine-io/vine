@@ -471,11 +471,11 @@ func (g *gogo) noStarOrSliceType(msg *generator.Descriptor, field *descriptor.Fi
 	return typ
 }
 
-func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, f *generator.FieldDescriptor, fieldname string, proto3 bool) {
+func (g *gogo) field(file *generator.FileDescriptor, msg *generator.MessageDescriptor, f *generator.FieldDescriptor, fieldname string, proto3 bool) {
 	field := f.Proto
 	repeated := field.IsRepeated()
 	nullable := gogoproto.IsNullable(field)
-	typ := g.noStarOrSliceType(msg, field)
+	typ := g.noStarOrSliceType(msg.Proto, field)
 	oneof := field.OneofIndex != nil
 	_, isInline := g.extractTags(f.Comments)[_inline]
 	switch *field.Type {
@@ -483,7 +483,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		g.P(`var v uint64`)
 		g.decodeFixed64("v", "uint64")
 		if oneof {
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{`, typ, "(", g.mathPkg.Use(), `.Float64frombits(v))}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{`, typ, "(", g.mathPkg.Use(), `.Float64frombits(v))}`)
 		} else if repeated {
 			g.P(`v2 := `, typ, "(", g.mathPkg.Use(), `.Float64frombits(v))`)
 			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v2)`)
@@ -497,7 +497,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		g.P(`var v uint32`)
 		g.decodeFixed32("v", "uint32")
 		if oneof {
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{`, typ, "(", g.mathPkg.Use(), `.Float32frombits(v))}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{`, typ, "(", g.mathPkg.Use(), `.Float32frombits(v))}`)
 		} else if repeated {
 			g.P(`v2 := `, typ, "(", g.mathPkg.Use(), `.Float32frombits(v))`)
 			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v2)`)
@@ -511,7 +511,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
@@ -528,7 +528,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
@@ -545,7 +545,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
@@ -562,7 +562,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeFixed64("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeFixed64("v", typ)
@@ -579,7 +579,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeFixed32("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeFixed32("v", typ)
@@ -597,7 +597,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		g.decodeVarint("v", "int")
 		if oneof {
 			g.P(`b := `, typ, `(v != 0)`)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{b}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{b}`)
 		} else if repeated {
 			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, typ, `(v != 0))`)
 		} else if proto3 || !nullable {
@@ -627,7 +627,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		g.Out()
 		g.P(`}`)
 		if oneof {
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{`, typ, `(dAtA[iNdEx:postIndex])}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{`, typ, `(dAtA[iNdEx:postIndex])}`)
 		} else if repeated {
 			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, typ, `(dAtA[iNdEx:postIndex]))`)
 		} else if proto3 || !nullable {
@@ -758,7 +758,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 			g.P(`return err`)
 			g.Out()
 			g.P(`}`)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if g.IsMap(field) {
 			m := g.GoMapType(nil, field)
 
@@ -1120,7 +1120,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 			if oneof {
 				g.P(`v := make([]byte, postIndex-iNdEx)`)
 				g.P(`copy(v, dAtA[iNdEx:postIndex])`)
-				g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+				g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 			} else if repeated {
 				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, make([]byte, postIndex-iNdEx))`)
 				g.P(`copy(m.`, fieldname, `[len(m.`, fieldname, `)-1], dAtA[iNdEx:postIndex])`)
@@ -1145,7 +1145,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 				g.P(`return err`)
 				g.Out()
 				g.P(`}`)
-				g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{*v}`)
+				g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{*v}`)
 			} else if repeated {
 				g.P(`var v `, ctyp)
 				g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
@@ -1175,7 +1175,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeVarint("v", typ)
@@ -1193,7 +1193,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typName)
 			g.decodeVarint("v", typName)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typName)
 			g.decodeVarint("v", typName)
@@ -1210,7 +1210,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeFixed32("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeFixed32("v", typ)
@@ -1227,7 +1227,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		if oneof {
 			g.P(`var v `, typ)
 			g.decodeFixed64("v", typ)
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`var v `, typ)
 			g.decodeFixed64("v", typ)
@@ -1245,7 +1245,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		g.decodeVarint("v", typ)
 		g.P(`v = `, typ, `((uint32(v) >> 1) ^ uint32(((v&1)<<31)>>31))`)
 		if oneof {
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{v}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{v}`)
 		} else if repeated {
 			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, v)`)
 		} else if proto3 || !nullable {
@@ -1258,7 +1258,7 @@ func (g *gogo) field(file *generator.FileDescriptor, msg *generator.Descriptor, 
 		g.decodeVarint("v", "uint64")
 		g.P(`v = (v >> 1) ^ uint64((int64(v&1)<<63)>>63)`)
 		if oneof {
-			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, field), `{`, typ, `(v)}`)
+			g.P(`m.`, fieldname, ` = &`, g.OneOfTypeName(msg, f), `{`, typ, `(v)}`)
 		} else if repeated {
 			g.P(`m.`, fieldname, ` = append(m.`, fieldname, `, `, typ, `(v))`)
 		} else if proto3 || !nullable {
@@ -1329,10 +1329,10 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 		g.In()
 		for _, f := range message.Fields {
 			field := f.Proto
-			fieldname := g.GetFieldName(message.Proto, field)
+			fieldname := g.GetFieldName(message.Proto, f)
 			errFieldname := fieldname
 			if field.OneofIndex != nil {
-				errFieldname = g.GetOneOfFieldName(message.Proto, field)
+				errFieldname = g.GetOneOfFieldName(message, f)
 			}
 			possiblyPacked := field.IsScalar() && field.IsRepeated()
 			g.P(`case `, strconv.Itoa(int(field.GetNumber())), `:`)
@@ -1341,7 +1341,7 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 			if possiblyPacked {
 				g.P(`if wireType == `, strconv.Itoa(wireType), `{`)
 				g.In()
-				g.field(file, message.Proto, f, fieldname, false)
+				g.field(file, message, f, fieldname, false)
 				g.Out()
 				g.P(`} else if wireType == `, strconv.Itoa(proto.WireBytes), `{`)
 				g.In()
@@ -1393,7 +1393,7 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 
 				g.P(`for iNdEx < postIndex {`)
 				g.In()
-				g.field(file, message.Proto, f, fieldname, false)
+				g.field(file, message, f, fieldname, false)
 				g.Out()
 				g.P(`}`)
 				g.Out()
@@ -1408,7 +1408,7 @@ func (g *gogo) GenerateUnmarshal(file *generator.FileDescriptor) {
 				g.P(`return ` + g.fmtPkg.Use() + `.Errorf("proto: wrong wireType = %d for field ` + errFieldname + `", wireType)`)
 				g.Out()
 				g.P(`}`)
-				g.field(file, message.Proto, f, fieldname, proto3)
+				g.field(file, message, f, fieldname, proto3)
 			}
 
 			if field.IsRequired() {

@@ -258,7 +258,7 @@ func (g *Generator) ExtractEnum(name string) *EnumDescriptor {
 	return nil
 }
 
-func isInline(text string) bool {
+func isInlineText(text string) bool {
 	inline := false
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(strings.ReplaceAll(line, "//", ""))
@@ -271,6 +271,15 @@ func isInline(text string) bool {
 		}
 	}
 	return inline
+}
+
+func isInlineField(comments []*Comment) bool {
+	for _, c := range comments {
+		if c.Tag == "gen" && c.Text == "inline" {
+			return true
+		}
+	}
+	return false
 }
 
 func isMeta(comments []*Comment) bool {

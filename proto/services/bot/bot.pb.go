@@ -55,7 +55,7 @@ func (m *HelpRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_HelpRequest.Merge(m, src)
 }
 func (m *HelpRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *HelpRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_HelpRequest.DiscardUnknown(m)
@@ -93,7 +93,7 @@ func (m *HelpResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_HelpResponse.Merge(m, src)
 }
 func (m *HelpResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *HelpResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_HelpResponse.DiscardUnknown(m)
@@ -130,7 +130,7 @@ func (m *ExecRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ExecRequest.Merge(m, src)
 }
 func (m *ExecRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ExecRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ExecRequest.DiscardUnknown(m)
@@ -168,7 +168,7 @@ func (m *ExecResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ExecResponse.Merge(m, src)
 }
 func (m *ExecResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ExecResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_ExecResponse.DiscardUnknown(m)
@@ -210,7 +210,7 @@ var fileDescriptor_aa442adc5ebd3f45 = []byte{
 	0x00,
 }
 
-func (m *HelpRequest) Size() (n int) {
+func (m *HelpRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -219,7 +219,7 @@ func (m *HelpRequest) Size() (n int) {
 	return n
 }
 
-func (m *HelpResponse) Size() (n int) {
+func (m *HelpResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -236,7 +236,7 @@ func (m *HelpResponse) Size() (n int) {
 	return n
 }
 
-func (m *ExecRequest) Size() (n int) {
+func (m *ExecRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -251,7 +251,7 @@ func (m *ExecRequest) Size() (n int) {
 	return n
 }
 
-func (m *ExecResponse) Size() (n int) {
+func (m *ExecResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -275,7 +275,7 @@ func sozBot(x uint64) (n int) {
 	return sovBot(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *HelpRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -285,7 +285,7 @@ func (m *HelpRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *HelpRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -298,7 +298,7 @@ func (m *HelpRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *HelpResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -308,7 +308,7 @@ func (m *HelpResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *HelpResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -335,7 +335,7 @@ func (m *HelpResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ExecRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -345,7 +345,7 @@ func (m *ExecRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ExecRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -367,7 +367,7 @@ func (m *ExecRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ExecResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -377,7 +377,7 @@ func (m *ExecResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ExecResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

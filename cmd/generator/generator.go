@@ -2246,7 +2246,7 @@ type simpleField struct {
 
 // decl prints the declaration of the field in the struct (if any).
 func (f *simpleField) decl(g *Generator, mc *msgCtx) {
-	if isInline(f.comment) && f.protoType == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+	if isInlineText(f.comment) && f.protoType == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
 		tags := []string{}
 		parts := strings.Split(f.tags, " ")
 		for _, item := range parts {
@@ -2523,7 +2523,7 @@ func (g *Generator) generateGet(mc *msgCtx, protoField *descriptor.FieldDescript
 		// as does a message or group field, or a repeated field.
 		g.P("if m != nil {")
 		g.In()
-		if isInline(comment) {
+		if isInlineText(comment) {
 			g.P("return &m." + fname)
 		} else {
 			g.P("return m." + fname)

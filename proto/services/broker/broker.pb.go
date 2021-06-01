@@ -55,7 +55,7 @@ func (m *Empty) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Empty.Merge(m, src)
 }
 func (m *Empty) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Empty) XXX_DiscardUnknown() {
 	xxx_messageInfo_Empty.DiscardUnknown(m)
@@ -93,7 +93,7 @@ func (m *PublishRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_PublishRequest.Merge(m, src)
 }
 func (m *PublishRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *PublishRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_PublishRequest.DiscardUnknown(m)
@@ -131,7 +131,7 @@ func (m *SubscribeRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_SubscribeRequest.Merge(m, src)
 }
 func (m *SubscribeRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *SubscribeRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_SubscribeRequest.DiscardUnknown(m)
@@ -169,7 +169,7 @@ func (m *Message) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Message.Merge(m, src)
 }
 func (m *Message) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Message) XXX_DiscardUnknown() {
 	xxx_messageInfo_Message.DiscardUnknown(m)
@@ -215,7 +215,7 @@ var fileDescriptor_bcb42959c79a2a17 = []byte{
 	0x15, 0xdb, 0x79, 0x0f, 0x00, 0x00, 0xff, 0xff, 0xdd, 0x08, 0xed, 0x48, 0x46, 0x02, 0x00, 0x00,
 }
 
-func (m *Empty) Size() (n int) {
+func (m *Empty) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -224,7 +224,7 @@ func (m *Empty) Size() (n int) {
 	return n
 }
 
-func (m *PublishRequest) Size() (n int) {
+func (m *PublishRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -235,13 +235,13 @@ func (m *PublishRequest) Size() (n int) {
 		n += 1 + l + sovBroker(uint64(l))
 	}
 	if m.Message != nil {
-		l = m.Message.Size()
+		l = m.Message.XSize()
 		n += 1 + l + sovBroker(uint64(l))
 	}
 	return n
 }
 
-func (m *SubscribeRequest) Size() (n int) {
+func (m *SubscribeRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -258,7 +258,7 @@ func (m *SubscribeRequest) Size() (n int) {
 	return n
 }
 
-func (m *Message) Size() (n int) {
+func (m *Message) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -286,7 +286,7 @@ func sozBroker(x uint64) (n int) {
 	return sovBroker(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Empty) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -296,7 +296,7 @@ func (m *Empty) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Empty) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -309,7 +309,7 @@ func (m *Empty) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *PublishRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -319,7 +319,7 @@ func (m *PublishRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *PublishRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -351,7 +351,7 @@ func (m *PublishRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *SubscribeRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -361,7 +361,7 @@ func (m *SubscribeRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *SubscribeRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -388,7 +388,7 @@ func (m *SubscribeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Message) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -398,7 +398,7 @@ func (m *Message) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Message) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

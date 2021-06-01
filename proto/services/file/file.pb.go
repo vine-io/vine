@@ -57,7 +57,7 @@ func (m *OpenRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenRequest.Merge(m, src)
 }
 func (m *OpenRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenRequest.DiscardUnknown(m)
@@ -95,7 +95,7 @@ func (m *OpenResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenResponse.Merge(m, src)
 }
 func (m *OpenResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenResponse.DiscardUnknown(m)
@@ -132,7 +132,7 @@ func (m *CloseRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_CloseRequest.Merge(m, src)
 }
 func (m *CloseRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *CloseRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_CloseRequest.DiscardUnknown(m)
@@ -168,7 +168,7 @@ func (m *CloseResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_CloseResponse.Merge(m, src)
 }
 func (m *CloseResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *CloseResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_CloseResponse.DiscardUnknown(m)
@@ -205,7 +205,7 @@ func (m *StatRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_StatRequest.Merge(m, src)
 }
 func (m *StatRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *StatRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_StatRequest.DiscardUnknown(m)
@@ -215,7 +215,7 @@ var xxx_messageInfo_StatRequest proto.InternalMessageInfo
 
 type StatResponse struct {
 	Type         string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	Size_        int64  `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+	Size         int64  `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
 	LastModified int64  `protobuf:"varint,3,opt,name=last_modified,json=lastModified,proto3" json:"last_modified,omitempty"`
 }
 
@@ -244,7 +244,7 @@ func (m *StatResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_StatResponse.Merge(m, src)
 }
 func (m *StatResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *StatResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_StatResponse.DiscardUnknown(m)
@@ -255,7 +255,7 @@ var xxx_messageInfo_StatResponse proto.InternalMessageInfo
 type ReadRequest struct {
 	Id     int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Offset int64 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
-	Size_  int64 `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	Size   int64 `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
 }
 
 func (m *ReadRequest) Reset()         { *m = ReadRequest{} }
@@ -283,7 +283,7 @@ func (m *ReadRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ReadRequest.Merge(m, src)
 }
 func (m *ReadRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ReadRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ReadRequest.DiscardUnknown(m)
@@ -292,9 +292,9 @@ func (m *ReadRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_ReadRequest proto.InternalMessageInfo
 
 type ReadResponse struct {
-	Size_ int64  `protobuf:"varint,1,opt,name=size,proto3" json:"size,omitempty"`
-	Data  []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	Eof   bool   `protobuf:"varint,3,opt,name=eof,proto3" json:"eof,omitempty"`
+	Size int64  `protobuf:"varint,1,opt,name=size,proto3" json:"size,omitempty"`
+	Data []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Eof  bool   `protobuf:"varint,3,opt,name=eof,proto3" json:"eof,omitempty"`
 }
 
 func (m *ReadResponse) Reset()         { *m = ReadResponse{} }
@@ -322,7 +322,7 @@ func (m *ReadResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ReadResponse.Merge(m, src)
 }
 func (m *ReadResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ReadResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_ReadResponse.DiscardUnknown(m)
@@ -360,7 +360,7 @@ func (m *GetRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_GetRequest.Merge(m, src)
 }
 func (m *GetRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *GetRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_GetRequest.DiscardUnknown(m)
@@ -370,7 +370,7 @@ var xxx_messageInfo_GetRequest proto.InternalMessageInfo
 
 type GetResponse struct {
 	BlockId int64  `protobuf:"varint,1,opt,name=block_id,json=blockId,proto3" json:"block_id,omitempty"`
-	Size_   int64  `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+	Size    int64  `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
 	Data    []byte `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 }
 
@@ -399,7 +399,7 @@ func (m *GetResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_GetResponse.Merge(m, src)
 }
 func (m *GetResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *GetResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_GetResponse.DiscardUnknown(m)
@@ -438,7 +438,7 @@ func (m *WriteRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_WriteRequest.Merge(m, src)
 }
 func (m *WriteRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *WriteRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_WriteRequest.DiscardUnknown(m)
@@ -474,7 +474,7 @@ func (m *WriteResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_WriteResponse.Merge(m, src)
 }
 func (m *WriteResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *WriteResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_WriteResponse.DiscardUnknown(m)
@@ -537,7 +537,7 @@ var fileDescriptor_b68b393a872fd72f = []byte{
 	0x00, 0x00,
 }
 
-func (m *OpenRequest) Size() (n int) {
+func (m *OpenRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -553,7 +553,7 @@ func (m *OpenRequest) Size() (n int) {
 	return n
 }
 
-func (m *OpenResponse) Size() (n int) {
+func (m *OpenResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -568,7 +568,7 @@ func (m *OpenResponse) Size() (n int) {
 	return n
 }
 
-func (m *CloseRequest) Size() (n int) {
+func (m *CloseRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -580,7 +580,7 @@ func (m *CloseRequest) Size() (n int) {
 	return n
 }
 
-func (m *CloseResponse) Size() (n int) {
+func (m *CloseResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -589,7 +589,7 @@ func (m *CloseResponse) Size() (n int) {
 	return n
 }
 
-func (m *StatRequest) Size() (n int) {
+func (m *StatRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -602,7 +602,7 @@ func (m *StatRequest) Size() (n int) {
 	return n
 }
 
-func (m *StatResponse) Size() (n int) {
+func (m *StatResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -612,8 +612,8 @@ func (m *StatResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovFile(uint64(l))
 	}
-	if m.Size_ != 0 {
-		n += 1 + sovFile(uint64(m.Size_))
+	if m.Size != 0 {
+		n += 1 + sovFile(uint64(m.Size))
 	}
 	if m.LastModified != 0 {
 		n += 1 + sovFile(uint64(m.LastModified))
@@ -621,7 +621,7 @@ func (m *StatResponse) Size() (n int) {
 	return n
 }
 
-func (m *ReadRequest) Size() (n int) {
+func (m *ReadRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -633,20 +633,20 @@ func (m *ReadRequest) Size() (n int) {
 	if m.Offset != 0 {
 		n += 1 + sovFile(uint64(m.Offset))
 	}
-	if m.Size_ != 0 {
-		n += 1 + sovFile(uint64(m.Size_))
+	if m.Size != 0 {
+		n += 1 + sovFile(uint64(m.Size))
 	}
 	return n
 }
 
-func (m *ReadResponse) Size() (n int) {
+func (m *ReadResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Size_ != 0 {
-		n += 1 + sovFile(uint64(m.Size_))
+	if m.Size != 0 {
+		n += 1 + sovFile(uint64(m.Size))
 	}
 	l = len(m.Data)
 	if l > 0 {
@@ -658,7 +658,7 @@ func (m *ReadResponse) Size() (n int) {
 	return n
 }
 
-func (m *GetRequest) Size() (n int) {
+func (m *GetRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -673,7 +673,7 @@ func (m *GetRequest) Size() (n int) {
 	return n
 }
 
-func (m *GetResponse) Size() (n int) {
+func (m *GetResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -682,8 +682,8 @@ func (m *GetResponse) Size() (n int) {
 	if m.BlockId != 0 {
 		n += 1 + sovFile(uint64(m.BlockId))
 	}
-	if m.Size_ != 0 {
-		n += 1 + sovFile(uint64(m.Size_))
+	if m.Size != 0 {
+		n += 1 + sovFile(uint64(m.Size))
 	}
 	l = len(m.Data)
 	if l > 0 {
@@ -692,7 +692,7 @@ func (m *GetResponse) Size() (n int) {
 	return n
 }
 
-func (m *WriteRequest) Size() (n int) {
+func (m *WriteRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -711,7 +711,7 @@ func (m *WriteRequest) Size() (n int) {
 	return n
 }
 
-func (m *WriteResponse) Size() (n int) {
+func (m *WriteResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -727,7 +727,7 @@ func sozFile(x uint64) (n int) {
 	return sovFile(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *OpenRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -737,7 +737,7 @@ func (m *OpenRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -767,7 +767,7 @@ func (m *OpenRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -777,7 +777,7 @@ func (m *OpenResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -805,7 +805,7 @@ func (m *OpenResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *CloseRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -815,7 +815,7 @@ func (m *CloseRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *CloseRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -833,7 +833,7 @@ func (m *CloseRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *CloseResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -843,7 +843,7 @@ func (m *CloseResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *CloseResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -856,7 +856,7 @@ func (m *CloseResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *StatRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -866,7 +866,7 @@ func (m *StatRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *StatRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -886,7 +886,7 @@ func (m *StatRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *StatResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -896,7 +896,7 @@ func (m *StatResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *StatResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -910,8 +910,8 @@ func (m *StatResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.Size_ != 0 {
-		i = encodeVarintFile(dAtA, i, uint64(m.Size_))
+	if m.Size != 0 {
+		i = encodeVarintFile(dAtA, i, uint64(m.Size))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -926,7 +926,7 @@ func (m *StatResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ReadRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -936,7 +936,7 @@ func (m *ReadRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ReadRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -945,8 +945,8 @@ func (m *ReadRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Size_ != 0 {
-		i = encodeVarintFile(dAtA, i, uint64(m.Size_))
+	if m.Size != 0 {
+		i = encodeVarintFile(dAtA, i, uint64(m.Size))
 		i--
 		dAtA[i] = 0x18
 	}
@@ -964,7 +964,7 @@ func (m *ReadRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ReadResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -974,7 +974,7 @@ func (m *ReadResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ReadResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1000,8 +1000,8 @@ func (m *ReadResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.Size_ != 0 {
-		i = encodeVarintFile(dAtA, i, uint64(m.Size_))
+	if m.Size != 0 {
+		i = encodeVarintFile(dAtA, i, uint64(m.Size))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1009,7 +1009,7 @@ func (m *ReadResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *GetRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1019,7 +1019,7 @@ func (m *GetRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *GetRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1042,7 +1042,7 @@ func (m *GetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *GetResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1052,7 +1052,7 @@ func (m *GetResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *GetResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1068,8 +1068,8 @@ func (m *GetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.Size_ != 0 {
-		i = encodeVarintFile(dAtA, i, uint64(m.Size_))
+	if m.Size != 0 {
+		i = encodeVarintFile(dAtA, i, uint64(m.Size))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1082,7 +1082,7 @@ func (m *GetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *WriteRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1092,7 +1092,7 @@ func (m *WriteRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *WriteRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1122,7 +1122,7 @@ func (m *WriteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *WriteResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1132,7 +1132,7 @@ func (m *WriteResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *WriteResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1610,9 +1610,9 @@ func (m *StatResponse) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Size", wireType)
 			}
-			m.Size_ = 0
+			m.Size = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowFile
@@ -1622,7 +1622,7 @@ func (m *StatResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Size_ |= int64(b&0x7F) << shift
+				m.Size |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1736,9 +1736,9 @@ func (m *ReadRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Size", wireType)
 			}
-			m.Size_ = 0
+			m.Size = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowFile
@@ -1748,7 +1748,7 @@ func (m *ReadRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Size_ |= int64(b&0x7F) << shift
+				m.Size |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1805,9 +1805,9 @@ func (m *ReadResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Size", wireType)
 			}
-			m.Size_ = 0
+			m.Size = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowFile
@@ -1817,7 +1817,7 @@ func (m *ReadResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Size_ |= int64(b&0x7F) << shift
+				m.Size |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2035,9 +2035,9 @@ func (m *GetResponse) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Size_", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Size", wireType)
 			}
-			m.Size_ = 0
+			m.Size = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowFile
@@ -2047,7 +2047,7 @@ func (m *GetResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Size_ |= int64(b&0x7F) << shift
+				m.Size |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

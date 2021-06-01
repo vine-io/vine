@@ -59,7 +59,7 @@ func (m *OpenAPI) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPI.Merge(m, src)
 }
 func (m *OpenAPI) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPI) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPI.DiscardUnknown(m)
@@ -97,7 +97,7 @@ func (m *OpenAPIServer) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPIServer.Merge(m, src)
 }
 func (m *OpenAPIServer) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPIServer) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPIServer.DiscardUnknown(m)
@@ -139,7 +139,7 @@ func (m *OpenAPIInfo) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPIInfo.Merge(m, src)
 }
 func (m *OpenAPIInfo) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPIInfo) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPIInfo.DiscardUnknown(m)
@@ -177,7 +177,7 @@ func (m *OpenAPIContact) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPIContact.Merge(m, src)
 }
 func (m *OpenAPIContact) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPIContact) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPIContact.DiscardUnknown(m)
@@ -215,7 +215,7 @@ func (m *OpenAPILicense) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPILicense.Merge(m, src)
 }
 func (m *OpenAPILicense) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPILicense) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPILicense.DiscardUnknown(m)
@@ -254,7 +254,7 @@ func (m *OpenAPITag) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPITag.Merge(m, src)
 }
 func (m *OpenAPITag) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPITag) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPITag.DiscardUnknown(m)
@@ -292,7 +292,7 @@ func (m *OpenAPIExternalDocs) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPIExternalDocs.Merge(m, src)
 }
 func (m *OpenAPIExternalDocs) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPIExternalDocs) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPIExternalDocs.DiscardUnknown(m)
@@ -333,7 +333,7 @@ func (m *OpenAPIPath) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPIPath.Merge(m, src)
 }
 func (m *OpenAPIPath) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPIPath) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPIPath.DiscardUnknown(m)
@@ -378,7 +378,7 @@ func (m *OpenAPIPathDocs) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPIPathDocs.Merge(m, src)
 }
 func (m *OpenAPIPathDocs) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPIPathDocs) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPIPathDocs.DiscardUnknown(m)
@@ -417,7 +417,7 @@ func (m *PathSecurity) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_PathSecurity.Merge(m, src)
 }
 func (m *PathSecurity) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *PathSecurity) XXX_DiscardUnknown() {
 	xxx_messageInfo_PathSecurity.DiscardUnknown(m)
@@ -464,7 +464,7 @@ func (m *PathParameters) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_PathParameters.Merge(m, src)
 }
 func (m *PathParameters) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *PathParameters) XXX_DiscardUnknown() {
 	xxx_messageInfo_PathParameters.DiscardUnknown(m)
@@ -503,7 +503,7 @@ func (m *PathRequestBody) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_PathRequestBody.Merge(m, src)
 }
 func (m *PathRequestBody) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *PathRequestBody) XXX_DiscardUnknown() {
 	xxx_messageInfo_PathRequestBody.DiscardUnknown(m)
@@ -541,7 +541,7 @@ func (m *PathRequestBodyContent) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_PathRequestBodyContent.Merge(m, src)
 }
 func (m *PathRequestBodyContent) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *PathRequestBodyContent) XXX_DiscardUnknown() {
 	xxx_messageInfo_PathRequestBodyContent.DiscardUnknown(m)
@@ -578,7 +578,7 @@ func (m *ApplicationContent) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ApplicationContent.Merge(m, src)
 }
 func (m *ApplicationContent) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ApplicationContent) XXX_DiscardUnknown() {
 	xxx_messageInfo_ApplicationContent.DiscardUnknown(m)
@@ -617,7 +617,7 @@ func (m *PathResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_PathResponse.Merge(m, src)
 }
 func (m *PathResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *PathResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_PathResponse.DiscardUnknown(m)
@@ -655,7 +655,7 @@ func (m *OpenAPIComponents) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_OpenAPIComponents.Merge(m, src)
 }
 func (m *OpenAPIComponents) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *OpenAPIComponents) XXX_DiscardUnknown() {
 	xxx_messageInfo_OpenAPIComponents.DiscardUnknown(m)
@@ -694,7 +694,7 @@ func (m *SecuritySchemes) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_SecuritySchemes.Merge(m, src)
 }
 func (m *SecuritySchemes) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *SecuritySchemes) XXX_DiscardUnknown() {
 	xxx_messageInfo_SecuritySchemes.DiscardUnknown(m)
@@ -734,7 +734,7 @@ func (m *BasicSecurity) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_BasicSecurity.Merge(m, src)
 }
 func (m *BasicSecurity) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *BasicSecurity) XXX_DiscardUnknown() {
 	xxx_messageInfo_BasicSecurity.DiscardUnknown(m)
@@ -775,7 +775,7 @@ func (m *APIKeysSecurity) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_APIKeysSecurity.Merge(m, src)
 }
 func (m *APIKeysSecurity) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *APIKeysSecurity) XXX_DiscardUnknown() {
 	xxx_messageInfo_APIKeysSecurity.DiscardUnknown(m)
@@ -817,7 +817,7 @@ func (m *BearerSecurity) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_BearerSecurity.Merge(m, src)
 }
 func (m *BearerSecurity) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *BearerSecurity) XXX_DiscardUnknown() {
 	xxx_messageInfo_BearerSecurity.DiscardUnknown(m)
@@ -858,7 +858,7 @@ func (m *Model) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Model.Merge(m, src)
 }
 func (m *Model) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Model) XXX_DiscardUnknown() {
 	xxx_messageInfo_Model.DiscardUnknown(m)
@@ -876,7 +876,7 @@ type Schema struct {
 	ReadOnly             bool              `protobuf:"varint,7,opt,name=readOnly,proto3" json:"readOnly,omitempty"`
 	WriteOnly            bool              `protobuf:"varint,8,opt,name=writeOnly,proto3" json:"writeOnly,omitempty"`
 	Required             bool              `protobuf:"varint,9,opt,name=required,proto3" json:"required,omitempty"`
-	Ref                  string            `protobuf:"bytes,10,opt,name=ref,proto3" json:"$ef,omitempty"`
+	Ref                  string            `protobuf:"bytes,10,opt,name=ref,proto3" json:"$ref,omitempty"`
 	Default              string            `protobuf:"bytes,11,opt,name=default,proto3" json:"default,omitempty"`
 	MinLength            int32             `protobuf:"varint,20,opt,name=minLength,proto3" json:"minLength,omitempty"`
 	MaxLength            int32             `protobuf:"varint,21,opt,name=maxLength,proto3" json:"maxLength,omitempty"`
@@ -916,7 +916,7 @@ func (m *Schema) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Schema.Merge(m, src)
 }
 func (m *Schema) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Schema) XXX_DiscardUnknown() {
 	xxx_messageInfo_Schema.DiscardUnknown(m)
@@ -1055,7 +1055,7 @@ var fileDescriptor_778a5c0fd2187fcb = []byte{
 	0x00, 0xff, 0xff, 0x8e, 0x5d, 0x8f, 0xca, 0x26, 0x11, 0x00, 0x00,
 }
 
-func (m *OpenAPI) Size() (n int) {
+func (m *OpenAPI) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1066,22 +1066,22 @@ func (m *OpenAPI) Size() (n int) {
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Info != nil {
-		l = m.Info.Size()
+		l = m.Info.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.ExternalDocs != nil {
-		l = m.ExternalDocs.Size()
+		l = m.ExternalDocs.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if len(m.Servers) > 0 {
 		for _, e := range m.Servers {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovOpenapi(uint64(l))
 		}
 	}
 	if len(m.Tags) > 0 {
 		for _, e := range m.Tags {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovOpenapi(uint64(l))
 		}
 	}
@@ -1091,7 +1091,7 @@ func (m *OpenAPI) Size() (n int) {
 			_ = v
 			l = 0
 			if v != nil {
-				l = v.Size()
+				l = v.XSize()
 				l += 1 + sovOpenapi(uint64(l))
 			}
 			mapEntrySize := 1 + len(k) + sovOpenapi(uint64(len(k))) + l
@@ -1099,13 +1099,13 @@ func (m *OpenAPI) Size() (n int) {
 		}
 	}
 	if m.Components != nil {
-		l = m.Components.Size()
+		l = m.Components.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *OpenAPIServer) Size() (n int) {
+func (m *OpenAPIServer) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1122,7 +1122,7 @@ func (m *OpenAPIServer) Size() (n int) {
 	return n
 }
 
-func (m *OpenAPIInfo) Size() (n int) {
+func (m *OpenAPIInfo) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1141,11 +1141,11 @@ func (m *OpenAPIInfo) Size() (n int) {
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Contact != nil {
-		l = m.Contact.Size()
+		l = m.Contact.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.License != nil {
-		l = m.License.Size()
+		l = m.License.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	l = len(m.Version)
@@ -1155,7 +1155,7 @@ func (m *OpenAPIInfo) Size() (n int) {
 	return n
 }
 
-func (m *OpenAPIContact) Size() (n int) {
+func (m *OpenAPIContact) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1172,7 +1172,7 @@ func (m *OpenAPIContact) Size() (n int) {
 	return n
 }
 
-func (m *OpenAPILicense) Size() (n int) {
+func (m *OpenAPILicense) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1189,7 +1189,7 @@ func (m *OpenAPILicense) Size() (n int) {
 	return n
 }
 
-func (m *OpenAPITag) Size() (n int) {
+func (m *OpenAPITag) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1204,13 +1204,13 @@ func (m *OpenAPITag) Size() (n int) {
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.ExternalDocs != nil {
-		l = m.ExternalDocs.Size()
+		l = m.ExternalDocs.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *OpenAPIExternalDocs) Size() (n int) {
+func (m *OpenAPIExternalDocs) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1227,36 +1227,36 @@ func (m *OpenAPIExternalDocs) Size() (n int) {
 	return n
 }
 
-func (m *OpenAPIPath) Size() (n int) {
+func (m *OpenAPIPath) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Get != nil {
-		l = m.Get.Size()
+		l = m.Get.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Post != nil {
-		l = m.Post.Size()
+		l = m.Post.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Put != nil {
-		l = m.Put.Size()
+		l = m.Put.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Patch != nil {
-		l = m.Patch.Size()
+		l = m.Patch.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Delete != nil {
-		l = m.Delete.Size()
+		l = m.Delete.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *OpenAPIPathDocs) Size() (n int) {
+func (m *OpenAPIPathDocs) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1284,12 +1284,12 @@ func (m *OpenAPIPathDocs) Size() (n int) {
 		n += 2
 	}
 	if m.RequestBody != nil {
-		l = m.RequestBody.Size()
+		l = m.RequestBody.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if len(m.Parameters) > 0 {
 		for _, e := range m.Parameters {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovOpenapi(uint64(l))
 		}
 	}
@@ -1299,7 +1299,7 @@ func (m *OpenAPIPathDocs) Size() (n int) {
 			_ = v
 			l = 0
 			if v != nil {
-				l = v.Size()
+				l = v.XSize()
 				l += 1 + sovOpenapi(uint64(l))
 			}
 			mapEntrySize := 1 + len(k) + sovOpenapi(uint64(len(k))) + l
@@ -1308,14 +1308,14 @@ func (m *OpenAPIPathDocs) Size() (n int) {
 	}
 	if len(m.Security) > 0 {
 		for _, e := range m.Security {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovOpenapi(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *PathSecurity) Size() (n int) {
+func (m *PathSecurity) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1342,7 +1342,7 @@ func (m *PathSecurity) Size() (n int) {
 	return n
 }
 
-func (m *PathParameters) Size() (n int) {
+func (m *PathParameters) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1377,7 +1377,7 @@ func (m *PathParameters) Size() (n int) {
 		n += 2
 	}
 	if m.Schema != nil {
-		l = m.Schema.Size()
+		l = m.Schema.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	l = len(m.Example)
@@ -1387,7 +1387,7 @@ func (m *PathParameters) Size() (n int) {
 	return n
 }
 
-func (m *PathRequestBody) Size() (n int) {
+func (m *PathRequestBody) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1401,43 +1401,43 @@ func (m *PathRequestBody) Size() (n int) {
 		n += 2
 	}
 	if m.Content != nil {
-		l = m.Content.Size()
+		l = m.Content.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *PathRequestBodyContent) Size() (n int) {
+func (m *PathRequestBodyContent) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.ApplicationJson != nil {
-		l = m.ApplicationJson.Size()
+		l = m.ApplicationJson.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.ApplicationXml != nil {
-		l = m.ApplicationXml.Size()
+		l = m.ApplicationXml.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *ApplicationContent) Size() (n int) {
+func (m *ApplicationContent) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Schema != nil {
-		l = m.Schema.Size()
+		l = m.Schema.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *PathResponse) Size() (n int) {
+func (m *PathResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1448,20 +1448,20 @@ func (m *PathResponse) Size() (n int) {
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Content != nil {
-		l = m.Content.Size()
+		l = m.Content.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *OpenAPIComponents) Size() (n int) {
+func (m *OpenAPIComponents) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.SecuritySchemes != nil {
-		l = m.SecuritySchemes.Size()
+		l = m.SecuritySchemes.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if len(m.Schemas) > 0 {
@@ -1470,7 +1470,7 @@ func (m *OpenAPIComponents) Size() (n int) {
 			_ = v
 			l = 0
 			if v != nil {
-				l = v.Size()
+				l = v.XSize()
 				l += 1 + sovOpenapi(uint64(l))
 			}
 			mapEntrySize := 1 + len(k) + sovOpenapi(uint64(len(k))) + l
@@ -1480,28 +1480,28 @@ func (m *OpenAPIComponents) Size() (n int) {
 	return n
 }
 
-func (m *SecuritySchemes) Size() (n int) {
+func (m *SecuritySchemes) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Basic != nil {
-		l = m.Basic.Size()
+		l = m.Basic.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.ApiKeys != nil {
-		l = m.ApiKeys.Size()
+		l = m.ApiKeys.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	if m.Bearer != nil {
-		l = m.Bearer.Size()
+		l = m.Bearer.XSize()
 		n += 1 + l + sovOpenapi(uint64(l))
 	}
 	return n
 }
 
-func (m *BasicSecurity) Size() (n int) {
+func (m *BasicSecurity) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1518,7 +1518,7 @@ func (m *BasicSecurity) Size() (n int) {
 	return n
 }
 
-func (m *APIKeysSecurity) Size() (n int) {
+func (m *APIKeysSecurity) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1539,7 +1539,7 @@ func (m *APIKeysSecurity) Size() (n int) {
 	return n
 }
 
-func (m *BearerSecurity) Size() (n int) {
+func (m *BearerSecurity) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1560,7 +1560,7 @@ func (m *BearerSecurity) Size() (n int) {
 	return n
 }
 
-func (m *Model) Size() (n int) {
+func (m *Model) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1576,7 +1576,7 @@ func (m *Model) Size() (n int) {
 			_ = v
 			l = 0
 			if v != nil {
-				l = v.Size()
+				l = v.XSize()
 				l += 1 + sovOpenapi(uint64(l))
 			}
 			mapEntrySize := 1 + len(k) + sovOpenapi(uint64(len(k))) + l
@@ -1592,7 +1592,7 @@ func (m *Model) Size() (n int) {
 	return n
 }
 
-func (m *Schema) Size() (n int) {
+func (m *Schema) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1666,17 +1666,17 @@ func (m *Schema) Size() (n int) {
 		}
 	}
 	if m.Items != nil {
-		l = m.Items.Size()
+		l = m.Items.XSize()
 		n += 2 + l + sovOpenapi(uint64(l))
 	}
 	if len(m.Parameters) > 0 {
 		for _, e := range m.Parameters {
-			l = e.Size()
+			l = e.XSize()
 			n += 2 + l + sovOpenapi(uint64(l))
 		}
 	}
 	if m.AdditionalProperties != nil {
-		l = m.AdditionalProperties.Size()
+		l = m.AdditionalProperties.XSize()
 		n += 2 + l + sovOpenapi(uint64(l))
 	}
 	return n
@@ -1689,7 +1689,7 @@ func sozOpenapi(x uint64) (n int) {
 	return sovOpenapi(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *OpenAPI) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1699,7 +1699,7 @@ func (m *OpenAPI) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPI) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1809,7 +1809,7 @@ func (m *OpenAPI) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPIServer) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1819,7 +1819,7 @@ func (m *OpenAPIServer) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPIServer) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1846,7 +1846,7 @@ func (m *OpenAPIServer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPIInfo) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1856,7 +1856,7 @@ func (m *OpenAPIInfo) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPIInfo) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1921,7 +1921,7 @@ func (m *OpenAPIInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPIContact) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1931,7 +1931,7 @@ func (m *OpenAPIContact) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPIContact) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1958,7 +1958,7 @@ func (m *OpenAPIContact) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPILicense) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1968,7 +1968,7 @@ func (m *OpenAPILicense) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPILicense) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1995,7 +1995,7 @@ func (m *OpenAPILicense) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPITag) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2005,7 +2005,7 @@ func (m *OpenAPITag) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPITag) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2044,7 +2044,7 @@ func (m *OpenAPITag) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPIExternalDocs) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2054,7 +2054,7 @@ func (m *OpenAPIExternalDocs) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPIExternalDocs) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2081,7 +2081,7 @@ func (m *OpenAPIExternalDocs) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPIPath) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2091,7 +2091,7 @@ func (m *OpenAPIPath) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPIPath) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2164,7 +2164,7 @@ func (m *OpenAPIPath) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPIPathDocs) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2174,7 +2174,7 @@ func (m *OpenAPIPathDocs) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPIPathDocs) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2293,7 +2293,7 @@ func (m *OpenAPIPathDocs) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *PathSecurity) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2303,7 +2303,7 @@ func (m *PathSecurity) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *PathSecurity) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2343,7 +2343,7 @@ func (m *PathSecurity) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *PathParameters) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2353,7 +2353,7 @@ func (m *PathParameters) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *PathParameters) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2453,7 +2453,7 @@ func (m *PathParameters) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *PathRequestBody) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2463,7 +2463,7 @@ func (m *PathRequestBody) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *PathRequestBody) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2505,7 +2505,7 @@ func (m *PathRequestBody) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *PathRequestBodyContent) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2515,7 +2515,7 @@ func (m *PathRequestBodyContent) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *PathRequestBodyContent) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2552,7 +2552,7 @@ func (m *PathRequestBodyContent) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 }
 
 func (m *ApplicationContent) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2562,7 +2562,7 @@ func (m *ApplicationContent) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ApplicationContent) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2587,7 +2587,7 @@ func (m *ApplicationContent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *PathResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2597,7 +2597,7 @@ func (m *PathResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *PathResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2629,7 +2629,7 @@ func (m *PathResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *OpenAPIComponents) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2639,7 +2639,7 @@ func (m *OpenAPIComponents) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *OpenAPIComponents) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2690,7 +2690,7 @@ func (m *OpenAPIComponents) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *SecuritySchemes) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2700,7 +2700,7 @@ func (m *SecuritySchemes) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *SecuritySchemes) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2749,7 +2749,7 @@ func (m *SecuritySchemes) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *BasicSecurity) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2759,7 +2759,7 @@ func (m *BasicSecurity) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *BasicSecurity) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2786,7 +2786,7 @@ func (m *BasicSecurity) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *APIKeysSecurity) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2796,7 +2796,7 @@ func (m *APIKeysSecurity) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *APIKeysSecurity) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2830,7 +2830,7 @@ func (m *APIKeysSecurity) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *BearerSecurity) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2840,7 +2840,7 @@ func (m *BearerSecurity) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *BearerSecurity) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2874,7 +2874,7 @@ func (m *BearerSecurity) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Model) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2884,7 +2884,7 @@ func (m *Model) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Model) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -2939,7 +2939,7 @@ func (m *Model) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Schema) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -2949,7 +2949,7 @@ func (m *Schema) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Schema) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

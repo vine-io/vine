@@ -62,7 +62,7 @@ func (m *Query) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Query.Merge(m, src)
 }
 func (m *Query) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Query) XXX_DiscardUnknown() {
 	xxx_messageInfo_Query.DiscardUnknown(m)
@@ -99,7 +99,7 @@ func (m *ConnectRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ConnectRequest.Merge(m, src)
 }
 func (m *ConnectRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ConnectRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ConnectRequest.DiscardUnknown(m)
@@ -135,7 +135,7 @@ func (m *ConnectResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ConnectResponse.Merge(m, src)
 }
 func (m *ConnectResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ConnectResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_ConnectResponse.DiscardUnknown(m)
@@ -174,7 +174,7 @@ func (m *NodesRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_NodesRequest.Merge(m, src)
 }
 func (m *NodesRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *NodesRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_NodesRequest.DiscardUnknown(m)
@@ -213,7 +213,7 @@ func (m *NodesResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_NodesResponse.Merge(m, src)
 }
 func (m *NodesResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *NodesResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_NodesResponse.DiscardUnknown(m)
@@ -251,7 +251,7 @@ func (m *GraphRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_GraphRequest.Merge(m, src)
 }
 func (m *GraphRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *GraphRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_GraphRequest.DiscardUnknown(m)
@@ -288,7 +288,7 @@ func (m *GraphResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_GraphResponse.Merge(m, src)
 }
 func (m *GraphResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *GraphResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_GraphResponse.DiscardUnknown(m)
@@ -326,7 +326,7 @@ func (m *RoutesRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_RoutesRequest.Merge(m, src)
 }
 func (m *RoutesRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *RoutesRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_RoutesRequest.DiscardUnknown(m)
@@ -363,7 +363,7 @@ func (m *RoutesResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_RoutesResponse.Merge(m, src)
 }
 func (m *RoutesResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *RoutesResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_RoutesResponse.DiscardUnknown(m)
@@ -399,7 +399,7 @@ func (m *ServicesRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ServicesRequest.Merge(m, src)
 }
 func (m *ServicesRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ServicesRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ServicesRequest.DiscardUnknown(m)
@@ -436,7 +436,7 @@ func (m *ServicesResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ServicesResponse.Merge(m, src)
 }
 func (m *ServicesResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ServicesResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_ServicesResponse.DiscardUnknown(m)
@@ -472,7 +472,7 @@ func (m *StatusRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_StatusRequest.Merge(m, src)
 }
 func (m *StatusRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *StatusRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_StatusRequest.DiscardUnknown(m)
@@ -509,7 +509,7 @@ func (m *StatusResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_StatusResponse.Merge(m, src)
 }
 func (m *StatusResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *StatusResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_StatusResponse.DiscardUnknown(m)
@@ -548,7 +548,7 @@ func (m *Error) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Error.Merge(m, src)
 }
 func (m *Error) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Error) XXX_DiscardUnknown() {
 	xxx_messageInfo_Error.DiscardUnknown(m)
@@ -586,7 +586,7 @@ func (m *Status) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Status.Merge(m, src)
 }
 func (m *Status) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Status) XXX_DiscardUnknown() {
 	xxx_messageInfo_Status.DiscardUnknown(m)
@@ -633,7 +633,7 @@ func (m *Node) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Node.Merge(m, src)
 }
 func (m *Node) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Node) XXX_DiscardUnknown() {
 	xxx_messageInfo_Node.DiscardUnknown(m)
@@ -672,7 +672,7 @@ func (m *Connect) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Connect.Merge(m, src)
 }
 func (m *Connect) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Connect) XXX_DiscardUnknown() {
 	xxx_messageInfo_Connect.DiscardUnknown(m)
@@ -711,7 +711,7 @@ func (m *Close) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Close.Merge(m, src)
 }
 func (m *Close) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Close) XXX_DiscardUnknown() {
 	xxx_messageInfo_Close.DiscardUnknown(m)
@@ -752,7 +752,7 @@ func (m *Peer) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Peer.Merge(m, src)
 }
 func (m *Peer) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Peer) XXX_DiscardUnknown() {
 	xxx_messageInfo_Peer.DiscardUnknown(m)
@@ -793,7 +793,7 @@ func (m *Sync) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Sync.Merge(m, src)
 }
 func (m *Sync) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Sync) XXX_DiscardUnknown() {
 	xxx_messageInfo_Sync.DiscardUnknown(m)
@@ -878,7 +878,7 @@ var fileDescriptor_8e95094d5d77d01b = []byte{
 	0xef, 0x00, 0x00, 0x00, 0xff, 0xff, 0x27, 0x01, 0xb7, 0x09, 0x30, 0x07, 0x00, 0x00,
 }
 
-func (m *Query) Size() (n int) {
+func (m *Query) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -907,7 +907,7 @@ func (m *Query) Size() (n int) {
 	return n
 }
 
-func (m *ConnectRequest) Size() (n int) {
+func (m *ConnectRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -915,14 +915,14 @@ func (m *ConnectRequest) Size() (n int) {
 	_ = l
 	if len(m.Nodes) > 0 {
 		for _, e := range m.Nodes {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovNetwork(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *ConnectResponse) Size() (n int) {
+func (m *ConnectResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -931,7 +931,7 @@ func (m *ConnectResponse) Size() (n int) {
 	return n
 }
 
-func (m *NodesRequest) Size() (n int) {
+func (m *NodesRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -943,7 +943,7 @@ func (m *NodesRequest) Size() (n int) {
 	return n
 }
 
-func (m *NodesResponse) Size() (n int) {
+func (m *NodesResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -951,14 +951,14 @@ func (m *NodesResponse) Size() (n int) {
 	_ = l
 	if len(m.Nodes) > 0 {
 		for _, e := range m.Nodes {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovNetwork(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *GraphRequest) Size() (n int) {
+func (m *GraphRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -970,33 +970,33 @@ func (m *GraphRequest) Size() (n int) {
 	return n
 }
 
-func (m *GraphResponse) Size() (n int) {
+func (m *GraphResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Root != nil {
-		l = m.Root.Size()
+		l = m.Root.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	return n
 }
 
-func (m *RoutesRequest) Size() (n int) {
+func (m *RoutesRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Query != nil {
-		l = m.Query.Size()
+		l = m.Query.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	return n
 }
 
-func (m *RoutesResponse) Size() (n int) {
+func (m *RoutesResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1004,14 +1004,14 @@ func (m *RoutesResponse) Size() (n int) {
 	_ = l
 	if len(m.Routes) > 0 {
 		for _, e := range m.Routes {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovNetwork(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *ServicesRequest) Size() (n int) {
+func (m *ServicesRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1020,7 +1020,7 @@ func (m *ServicesRequest) Size() (n int) {
 	return n
 }
 
-func (m *ServicesResponse) Size() (n int) {
+func (m *ServicesResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1035,7 +1035,7 @@ func (m *ServicesResponse) Size() (n int) {
 	return n
 }
 
-func (m *StatusRequest) Size() (n int) {
+func (m *StatusRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1044,20 +1044,20 @@ func (m *StatusRequest) Size() (n int) {
 	return n
 }
 
-func (m *StatusResponse) Size() (n int) {
+func (m *StatusResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Status != nil {
-		l = m.Status.Size()
+		l = m.Status.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	return n
 }
 
-func (m *Error) Size() (n int) {
+func (m *Error) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1073,20 +1073,20 @@ func (m *Error) Size() (n int) {
 	return n
 }
 
-func (m *Status) Size() (n int) {
+func (m *Status) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Error != nil {
-		l = m.Error.Size()
+		l = m.Error.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	return n
 }
 
-func (m *Node) Size() (n int) {
+func (m *Node) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1113,70 +1113,70 @@ func (m *Node) Size() (n int) {
 		}
 	}
 	if m.Status != nil {
-		l = m.Status.Size()
+		l = m.Status.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	return n
 }
 
-func (m *Connect) Size() (n int) {
+func (m *Connect) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Node != nil {
-		l = m.Node.Size()
+		l = m.Node.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	return n
 }
 
-func (m *Close) Size() (n int) {
+func (m *Close) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Node != nil {
-		l = m.Node.Size()
+		l = m.Node.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	return n
 }
 
-func (m *Peer) Size() (n int) {
+func (m *Peer) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Node != nil {
-		l = m.Node.Size()
+		l = m.Node.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	if len(m.Peers) > 0 {
 		for _, e := range m.Peers {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovNetwork(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *Sync) Size() (n int) {
+func (m *Sync) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
 	if m.Peer != nil {
-		l = m.Peer.Size()
+		l = m.Peer.XSize()
 		n += 1 + l + sovNetwork(uint64(l))
 	}
 	if len(m.Routes) > 0 {
 		for _, e := range m.Routes {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovNetwork(uint64(l))
 		}
 	}
@@ -1190,7 +1190,7 @@ func sozNetwork(x uint64) (n int) {
 	return sovNetwork(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Query) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1200,7 +1200,7 @@ func (m *Query) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Query) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1248,7 +1248,7 @@ func (m *Query) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ConnectRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1258,7 +1258,7 @@ func (m *ConnectRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ConnectRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1285,7 +1285,7 @@ func (m *ConnectRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ConnectResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1295,7 +1295,7 @@ func (m *ConnectResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ConnectResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1308,7 +1308,7 @@ func (m *ConnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *NodesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1318,7 +1318,7 @@ func (m *NodesRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *NodesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1336,7 +1336,7 @@ func (m *NodesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *NodesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1346,7 +1346,7 @@ func (m *NodesResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *NodesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1373,7 +1373,7 @@ func (m *NodesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *GraphRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1383,7 +1383,7 @@ func (m *GraphRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *GraphRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1401,7 +1401,7 @@ func (m *GraphRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *GraphResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1411,7 +1411,7 @@ func (m *GraphResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *GraphResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1436,7 +1436,7 @@ func (m *GraphResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *RoutesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1446,7 +1446,7 @@ func (m *RoutesRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *RoutesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1471,7 +1471,7 @@ func (m *RoutesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *RoutesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1481,7 +1481,7 @@ func (m *RoutesResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *RoutesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1508,7 +1508,7 @@ func (m *RoutesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ServicesRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1518,7 +1518,7 @@ func (m *ServicesRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ServicesRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1531,7 +1531,7 @@ func (m *ServicesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ServicesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1541,7 +1541,7 @@ func (m *ServicesResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ServicesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1563,7 +1563,7 @@ func (m *ServicesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *StatusRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1573,7 +1573,7 @@ func (m *StatusRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *StatusRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1586,7 +1586,7 @@ func (m *StatusRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *StatusResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1596,7 +1596,7 @@ func (m *StatusResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *StatusResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1621,7 +1621,7 @@ func (m *StatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Error) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1631,7 +1631,7 @@ func (m *Error) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Error) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1656,7 +1656,7 @@ func (m *Error) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Status) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1666,7 +1666,7 @@ func (m *Status) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Status) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1691,7 +1691,7 @@ func (m *Status) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Node) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1701,7 +1701,7 @@ func (m *Node) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Node) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1766,7 +1766,7 @@ func (m *Node) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Connect) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1776,7 +1776,7 @@ func (m *Connect) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Connect) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1801,7 +1801,7 @@ func (m *Connect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Close) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1811,7 +1811,7 @@ func (m *Close) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Close) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1836,7 +1836,7 @@ func (m *Close) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Peer) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1846,7 +1846,7 @@ func (m *Peer) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Peer) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1885,7 +1885,7 @@ func (m *Peer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Sync) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1895,7 +1895,7 @@ func (m *Sync) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Sync) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

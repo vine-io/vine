@@ -197,7 +197,7 @@ func (g *gogo) std(field *descriptor.FieldDescriptorProto, name string) (string,
 func (g *gogo) generateField(proto3 bool, file *generator.FileDescriptor, msg *generator.MessageDescriptor, f *generator.FieldDescriptor, sizeName string) {
 	message := msg.Proto
 	field := f.Proto
-	fieldname := g.GetOneOfFieldName(message, field)
+	fieldname := g.GetOneOfFieldName(msg, f)
 	nullable := gogoproto.IsNullable(field)
 	repeated := field.IsRepeated()
 	_, isInline := g.extractTags(f.Comments)[_inline]
@@ -583,7 +583,7 @@ func (g *gogo) GenerateSize(file *generator.FileDescriptor) {
 				proto3 := gogoproto.IsProto3(file.FileDescriptorProto)
 				g.generateField(proto3, file, message, field, sizeName)
 			} else {
-				fieldname := g.GetFieldName(message.Proto, field.Proto)
+				fieldname := g.GetFieldName(message.Proto, field)
 				if _, ok := oneofs[fieldname]; ok {
 					continue
 				} else {
@@ -626,7 +626,7 @@ func (g *gogo) GenerateSize(file *generator.FileDescriptor) {
 			if !oneof {
 				continue
 			}
-			ccTypeName := g.OneOfTypeName(message.Proto, f.Proto)
+			ccTypeName := g.OneOfTypeName(message, f)
 			g.P(`func (m *`, ccTypeName, `) `, sizeName, `() (n int) {`)
 			g.In()
 			g.P(`if m == nil {`)

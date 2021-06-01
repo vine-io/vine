@@ -82,7 +82,7 @@ func (m *HealthRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_HealthRequest.Merge(m, src)
 }
 func (m *HealthRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *HealthRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_HealthRequest.DiscardUnknown(m)
@@ -120,7 +120,7 @@ func (m *HealthResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_HealthResponse.Merge(m, src)
 }
 func (m *HealthResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *HealthResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_HealthResponse.DiscardUnknown(m)
@@ -158,7 +158,7 @@ func (m *StatsRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_StatsRequest.Merge(m, src)
 }
 func (m *StatsRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *StatsRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_StatsRequest.DiscardUnknown(m)
@@ -210,7 +210,7 @@ func (m *StatsResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_StatsResponse.Merge(m, src)
 }
 func (m *StatsResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *StatsResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_StatsResponse.DiscardUnknown(m)
@@ -257,7 +257,7 @@ func (m *LogRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_LogRequest.Merge(m, src)
 }
 func (m *LogRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *LogRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_LogRequest.DiscardUnknown(m)
@@ -300,7 +300,7 @@ func (m *Record) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Record.Merge(m, src)
 }
 func (m *Record) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Record) XXX_DiscardUnknown() {
 	xxx_messageInfo_Record.DiscardUnknown(m)
@@ -338,7 +338,7 @@ func (m *TraceRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_TraceRequest.Merge(m, src)
 }
 func (m *TraceRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *TraceRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_TraceRequest.DiscardUnknown(m)
@@ -375,7 +375,7 @@ func (m *TraceResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_TraceResponse.Merge(m, src)
 }
 func (m *TraceResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *TraceResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_TraceResponse.DiscardUnknown(m)
@@ -426,7 +426,7 @@ func (m *Span) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Span.Merge(m, src)
 }
 func (m *Span) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Span) XXX_DiscardUnknown() {
 	xxx_messageInfo_Span.DiscardUnknown(m)
@@ -499,7 +499,7 @@ var fileDescriptor_e8a77f1c5fd1cac4 = []byte{
 	0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x70, 0x01, 0xa3, 0xdc, 0x98, 0x05, 0x00, 0x00,
 }
 
-func (m *HealthRequest) Size() (n int) {
+func (m *HealthRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -512,7 +512,7 @@ func (m *HealthRequest) Size() (n int) {
 	return n
 }
 
-func (m *HealthResponse) Size() (n int) {
+func (m *HealthResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -525,7 +525,7 @@ func (m *HealthResponse) Size() (n int) {
 	return n
 }
 
-func (m *StatsRequest) Size() (n int) {
+func (m *StatsRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -538,7 +538,7 @@ func (m *StatsRequest) Size() (n int) {
 	return n
 }
 
-func (m *StatsResponse) Size() (n int) {
+func (m *StatsResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -571,7 +571,7 @@ func (m *StatsResponse) Size() (n int) {
 	return n
 }
 
-func (m *LogRequest) Size() (n int) {
+func (m *LogRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -593,7 +593,7 @@ func (m *LogRequest) Size() (n int) {
 	return n
 }
 
-func (m *Record) Size() (n int) {
+func (m *Record) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -617,7 +617,7 @@ func (m *Record) Size() (n int) {
 	return n
 }
 
-func (m *TraceRequest) Size() (n int) {
+func (m *TraceRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -630,7 +630,7 @@ func (m *TraceRequest) Size() (n int) {
 	return n
 }
 
-func (m *TraceResponse) Size() (n int) {
+func (m *TraceResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -638,14 +638,14 @@ func (m *TraceResponse) Size() (n int) {
 	_ = l
 	if len(m.Spans) > 0 {
 		for _, e := range m.Spans {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovDebug(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *Span) Size() (n int) {
+func (m *Span) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -694,7 +694,7 @@ func sozDebug(x uint64) (n int) {
 	return sovDebug(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *HealthRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -704,7 +704,7 @@ func (m *HealthRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *HealthRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -724,7 +724,7 @@ func (m *HealthRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *HealthResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -734,7 +734,7 @@ func (m *HealthResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *HealthResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -754,7 +754,7 @@ func (m *HealthResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *StatsRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -764,7 +764,7 @@ func (m *StatsRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *StatsRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -784,7 +784,7 @@ func (m *StatsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *StatsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -794,7 +794,7 @@ func (m *StatsResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *StatsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -847,7 +847,7 @@ func (m *StatsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *LogRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -857,7 +857,7 @@ func (m *LogRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *LogRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -897,7 +897,7 @@ func (m *LogRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Record) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -907,7 +907,7 @@ func (m *Record) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Record) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -951,7 +951,7 @@ func (m *Record) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *TraceRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -961,7 +961,7 @@ func (m *TraceRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *TraceRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -981,7 +981,7 @@ func (m *TraceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *TraceResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -991,7 +991,7 @@ func (m *TraceResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *TraceResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -1018,7 +1018,7 @@ func (m *TraceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *Span) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -1028,7 +1028,7 @@ func (m *Span) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Span) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 

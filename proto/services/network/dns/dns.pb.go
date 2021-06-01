@@ -66,7 +66,7 @@ func (m *Record) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_Record.Merge(m, src)
 }
 func (m *Record) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *Record) XXX_DiscardUnknown() {
 	xxx_messageInfo_Record.DiscardUnknown(m)
@@ -104,7 +104,7 @@ func (m *AdvertiseRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_AdvertiseRequest.Merge(m, src)
 }
 func (m *AdvertiseRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *AdvertiseRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_AdvertiseRequest.DiscardUnknown(m)
@@ -140,7 +140,7 @@ func (m *AdvertiseResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_AdvertiseResponse.Merge(m, src)
 }
 func (m *AdvertiseResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *AdvertiseResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_AdvertiseResponse.DiscardUnknown(m)
@@ -178,7 +178,7 @@ func (m *RemoveRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_RemoveRequest.Merge(m, src)
 }
 func (m *RemoveRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *RemoveRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_RemoveRequest.DiscardUnknown(m)
@@ -214,7 +214,7 @@ func (m *RemoveResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_RemoveResponse.Merge(m, src)
 }
 func (m *RemoveResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *RemoveResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_RemoveResponse.DiscardUnknown(m)
@@ -252,7 +252,7 @@ func (m *ResolveRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ResolveRequest.Merge(m, src)
 }
 func (m *ResolveRequest) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ResolveRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_ResolveRequest.DiscardUnknown(m)
@@ -290,7 +290,7 @@ func (m *ResolveResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_ResolveResponse.Merge(m, src)
 }
 func (m *ResolveResponse) XXX_Size() int {
-	return m.Size()
+	return m.XSize()
 }
 func (m *ResolveResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_ResolveResponse.DiscardUnknown(m)
@@ -340,7 +340,7 @@ var fileDescriptor_2425ca65c0dfa28b = []byte{
 	0x85, 0xe8, 0xd2, 0x02, 0x00, 0x00,
 }
 
-func (m *Record) Size() (n int) {
+func (m *Record) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -367,7 +367,7 @@ func (m *Record) Size() (n int) {
 	return n
 }
 
-func (m *AdvertiseRequest) Size() (n int) {
+func (m *AdvertiseRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -375,14 +375,14 @@ func (m *AdvertiseRequest) Size() (n int) {
 	_ = l
 	if len(m.Records) > 0 {
 		for _, e := range m.Records {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovDns(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *AdvertiseResponse) Size() (n int) {
+func (m *AdvertiseResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -391,7 +391,7 @@ func (m *AdvertiseResponse) Size() (n int) {
 	return n
 }
 
-func (m *RemoveRequest) Size() (n int) {
+func (m *RemoveRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -399,14 +399,14 @@ func (m *RemoveRequest) Size() (n int) {
 	_ = l
 	if len(m.Records) > 0 {
 		for _, e := range m.Records {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovDns(uint64(l))
 		}
 	}
 	return n
 }
 
-func (m *RemoveResponse) Size() (n int) {
+func (m *RemoveResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -415,7 +415,7 @@ func (m *RemoveResponse) Size() (n int) {
 	return n
 }
 
-func (m *ResolveRequest) Size() (n int) {
+func (m *ResolveRequest) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -432,7 +432,7 @@ func (m *ResolveRequest) Size() (n int) {
 	return n
 }
 
-func (m *ResolveResponse) Size() (n int) {
+func (m *ResolveResponse) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -440,7 +440,7 @@ func (m *ResolveResponse) Size() (n int) {
 	_ = l
 	if len(m.Records) > 0 {
 		for _, e := range m.Records {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovDns(uint64(l))
 		}
 	}
@@ -454,7 +454,7 @@ func sozDns(x uint64) (n int) {
 	return sovDns(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
 func (m *Record) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -464,7 +464,7 @@ func (m *Record) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *Record) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -508,7 +508,7 @@ func (m *Record) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *AdvertiseRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -518,7 +518,7 @@ func (m *AdvertiseRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *AdvertiseRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -545,7 +545,7 @@ func (m *AdvertiseRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *AdvertiseResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -555,7 +555,7 @@ func (m *AdvertiseResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *AdvertiseResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -568,7 +568,7 @@ func (m *AdvertiseResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *RemoveRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -578,7 +578,7 @@ func (m *RemoveRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *RemoveRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -605,7 +605,7 @@ func (m *RemoveRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *RemoveResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -615,7 +615,7 @@ func (m *RemoveResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *RemoveResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -628,7 +628,7 @@ func (m *RemoveResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ResolveRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -638,7 +638,7 @@ func (m *ResolveRequest) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ResolveRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
@@ -665,7 +665,7 @@ func (m *ResolveRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 }
 
 func (m *ResolveResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
+	size := m.XSize()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
 	if err != nil {
@@ -675,7 +675,7 @@ func (m *ResolveResponse) Marshal() (dAtA []byte, err error) {
 }
 
 func (m *ResolveResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
+	size := m.XSize()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
