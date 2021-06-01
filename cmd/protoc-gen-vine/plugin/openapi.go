@@ -201,7 +201,7 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods [
 				g.generateParameters(svcName, msg, pathParams, meth)
 				g.P("},")
 			}
-			if meth != _get {
+			if meth != _get && meth != _delete {
 				g.P(fmt.Sprintf("RequestBody: &%s.PathRequestBody{", g.openApiPkg.Use()))
 				desc := extractDesc(msg.Comments)
 				if len(desc) == 0 {
@@ -264,7 +264,9 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 				g.P("Required: true,")
 			}
 		}
-		g.P(`Style: "form",`)
+		if in != "path" {
+			g.P(`Style: "form",`)
+		}
 		g.P("Explode: true,")
 		g.P(fmt.Sprintf("Schema: &%s.Schema{", g.openApiPkg.Use()))
 		fieldTags := g.extractTags(field.Comments)

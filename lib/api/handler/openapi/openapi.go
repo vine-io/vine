@@ -93,6 +93,7 @@ func (o *openAPI) OpenAPIJOSNHandler(ctx *fiber.Ctx) error {
 				}
 			}
 		}
+
 		for _, i := range list {
 			if len(i.Apis) == 0 {
 				continue
@@ -127,6 +128,7 @@ func (o *openAPI) OpenAPIJOSNHandler(ctx *fiber.Ctx) error {
 		Info: &openapipb.OpenAPIInfo{
 			Title:       "Vine Document",
 			Description: "OpenAPI3.0",
+			Version:     "latest",
 		},
 		Tags:    []*openapipb.OpenAPITag{},
 		Paths:   paths,
