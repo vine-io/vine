@@ -24,6 +24,7 @@ package runtime
 
 import (
 	"context"
+	"strings"
 	"sync"
 
 	"github.com/lack-io/vine/lib/dao"
@@ -53,6 +54,22 @@ func (gvk *GroupVersionKind) String() string {
 		s = gvk.Version + "."
 	}
 	return s + gvk.Kind
+}
+
+func FromGVK(s string) *GroupVersionKind {
+	gvk := &GroupVersionKind{}
+	if idx := strings.Index(s, "/"); idx != -1 {
+		gvk.Group = s[:idx]
+		s = s[idx+1:]
+	}
+	if idx := strings.Index(s, "."); idx != -1 {
+		gvk.Version = s[:idx]
+		s = s[idx+1:]
+	} else {
+		gvk.Version = "v1"
+	}
+	gvk.Kind = s
+	return gvk
 }
 
 // Object is an interface that describes protocol message
