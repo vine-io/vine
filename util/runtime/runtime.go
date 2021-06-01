@@ -37,6 +37,13 @@ type GroupVersionKind struct {
 	Kind    string
 }
 
+func (gvk *GroupVersionKind) APIGroup() string {
+	if gvk.Group == "" {
+		return gvk.Version
+	}
+	return gvk.Group + "/" + gvk.Version
+}
+
 func (gvk *GroupVersionKind) String() string {
 	var s string
 	if gvk.Group != "" {
