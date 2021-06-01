@@ -313,11 +313,11 @@ func (g *vine) buildQueryField(msg *generator.MessageDescriptor, ignores []strin
 		if !field.Proto.IsMessage() {
 			*out = append(*out, field)
 		}
-		//_, isInline := g.extractTags(field.Comments)[_inline]
-		//if field.Proto.IsMessage() && isInline {
-		//	subMsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
-		//	g.buildQueryField(subMsg, ignores, out)
-		//}
+		_, isInline := g.extractTags(field.Comments)[_inline]
+		if field.Proto.IsMessage() && isInline {
+			subMsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
+			g.buildQueryField(subMsg, ignores, out)
+		}
 	}
 }
 
