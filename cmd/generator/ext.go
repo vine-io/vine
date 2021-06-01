@@ -235,6 +235,7 @@ func (g *Generator) ExtractMessage(name string) *MessageDescriptor {
 			if m.Proto.GoImportPath() == obj.GoImportPath() {
 				for _, item := range obj.TypeName() {
 					if item == m.Proto.GetName() {
+						m.Proto.file = f
 						return m
 					}
 				}

@@ -440,44 +440,44 @@ func (g *validator) generateRepeatedField(field *generator.FieldDescriptor) {
 }
 
 func (g *validator) generateMessageField(field *generator.FieldDescriptor) {
-	fieldName := generator.CamelCase(*field.Proto.Name)
 	tags := g.extractTags(field.Comments)
 	if len(tags) == 0 {
 		return
 	}
-	if _, ok := tags[_required]; ok {
-		if _, ok := tags[_inline]; ok {
-			smsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
-			for _, field := range smsg.Fields {
-				if field.Proto.IsRepeated() {
-					g.generateRepeatedField(field)
-					continue
-				}
-				if field.Proto.IsMessage() {
-					g.generateMessageField(field)
-					continue
-				}
-				switch *field.Proto.Type {
-				case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
-					descriptor.FieldDescriptorProto_TYPE_FLOAT,
-					descriptor.FieldDescriptorProto_TYPE_FIXED32,
-					descriptor.FieldDescriptorProto_TYPE_FIXED64,
-					descriptor.FieldDescriptorProto_TYPE_INT32,
-					descriptor.FieldDescriptorProto_TYPE_INT64:
-					g.generateNumberField(field)
-				case descriptor.FieldDescriptorProto_TYPE_STRING:
-					g.generateStringField(field)
-				case descriptor.FieldDescriptorProto_TYPE_BYTES:
-					g.generateBytesField(field)
-				}
+	if _, ok := tags[_inline]; ok {
+		smsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
+		for _, field := range smsg.Fields {
+			if field.Proto.IsRepeated() {
+				g.generateRepeatedField(field)
+				continue
 			}
-		} else {
-			g.P("if m.", fieldName, " == nil {")
-			g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", field.Proto.GetJsonName()))
-			g.P("} else {")
-			g.P(fmt.Sprintf("errs = append(errs, m.%s.ValidateE(prefix+\"%s.\"))", fieldName, field.Proto.GetJsonName()))
-			g.P("}")
+			if field.Proto.IsMessage() {
+				g.generateMessageField(field)
+				continue
+			}
+			switch *field.Proto.Type {
+			case descriptor.FieldDescriptorProto_TYPE_DOUBLE,
+				descriptor.FieldDescriptorProto_TYPE_FLOAT,
+				descriptor.FieldDescriptorProto_TYPE_FIXED32,
+				descriptor.FieldDescriptorProto_TYPE_FIXED64,
+				descriptor.FieldDescriptorProto_TYPE_INT32,
+				descriptor.FieldDescriptorProto_TYPE_INT64:
+				g.generateNumberField(field)
+			case descriptor.FieldDescriptorProto_TYPE_STRING:
+				g.generateStringField(field)
+			case descriptor.FieldDescriptorProto_TYPE_BYTES:
+				g.generateBytesField(field)
+			}
 		}
+		return
+	}
+	if _, ok := tags[_required]; ok {
+		fname := generator.CamelCase(*field.Proto.Name)
+		g.P("if m.", fname, " == nil {")
+		g.P(fmt.Sprintf("errs = append(errs, fmt.Errorf(\"field '%%s%s' is required\", prefix))", field.Proto.GetJsonName()))
+		g.P("} else {")
+		g.P(fmt.Sprintf("errs = append(errs, m.%s.ValidateE(prefix+\"%s.\"))", fname, field.Proto.GetJsonName()))
+		g.P("}")
 	}
 }
 

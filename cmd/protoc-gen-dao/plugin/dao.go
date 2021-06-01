@@ -1086,6 +1086,9 @@ func (g *dao) isContains(dir, source, kind, name string) (ok bool) {
 		if ok {
 			return nil
 		}
+		if err != nil {
+			return nil
+		}
 		if info.IsDir() || !strings.HasSuffix(info.Name(), ".go") {
 			return nil
 		}

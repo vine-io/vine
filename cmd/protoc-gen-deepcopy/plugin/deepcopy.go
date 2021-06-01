@@ -114,7 +114,7 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 			continue
 		}
 		if field.Proto.IsMessage() {
-			g.generateMessageField(field)
+			g.generateMessageField(file, field)
 			continue
 		}
 	}
@@ -213,10 +213,14 @@ func (g *deepcopy) generateRepeatedField(file *generator.FileDescriptor, msg *ge
 	g.P("}")
 }
 
-func (g *deepcopy) generateMessageField(field *generator.FieldDescriptor) {
+func (g *deepcopy) generateMessageField(file *generator.FileDescriptor, field *generator.FieldDescriptor) {
 	fname := generator.CamelCase(field.Proto.GetName())
 	subMsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
 	fpkg := subMsg.Proto.GetName()
+	if file != subMsg.Proto.File() {
+		pkg := string(g.gen.AddImport(subMsg.Proto.GoImportPath()))
+		fpkg = pkg + "." + fpkg
+	}
 	tags := g.extractTags(field.Comments)
 	_, isInline := tags[_inline]
 	if isInline {

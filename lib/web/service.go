@@ -43,7 +43,6 @@ import (
 	"github.com/lack-io/vine/lib/logger"
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 	maddr "github.com/lack-io/vine/util/addr"
-	authutil "github.com/lack-io/vine/util/auth"
 	"github.com/lack-io/vine/util/backoff"
 	mhttp "github.com/lack-io/vine/util/http"
 	mnet "github.com/lack-io/vine/util/net"
@@ -446,12 +445,6 @@ func (s *service) Init(opts ...Option) error {
 
 func (s *service) Run() error {
 	// generate an auth account
-	svcID := s.opts.Service.Server().Options().Id
-	svcName := s.Options().Name
-	if err := authutil.Generate(svcID, svcName, s.opts.Service.Options().Auth); err != nil {
-		return err
-	}
-
 	if err := s.start(); err != nil {
 		return err
 	}

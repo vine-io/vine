@@ -30,9 +30,7 @@ import (
 	"github.com/lack-io/vine/cmd/vine/app/cli/util"
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/client/grpc"
-	"github.com/lack-io/vine/lib/auth"
 	"github.com/lack-io/vine/util/config"
-	"github.com/lack-io/vine/util/context/metadata"
 )
 
 // New returns a wrapped grpc client which will inject the
@@ -51,9 +49,6 @@ type wrapper struct {
 }
 
 func (a *wrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
-	if len(a.token) > 0 {
-		ctx = metadata.Set(ctx, "Authorization", auth.BearerScheme+a.token)
-	}
 	if len(a.env) > 0 && !util.IsLocal(a.ctx) && !util.IsServer(a.ctx) {
 		// @todo this is temporarily removed because multi tenancy is not there yet
 		// and the moment core and non core services run in different environments, we
