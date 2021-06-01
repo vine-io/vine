@@ -283,7 +283,7 @@ func (g *dao) generateRegTables(_ *generator.FileDescriptor) {
 	for k, _ := range g.regTables {
 		name := g.wrapPkg(k)
 		pkg := g.runtimePkg.Use()
-		g.P(fmt.Sprintf(`sets.RegistrySchema(new(%s).APIGroup(), func(in %s.Object) %s.Schema {`, name, pkg, pkg))
+		g.P(fmt.Sprintf(`sets.RegistrySchema(new(%s).GVK(), func(in %s.Object) %s.Schema {`, name, pkg, pkg))
 		g.P(fmt.Sprintf(`return From%s(in.(*%s))`, k, name))
 		g.P(`})`)
 	}

@@ -51,7 +51,7 @@ func (gvk *GroupVersionKind) String() string {
 		s = gvk.Group + "/"
 	}
 	if gvk.Version != "" {
-		s = gvk.Version + "."
+		s = s + gvk.Version + "."
 	}
 	return s + gvk.Kind
 }
@@ -74,8 +74,8 @@ func FromGVK(s string) *GroupVersionKind {
 
 // Object is an interface that describes protocol message
 type Object interface {
-	// APIGroup get the GroupVersionKind of Object
-	APIGroup() *GroupVersionKind
+	// GVK get the GroupVersionKind of Object
+	GVK() *GroupVersionKind
 	// DeepCopy deep copy the struct
 	DeepCopy() Object
 }
@@ -115,8 +115,8 @@ func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 func (os *ObjectSet) AddObj(v ...Object) {
 	os.Lock()
 	for _, in := range v {
-		os.gvkSets[in.APIGroup()] = in
-		os.sets[in.APIGroup().String()] = in
+		os.gvkSets[in.GVK()] = in
+		os.sets[in.GVK().String()] = in
 	}
 	os.Unlock()
 }
@@ -173,7 +173,7 @@ func (s *SchemaSet) RegistrySchema(g *GroupVersionKind, fn func(Object) Schema) 
 func (s *SchemaSet) NewSchema(in Object) (Schema, bool) {
 	s.RLock()
 	defer s.RUnlock()
-	fn, ok := s.sets[in.APIGroup()]
+	fn, ok := s.sets[in.GVK()]
 	if !ok {
 		return nil, false
 	}

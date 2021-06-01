@@ -147,7 +147,7 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 		} else {
 			version = "v1"
 		}
-		g.P(fmt.Sprintf(`func (in *%s) APIGroup() *%s.GroupVersionKind {`, mname, pkg.Use()))
+		g.P(fmt.Sprintf(`func (in *%s) GVK() *%s.GroupVersionKind {`, mname, pkg.Use()))
 		g.P(fmt.Sprintf(`return &%s.GroupVersionKind{Group: "%s", Version: "%s", Kind: "%s"}`, pkg.Use(), group, version, mname))
 		g.P("}")
 		g.P()
