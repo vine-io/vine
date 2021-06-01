@@ -180,7 +180,7 @@ func (g *Generator) GetFieldName(message *Descriptor, field *descriptor.FieldDes
 		}
 	}
 	if !gogoproto.IsProtoSizer(message.file.FileDescriptorProto, message.DescriptorProto) {
-		if fieldname == "Size" {
+		if fieldname == "XSize" {
 			return fieldname + "_"
 		}
 	}
@@ -202,7 +202,7 @@ func (g *Generator) GetOneOfFieldName(message *Descriptor, field *descriptor.Fie
 		}
 	}
 	if !gogoproto.IsProtoSizer(message.file.FileDescriptorProto, message.DescriptorProto) {
-		if fieldname == "Size" {
+		if fieldname == "XSize" {
 			return fieldname + "_"
 		}
 	}

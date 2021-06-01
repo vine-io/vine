@@ -62,17 +62,17 @@ The following message:
 
 given to the size plugin, will generate the following code:
 
-  func (m *B) Size() (n int) {
+  func (m *B) XSize() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.A.Size()
+	l = m.A.XSize()
 	n += 1 + l + sovExample(uint64(l))
 	if len(m.G) > 0 {
 		for _, e := range m.G {
-			l = e.Size()
+			l = e.XSize()
 			n += 1 + l + sovExample(uint64(l))
 		}
 	}
@@ -91,7 +91,7 @@ and the following test code:
 		if err != nil {
 			panic(err)
 		}
-		size := g.Size()
+		size := g.XSize()
 		if len(dAtA) != size {
 			t.Fatalf("size %v != marshalled size %v", size, len(dAtA))
 		}
@@ -556,7 +556,7 @@ func (g *gogo) GenerateSize(file *generator.FileDescriptor) {
 			os.Exit(1)
 		}
 		if gogoproto.IsSizer(file.FileDescriptorProto, message.Proto.DescriptorProto) {
-			sizeName = "Size"
+			sizeName = "XSize"
 		} else if gogoproto.IsProtoSizer(file.FileDescriptorProto, message.Proto.DescriptorProto) {
 			sizeName = "ProtoSize"
 		} else {

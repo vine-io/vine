@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 	"time"
@@ -105,6 +106,15 @@ func write(c config, file, tmpl string) error {
 			return strings.ReplaceAll(s, `"`, `\"`)
 		},
 	}
+
+	sort.Slice(c.Toml.Proto, func(i, j int) bool {
+		a := c.Toml.Proto[i]
+		b := c.Toml.Proto[j]
+		if a.Type == "service" && b.Type == "api" {
+			return true
+		}
+		return a.Name < b.Name
+	})
 
 	var f *os.File
 	var err error

@@ -857,7 +857,7 @@ func (g *gogo) GenerateMarshal(file *generator.FileDescriptor) {
 		if gogoproto.IsProtoSizer(file.FileDescriptorProto, message.Proto.DescriptorProto) {
 			g.P(`size := m.ProtoSize()`)
 		} else {
-			g.P(`size := m.Size()`)
+			g.P(`size := m.XSize()`)
 		}
 		g.P(`dAtA = make([]byte, size)`)
 		g.P(`n, err := m.MarshalToSizedBuffer(dAtA[:size])`)
@@ -875,7 +875,7 @@ func (g *gogo) GenerateMarshal(file *generator.FileDescriptor) {
 		if gogoproto.IsProtoSizer(file.FileDescriptorProto, message.Proto.DescriptorProto) {
 			g.P(`size := m.ProtoSize()`)
 		} else {
-			g.P(`size := m.Size()`)
+			g.P(`size := m.XSize()`)
 		}
 		g.P(`return m.MarshalToSizedBuffer(dAtA[:size])`)
 		g.Out()

@@ -2648,7 +2648,7 @@ func (g *Generator) generateOneofDecls(mc *msgCtx, topLevelFields []topLevelFiel
 			g.P(`MarshalTo([]byte) (int, error)`)
 		}
 		if gogoproto.IsSizer(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto) {
-			g.P(`Size() int`)
+			g.P(`XSize() int`)
 		}
 		if gogoproto.IsProtoSizer(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto) {
 			g.P(`ProtoSize() int`)
@@ -2913,18 +2913,18 @@ func (g *Generator) generateCommonMethods(mc *msgCtx) {
 	g.Out()
 	g.P("}")
 
-	g.P("func (m *", mc.goName, ") XXX_Size() int {") // avoid name clash with "Size" field in some message
+	g.P("func (m *", mc.goName, ") XXX_Size() int {") // avoid name clash with "XSize" field in some message
 	g.In()
 	if (gogoproto.IsMarshaler(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto) ||
 		gogoproto.IsUnsafeMarshaler(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto)) &&
 		gogoproto.IsSizer(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto) {
-		g.P("return m.Size()")
+		g.P("return m.XSize()")
 	} else if (gogoproto.IsMarshaler(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto) ||
 		gogoproto.IsUnsafeMarshaler(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto)) &&
 		gogoproto.IsProtoSizer(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto) {
 		g.P("return m.ProtoSize()")
 	} else {
-		g.P("return xxx_messageInfo_", mc.goName, ".Size(m)")
+		g.P("return xxx_messageInfo_", mc.goName, ".XSize(m)")
 	}
 	g.Out()
 	g.P("}")
@@ -2952,7 +2952,7 @@ func (g *Generator) GenerateMessage(message *MessageDescriptor) {
 		usedNames[n] = true
 	}
 	if !gogoproto.IsProtoSizer(message.Proto.file.FileDescriptorProto, message.Proto.DescriptorProto) {
-		usedNames["Size"] = true
+		usedNames["XSize"] = true
 	}
 
 	// allocNames finds a conflict-free variation of the given strings,
