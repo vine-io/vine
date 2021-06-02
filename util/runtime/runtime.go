@@ -91,17 +91,18 @@ type ObjectSet struct {
 	OnCreate func(in Object) Object
 }
 
-// NewObj creates a new object
-func (os *ObjectSet) NewObj(name string) (Object, bool) {
+// NewObj creates a new object, trigger OnCreate function
+func (os *ObjectSet) NewObj(gvk string) (Object, bool) {
 	os.RLock()
 	defer os.RUnlock()
-	out, ok := os.sets[name]
+	out, ok := os.sets[gvk]
 	if !ok {
 		return nil, false
 	}
 	return os.OnCreate(out.DeepCopy()), true
 }
 
+// NewObjWithGVK creates a new object, trigger OnCreate function
 func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	os.RLock()
 	defer os.RUnlock()
@@ -112,6 +113,7 @@ func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	return os.OnCreate(out.DeepCopy()), true
 }
 
+// AddObj push objects to Set
 func (os *ObjectSet) AddObj(v ...Object) {
 	os.Lock()
 	for _, in := range v {
@@ -121,11 +123,12 @@ func (os *ObjectSet) AddObj(v ...Object) {
 	os.Unlock()
 }
 
-// NewObj creates a new object
-func NewObj(name string) (Object, bool) {
-	return oset.NewObj(name)
+// NewObj creates a new object, trigger OnCreate function
+func NewObj(gvk string) (Object, bool) {
+	return oset.NewObj(gvk)
 }
 
+// NewObjWithGVK creates a new object, trigger OnCreate function
 func NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	return oset.NewObjWithGVK(gvk)
 }
