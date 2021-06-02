@@ -145,7 +145,7 @@ func runGateway(ctx *cli.Context) {
 	// create gateway config
 	c.Files = []file{
 		{"cmd/" + name + "/main.go", t2.ClusterCMD},
-		{"pkg/common/runtime/doc.go", t2.Doc},
+		{"pkg/runtime/doc.go", t2.Doc},
 		{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
 		{"pkg/" + name + "/app.go", t2.GatewayApp},
 		{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},

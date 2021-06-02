@@ -111,7 +111,7 @@ func write(c config, file, tmpl string) error {
 		a := c.Toml.Proto[i]
 		b := c.Toml.Proto[j]
 		if a.Type == "service" && b.Type == "api" {
-			return true
+			return false
 		}
 		return a.Name < b.Name
 	})

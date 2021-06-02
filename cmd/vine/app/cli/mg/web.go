@@ -143,7 +143,7 @@ func runWeb(ctx *cli.Context) {
 		// create web config
 		c.Files = []file{
 			{"cmd/" + name + "/main.go", t2.ClusterCMD},
-			{"pkg/common/runtime/doc.go", t2.Doc},
+			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
 			{"pkg/" + name + "/app.go", t2.ClusterWebSRV},
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
@@ -168,7 +168,7 @@ func runWeb(ctx *cli.Context) {
 		// create web config
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
-			{"pkg/common/runtime/doc.go", t2.Doc},
+			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/plugin.go", t2.SinglePlugin},
 			{"pkg/app.go", t2.SingleWebSRV},
 			{"deploy/Dockerfile", t2.DockerSRV},

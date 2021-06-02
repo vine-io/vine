@@ -156,7 +156,7 @@ func runSRV(ctx *cli.Context) {
 		// create service config
 		c.Files = []file{
 			{"cmd/" + name + "/main.go", t2.ClusterCMD},
-			{"pkg/common/runtime/doc.go", t2.Doc},
+			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
 			{"pkg/" + name + "/app.go", t2.ClusterApp},
 			{"pkg/" + name + "/server/" + name + ".go", t2.ClusterSRV},
@@ -197,7 +197,7 @@ func runSRV(ctx *cli.Context) {
 		// create service config
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
-			{"pkg/common/runtime/doc.go", t2.Doc},
+			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/plugin.go", t2.SinglePlugin},
 			{"pkg/app.go", t2.SingleApp},
 			{"pkg/server/" + name + ".go", t2.SingleSRV},
