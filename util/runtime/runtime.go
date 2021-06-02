@@ -160,7 +160,7 @@ func NewObjectSet() *ObjectSet {
 }
 
 type Schema interface {
-	FindPage(ctx context.Context, page, size int) ([]Object, int64, error)
+	FindPage(ctx context.Context, page, size int32) ([]Object, int64, error)
 	FindAll(ctx context.Context) ([]Object, error)
 	FindPureAll(ctx context.Context) ([]Object, error)
 	Count(ctx context.Context) (total int64, err error)

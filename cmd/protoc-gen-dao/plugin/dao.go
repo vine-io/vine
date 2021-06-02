@@ -608,7 +608,7 @@ func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *
 func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *Schema) {
 	source, target := schema.Name, schema.Desc.Proto.GetName()
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]%s.Object, int64, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int32) ([]%s.Object, int64, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]*%s, int64, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -616,7 +616,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 	g.P(`m.exprs = append(m.exprs,`)
 	g.P(fmt.Sprintf(`%s.OrderBy{Columns: []%s.OrderByColumn{{Column: %s.Column{Table: m.TableName(), Name: pk}, Desc: true}}},`, g.clausePkg.Use(), g.clausePkg.Use(), g.clausePkg.Use()))
-	g.P(fmt.Sprintf(`%s.Limit{Offset: (page - 1) * size, Limit: size},`, g.clausePkg.Use()))
+	g.P(fmt.Sprintf(`%s.Limit{Offset: int((page - 1) * size), Limit: int(size)},`, g.clausePkg.Use()))
 	g.P(fmt.Sprintf(`%s.Cond().Build("deletion_timestamp", 0),`, g.clausePkg.Use()))
 	g.P(`)`)
 	g.P()
