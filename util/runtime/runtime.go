@@ -113,6 +113,23 @@ func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	return os.OnCreate(out.DeepCopy()), true
 }
 
+func (os *ObjectSet) IsExists(gvk *GroupVersionKind) bool {
+	os.RLock()
+	defer os.RUnlock()
+	_, ok := os.gvkSets[gvk]
+	return ok
+}
+
+func (os *ObjectSet) GetObj(gvk *GroupVersionKind) (Object, bool) {
+	os.RLock()
+	defer os.RUnlock()
+	out, ok := os.gvkSets[gvk]
+	if !ok {
+		return nil, false
+	}
+	return out.DeepCopy(), true
+}
+
 // AddObj push objects to Set
 func (os *ObjectSet) AddObj(v ...Object) {
 	os.Lock()
