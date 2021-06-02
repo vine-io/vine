@@ -76,7 +76,7 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/server"
-	"{{.Dir}}/pkg/common/runtime"
+	"{{.Dir}}/pkg/runtime"
 )
 
 func Run() {
@@ -104,7 +104,7 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/{{.Name}}/server"
-	"{{.Dir}}/pkg/common/runtime"
+	"{{.Dir}}/pkg/runtime"
 )
 
 func Run() {
@@ -149,7 +149,7 @@ import (
 	"github.com/lack-io/vine/util/namespace"
 	"github.com/rakyll/statik/fs"
 
-	"{{.Dir}}/pkg/common/runtime"
+	"{{.Dir}}/pkg/runtime"
 
 	_ "github.com/lack-io/vine/lib/api/handler/openapi/statik"
 )
@@ -286,7 +286,7 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/web"
 
-	"{{.Dir}}/pkg/common/runtime"
+	"{{.Dir}}/pkg/runtime"
 )
 
 func Run() {
@@ -318,7 +318,7 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 	"github.com/lack-io/vine/lib/web"
 
-	"{{.Dir}}/pkg/common/runtime"
+	"{{.Dir}}/pkg/runtime"
 )
 
 func Run() {
