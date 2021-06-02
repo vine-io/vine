@@ -157,23 +157,23 @@ type Schema interface {
 	Tx(ctx context.Context) *dao.DB
 }
 
-var sset = SchemaSet{sets: map[*GroupVersionKind]func(Object) Schema{}}
+var sset = SchemaSet{sets: map[string]func(Object) Schema{}}
 
 type SchemaSet struct {
 	sync.RWMutex
-	sets map[*GroupVersionKind]func(Object) Schema
+	sets map[string]func(Object) Schema
 }
 
 func (s *SchemaSet) RegistrySchema(g *GroupVersionKind, fn func(Object) Schema) {
 	s.Lock()
-	s.sets[g] = fn
+	s.sets[g.String()] = fn
 	s.Unlock()
 }
 
 func (s *SchemaSet) NewSchema(in Object) (Schema, bool) {
 	s.RLock()
 	defer s.RUnlock()
-	fn, ok := s.sets[in.GVK()]
+	fn, ok := s.sets[in.GVK().String()]
 	if !ok {
 		return nil, false
 	}
@@ -181,7 +181,7 @@ func (s *SchemaSet) NewSchema(in Object) (Schema, bool) {
 }
 
 func NewSchemaSet() *SchemaSet {
-	return &SchemaSet{sets: map[*GroupVersionKind]func(Object) Schema{}}
+	return &SchemaSet{sets: map[string]func(Object) Schema{}}
 }
 
 func RegistrySchema(g *GroupVersionKind, fn func(Object) Schema) {
