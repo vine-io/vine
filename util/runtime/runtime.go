@@ -31,7 +31,7 @@ import (
 	"github.com/lack-io/vine/lib/dao/clause"
 )
 
-// GroupVersionKind contains the information of Object, etc Group, Version, Name
+// GroupVersionKind contains the information of Object, etc Group, Version, Kind
 type GroupVersionKind struct {
 	Group   string
 	Version string

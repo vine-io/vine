@@ -135,7 +135,7 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 	} else {
 		vv := v.Value
 		pkg := g.NewImport("github.com/lack-io/vine/util/runtime", "runtime")
-		g.P(`// APIGroup is an auto-generated APIGroup function, get the information like group, version and name of %s.`, mname)
+		g.P(`// GVK is an auto-generated gvk function, get the information like group, version and name of %s.`, mname)
 		var group, version string
 		if vv != "" {
 			parts := strings.Split(vv, "/")
