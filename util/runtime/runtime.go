@@ -86,7 +86,6 @@ type ObjectSet struct {
 	sync.RWMutex
 
 	sets    map[string]Object
-	gvkSets map[*GroupVersionKind]Object
 
 	OnCreate func(in Object) Object
 }
@@ -106,7 +105,7 @@ func (os *ObjectSet) NewObj(gvk string) (Object, bool) {
 func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	os.RLock()
 	defer os.RUnlock()
-	out, ok := os.gvkSets[gvk]
+	out, ok := os.sets[gvk.String()]
 	if !ok {
 		return nil, false
 	}
@@ -116,14 +115,14 @@ func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 func (os *ObjectSet) IsExists(gvk *GroupVersionKind) bool {
 	os.RLock()
 	defer os.RUnlock()
-	_, ok := os.gvkSets[gvk]
+	_, ok := os.sets[gvk.String()]
 	return ok
 }
 
 func (os *ObjectSet) GetObj(gvk *GroupVersionKind) (Object, bool) {
 	os.RLock()
 	defer os.RUnlock()
-	out, ok := os.gvkSets[gvk]
+	out, ok := os.sets[gvk.String()]
 	if !ok {
 		return nil, false
 	}
@@ -134,7 +133,6 @@ func (os *ObjectSet) GetObj(gvk *GroupVersionKind) (Object, bool) {
 func (os *ObjectSet) AddObj(v ...Object) {
 	os.Lock()
 	for _, in := range v {
-		os.gvkSets[in.GVK()] = in
 		os.sets[in.GVK().String()] = in
 	}
 	os.Unlock()
@@ -157,7 +155,6 @@ func AddObj(v ...Object) {
 func NewObjectSet() *ObjectSet {
 	return &ObjectSet{
 		sets:     map[string]Object{},
-		gvkSets:  map[*GroupVersionKind]Object{},
 		OnCreate: func(in Object) Object { return in },
 	}
 }
