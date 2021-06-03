@@ -31,6 +31,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/xlab/treeprint"
 
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
@@ -104,6 +105,9 @@ func write(c config, file, tmpl string) error {
 		"title": strings.Title,
 		"quota": func(s string) string {
 			return strings.ReplaceAll(s, `"`, `\"`)
+		},
+		"uuid": func() string {
+			return uuid.New().String()
 		},
 	}
 

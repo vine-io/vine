@@ -29,10 +29,15 @@ package runtime
 const Namespace = "{{.Toml.Package.Namespace}}"
 {{if .Toml.Pkg}}
 const {{title .Toml.Pkg.Name}}Name = "{{.Toml.Pkg.Alias}}"
+const {{title .Toml.Pkg.Name}}ID = "{{uuid}}"
 {{end}}
 {{if eq .Toml.Package.Kind "cluster"}}
 const ({{range .Toml.Mod}}
 	{{title .Name}}Name = "{{.Alias}}"{{end}}
+)
+
+var ({{range .Toml.Mod}}
+	{{title .Name}}ID = "{{uuid}}"{{end}}
 )
 {{end}}
 var (
@@ -82,6 +87,7 @@ import (
 func Run() {
 	s := server.New(
 		vine.Name(runtime.{{title .Name}}Name),
+		vine.Id(runtime.{{title .Name}}ID),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
@@ -110,6 +116,7 @@ import (
 func Run() {
 	s := server.New(
 		vine.Name(runtime.{{title .Name}}Name),
+		vine.Id(runtime.{{title .Name}}ID),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
@@ -184,6 +191,7 @@ func Run() {
 	// initialise service
 	svc := vine.NewService(
 		vine.Name(runtime.{{title .Name}}Name),
+		vine.Id(runtime.{{title .Name}}ID),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"api-address": Address,
@@ -292,7 +300,8 @@ import (
 func Run() {
 	s := web.NewService(
 		web.Name(runtime.{{title .Name}}Name),
-		vine.Metadata(map[string]string{
+		web.Id(runtime.{{title .Name}}ID),
+		web.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
 		}),
 	)
@@ -324,12 +333,13 @@ import (
 func Run() {
 	s := web.NewService(
 		web.Name(runtime.{{title .Name}}Name),
-		vine.Metadata(map[string]string{
+		web.Id(runtime.{{title .Name}}ID),
+		web.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
 		}),
 	)
 
-	srv.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
+	s.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
 		return c.SendString("hello world")
 	})
 
