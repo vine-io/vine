@@ -70,10 +70,7 @@ message HelloWorldResponse {
 生成 golang 代码
 
 ```bash
-protoc -I=. \
-  -I=$GOPATH/src \
-  -I=$GOPATH/src/github.com/gogo/protobuf/protobuf \
-  --gogo_out=:. --vine_out=. example/proto/test.proto
+protoc -I=. -I=$GOPATH/src --gogo_out=:. --vine_out=. example/proto/test.proto
 ```
 
 ### 服务端

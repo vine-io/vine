@@ -241,7 +241,7 @@ func Run() {
 	}
 
 	// create the namespace resolver
-	nsResolver := namespace.NewResolver(Type, Namespace)
+	nsResolver := namespace.NewResolver(Type, runtime.Namespace)
 	// resolver options
 	ropts := []resolver.Option{
 		resolver.WithNamespace(nsResolver.ResolveWithType),
@@ -256,7 +256,7 @@ func Run() {
 		router.WithRegistry(svc.Options().Registry),
 	)
 	rp := arpc.NewHandler(
-		ahandler.WithNamespace(Namespace),
+		ahandler.WithNamespace(runtime.Namespace),
 		ahandler.WithRouter(rt),
 		ahandler.WithClient(svc.Client()),
 	)

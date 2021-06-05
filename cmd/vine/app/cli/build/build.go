@@ -38,13 +38,6 @@ func Commands() []*cli.Command {
 			Name:        "build",
 			Usage:       "Build vine project or resource",
 			Subcommands: []*cli.Command{cmdProto(), cmdSRV()},
-			Flags: []cli.Flag{
-				&cli.BoolFlag{
-					Name:  "wire",
-					Usage: "generate wire code before building vine project.",
-					Value: true,
-				},
-			},
 			Action: func(c *cli.Context) error {
 				if c.Args().Len() > 0 {
 					command := c.Args().First()
