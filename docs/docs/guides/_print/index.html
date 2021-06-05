@@ -24,7 +24,7 @@
 " />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/guides/" />
-<meta property="og:updated_time" content="2020-12-29T14:33:10+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-06-05T10:47:09+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="开始">
 <meta itemprop="description" content="我们将在这里学会如何创建服务，以及如何使用 vine 命令行工具管理项目。
 ">
@@ -144,7 +144,8 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Service <span style="color:#8be9fd;font-style:italic">interface</span> {
+      <p><strong>Service</strong> 是其他主要组件服务的顶层接口，它将所有底层包包裹在一个更加方便的接口中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Service <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#6272a4">// 服务名称
 </span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Name</span>() <span style="color:#8be9fd">string</span>
 	<span style="color:#6272a4">// 初始化选项
@@ -160,7 +161,8 @@ This the multi-page printable view of this section.
 	<span style="color:#6272a4">// 实现 server.Server 接口
 </span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
-</code></pre></div><h2 id="1初始化">1.初始化</h2>
+</code></pre></div><h2 id="开始">开始</h2>
+<h3 id="1初始化">1.初始化</h3>
 <p>使用 <code>service.NewService</code> 创建服务</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
 
@@ -198,7 +200,7 @@ service = vine.<span style="color:#50fa7b">NewService</span>()
 		}),
 	)
 </code></pre></div><p><code>service.Init</code> 支持的选择看<a href="https://pkg.go.dev/github.com/lack-io/vine/service/config/cmd#pkg-variables">这里</a></p>
-<h2 id="2定义-api">2.定义 API</h2>
+<h3 id="2定义-api">2.定义 API</h3>
 <p>使用 protobuf 文件定义服务的 API 接口。它可以能便利的提供严谨的 API 接口，同时为服务端和客户端提供具体的接口。
 greeter.proto</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
@@ -215,7 +217,7 @@ greeter.proto</p>
 	<span style="color:#8be9fd">string</span> greeting <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
 }
 </code></pre></div><p>这里我们定义一个 Greeter 服务，提供 Hello 方法。Request 和 Response 是 Hello 方法的入参和返回值。</p>
-<h2 id="3生成-api-接口">3.生成 API 接口</h2>
+<h3 id="3生成-api-接口">3.生成 API 接口</h3>
 <p>你需要以下的工具来生成 protobuf 代码</p>
 <ul>
 <li><a href="https://github.com/protocolbuffers/protobuf">protoc</a></li>
@@ -279,7 +281,7 @@ go get github.com/lack-io/vine/cmd/protoc-gen-vine
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">RegisterGreeterHandler</span>(s server.Server, hdlr GreeterHandler) {
 	s.<span style="color:#50fa7b">Handle</span>(s.<span style="color:#50fa7b">NewHandler</span>(<span style="color:#ff79c6">&amp;</span>Greeter{hdlr}))
 }
-</code></pre></div><h2 id="4实现-handler">4.实现 handler</h2>
+</code></pre></div><h3 id="4实现-handler">4.实现 handler</h3>
 <p>handler.go</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> proto <span style="color:#f1fa8c">&#34;github.com/vine/examples/service/proto&#34;</span>
 
@@ -295,13 +297,13 @@ go get github.com/lack-io/vine/cmd/protoc-gen-vine
 )
 
 pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(service.Server, <span style="color:#8be9fd;font-style:italic">new</span>(Greeter))
-</code></pre></div><h2 id="5启动服务">5.启动服务</h2>
+</code></pre></div><h3 id="5启动服务">5.启动服务</h3>
 <p>服务通过调用 <code>service.Run</code> 来启动。它会绑定到配置参数提供的地址上并且监听请求。
 服务启动时会通过 registry 组件注册服务，在接收到 kill 信号时注销服务。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
     log.<span style="color:#50fa7b">Fatal</span>(err)
 }
-</code></pre></div><h2 id="6完整的服务端代码">6.完整的服务端代码</h2>
+</code></pre></div><h3 id="6完整的服务端代码">6.完整的服务端代码</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
@@ -332,7 +334,7 @@ pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(service.Server, <sp
                 log.<span style="color:#50fa7b">Fatal</span>(err)
         }
 }
-</code></pre></div><h2 id="客户端">客户端</h2>
+</code></pre></div><h3 id="客户端">客户端</h3>
 <p>查询上面的服务，可以使用以下的代码</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 创建 greeter 服务的客户端
 </span><span style="color:#6272a4"></span>greeter <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;greeter&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
@@ -347,7 +349,95 @@ pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(service.Server, <sp
 }
 
 fmt.<span style="color:#50fa7b">Println</span>(rsp.Greeting)
-</code></pre></div>
+</code></pre></div><h2 id="使用-vine-工具管理项目">使用 vine 工具管理项目</h2>
+<h3 id="初始化项目">初始化项目</h3>
+<p>创建项目目录</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+</code></pre></div><p>初始化目录</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine init --cluster
+Creating resource  in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+
+.
+├── vine.toml
+├── README.md
+├── .gitignore
+└── go.mod
+</code></pre></div><h3 id="创建服务-echo">创建服务 echo</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine new service <span style="color:#8be9fd;font-style:italic">echo</span>   
+Creating resource <span style="color:#8be9fd;font-style:italic">echo</span> in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+
+.
+├── cmd
+│   └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│       └── main.go
+├── pkg
+│   ├── runtime
+│   │   └── doc.go
+│   └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│       ├── plugin.go
+│       ├── app.go
+│       ├── server
+│       │   └── echo.go
+│       ├── service
+│       │   ├── echo.go
+│       │   └── wire.go
+│       └── dao
+│           └── echo.go
+├── deploy
+│   ├── docker
+│   │   └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│   │       └── Dockerfile
+│   ├── config
+│   │   └── echo.ini
+│   └── systemed
+│       └── echo.service
+├── proto
+│   └── service
+│       └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│           └── v1
+│               └── echo.proto
+└── vine.toml
+
+
+download protoc zip packages <span style="color:#ff79c6">(</span>protoc-<span style="color:#8be9fd;font-style:italic">$VERSION</span>-<span style="color:#8be9fd;font-style:italic">$PLATFORM</span>.zip<span style="color:#ff79c6">)</span> and install:
+
+visit https://github.com/protocolbuffers/protobuf/releases
+
+download protobuf <span style="color:#ff79c6">for</span> vine:
+
+<span style="color:#8be9fd;font-style:italic">cd</span> example
+
+install dependencies:
+        go get github.com/gogo/protobuf
+        go get github.com/lack-io/vine/cmd/protoc-gen-gogo
+        go get github.com/lack-io/vine/cmd/protoc-gen-vine
+        go get github.com/lack-io/vine/cmd/protoc-gen-validator
+        go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
+        go get github.com/lack-io/vine/cmd/protoc-gen-dao
+
+<span style="color:#8be9fd;font-style:italic">cd</span> example
+        vine build <span style="color:#8be9fd;font-style:italic">echo</span>
+</code></pre></div><h3 id="编译运行-echo">编译运行 echo</h3>
+<p>先要成 proto 文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine build proto                                        
+change directory <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src: 
+protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. --validator_out<span style="color:#ff79c6">=</span>:. example/proto/service/echo/v1/echo.proto
+</code></pre></div><p>编译 echo 服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go mod vendor
+$ vine build service --output<span style="color:#ff79c6">=</span>_output/echo  <span style="color:#8be9fd;font-style:italic">echo</span>
+</code></pre></div><p>运行服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./output/echo
+</code></pre></div><h3 id="添加网关服务">添加网关服务</h3>
+<p>新建服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine new gateway api
+</code></pre></div><p>编译</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go mod vendor
+$ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
+</code></pre></div><p>启动 api</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./_output/api --enable-openapi
+</code></pre></div><p>浏览器访问地址 <a href="127.0.0.1:8080/openapi-ui/">127.0.0.1:8080/openapi-ui/</a></p>
+<p>关于 <code>vine</code> 命令行工具更加具体的内容可以参考 <a href="https://lack-io.github.io/vine/docs/tools/vine/">这里</a></p>
+
 </div>
 </div>
 

@@ -23,7 +23,7 @@
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://lack-io.github.io/vine/docs/" />
-<meta property="og:updated_time" content="2021-03-30T14:18:11+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-06-05T10:47:09+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="欢迎来到 Vine 文档">
 <meta itemprop="description" content="Vine 文档">
 <meta name="twitter:card" content="summary"/>
@@ -601,6 +601,31 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
+    <a  href="/vine/docs/tools/vine/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">Vine</a>
+  </li>
+  <ul>
+    <li class="collapse " id="vinedocstoolsvine">
+      
+      
+      
+    </li>
+  </ul>
+</ul>
+
+        
+      
+      
+      
+        
+          
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
     <a  href="/vine/docs/tools/validate/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">Validate</a>
   </li>
   <ul>
@@ -729,11 +754,10 @@ if (!doNotTrack) {
     <li><a href="#起步">起步</a>
       <ul>
         <li><a href="#安装">安装</a></li>
-        <li><a href="#proto-文件">proto 文件</a></li>
-        <li><a href="#服务端">服务端</a></li>
-        <li><a href="#客户端">客户端</a></li>
-        <li><a href="#启动-api">启动 api</a></li>
-        <li><a href="#验证">验证</a></li>
+        <li><a href="#初始化项目">初始化项目</a></li>
+        <li><a href="#创建服务-echo">创建服务 echo</a></li>
+        <li><a href="#编译运行-echo">编译运行 echo</a></li>
+        <li><a href="#添加网关服务">添加网关服务</a></li>
       </ul>
     </li>
   </ul>
@@ -807,94 +831,94 @@ if (!doNotTrack) {
 <p>Vine 遵守 Apache 2.0 开源许可.</p>
 <h2 id="起步">起步</h2>
 <h3 id="安装">安装</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-go get github.com/lack-io/vine/cmd/protoc-gen-vine
-go get github.com/lack-io/cmd/vine
-</code></pre></div><h3 id="proto-文件">proto 文件</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/lack-io/vine/cmd/vine
+</code></pre></div><h3 id="初始化项目">初始化项目</h3>
+<p>创建项目目录</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+</code></pre></div><p>初始化目录</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine init --cluster
+Creating resource  in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
 
-<span style="color:#ff79c6">package</span> testdata;
+.
+├── vine.toml
+├── README.md
+├── .gitignore
+└── go.mod
+</code></pre></div><h3 id="创建服务-echo">创建服务 echo</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine new service <span style="color:#8be9fd;font-style:italic">echo</span>   
+Creating resource <span style="color:#8be9fd;font-style:italic">echo</span> in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
 
-<span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Rpc {
-  <span style="color:#6272a4">// +gen:post=/api/{name}
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> HelloWorld(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-}
+.
+├── cmd
+│   └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│       └── main.go
+├── pkg
+│   ├── runtime
+│   │   └── doc.go
+│   └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│       ├── plugin.go
+│       ├── app.go
+│       ├── server
+│       │   └── echo.go
+│       ├── service
+│       │   ├── echo.go
+│       │   └── wire.go
+│       └── dao
+│           └── echo.go
+├── deploy
+│   ├── docker
+│   │   └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│   │       └── Dockerfile
+│   ├── config
+│   │   └── echo.ini
+│   └── systemed
+│       └── echo.service
+├── proto
+│   └── service
+│       └── <span style="color:#8be9fd;font-style:italic">echo</span>
+│           └── v1
+│               └── echo.proto
+└── vine.toml
 
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
-  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
 
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldResponse</span> {
-  <span style="color:#8be9fd">string</span> reply <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><p>生成 golang 代码</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span>. <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf <span style="color:#f1fa8c">\
-</span><span style="color:#f1fa8c"></span>  --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>. example/proto/test.proto
-</code></pre></div><h3 id="服务端">服务端</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+download protoc zip packages <span style="color:#ff79c6">(</span>protoc-<span style="color:#8be9fd;font-style:italic">$VERSION</span>-<span style="color:#8be9fd;font-style:italic">$PLATFORM</span>.zip<span style="color:#ff79c6">)</span> and install:
 
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+visit https://github.com/protocolbuffers/protobuf/releases
 
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
-	pb <span style="color:#f1fa8c">&#34;example/proto&#34;</span>
-)
+download protobuf <span style="color:#ff79c6">for</span> vine:
 
-<span style="color:#8be9fd;font-style:italic">type</span> HelloWorld <span style="color:#8be9fd;font-style:italic">struct</span> {
-}
+<span style="color:#8be9fd;font-style:italic">cd</span> example
 
-<span style="color:#8be9fd;font-style:italic">func</span> (t <span style="color:#ff79c6">*</span>HelloWorld) <span style="color:#50fa7b">HelloWorld</span>(ctx context.Context, req <span style="color:#ff79c6">*</span>pb.HelloWorldRequest, rsp <span style="color:#ff79c6">*</span>pb.HelloWorldResponse) <span style="color:#8be9fd">error</span> {
-	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;get echo request&#34;</span>)
-	rsp.Reply = <span style="color:#f1fa8c">&#34;hello &#34;</span> <span style="color:#ff79c6">+</span> req.Name
-	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-}
+install dependencies:
+        go get github.com/gogo/protobuf
+        go get github.com/lack-io/vine/cmd/protoc-gen-gogo
+        go get github.com/lack-io/vine/cmd/protoc-gen-vine
+        go get github.com/lack-io/vine/cmd/protoc-gen-validator
+        go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
+        go get github.com/lack-io/vine/cmd/protoc-gen-dao
 
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>),
-		vine.<span style="color:#50fa7b">Address</span>(<span style="color:#f1fa8c">&#34;127.0.0.1:9000&#34;</span>),
-	)
+<span style="color:#8be9fd;font-style:italic">cd</span> example
+        vine build <span style="color:#8be9fd;font-style:italic">echo</span>
+</code></pre></div><h3 id="编译运行-echo">编译运行 echo</h3>
+<p>先要成 proto 文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine build proto                                        
+change directory <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src: 
+protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. --validator_out<span style="color:#ff79c6">=</span>:. example/proto/service/echo/v1/echo.proto
+</code></pre></div><p>编译 echo 服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go mod vendor
+$ vine build service --output<span style="color:#ff79c6">=</span>_output/echo  <span style="color:#8be9fd;font-style:italic">echo</span>
+</code></pre></div><p>运行服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./output/echo
+</code></pre></div><h3 id="添加网关服务">添加网关服务</h3>
+<p>新建服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine new gateway api
+</code></pre></div><p>编译</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go mod vendor
+$ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
+</code></pre></div><p>启动 api</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./_output/api --enable-openapi
+</code></pre></div><p>浏览器访问地址 <a href="127.0.0.1:8080/openapi-ui/">127.0.0.1:8080/openapi-ui/</a></p>
 
-	service.<span style="color:#50fa7b">Init</span>()
-
-	pb.<span style="color:#50fa7b">RegisterRpcHandler</span>(service.<span style="color:#50fa7b">Server</span>(), <span style="color:#8be9fd;font-style:italic">new</span>(HelloWorld))
-
-	service.<span style="color:#50fa7b">Run</span>()
-}
-</code></pre></div><h3 id="客户端">客户端</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
-	pb <span style="color:#f1fa8c">&#34;example/proto&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	srv <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>))
-	service <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewRpcService</span>(<span style="color:#f1fa8c">&#34;tt&#34;</span>, srv.<span style="color:#50fa7b">Client</span>())
-
-	rsp, err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">HelloWorld</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.HelloWorldRequest{Name: <span style="color:#f1fa8c">&#34;world&#34;</span>})
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		fmt.<span style="color:#50fa7b">Println</span>(err)
-		<span style="color:#ff79c6">return</span>
-	}
-	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;result: %v\n&#34;</span>, rsp)
-}
-
-</code></pre></div><h3 id="启动-api">启动 api</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine api --handler<span style="color:#ff79c6">=</span>rpc
-</code></pre></div><h3 id="验证">验证</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> -d <span style="color:#f1fa8c">&#39;{}&#39;</span> http://localhost:8080/api/vine
-</code></pre></div>
         <div class="section-index">
     
     
@@ -902,6 +926,8 @@ go get github.com/lack-io/cmd/vine
     
     
     <hr class="panel-line">
+        
+            
         
             
         
@@ -936,7 +962,7 @@ go get github.com/lack-io/cmd/vine
                     <h5>
                         <a href="/vine/docs/tools/">工具</a>
                     </h5>
-                    <p></p>
+                    <p>我们提供了一组工具，帮助开发人员提高开发效率。</p>
                 </div>
             
         
@@ -973,7 +999,7 @@ go get github.com/lack-io/cmd/vine
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 March 30, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/c85b3a833570c4ad1f49f390bb3d2931161aaa8b">rebuilding site 2021年 3月30日 星期二 14时18分11秒 CST (c85b3a8)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 June 5, 2021: <a  href="https://github.com/lack-io/vine-docs/commit/e00f19e7d78f3081240386f7cc108d858a3404c7">rebuilding site 2021年 6月 5日 星期六 10时47分09秒 CST (e00f19e)</a>
 </div>
 </div>
 

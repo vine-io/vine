@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.76.5" /><link rel="canonical" type="text/html" href="https://lack-io.github.io/vine/docs/tools/vine/">
+<link rel="alternate" type="application/rss&#43;xml" href="https://lack-io.github.io/vine/docs/tools/vine/index.xml">
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="shortcut icon" href="/vine/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/vine/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/vine/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/vine/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/vine/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/vine/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/vine/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/vine/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/vine/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
+
+<title>Vine | Vine</title><meta property="og:title" content="Vine" />
+<meta property="og:description" content="在 **vine** 框架下我们提供一套命令行管理工具，用来管理项目和实现与 **vine** 服务的交互
+" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lack-io.github.io/vine/docs/tools/vine/" />
+<meta property="og:updated_time" content="2021-06-05T10:47:09+08:00" /><meta property="og:site_name" content="Vine" />
+<meta itemprop="name" content="Vine">
+<meta itemprop="description" content="在 **vine** 框架下我们提供一套命令行管理工具，用来管理项目和实现与 **vine** 服务的交互
+">
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Vine"/>
+<meta name="twitter:description" content="在 **vine** 框架下我们提供一套命令行管理工具，用来管理项目和实现与 **vine** 服务的交互
+"/>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-00000000-0', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<link rel="preload" href="/vine/scss/main.min.9156453689c2a62860578c0dd5be0d8047f7ff28c3529bf4b8b3279efe82e52a.css" as="style">
+<link href="/vine/scss/main.min.9156453689c2a62860578c0dd5be0d8047f7ff28c3529bf4b8b3279efe82e52a.css" rel="stylesheet" integrity="">
+
+
+<script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
+
+
+
+
+  </head>
+  <body class="td-section">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+        <a class="navbar-brand" href="/vine/">
+		<span class="navbar-logo"><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500"><g><path style="fill:#fff" d="M116.8525 421.9722c-5.7041.0-10.3442-4.3127-10.3442-9.6129V88.183c0-5.3002 4.6401-9.6117 10.3442-9.6117H320.858c3.0347.0 9.3959.5498 11.7506 2.6302l.3545.3442 58.905 63.2912c2.3101 2.491 2.9202 8.4928 2.9202 11.3184v256.2039c0 5.3002-4.6407 9.6129-10.3436 9.6129H116.8525z"/><g><g><g><path style="fill:#767676" d="M384.4445 423.2066H116.852c-6.3839.0-11.5786-4.8658-11.5786-10.8474V88.1831c0-5.9804 5.1947-10.8461 11.5786-10.8461h204.0062c.377.0 9.2786.0329 12.568 2.9389l.3947.3833 58.9508 63.337c3.2135 3.4652 3.2514 11.7924 3.2514 12.1593v256.2036C396.0231 418.3408 390.8284 423.2066 384.4445 423.2066zM116.5079 411.9189c.0848.0278.1999.0531.3441.0531h267.5925c.1442.0.2581-.0253.3441-.0531V156.1556c-.0076-.9033-.3593-3.7347-.7034-5.0037l-57.6527-61.9416c-1.4651-.3176-4.4533-.6389-5.5742-.6389H116.852c-.143.0-.2594.024-.3441.0531V411.9189zm267.4533-261.149zM327.0321 89.371v.0013V89.371z"/></g></g></g><g><g><path style="fill:#5b7fc0" d="M189.0874 210.1754l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4473C177.5953 212.627 183.0601 210.1742 189.0874 210.1754zM197.0804 232.033c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 234.1722 197.0804 232.033z"/><path style="opacity:.3;fill:#fff" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zM197.0839 232.0372c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/><g><defs><path id="SVGID_1_" d="M194.7376 237.6875c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 234.2399 196.1861 236.239 194.7376 237.6875z"/></defs><clipPath id="SVGID_2_"><use xlink:href="#SVGID_1_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_2_);fill:#fff" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/><path style="opacity:.13;clip-path:url(#SVGID_2_);fill:#020202" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/></g><g><defs><path id="SVGID_3_" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zM197.0839 232.0372c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/></defs><clipPath id="SVGID_4_"><use xlink:href="#SVGID_3_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_4_);fill:#5b7fc0" d="M172.6595 215.6045c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8475-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 209.1953 176.6171 211.647 172.6595 215.6045z"/></g></g><rect x="198.8952" y="225.1043" style="fill:#5b7fc0" width="122.6266" height="13.8671"/></g><g><path style="fill:#d95140" d="M189.0874 155.7611l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.0249 2.454-11.4897 6.4116-15.4473C177.5953 158.2128 183.0601 155.7599 189.0874 155.7611zM197.0804 177.6188c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.2508 181.7667 197.0816 179.758 197.0804 177.6188z"/><path style="opacity:.3;fill:#fff" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zM197.0839 177.623c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/><g><defs><path id="SVGID_5_" d="M194.7376 183.2733c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 179.8256 196.1861 181.8248 194.7376 183.2733z"/></defs><clipPath id="SVGID_6_"><use xlink:href="#SVGID_5_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_6_);fill:#fff" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/><path style="opacity:.13;clip-path:url(#SVGID_6_);fill:#020202" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/></g><g><defs><path id="SVGID_7_" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zM197.0839 177.623c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/></defs><clipPath id="SVGID_8_"><use xlink:href="#SVGID_7_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_8_);fill:#d95140" d="M172.6595 161.1903c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 154.7811 176.6171 157.2327 172.6595 161.1903z"/></g><rect x="198.8952" y="170.69" style="fill:#d95140" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#56a55c" d="M189.5379 264.6147l.0012-.0012c7.7751.0012 15.0294 4.1862 18.932 10.9235 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032-5.8394.0-11.3281-2.2733-15.458-6.4032-4.13-4.13-6.4032-9.6186-6.4056-15.4628.0012-6.0249 2.454-11.4897 6.4116-15.4472C178.0458 267.0663 183.5105 264.6135 189.5379 264.6147zM197.5309 286.4723c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6538 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.7013 290.6202 197.5321 288.6115 197.5309 286.4723z"/><path style="opacity:.3;fill:#fff" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zM197.5344 286.4765c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/><g><defs><path id="SVGID_9_" d="M195.1881 292.1268c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9941 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.5344 288.6792 196.6366 290.6783 195.1881 292.1268z"/></defs><clipPath id="SVGID_10_"><use xlink:href="#SVGID_9_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_10_);fill:#fff" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/><path style="opacity:.13;clip-path:url(#SVGID_10_);fill:#020202" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/></g><g><defs><path id="SVGID_11_" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zM197.5344 286.4765c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/></defs><clipPath id="SVGID_12_"><use xlink:href="#SVGID_11_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_12_);fill:#56a55c" d="M173.11 270.0439c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7325-11.1497-10.9151-18.926-10.9151C182.5311 263.6346 177.0676 266.0863 173.11 270.0439z"/></g></g><rect x="199.3456" y="279.5436" style="fill:#56a55c" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#f1bc42" d="M189.0874 318.7208l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3305-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4472C177.5953 321.1724 183.0601 318.7196 189.0874 318.7208zM197.0804 340.5784c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 342.7176 197.0804 340.5784z"/><path style="opacity:.3;fill:#fff" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zM197.0839 340.5826c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/><g><defs><path id="SVGID_13_" d="M194.7376 346.2329c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 342.7853 196.1861 344.7844 194.7376 346.2329z"/></defs><clipPath id="SVGID_14_"><use xlink:href="#SVGID_13_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_14_);fill:#fff" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/><path style="opacity:.13;clip-path:url(#SVGID_14_);fill:#020202" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/></g><g><defs><path id="SVGID_15_" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zM197.0839 340.5826c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/></defs><clipPath id="SVGID_16_"><use xlink:href="#SVGID_15_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_16_);fill:#f1bc42" d="M172.6595 324.15c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8474-1.0151-7.6327-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 317.7407 176.6171 320.1924 172.6595 324.15z"/></g></g><rect x="198.8952" y="333.6497" style="fill:#f1bc42" width="122.6266" height="13.8671"/></g></g></svg></span><span class="text-uppercase font-weight-bold">Vine</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				
+				
+				<a  class="nav-link active" href="/vine/docs/" ><span class="active">文档</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a  class="nav-link" href="https://github.com/lack-io/vine-example" target="_blank" ><span>实例</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a  class="nav-link" href="https://github.com/lack-io/vine" target="_blank" ><span>GitHub</span></a>
+			</li>
+			
+			
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block">
+<input type="search" class="form-control td-search-input" placeholder="&#xf002 站内搜索…" aria-label="站内搜索…" autocomplete="off">
+
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            
+
+
+
+
+<div class="td-content">
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This the multi-page printable view of this section.
+<a href="#" onclick="print();return false;">Click here to print</a>.
+</p><p>
+<a href="/vine/docs/tools/vine/">Return to the regular view of this page</a>.
+</p>
+</div>
+
+
+
+<h1 class="title">Vine</h1>
+<div class="lead">在 <strong>vine</strong> 框架下我们提供一套命令行管理工具，用来管理项目和实现与 <strong>vine</strong> 服务的交互</div>
+
+
+
+
+
+<div class="content">
+      <h2 id="安装-vine-工具">安装 vine 工具</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/vine
+</code></pre></div><p>验证安装结果</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine --help
+NAME:
+   vine - A vine service runtime
+        _
+ _   __<span style="color:#ff79c6">(</span>_<span style="color:#ff79c6">)</span>___  ___
+| | / / / __ <span style="color:#f1fa8c">\/</span> _ <span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>| |/ / / / / /  __/
+|___/_/_/ /_/<span style="color:#f1fa8c">\_</span>__/
+
+USAGE:
+   vine <span style="color:#ff79c6">[</span>global options<span style="color:#ff79c6">]</span> <span style="color:#8be9fd;font-style:italic">command</span> <span style="color:#ff79c6">[</span><span style="color:#8be9fd;font-style:italic">command</span> options<span style="color:#ff79c6">]</span> <span style="color:#ff79c6">[</span>arguments...<span style="color:#ff79c6">]</span>
+
+VERSION:
+   ...
+
+COMMANDS:
+   api      Run the api gateway
+   new      Create vine resource template
+   init     Initialize a vine project
+   build    Build vine project or resource
+   run      Start a vine project
+   help, h  Shows a list of commands or <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">for</span> one <span style="color:#8be9fd;font-style:italic">command</span>
+
+GLOBAL OPTIONS:
+   --help, -h     show <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+   --version, -v  print the version <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+</code></pre></div><p>vine 命令行工具支持多个子命令，包含以下功能:</p>
+<ul>
+<li>启动网关</li>
+<li>项目管理 (创建，编译，运行)</li>
+</ul>
+<h2 id="vine-项目管理">vine 项目管理</h2>
+<p><code>new</code>, <code>init</code>, <code>build</code>, <code>run</code> 可能帮助开发人员很好的管理 vine 实现的项目。接下来我们使用该工具一步步实现单服务的管理</p>
+<h3 id="初始化项目">初始化项目</h3>
+<p>新建目录 <code>$GOPATH/src/example</code> (建议将项目目录保存在 GOPATH 下。)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir <span style="color:#8be9fd;font-style:italic">$GOAPTH</span>/src/example
+$ <span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+</code></pre></div><p>在项目目录下执行初始化操作:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine init 
+Creating resource  in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+
+.
+├── vine.toml
+├── README.md
+├── .gitignore
+└── go.mod
+</code></pre></div><p>初始化话生成以上文件，<code>vine.toml</code> 中包含项目相关的信息，包含该文件的目录就会被识别为 <code>vine</code> 项目。</p>
+<h3 id="新建服务">新建服务</h3>
+<p>执行以下命令创建一个服务:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine new service 
+Creating resource example in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+
+.
+├── cmd
+│   └── main.go
+├── pkg
+│   ├── runtime
+│   │   └── doc.go
+│   ├── plugin.go
+│   ├── app.go
+│   ├── server
+│   │   └── example.go
+│   ├── service
+│   │   ├── example.go
+│   │   └── wire.go
+│   └── dao
+│       └── example.go
+├── deploy
+│   ├── Dockerfile
+│   ├── example.ini
+│   └── example.service
+├── proto
+│   └── service
+│       └── example
+│           └── v1
+│               └── example.proto
+└── vine.toml
+
+
+download protoc zip packages <span style="color:#ff79c6">(</span>protoc-<span style="color:#8be9fd;font-style:italic">$VERSION</span>-<span style="color:#8be9fd;font-style:italic">$PLATFORM</span>.zip<span style="color:#ff79c6">)</span> and install:
+
+visit https://github.com/protocolbuffers/protobuf/releases
+
+download protobuf <span style="color:#ff79c6">for</span> vine:
+
+<span style="color:#8be9fd;font-style:italic">cd</span> example
+
+install dependencies:
+	go get github.com/gogo/protobuf
+	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
+	go get github.com/lack-io/vine/cmd/protoc-gen-vine
+	go get github.com/lack-io/vine/cmd/protoc-gen-validator
+	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
+	go get github.com/lack-io/vine/cmd/protoc-gen-dao
+
+<span style="color:#8be9fd;font-style:italic">cd</span> example
+	vine build example
+</code></pre></div><h3 id="安装依赖包">安装依赖包</h3>
+<p>根据提示，安装依赖</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/gogo/protobuf
+$ go get github.com/lack-io/vine/cmd/protoc-gen-gogo
+$ go get github.com/lack-io/vine/cmd/protoc-gen-vine
+$ go get github.com/lack-io/vine/cmd/protoc-gen-validator
+$ go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
+$ go get github.com/lack-io/vine/cmd/protoc-gen-dao
+</code></pre></div><h3 id="编译项目">编译项目</h3>
+<p>生成 <code>*.pb.go</code> 代码:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine build proto --type<span style="color:#ff79c6">=</span>service  --group<span style="color:#ff79c6">=</span>example example
+change directory <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src:
+protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. --validator_out<span style="color:#ff79c6">=</span>:. example/proto/service/example/v1/example.proto
+</code></pre></div><p>编译成二进制文件:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go mod vendor
+go: finding module <span style="color:#ff79c6">for</span> package github.com/google/wire
+go: found github.com/google/wire in github.com/google/wire v0.5.0
+$ vine build service example
+vine build service example
+go build -a -installsuffix cgo -ldflags <span style="color:#f1fa8c">&#34;-s -w&#34;</span> cmd/main.go
+speed: 17.907776483s
+</code></pre></div><h3 id="运行服务">运行服务</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./main
+2021-06-05 08:47:29  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:199 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting <span style="color:#ff79c6">[</span>service<span style="color:#ff79c6">]</span> go.vine.service.example
+2021-06-05 08:47:29  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:200 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info service <span style="color:#ff79c6">[</span>version<span style="color:#ff79c6">]</span> latest
+2021-06-05 08:47:29  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:878 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Server <span style="color:#ff79c6">[</span>grpc<span style="color:#ff79c6">]</span> Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:51530
+2021-06-05 08:47:29  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:719 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registry <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> Registering node: go.vine.service.example-81ec2a02-c402-42d7-88c8-3de75a68a49b
+2021-06-05 08:47:29  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>mdns/mdns_registry.go:266 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> registry create new service with ip: 192.168.11.167 <span style="color:#ff79c6">for</span>: 192.168.11.167
+</code></pre></div><h2 id="vine-项目结构">vine 项目结构</h2>
+<p>vine 项目采用合理的结构，使代码结构变得清晰易理解。项目分成两种类型，<code>cluster</code> 分布式和 <code>single</code> 单服务。两种类型的目录结构上有一些区别</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># 单服务项目</span>
+.
+├── cmd  <span style="color:#6272a4"># 服务入口目录, single类型时目录下只有 main.go 文件，cluster 下包含多个服务同名的目录，内部有 main.go 文件</span>
+│   └── main.go
+├── pkg  <span style="color:#6272a4"># pkg 每个服务核心代码存放下该目录下，single类型时，目录下直接存放服务代码，cluster类型时，目录还有一层服务同名的子目录。</span>
+│   ├── runtime  <span style="color:#6272a4"># 各服务公用的工具包和 client 等</span>
+│   │   └── doc.go
+│   ├── plugin.go <span style="color:#6272a4"># vine 服务的插件信息</span>
+│   ├── app.go    <span style="color:#6272a4"># 服务入口，初始化的一些代码</span>
+│   ├── server    <span style="color:#6272a4"># 提供 rpc 服务，只进行一些数据的验证，具体工具调用 service</span>
+│   │   └── example.go
+│   ├── service   <span style="color:#6272a4"># 服务业务逻辑代码</span>
+│   │   ├── example.go
+│   │   └── wire.go <span style="color:#6272a4"># 使用 github.com/google/wire 实现 DI</span>
+│   └── dao       <span style="color:#6272a4"># 数据库交互代码，有 protoc 工具自动生成</span>
+│       └── example.go
+├── deploy    <span style="color:#6272a4"># 项目代码部署时需要的文件，single 和 cluster 结构上不同</span>
+│   ├── Dockerfile <span style="color:#6272a4"># 服务 Dockerfile</span>
+│   ├── example.ini <span style="color:#6272a4"># 服务的启动参数配置文件</span>
+│   └── example.service <span style="color:#6272a4"># CentOS 上的服务脚本</span>
+├── proto    <span style="color:#6272a4"># 存放 *.proto 文件及其生成的 *.go 代码，分成 apis 和 service 类型</span>
+│   └── service <span style="color:#6272a4"># 提供 gRPC 服务，引用 proto/apis 下的 message  </span>
+│       └── example <span style="color:#6272a4"># 和服务同名的目录</span>
+│           └── v1  <span style="color:#6272a4"># 服务接口版本，默认为 v1</span>
+│               └── example.proto
+└── vine.toml <span style="color:#6272a4"># vine 项目的描述文件，有该文件则被认定为 vine 项目。</span>
+</code></pre></div><p><code>vine.toml</code> 文件内容说明</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>package<span style="color:#ff79c6">]</span>   
+<span style="color:#8be9fd;font-style:italic">kind</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;single&#34;</span> <span style="color:#6272a4"># 项目类型</span>
+<span style="color:#8be9fd;font-style:italic">namespace</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;go.vine&#34;</span> <span style="color:#6272a4"># 项目的命令空间</span>
+
+<span style="color:#ff79c6">[</span>pkg<span style="color:#ff79c6">]</span>  <span style="color:#6272a4"># kind = &#34;single&#34; 该配置存在，描述服务信息。</span>
+<span style="color:#8be9fd;font-style:italic">name</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;example&#34;</span> <span style="color:#6272a4"># 服务命令</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;go.vine.service.example&#34;</span> <span style="color:#6272a4"># 别名</span>
+<span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;service&#34;</span>  <span style="color:#6272a4"># 服务类型,提供 gRPC 接口，service, web, gateway</span>
+<span style="color:#8be9fd;font-style:italic">version</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;latest&#34;</span> <span style="color:#6272a4"># 服务版本</span>
+<span style="color:#8be9fd;font-style:italic">main</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;cmd/main.go&#34;</span> <span style="color:#6272a4"># main 函数路径</span>
+<span style="color:#8be9fd;font-style:italic">dir</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;example&#34;</span> <span style="color:#6272a4"># 项目目录路径，$GOPATH/src 下</span>
+<span style="color:#8be9fd;font-style:italic">output</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span> <span style="color:#6272a4"># 服务编译时，输入路径 go build -o $output main.go</span>
+<span style="color:#8be9fd;font-style:italic">flags</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">[</span>   <span style="color:#6272a4"># 服务编译时的额外参数，支持多个格式，&#34;KEY=value&#34;, &#34;-key&#34;, &#34;key=${shell command}&#34;  </span>
+	<span style="color:#f1fa8c">&#34;-a&#34;</span>, <span style="color:#f1fa8c">&#34;-installsuffix&#34;</span>, <span style="color:#f1fa8c">&#34;cgo&#34;</span>, <span style="color:#f1fa8c">&#34;-ldflags \&#34;-s -w\&#34;&#34;</span>,
+<span style="color:#ff79c6">]</span>
+
+<span style="color:#ff79c6">[[</span>mod<span style="color:#ff79c6">]]</span>  <span style="color:#6272a4"># kind = &#34;cluster&#34; 该配置存在，描述服务信息。每个 mod 表示一个服务</span>
+<span style="color:#8be9fd;font-style:italic">name</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;apiserver&#34;</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;com.howlink.service.apiserver&#34;</span>
+<span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;service&#34;</span>
+<span style="color:#8be9fd;font-style:italic">version</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;latest&#34;</span>
+<span style="color:#8be9fd;font-style:italic">main</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;cmd/apiserver/main.go&#34;</span>
+<span style="color:#8be9fd;font-style:italic">dir</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;dr/apiserver&#34;</span>
+<span style="color:#8be9fd;font-style:italic">output</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;_output/apiserver&#34;</span>
+<span style="color:#8be9fd;font-style:italic">flags</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">[</span>
+	<span style="color:#f1fa8c">&#34;GOOS=linux&#34;</span>, <span style="color:#f1fa8c">&#34;GOARCH=amd64&#34;</span>, <span style="color:#f1fa8c">&#34;-a&#34;</span>, <span style="color:#f1fa8c">&#34;-installsuffix&#34;</span>, <span style="color:#f1fa8c">&#34;cgo&#34;</span>, <span style="color:#f1fa8c">&#34;-ldflags \&#34;-s -w\&#34;&#34;</span>,
+<span style="color:#ff79c6">]</span>
+
+<span style="color:#ff79c6">[[</span>proto<span style="color:#ff79c6">]]</span> <span style="color:#6272a4"># .proto 文件描述信息</span>
+<span style="color:#8be9fd;font-style:italic">name</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;example&#34;</span> <span style="color:#6272a4"># 文件名</span>
+<span style="color:#8be9fd;font-style:italic">pb</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;example/proto/service/example/v1/example.proto&#34;</span> <span style="color:#6272a4"># 路径</span>
+<span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;service&#34;</span> <span style="color:#6272a4"># 类型，service 和 api</span>
+<span style="color:#8be9fd;font-style:italic">group</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;example&#34;</span> <span style="color:#6272a4"># 组，同个 group 下不同有同名的 proto 文件</span>
+<span style="color:#8be9fd;font-style:italic">version</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;v1&#34;</span> <span style="color:#6272a4"># 版本，默认为 v1</span>
+<span style="color:#8be9fd;font-style:italic">plugins</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">[</span><span style="color:#f1fa8c">&#34;gogo&#34;</span>, <span style="color:#f1fa8c">&#34;vine&#34;</span>, <span style="color:#f1fa8c">&#34;validator&#34;</span><span style="color:#ff79c6">]</span> <span style="color:#6272a4"># 生成 .go 代码时启用的 protoc 插件</span>
+</code></pre></div><h2 id="vine-命令解析">vine 命令解析</h2>
+<p><code>vine</code> 工具支持以下子命令:</p>
+<ul>
+<li>api      启动网关服务</li>
+<li>new      创建服务或者proto文件</li>
+<li>init     初始化项目，将一个目录转化为项目目录</li>
+<li>build    编译服务、生成 .go 文件</li>
+<li>run      运行服务</li>
+</ul>
+<h3 id="init-子命令">init 子命令</h3>
+<p><code>vine init</code> 支持以下参数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine init --help    
+NAME:
+   vine init - Initialize a vine project
+
+USAGE:
+   vine init <span style="color:#ff79c6">[</span><span style="color:#8be9fd;font-style:italic">command</span> options<span style="color:#ff79c6">]</span> <span style="color:#ff79c6">[</span>arguments...<span style="color:#ff79c6">]</span>
+
+OPTIONS:
+   --namespace string  Namespace <span style="color:#ff79c6">for</span> the project e.g com.example <span style="color:#ff79c6">(</span>default: <span style="color:#f1fa8c">&#34;go.vine&#34;</span><span style="color:#ff79c6">)</span> <span style="color:#6272a4"># 指定项目的命令空间</span>
+   --cluster           create cluster package. <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span> <span style="color:#6272a4"># 确认项目类型，默认为单服务</span>
+   --help, -h          show <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+</code></pre></div><p>vine 项目支持 cluster (多服务分布式)、single (单服务，默认) 两种类型。</p>
+<h3 id="new-子命令">new 子命令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ NAME:
+   vine new - Create vine resource template
+
+USAGE:
+   vine new <span style="color:#8be9fd;font-style:italic">command</span> <span style="color:#ff79c6">[</span><span style="color:#8be9fd;font-style:italic">command</span> options<span style="color:#ff79c6">]</span> <span style="color:#ff79c6">[</span>arguments...<span style="color:#ff79c6">]</span>
+
+COMMANDS:
+   service  Create a service template  <span style="color:#6272a4"># 创建一个 gRPC 服务</span>
+   gateway  Create a gateway template  <span style="color:#6272a4"># 创建一个网关服务</span>
+   web      Create a web template      <span style="color:#6272a4"># 创建一个 web 服务</span>
+   proto    Create a proto file        <span style="color:#6272a4"># 创建 proto 文件</span>
+   help, h  Shows a list of commands or <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">for</span> one <span style="color:#8be9fd;font-style:italic">command</span>
+
+OPTIONS:
+   --help, -h     show <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+   --version, -v  print the version <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+   
+</code></pre></div><h3 id="build-子命令">build 子命令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine build --help
+NAME:
+   vine build - Build vine project or resource
+
+USAGE:
+   vine build <span style="color:#8be9fd;font-style:italic">command</span> <span style="color:#ff79c6">[</span><span style="color:#8be9fd;font-style:italic">command</span> options<span style="color:#ff79c6">]</span> <span style="color:#ff79c6">[</span>arguments...<span style="color:#ff79c6">]</span>
+
+COMMANDS:
+   proto    Generate protobuf file  <span style="color:#6272a4"># 生成 proto 对应的go代码</span>
+   service  Build vine project      <span style="color:#6272a4"># 编译服务</span>
+   help, h  Shows a list of commands or <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">for</span> one <span style="color:#8be9fd;font-style:italic">command</span>
+
+OPTIONS:
+   --help, -h     show <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+   --version, -v  print the version <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+
+</code></pre></div><h3 id="run-子命令">run 子命令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine run --help          
+NAME:
+   vine run - Start a vine project
+
+USAGE:
+   vine run <span style="color:#ff79c6">[</span><span style="color:#8be9fd;font-style:italic">command</span> options<span style="color:#ff79c6">]</span> <span style="color:#ff79c6">[</span>arguments...<span style="color:#ff79c6">]</span>
+
+OPTIONS:
+   --auto-restart   <span style="color:#6272a4"># 是否在监听到文件变动时自动重启，默认为 true</span>
+   --watch strings  <span style="color:#6272a4"># 监听指定目录的文件内容变化</span>
+   --help, -h       show <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+
+</code></pre></div><p>// TODO</p>
+
+</div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="" aria-label="">
+    <a class="text-white" target="_blank" rel="noopener noreferrer" href="">
+      <i class=""></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
+	
+		<p class="mt-2"><a href="/vine/about/">about</a></p>
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@8.8.1/dist/mermaid.min.js" integrity="sha384-to2w0I1OqmbJ9J6yTnIX+KYU8grNpZoD1dKPLjgEJvMe5L5+/7qvuNa2sQo8WAWj" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/vine/js/main.min.81e9088f3e71ec0dcf796d72ffdc5103949e3aa6ba3e66cfcb74915da20475fe.js" integrity="sha256-gekIjz5x7A3PeW1y/9xRA5SeOqa6PmbPy3SRXaIEdf4=" crossorigin="anonymous"></script>
+
+
+
+
+  </body>
+</html>
