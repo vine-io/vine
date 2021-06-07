@@ -13,6 +13,22 @@ all: build
 vendor:
 	go mod vendor
 
+tar:
+	sed -i "" "s/GitCommit = ".*"/GitCommit = \"$(GIT_COMMIT)\"/g" cmd/vine/version/version.go
+	sed -i "" "s/GitTag    = ".*"/GitTag    = \"$(GIT_TAG)\"/g" cmd/vine/version/version.go
+	sed -i "" "s/BuildDate = ".*"/BuildDate = \"$(BUILD_DATE)\"/g" cmd/vine/version/version.go
+	GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/$(NAME)-windows-amd64.exe cmd/vine/main.go
+	GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/$(NAME)-linux-amd64 cmd/vine/main.go
+	GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/$(NAME)-linux-arm64 cmd/vine/main.go
+	GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/$(NAME)-darwin-amd64 cmd/vine/main.go
+	GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/$(NAME)-darwin-arm64 cmd/vine/main.go
+	mkdir -p _output && cd _output && \
+	zip $(NAME)-windows.amd64.zip $(NAME)-windows-amd64.exe && rm -fr $(NAME)-windows-amd64.exe && \
+	tar -zcvf $(NAME)-linux.amd64.tar.gz $(NAME)-linux-amd64 && rm -fr $(NAME)-linux-amd64 && \
+	tar -zcvf $(NAME)-linux.arm64.tar.gz $(NAME)-linux-arm64 && rm -fr $(NAME)-linux-arm64 && \
+	tar -zcvf $(NAME)-darwin.amd64.tar.gz $(NAME)-darwin-amd64 && rm -fr $(NAME)-darwin-amd64 && \
+	tar -zcvf $(NAME)-darwin.arm64.tar.gz $(NAME)-darwin-arm64 && rm -fr $(NAME)-darwin-arm64
+
 build:
 	sed -i "" "s/GitCommit = ".*"/GitCommit = \"$(GIT_COMMIT)\"/g" cmd/vine/version/version.go
 	sed -i "" "s/GitTag    = ".*"/GitTag    = \"$(GIT_TAG)\"/g" cmd/vine/version/version.go
@@ -84,4 +100,4 @@ clean:
 	rm -rf ./vine
 	rm -fr ./_output
 
-.PHONY: build build-windows-tool clean vet test docker install protoc openapi
+.PHONY: build tar build-windows-tool clean vet test docker install protoc openapi
