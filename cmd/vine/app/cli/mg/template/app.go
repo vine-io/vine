@@ -80,8 +80,8 @@ import (
 	"github.com/lack-io/vine"
 	log "github.com/lack-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/server"
 	"{{.Dir}}/pkg/runtime"
+	"{{.Dir}}/pkg/server"
 )
 
 func Run() {
@@ -109,8 +109,8 @@ import (
 	"github.com/lack-io/vine"
 	log "github.com/lack-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/{{.Name}}/server"
 	"{{.Dir}}/pkg/runtime"
+	"{{.Dir}}/pkg/{{.Name}}/server"
 )
 
 func Run() {

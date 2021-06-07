@@ -75,7 +75,7 @@ func runSRV(ctx *cli.Context) {
 	if len(namespace) > 0 {
 		command += " --namespace=" + namespace
 	}
-	if plugins := ctx.StringSlice("plugin"); len(plugins) > 0 {
+	if plugins = ctx.StringSlice("plugin"); len(plugins) > 0 {
 		command += " --plugin=" + strings.Join(plugins, ":")
 	}
 	command += " " + name
@@ -101,7 +101,11 @@ func runSRV(ctx *cli.Context) {
 	}
 
 	goDir := dir
-	dir = strings.TrimPrefix(dir, goPath+"/src/")
+	if runtime.GOOS == "windows" {
+		dir = strings.TrimPrefix(dir, goPath+"\\src\\")
+	} else {
+		dir = strings.TrimPrefix(dir, goPath+"/src/")
+	}
 	c := config{
 		Name:      name,
 		Command:   command,
