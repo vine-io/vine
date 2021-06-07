@@ -193,3 +193,4 @@ func addFileToTree(root treeprint.Tree, file string) {
 		curr.AddNode(split[len(split)-1])
 	}
 }
+

@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"go/build"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/lack-io/cli"
@@ -40,11 +41,25 @@ func runInit(ctx *cli.Context) {
 	namespace := ctx.String("namespace")
 	useGoModule := os.Getenv("GO111MODULE")
 
+	goPath := build.Default.GOPATH
+	// attempt to split path if not windows
+	if runtime.GOOS == "windows" {
+		goPath = strings.Split(goPath, ";")[0]
+	} else {
+		goPath = strings.Split(goPath, ":")[0]
+	}
+
 	dir, _ := os.Getwd()
+	goDir := dir
+	if runtime.GOOS == "windows" {
+		goDir = strings.TrimPrefix(goDir, goPath+"\\src\\")
+	} else {
+		goDir = strings.TrimPrefix(goDir, goPath+"/src/")
+	}
 	c := config{
 		Namespace: namespace,
 		Cluster:   cluster,
-		Dir:       strings.TrimPrefix(dir, build.Default.GOPATH+"/src/"),
+		Dir:       goDir,
 		GoDir:     dir,
 	}
 

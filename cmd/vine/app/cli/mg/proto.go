@@ -27,6 +27,7 @@ import (
 	"go/build"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/lack-io/cli"
@@ -65,7 +66,11 @@ func runProto(ctx *cli.Context) {
 
 	dir, _ := os.Getwd()
 	goDir := dir
-	dir = strings.TrimPrefix(dir, build.Default.GOPATH+"/src/")
+	if runtime.GOOS == "windows" {
+		dir = strings.TrimPrefix(dir, build.Default.GOPATH+"\\src\\")
+	} else {
+		dir = strings.TrimPrefix(dir, build.Default.GOPATH+"/src/")
+	}
 	c := config{
 		Name:    name,
 		Type:    atype,

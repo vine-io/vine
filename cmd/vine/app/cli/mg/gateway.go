@@ -101,6 +101,11 @@ func runGateway(ctx *cli.Context) {
 
 	goDir := dir
 	dir = strings.TrimPrefix(dir, goPath+"/src/")
+	if runtime.GOOS == "windows" {
+		dir = strings.TrimPrefix(dir, goPath+"\\src\\")
+	} else {
+		dir = strings.TrimPrefix(dir, goPath+"/src/")
+	}
 	c := config{
 		Name:      name,
 		Command:   command,

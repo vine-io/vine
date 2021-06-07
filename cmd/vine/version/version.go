@@ -7,9 +7,9 @@ import (
 )
 
 var (
-	GitCommit string
-	GitTag    string
-	BuildDate string
+	GitCommit = "b57e5357"
+	GitTag    = "v0.18.19"
+	BuildDate = "1623056799"
 )
 
 func Version() string {
@@ -36,6 +36,8 @@ func Version() string {
 
 func GoV() string {
 	v := strings.TrimPrefix(runtime.Version(), "go")
-	v = v[:strings.LastIndex(v, ".")]
+	if strings.Count(v, ".") > 1 {
+		v = v[:strings.LastIndex(v, ".")]
+	}
 	return v
 }
