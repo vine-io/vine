@@ -5,7 +5,6 @@ GIT_TAG=$(shell git describe --abbrev=0 --tags --always --match "v*")
 GIT_VERSION=github.com/lack-io/vine/cmd/vine/version
 CGO_ENABLED=0
 BUILD_DATE=$(shell date +%s)
-LDFLAGS=-X $(GIT_VERSION).GitCommit=$(GIT_COMMIT) -X $(GIT_VERSION).GitTag=$(GIT_TAG) -X $(GIT_VERSION).BuildDate=$(BUILD_DATE)
 IMAGE_TAG=$(GIT_TAG)-$(GIT_COMMIT)
 ROOT=github.com/lack-io/vine
 
@@ -18,7 +17,7 @@ build:
 	sed -i "" "s/GitCommit = ".*"/GitCommit = \"$(GIT_COMMIT)\"/g" cmd/vine/version/version.go
 	sed -i "" "s/GitTag    = ".*"/GitTag    = \"$(GIT_TAG)\"/g" cmd/vine/version/version.go
 	sed -i "" "s/BuildDate = ".*"/BuildDate = \"$(BUILD_DATE)\"/g" cmd/vine/version/version.go
-	go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o $(NAME) cmd/vine/main.go
+	go build -a -installsuffix cgo -ldflags "-s -w" -o $(NAME) cmd/vine/main.go
 
 build-windows-tool:
 	mkdir -p _output
