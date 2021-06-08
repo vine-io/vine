@@ -77,7 +77,11 @@ func runProto(ctx *cli.Context) {
 				args = append(args, "--"+p+"_out=:.")
 			}
 		}
-		args = append(args, pb.Pb)
+		if runtime.GOOS == "windows" {
+			args = append(args, filepath.Join(root, pb.Pb))
+		} else {
+			args = append(args, pb.Pb)
+		}
 
 		fmt.Printf("protoc %s\n", strings.Join(args, " "))
 		cmd := exec.Command("protoc", args...)

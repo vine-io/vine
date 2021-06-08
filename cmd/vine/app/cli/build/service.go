@@ -41,7 +41,7 @@ import (
 
 func runSRV(ctx *cli.Context) {
 	cfg, err := tool.New("vine.toml")
-	if err != nil && os.IsNotExist(err) {
+	if err != nil {
 		fmt.Printf("invalid vine project: %v\n", err)
 		return
 	}
@@ -172,7 +172,7 @@ func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster 
 	var err error
 	switch runtime.GOOS {
 	case "windows":
-		out, err = exec.Command("cmd", "/C", strings.Join(args, " ")).CombinedOutput()
+		out, err = exec.Command("cmd", "/C", strings.ReplaceAll(strings.Join(args, " "), `\`, "")).CombinedOutput()
 	default:
 		out, err = exec.Command("/bin/sh", "-c", strings.Join(args, " ")).CombinedOutput()
 	}
@@ -184,26 +184,35 @@ func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster 
 }
 
 func parseFlag(s string) string {
-	a := strings.Index(s, "$")
-	if a == -1 {
-		return s
-	}
-	b := strings.LastIndex(s, ")")
-	if b == -1 {
-		return s
-	}
-	sub := s[a+2 : b]
-	parts := strings.Split(sub, " ")
-	data, _ := exec.Command(parts[0], parts[1:]...).CombinedOutput()
-	var out string
-	switch runtime.GOOS {
-	case "windows":
-		out = strings.TrimSuffix(string(data), "\r\n")
-	default:
-		out = strings.TrimSuffix(string(data), "\n")
+	shell := func(text string, i, j int) string {
+		sub := text[i+2 : j]
+		parts := strings.Split(sub, " ")
+		data, _ := exec.Command(parts[0], parts[1:]...).CombinedOutput()
+		var out string
+		switch runtime.GOOS {
+		case "windows":
+			out = strings.TrimSuffix(string(data), "\r\n")
+		default:
+			out = strings.TrimSuffix(string(data), "\n")
 
+		}
+		return text[:i] + out + text[j+1:]
 	}
-	return s[:a] + out + s[b+1:]
+
+	c := strings.Count(s, "$")
+	if c == 0 {
+		return s
+	}
+
+	var out string
+	for i := 0; i < c; i++ {
+		a := strings.Index(s, "$")
+		b := strings.Index(s, ")")
+		out += shell(s[:b+1], a, b)
+		s = s[b+1:]
+	}
+
+	return out
 }
 
 func isUp(text string) bool {

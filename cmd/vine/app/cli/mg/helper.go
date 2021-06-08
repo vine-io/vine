@@ -46,6 +46,7 @@ func protoComments(goDir, name string) []string {
 		"\ndownload protobuf for vine:\n",
 		"cd " + goDir,
 		"\ninstall dependencies:",
+		"\tgo get github.com/google/wire/cmd/wire",
 		"\tgo get github.com/gogo/protobuf",
 		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-gogo",
 		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-vine",
@@ -104,6 +105,7 @@ func write(c config, file, tmpl string) error {
 	fn := template.FuncMap{
 		"title": strings.Title,
 		"quota": func(s string) string {
+			s = strings.ReplaceAll(s, `\`, `\\`)
 			return strings.ReplaceAll(s, `"`, `\"`)
 		},
 		"uuid": func() string {

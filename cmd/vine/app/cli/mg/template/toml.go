@@ -32,9 +32,9 @@ name = "{{.Name}}"
 alias = "{{.Alias}}"
 type = "{{.Type}}"
 version = "{{.Version}}"
-main = "{{.Main}}"
-dir = "{{.Dir}}"
-output = "{{.Output}}"
+main = "{{quota .Main}}"
+dir = "{{quota .Dir}}"
+output = "{{quota .Output}}"
 flags = [
 	{{range .Flags}}"{{quota .}}", {{end}}
 ]
@@ -44,16 +44,16 @@ name = "{{.Toml.Pkg.Name}}"
 alias = "{{.Toml.Pkg.Alias}}"
 type = "{{.Toml.Pkg.Type}}"
 version = "{{.Toml.Pkg.Version}}"
-main = "{{.Toml.Pkg.Main}}"
-dir = "{{.Toml.Pkg.Dir}}"
-output = "{{.Toml.Pkg.Output}}"
+main = "{{quota .Toml.Pkg.Main}}"
+dir = "{{quota .Toml.Pkg.Dir}}"
+output = "{{quota .Toml.Pkg.Output}}"
 flags = [
 	{{range .Toml.Pkg.Flags}}"{{quota .}}", {{end}}
 ]
 {{end}}{{range .Toml.Proto}}
 [[proto]]
 name = "{{.Name}}"
-pb = "{{.Pb}}"
+pb = "{{quota .Pb}}"
 type = "{{.Type}}"
 group = "{{.Group}}"
 version = "{{.Version}}"
