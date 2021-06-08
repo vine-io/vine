@@ -24,11 +24,11 @@ tar:
 	GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/$(NAME)-darwin-amd64 cmd/vine/main.go
 	GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/$(NAME)-darwin-arm64 cmd/vine/main.go
 	mkdir -p _output && cd _output && \
-	zip $(NAME)-windows.amd64.zip $(NAME)-windows-amd64.exe && rm -fr $(NAME)-windows-amd64.exe && \
-	tar -zcvf $(NAME)-linux.amd64.tar.gz $(NAME)-linux-amd64 && rm -fr $(NAME)-linux-amd64 && \
-	tar -zcvf $(NAME)-linux.arm64.tar.gz $(NAME)-linux-arm64 && rm -fr $(NAME)-linux-arm64 && \
-	tar -zcvf $(NAME)-darwin.amd64.tar.gz $(NAME)-darwin-amd64 && rm -fr $(NAME)-darwin-amd64 && \
-	tar -zcvf $(NAME)-darwin.arm64.tar.gz $(NAME)-darwin-arm64 && rm -fr $(NAME)-darwin-arm64
+	zip $(NAME)-windows-amd64-$(GIT_TAG).zip $(NAME)-windows-amd64.exe && rm -fr $(NAME)-windows-amd64.exe && \
+	tar -zcvf $(NAME)-linux-amd64-$(GIT_TAG).tar.gz $(NAME)-linux-amd64 && rm -fr $(NAME)-linux-amd64 && \
+	tar -zcvf $(NAME)-linux-arm64-$(GIT_TAG).tar.gz $(NAME)-linux-arm64 && rm -fr $(NAME)-linux-arm64 && \
+	tar -zcvf $(NAME)-darwin-amd64-$(GIT_TAG).tar.gz $(NAME)-darwin-amd64 && rm -fr $(NAME)-darwin-amd64 && \
+	tar -zcvf $(NAME)-darwin-arm64-$(GIT_TAG).tar.gz $(NAME)-darwin-arm64 && rm -fr $(NAME)-darwin-arm64
 
 build:
 	sed -i "" "s/GitCommit = ".*"/GitCommit = \"$(GIT_COMMIT)\"/g" cmd/vine/version/version.go

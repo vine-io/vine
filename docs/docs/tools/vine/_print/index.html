@@ -235,6 +235,7 @@ download protobuf <span style="color:#ff79c6">for</span> vine:
 <span style="color:#8be9fd;font-style:italic">cd</span> example
 
 install dependencies:
+   go get github.com/google/wire/cmd/wire
 	go get github.com/gogo/protobuf
 	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 	go get github.com/lack-io/vine/cmd/protoc-gen-vine
@@ -246,7 +247,8 @@ install dependencies:
 	vine build example
 </code></pre></div><h3 id="安装依赖包">安装依赖包</h3>
 <p>根据提示，安装依赖</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/gogo/protobuf
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/google/wire/cmd/wire
+$ go get github.com/gogo/protobuf
 $ go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 $ go get github.com/lack-io/vine/cmd/protoc-gen-vine
 $ go get github.com/lack-io/vine/cmd/protoc-gen-validator

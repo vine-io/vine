@@ -114,6 +114,7 @@ download protobuf &lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; vin
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;cd&lt;/span&gt; example
 
 install dependencies:
+   go get github.com/google/wire/cmd/wire
 	go get github.com/gogo/protobuf
 	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 	go get github.com/lack-io/vine/cmd/protoc-gen-vine
@@ -125,7 +126,8 @@ install dependencies:
 	vine build example
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;安装依赖包&#34;&gt;安装依赖包&lt;/h3&gt;
 &lt;p&gt;根据提示，安装依赖&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ go get github.com/gogo/protobuf
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ go get github.com/google/wire/cmd/wire
+$ go get github.com/gogo/protobuf
 $ go get github.com/lack-io/vine/cmd/protoc-gen-gogo
 $ go get github.com/lack-io/vine/cmd/protoc-gen-vine
 $ go get github.com/lack-io/vine/cmd/protoc-gen-validator

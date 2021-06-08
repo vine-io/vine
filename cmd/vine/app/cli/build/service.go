@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"go/build"
 	"io/fs"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -35,6 +36,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/lack-io/cli"
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 )
@@ -108,6 +110,7 @@ func runSRV(ctx *cli.Context) {
 
 func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster bool) {
 	if wire {
+		fmt.Println("start generating wire code")
 		root := mod.Dir
 		wd, _ := os.Getwd()
 		if !cluster {
@@ -123,6 +126,7 @@ func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster 
 			dir := path.Dir(p)
 			base := path.Base(p)
 			if base == "wire.go" {
+				fmt.Printf("generate wire code in %s\n", dir)
 				cmd := exec.Command("wire", "gen")
 				cmd.Dir = dir
 				out, err := cmd.CombinedOutput()
@@ -172,7 +176,10 @@ func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster 
 	var err error
 	switch runtime.GOOS {
 	case "windows":
-		out, err = exec.Command("cmd", "/C", strings.ReplaceAll(strings.Join(args, " "), `\`, "")).CombinedOutput()
+		ft := fmt.Sprintf("%s.bat", uuid.New().String())
+		_ = ioutil.WriteFile(ft, []byte( strings.Join(args, " ")), 0755)
+		out, err = exec.Command("cmd", "/C", ft).CombinedOutput()
+		_ = os.Remove(ft)
 	default:
 		out, err = exec.Command("/bin/sh", "-c", strings.Join(args, " ")).CombinedOutput()
 	}
