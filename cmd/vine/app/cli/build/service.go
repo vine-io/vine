@@ -110,7 +110,7 @@ func runSRV(ctx *cli.Context) {
 
 func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster bool) {
 	if wire {
-		fmt.Println("start generating wire code")
+		fmt.Println("start generating wire code ...")
 		root := mod.Dir
 		wd, _ := os.Getwd()
 		if !cluster {
