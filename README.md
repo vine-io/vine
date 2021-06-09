@@ -34,4 +34,4 @@ Vine (*/vaɪn/*) 一套简单、高效、可插拔的分布式 RPC 框架。
 
 Vine 遵守 Apache 2.0 开源许可.
 
-关于 `vine` 的文档可以参考 [vine 文件](https://lack-io.github.io/vine/)
+关于 `vine` 的文档可以参考 [vine 文档](https://lack-io.github.io/vine/)
