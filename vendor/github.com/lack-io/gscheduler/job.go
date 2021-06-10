@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package gscheduler
 
 import (
@@ -117,19 +105,19 @@ func (j *Job) safeCall() {
 }
 
 type builder struct {
-	j   *Job
-	err error
+	j *Job
 }
 
 // JobBuilder the builder of Job
 //  examples:
-//   job, err := JobBuilder().Name("cron-job").Spec("*/10 * * * * * *").Out()
+//   c, err := cron.Parse("*/10 * * * * * *")
+//   job := JobBuilder().Name("cron-job").Spec(c).Out()
 //
-//   job, err := JobBuilder().Name("delay-job").Delay(time.Now().Add(time.Hour*3)).Out()
+//   job := JobBuilder().Name("delay-job").Delay(time.Now().Add(time.Hour*3)).Out()
 //
-//   job, err := JobBuilder().Name("duration-job").Duration(time.Second*10).Out()
+//   job := JobBuilder().Name("duration-job").Duration(time.Second*10).Out()
 //
-//   job, err := JobBuilder().Name("once-job").Duration(time.Second*5).Times(1).Out()
+//   job := JobBuilder().Name("once-job").Duration(time.Second*5).Times(1).Out()
 func JobBuilder() *builder {
 	return &builder{j: &Job{
 		id:         uuid.New().String(),
@@ -161,8 +149,8 @@ func (b *builder) Duration(d time.Duration) *builder {
 // Spec set the crontab expression of Job
 //  */3 * * * * * * : every 3s
 //  00 30 15 * * * * : 15:30:00 every day
-func (b *builder) Spec(spec string) *builder {
-	b.j.cron, b.err = cron.Parse(spec)
+func (b *builder) Spec(c cron.Crontab) *builder {
+	b.j.cron = c
 	return b
 }
 
@@ -192,6 +180,6 @@ func (b *builder) Fn(fn func()) *builder {
 }
 
 // Out get a Job
-func (b *builder) Out() (*Job, error) {
-	return b.j, b.err
+func (b *builder) Out() *Job {
+	return b.j
 }

@@ -1,26 +1,14 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package cron
 
 import "time"
 
 type Crontab interface {
-	// Return the next activation time, later than the given time.
+	// Next Return the next activation time, later than the given time.
 	// Next is invoked initially, and then each time the job is run.
 	Next(time.Time) time.Time
 }
 
-// ConstantDelaySchedule represents a simple recurring duty cycle, e.g. "Every 5 minutes".
+// ConstantDelayCron represents a simple recurring duty cycle, e.g. "Every 5 minutes".
 // It does not support jobs more frequent than once a second.
 type ConstantDelayCron struct {
 	Delay time.Duration

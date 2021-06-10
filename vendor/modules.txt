@@ -274,7 +274,7 @@ github.com/kr/text
 # github.com/lack-io/cli v1.2.4
 ## explicit
 github.com/lack-io/cli
-# github.com/lack-io/gscheduler v0.1.0
+# github.com/lack-io/gscheduler v0.2.0
 ## explicit
 github.com/lack-io/gscheduler
 github.com/lack-io/gscheduler/cron

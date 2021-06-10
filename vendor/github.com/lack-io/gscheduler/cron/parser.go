@@ -1,15 +1,3 @@
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package cron
 
 import (
@@ -20,7 +8,7 @@ import (
 	"time"
 )
 
-// Configuration options for creating a parser. Most options specify which
+// ParseOption Configuration options for creating a parser. Most options specify which
 // fields should be included, while others enable features. If a field is not
 // included the parser will assume a default value. These options do not change
 // the order fields are parse in.
@@ -55,13 +43,13 @@ var defaults = []string{
 	"*",
 }
 
-// A custom Parser that can be configured.
+// Parser A custom Parser that can be configured.
 type Parser struct {
 	options   ParseOption
 	optionals int
 }
 
-// Creates a custom Parser with custom options.
+// NewParser Creates a custom Parser with custom options.
 //
 //  // Standard parser without descriptors
 //  specParser := NewParser(Second | Minute | Hour | Dom | Month | Dow)
