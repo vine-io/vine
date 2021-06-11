@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package main define the proto-gen-gogo binary we use to generate out proto go file,
+// Package main define the proto-gen-go binary we use to generate out proto go file,
 package main
 
 import (
-	"github.com/lack-io/vine/cmd/generator/vanity"
-	"github.com/lack-io/vine/cmd/generator/vanity/command"
+	 "github.com/lack-io/vine/cmd/generator/vanity"
+	 "github.com/lack-io/vine/cmd/generator/vanity/command"
 	gogo "github.com/lack-io/vine/cmd/protoc-gen-gogo/plugin"
 )
 
@@ -34,11 +34,8 @@ func main() {
 	files := req.GetProtoFile()
 	files = vanity.FilterFiles(files, vanity.NotGoogleProtobufDescriptorProto)
 
-	vanity.ForEachFile(files, vanity.TurnOnMarshalerAll)
-	vanity.ForEachFile(files, vanity.TurnOnSizerAll)
-	vanity.ForEachFile(files, vanity.TurnOnUnmarshalerAll)
-
 	vanity.ForEachFile(files, vanity.TurnOffGoGettersAll)
+	vanity.ForEachFile(files, vanity.TurnOffTypeDesc)
 
 	vanity.ForEachFieldInFilesExcludingExtensions(vanity.OnlyProto2(files), vanity.TurnOffNullableForNativeTypesWithoutDefaultsOnly)
 	vanity.ForEachFile(files, vanity.TurnOffGoUnrecognizedAll)

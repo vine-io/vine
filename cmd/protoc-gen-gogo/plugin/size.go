@@ -125,9 +125,9 @@ import (
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
+	vanity2 "github.com/lack-io/vine/cmd/generator/vanity"
 
 	"github.com/lack-io/vine/cmd/generator"
-	"github.com/lack-io/vine/cmd/protoc-gen-gogo/vanity"
 )
 
 func wireToType(wire string) int {
@@ -636,7 +636,7 @@ func (g *gogo) GenerateSize(file *generator.FileDescriptor) {
 			g.P(`}`)
 			g.P(`var l int`)
 			g.P(`_ = l`)
-			vanity.TurnOffNullableForNativeTypes(f.Proto)
+			vanity2.TurnOffNullableForNativeTypes(f.Proto)
 			g.generateField(false, file, message, f, sizeName)
 			g.P(`return n`)
 			g.Out()

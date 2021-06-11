@@ -2924,7 +2924,7 @@ func (g *Generator) generateCommonMethods(mc *msgCtx) {
 		gogoproto.IsProtoSizer(g.file.FileDescriptorProto, mc.message.Proto.DescriptorProto) {
 		g.P("return m.ProtoSize()")
 	} else {
-		g.P("return xxx_messageInfo_", mc.goName, ".XSize(m)")
+		g.P("return xxx_messageInfo_", mc.goName, ".Size(m)")
 	}
 	g.Out()
 	g.P("}")

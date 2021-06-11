@@ -146,9 +146,9 @@ import (
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
+	vanity2 "github.com/lack-io/vine/cmd/generator/vanity"
 
 	"github.com/lack-io/vine/cmd/generator"
-	"github.com/lack-io/vine/cmd/protoc-gen-gogo/vanity"
 )
 
 type NumGen interface {
@@ -963,7 +963,7 @@ func (g *gogo) GenerateMarshal(file *generator.FileDescriptor) {
 			g.P(`func (m *`, ccTypeName, `) MarshalToSizedBuffer(dAtA []byte) (int, error) {`)
 			g.In()
 			g.P(`i := len(dAtA)`)
-			vanity.TurnOffNullableForNativeTypes(field.Proto)
+			vanity2.TurnOffNullableForNativeTypes(field.Proto)
 			g.generateMarshalField(false, numGen, file, message, field)
 			g.P(`return len(dAtA) - i, nil`)
 			g.Out()
