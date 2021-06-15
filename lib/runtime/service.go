@@ -196,7 +196,7 @@ func (s *service) Stop() error {
 		err := s.Process.Kill(s.PID)
 		if err == nil {
 			// wait for it to exit
-			s.Process.Wait(s.PID)
+			_ = s.Process.Wait(s.PID)
 		}
 
 		// set status

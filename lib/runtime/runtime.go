@@ -47,7 +47,7 @@ type Runtime interface {
 	Read(...ReadOption) ([]*Service, error)
 	// Update the service in place
 	Update(*Service, ...UpdateOption) error
-	// Remove a service
+	// Delete remove a service
 	Delete(*Service, ...DeleteOption) error
 	// Logs returns the logs for a service
 	Logs(*Service, ...LogsOption) (LogStream, error)
@@ -59,7 +59,7 @@ type Runtime interface {
 	String() string
 }
 
-// Stream returns a log stream
+// LogStream stream returns a log stream
 type LogStream interface {
 	Error() error
 	Chan() chan LogRecord
