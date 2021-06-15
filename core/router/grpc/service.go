@@ -117,7 +117,7 @@ func (s *svc) Start() error {
 func (s *svc) advertiseEvents(advertChan chan *rr.Advert, stream pb.Router_AdvertiseService) error {
 	go func() {
 		<-s.exit
-		stream.Close()
+		_ = stream.Close()
 	}()
 
 	var advErr error
@@ -224,7 +224,7 @@ func (s *svc) Process(advert *rr.Advert) error {
 	return nil
 }
 
-// Remote router cannot be stopped
+// Stop remote router cannot be stopped
 func (s *svc) Stop() error {
 	s.Lock()
 	defer s.Unlock()

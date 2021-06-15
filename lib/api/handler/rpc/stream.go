@@ -59,11 +59,11 @@ func serveWebSocket(r *ctx.RequestCtx, service *apipb.Service, c client.Client) 
 	}
 
 	hdr := make(http.Header)
-	if proto := r.Get("Sec-WebSocket-Protocol"); proto != "" {
+	if proto := r.Get("Set-WebSocket-Protocol"); proto != "" {
 		for _, p := range strings.Split(proto, ",") {
 			switch p {
 			case "binary":
-				hdr["Sec-WebSocket-Protocol"] = []string{"binary"}
+				hdr["Set-WebSocket-Protocol"] = []string{"binary"}
 				op = websocket.BinaryMessage
 			}
 		}
