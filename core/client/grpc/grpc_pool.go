@@ -118,7 +118,7 @@ func (p *pool) getConn(addr string, opts ...grpc.DialOption) (*poolConn, error) 
 			next := conn.next
 			if conn.streams == 0 {
 				removeConn(conn)
-				conn.ClientConn.Close()
+				_ = conn.ClientConn.Close()
 				sp.idle--
 			}
 			conn = next
@@ -132,7 +132,7 @@ func (p *pool) getConn(addr string, opts ...grpc.DialOption) (*poolConn, error) 
 			next := conn.next
 			if conn.streams == 0 {
 				removeConn(conn)
-				conn.ClientConn.Close()
+				_ = conn.ClientConn.Close()
 				sp.idle--
 			}
 			conn = next
@@ -183,7 +183,7 @@ func (p *pool) release(addr string, conn *poolConn, err error) {
 	}
 	if !conn.in {
 		p.Unlock()
-		conn.ClientConn.Close()
+		_ = conn.ClientConn.Close()
 		return
 	}
 	// a busy conn
@@ -201,7 +201,7 @@ func (p *pool) release(addr string, conn *poolConn, err error) {
 		if err != nil || sp.idle >= p.maxIdle || now-created > p.ttl {
 			removeConn(conn)
 			p.Unlock()
-			conn.ClientConn.Close()
+			_ = conn.ClientConn.Close()
 			return
 		}
 		sp.idle++

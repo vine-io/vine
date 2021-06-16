@@ -271,7 +271,7 @@ func (g *grpcClient) stream(ctx context.Context, node *regpb.Node, req client.Re
 		// cancel the context
 		cancel()
 		// close the connection
-		cc.Close()
+		_ = cc.Close()
 		// now return the error
 		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error creating stream: %v", err))
 	}

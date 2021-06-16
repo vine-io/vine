@@ -106,6 +106,6 @@ func (g *grpcStream) Close() error {
 	// cancel the context
 	g.cancel()
 	g.closed = true
-	g.stream.CloseSend()
+	_ = g.stream.CloseSend()
 	return g.conn.Close()
 }
