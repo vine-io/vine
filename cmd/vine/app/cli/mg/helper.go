@@ -113,14 +113,28 @@ func write(c config, file, tmpl string) error {
 		},
 	}
 
-	sort.Slice(c.Toml.Proto, func(i, j int) bool {
+	apiProtos := make([]tool.Proto, 0)
+	svcProtos := make([]tool.Proto, 0)
+	for _, item := range c.Toml.Proto {
+		switch item.Type {
+		case "service":
+			svcProtos = append(svcProtos, item)
+		case "api":
+			apiProtos = append(apiProtos, item)
+		}
+	}
+	sort.Slice(apiProtos, func(i, j int) bool {
 		a := c.Toml.Proto[i]
 		b := c.Toml.Proto[j]
-		if a.Type == "service" && b.Type == "api" {
-			return false
-		}
 		return a.Name < b.Name
 	})
+	sort.Slice(svcProtos, func(i, j int) bool {
+		a := c.Toml.Proto[i]
+		b := c.Toml.Proto[j]
+		return a.Name < b.Name
+	})
+
+	c.Toml.Proto = append(svcProtos, apiProtos...)
 
 	var f *os.File
 	var err error
@@ -195,4 +209,3 @@ func addFileToTree(root treeprint.Tree, file string) {
 		curr.AddNode(split[len(split)-1])
 	}
 }
-

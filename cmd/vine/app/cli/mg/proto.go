@@ -86,8 +86,8 @@ func runProto(ctx *cli.Context) {
 	c.VineVersion = version.GitTag
 
 	for _, item := range c.Toml.Proto {
-		if item.Type == atype && item.Name == name && item.Version == pv {
-			fmt.Printf("%s %s/%s.proto exists\n", atype, pv, name)
+		if item.Type == atype && item.Group == group && item.Name == name && item.Version == pv {
+			fmt.Printf("%s %s/%s/%s.proto exists\n", atype, group, pv, name)
 			return
 		}
 	}
