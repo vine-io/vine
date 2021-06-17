@@ -151,6 +151,11 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 		g.P(fmt.Sprintf(`return &%s.GroupVersionKind{Group: "%s", Version: "%s", Kind: "%s"}`, pkg.Use(), group, version, mname))
 		g.P("}")
 		g.P()
+		g.P(fmt.Sprintf(`// DeepCopyFrom is an auto-generated deepcopy function, copying value from %s.`, mname))
+		g.P(fmt.Sprintf(`func (in *%s) DeepCopyFrom(src %s.Object) {`, mname, pkg.Use()))
+		g.P(fmt.Sprintf(`o := src.(*%s)`, mname))
+		g.P(`o.DeepCopyInto(in)`)
+		g.P(`}`)
 		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
 		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() %s.Object {`, mname, pkg.Use()))
 	}

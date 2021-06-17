@@ -76,6 +76,8 @@ func FromGVK(s string) *GroupVersionKind {
 type Object interface {
 	// GVK get the GroupVersionKind of Object
 	GVK() *GroupVersionKind
+	// DeepCopyFrom deep copy the struct from another
+	DeepCopyFrom(Object)
 	// DeepCopy deep copy the struct
 	DeepCopy() Object
 }
@@ -85,7 +87,7 @@ var oset = NewObjectSet()
 type ObjectSet struct {
 	sync.RWMutex
 
-	sets    map[string]Object
+	sets map[string]Object
 
 	OnCreate func(in Object) Object
 }
