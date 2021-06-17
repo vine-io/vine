@@ -167,6 +167,7 @@ type Schema interface {
 	FindPureAll(ctx context.Context) ([]Object, error)
 	Count(ctx context.Context) (total int64, err error)
 	FindOne(ctx context.Context) (Object, error)
+	FindPureOne(ctx context.Context) (Object, error)
 	Cond(exprs ...clause.Expression) Schema
 	Create(ctx context.Context) (Object, error)
 	BatchUpdates(ctx context.Context) error

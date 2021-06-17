@@ -705,6 +705,21 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
+		g.P(fmt.Sprintf(`func (m *%s) FindPureOne(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+	} else {
+		g.P(fmt.Sprintf(`func (m *%s) FindPureOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+	}
+	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
+	g.P()
+	g.P(`if err := tx.Clauses(m.exprs...).First(&m).Error; err != nil {`)
+	g.P("return nil, err")
+	g.P("}")
+	g.P()
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P("}")
+	g.P()
+
+	if schema.Deep {
 		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) %s.Schema {`, source, g.clausePkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) *%s {`, source, g.clausePkg.Use(), source))
