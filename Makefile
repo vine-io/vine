@@ -46,6 +46,15 @@ build-windows-tool:
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-deepcopy.exe cmd/protoc-gen-deepcopy/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/vine.exe cmd/vine/main.go
 
+build-linux-tool:
+	mkdir -p _output
+	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-gogo.exe cmd/protoc-gen-gogo/main.go
+	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-vine.exe cmd/protoc-gen-vine/main.go
+	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-dao.exe cmd/protoc-gen-dao/main.go
+	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-validator.exe cmd/protoc-gen-validator/main.go
+	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-deepcopy.exe cmd/protoc-gen-deepcopy/main.go
+	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/vine.exe cmd/vine/main.go
+
 install:
 	go get github.com/rakyll/statik
 	go get github.com/gogo/protobuf
