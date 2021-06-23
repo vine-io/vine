@@ -124,17 +124,17 @@ func write(c config, file, tmpl string) error {
 		}
 	}
 	sort.Slice(apiProtos, func(i, j int) bool {
-		a := c.Toml.Proto[i]
-		b := c.Toml.Proto[j]
+		a := apiProtos[i]
+		b := apiProtos[j]
 		return a.Name < b.Name
 	})
 	sort.Slice(svcProtos, func(i, j int) bool {
-		a := c.Toml.Proto[i]
-		b := c.Toml.Proto[j]
+		a := svcProtos[i]
+		b := svcProtos[j]
 		return a.Name < b.Name
 	})
 
-	c.Toml.Proto = append(svcProtos, apiProtos...)
+	c.Toml.Proto = append(apiProtos, svcProtos...)
 
 	var f *os.File
 	var err error

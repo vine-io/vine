@@ -54,7 +54,7 @@ func (g *Generator) IsGroup(field *descriptor.FieldDescriptorProto) bool {
 func (g *Generator) TypeNameByObject(typeName string) Object {
 	o, ok := g.typeNameToObject[typeName]
 	if !ok {
-		g.Fail("can't find object with type", typeName)
+		g.Fail("can't find object with type " + typeName)
 	}
 	return o
 }
