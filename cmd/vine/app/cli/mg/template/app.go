@@ -169,6 +169,14 @@ var (
 	enableOpenAPI = false
 
 	flags = []cli.Flag{
+		&cli.StringFlag{
+			Name:        "api-address",
+			Usage:       "The specify for api address",
+			EnvVars:     []string{"VINE_API_ADDRESS"},
+			Required:    true,
+			Value:       Address,
+			Destination: &Address,
+		},
 		&cli.BoolFlag{
 			Name:    "enable-openapi",
 			Usage:   "Enable OpenAPI3",
