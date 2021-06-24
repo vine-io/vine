@@ -105,7 +105,7 @@ func write(c config, file, tmpl string) error {
 	fn := template.FuncMap{
 		"title": strings.Title,
 		"quota": func(s string) string {
-			s = strings.ReplaceAll(s, `\`, `\\`)
+			s = strings.ReplaceAll(s, `\`, `/`)
 			return strings.ReplaceAll(s, `"`, `\"`)
 		},
 		"uuid": func() string {
