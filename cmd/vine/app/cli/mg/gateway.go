@@ -155,7 +155,7 @@ func runGateway(ctx *cli.Context) {
 		{"pkg/" + name + "/app.go", t2.GatewayApp},
 		{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
 		{"deploy/config/" + name + ".ini", t2.ConfSRV},
-		{"deploy/systemed/" + name + ".service", t2.SystemedSRV},
+		{"deploy/systemd/" + name + ".service", t2.SystemedSRV},
 		{"vine.toml", t2.TOML},
 	}
 

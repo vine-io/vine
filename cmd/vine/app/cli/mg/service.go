@@ -169,7 +169,7 @@ func runSRV(ctx *cli.Context) {
 			{"pkg/" + name + "/dao/" + name + ".go", t2.DaoHandler},
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
 			{"deploy/config/" + name + ".ini", t2.ConfSRV},
-			{"deploy/systemed/" + name + ".service", t2.SystemedSRV},
+			{"deploy/systemd/" + name + ".service", t2.SystemedSRV},
 			{"proto/service/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
 			{"vine.toml", t2.TOML},
 		}
