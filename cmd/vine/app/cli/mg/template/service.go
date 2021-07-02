@@ -3,9 +3,21 @@ package template
 var (
 	ServiceSRV = `package service
 
-import "github.com/lack-io/vine"
+import (
+	"fmt"
+
+	"github.com/lack-io/foo/pkg/runtime/inject"
+	"github.com/lack-io/vine"
+)
+
+func init() {
+	if err := inject.Provide(new({{.Name}})); err != nil {
+		panic(err)
+	}
+}
 
 type {{title .Name}} interface {
+	Init() error
 	Call()
 	Stream()
 	PingPong()
@@ -14,7 +26,7 @@ type {{title .Name}} interface {
 var _ {{title .Name}} = (*{{.Name}})(nil)
 
 type {{.Name}} struct {
-	vine.Service
+	vine.Service +"` + "`inject:\"\"`" + `
 }
 
 func (s *{{.Name}}) Call() {
@@ -28,25 +40,6 @@ func (s *{{.Name}}) Stream() {
 
 func (s *{{.Name}}) PingPong() {
 	panic("implement me")
-}
-
-func new{{title .Name}}(s vine.Service) *{{.Name}} {
-	return &{{.Name}}{Service: s}
-}`
-
-	Wire = `// +build wireinject
-
-package service
-
-import (
-	"github.com/google/wire"
-
-	"github.com/lack-io/vine"
-)
-
-func New(s vine.Service) *{{.Name}} {
-	wire.Build(new{{title .Name}})
-	return nil
 }
 `
 )

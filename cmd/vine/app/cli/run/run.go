@@ -23,7 +23,6 @@
 package build
 
 import (
-	"context"
 	"fmt"
 	"io/fs"
 	"os"
@@ -31,6 +30,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/lack-io/cli"
@@ -39,6 +39,58 @@ import (
 	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
 	signalutil "github.com/lack-io/vine/util/signal"
 )
+
+type Runner struct {
+	wg   sync.WaitGroup
+	kwg  sync.WaitGroup
+	cmd  *exec.Cmd
+	args []string
+}
+
+func NewRunner(args ...string) *Runner {
+	return &Runner{args: args}
+}
+
+func (r *Runner) init() {
+	c := exec.Command("go", r.args...)
+	c.Stdin = os.Stdin
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	r.cmd = c
+}
+
+func (r *Runner) Run() {
+	r.wg.Add(1)
+	r.init()
+	go func() {
+		defer r.wg.Done()
+		r.kwg.Wait()
+		if err := r.cmd.Run(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+}
+
+func (r *Runner) Kill() error {
+	r.kwg.Add(1)
+	defer r.kwg.Done()
+	for {
+		p := r.cmd.Process
+		if p != nil {
+			fmt.Printf("kill process: %d\n", p.Pid)
+			return p.Kill()
+		}
+		time.Sleep(time.Second * 2)
+	}
+}
+
+func (r *Runner) Wait() error {
+	if err := r.Kill(); err != nil {
+		return err
+	}
+	r.wg.Wait()
+	return nil
+}
 
 func run(c *cli.Context) error {
 	cfg, err := tool.New("vine.toml")
@@ -49,6 +101,7 @@ func run(c *cli.Context) error {
 	name := c.Args().First()
 	watches := c.StringSlice("watch")
 	auto := c.Bool("auto-restart")
+	interval := c.Int64("watch-interval")
 
 	var mod *tool.Mod
 	switch cfg.Package.Kind {
@@ -79,8 +132,10 @@ func run(c *cli.Context) error {
 	}
 
 	fmt.Printf("go %s\n", strings.Join(args, " "))
+	runner := NewRunner(args...)
 	if !auto {
-		return goRun(context.Background(), args)
+		runner.Run()
+		return nil
 	}
 
 	done := make(chan struct{})
@@ -142,12 +197,8 @@ func run(c *cli.Context) error {
 	}
 
 	go func() {
-		ctx, cancel := context.WithCancel(context.Background())
-		go func() {
-			if err := goRun(ctx, args); err != nil {
-				fmt.Println(err)
-			}
-		}()
+		t := time.Now()
+		runner.Run()
 		for {
 			select {
 			case <-done:
@@ -156,9 +207,6 @@ func run(c *cli.Context) error {
 				if !ok {
 					goto EXIT
 				}
-				cancel()
-				time.Sleep(time.Millisecond * 500)
-				ctx, cancel = context.WithCancel(context.Background())
 
 				if e.Op == fsnotify.Create && !strings.HasSuffix(e.Name, "~") {
 					stat, _ := os.Stat(e.Name)
@@ -168,31 +216,25 @@ func run(c *cli.Context) error {
 					continue
 				}
 
+				now := time.Now()
+				if now.Sub(t).Seconds() < float64(interval) {
+					continue
+				}
+				t = now
+
+				runner.Wait()
 				fmt.Printf("watching change, restart go binary: go %s\n", strings.Join(args, " "))
-				go func() {
-					if err := goRun(ctx, args); err != nil && err != context.Canceled && !strings.HasPrefix(err.Error(), "signal") {
-						fmt.Println(err)
-					}
-				}()
+				runner.Run()
 			}
 		}
 	EXIT:
-		cancel()
 	}()
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, signalutil.Shutdown()...)
 	<-ch
 	close(ch)
-	return nil
-}
-
-func goRun(ctx context.Context, args []string) error {
-	cmd := exec.CommandContext(ctx, "go", args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	return runner.Wait()
 }
 
 func Commands() []*cli.Command {
@@ -203,12 +245,18 @@ func Commands() []*cli.Command {
 			Flags: []cli.Flag{
 				&cli.BoolFlag{
 					Name:  "auto-restart",
-					Usage: "auto restart project when code updated.",
+					Usage: "auto restart project when code updating.",
 					Value: true,
 				},
 				&cli.StringSliceFlag{
 					Name:  "watch",
 					Usage: "specify directory in which for watching",
+				},
+				&cli.Int64Flag{
+					Name:    "watch-interval",
+					Aliases: []string{"I"},
+					Usage:   "effective interval when event triggering",
+					Value:   3,
 				},
 			},
 			Action: func(c *cli.Context) error {

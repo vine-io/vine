@@ -46,7 +46,6 @@ func protoComments(goDir, name string) []string {
 		"\ndownload protobuf for vine:\n",
 		"cd " + goDir,
 		"\ninstall dependencies:",
-		"\tgo get github.com/google/wire/cmd/wire",
 		"\tgo get github.com/gogo/protobuf",
 		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-gogo",
 		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-vine",

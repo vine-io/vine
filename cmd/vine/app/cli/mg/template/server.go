@@ -90,7 +90,7 @@ import (
 type server struct{
 	vine.Service
 
-	h service.{{title .Name}}
+	H service.{{title .Name}}` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -142,15 +142,36 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 }
 
 func (s *server) Init(opts ...vine.Option) error {
+	var err error
 	s.Service.Init(opts...)
-	return pb.Register{{title .Name}}ServiceHandler(s.Service.Server(), s)
+
+	if err = inject.Provide(s.Service, s.Client(), s); err != nil {
+		return err
+	}
+
+	// TODO: inject more objects
+
+	// DOOd
+
+	if err = inject.Populate(); err != nil {
+		return err
+	}
+
+	if err = s.H.Init(); err != nil {
+		return err
+	}
+
+	if err = pb.RegisterFooServiceHandler(s.Service.Server(), s); err != nil {
+		return err
+	}
+
+	return err
 }
 
 func New(opts ...vine.Option) *server {
 	srv := vine.NewService(opts...)
 	return &server{
 		Service: srv,
-		h:       service.New(srv),
 	}
 }
 `
@@ -170,7 +191,7 @@ import (
 type server struct{
 	vine.Service
 
-	h service.{{title .Name}}
+	H service.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -222,15 +243,36 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 }
 
 func (s *server) Init(opts ...vine.Option) error {
+	var err error
 	s.Service.Init(opts...)
-	return pb.Register{{title .Name}}ServiceHandler(s.Service.Server(), s)
+
+	if err = inject.Provide(s.Service, s.Client(), s); err != nil {
+		return err
+	}
+
+	// TODO: inject more objects
+
+	// DOOd
+
+	if err = inject.Populate(); err != nil {
+		return err
+	}
+
+	if err = s.H.Init(); err != nil {
+		return err
+	}
+
+	if err = pb.RegisterFooServiceHandler(s.Service.Server(), s); err != nil {
+		return err
+	}
+
+	return err
 }
 
 func New(opts ...vine.Option) *server {
 	srv := vine.NewService(opts...)
 	return &server{
 		Service: srv,
-		h:       service.New(srv),
 	}
 }
 `

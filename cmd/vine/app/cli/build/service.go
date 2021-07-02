@@ -25,12 +25,9 @@ package build
 import (
 	"fmt"
 	"go/build"
-	"io/fs"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path"
-	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
@@ -61,7 +58,6 @@ func runSRV(ctx *cli.Context) {
 		}
 	}
 
-	wireEnable := ctx.Bool("wire")
 	flags := ctx.StringSlice("flags")
 	output := ctx.String("output")
 	name := ctx.Args().First()
@@ -94,55 +90,21 @@ func runSRV(ctx *cli.Context) {
 			return
 		}
 
-		buildFunc(mod, output, flags, wireEnable, cluster)
+		buildFunc(mod, output, flags, cluster)
 	} else {
 		switch cfg.Package.Kind {
 		case "cluster":
 			for _, mod := range *cfg.Mod {
-				buildFunc(&mod, output, flags, wireEnable, cluster)
+				buildFunc(&mod, output, flags, cluster)
 			}
 		case "single":
-			buildFunc(cfg.Pkg, output, flags, wireEnable, cluster)
+			buildFunc(cfg.Pkg, output, flags, cluster)
 		}
 
 	}
 }
 
-func buildFunc(mod *tool.Mod, output string, flags []string, wire bool, cluster bool) {
-	if wire {
-		fmt.Println("start generating wire code ...")
-		root := mod.Dir
-		wd, _ := os.Getwd()
-		if !cluster {
-			root = filepath.Join(wd, "pkg")
-		} else {
-			root = filepath.Join(wd, "pkg", mod.Name)
-		}
-		err := filepath.Walk(root, func(p string, _ fs.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-
-			dir := path.Dir(p)
-			base := path.Base(p)
-			if base == "wire.go" {
-				fmt.Printf("generate wire code in %s\n", dir)
-				cmd := exec.Command("wire", "gen")
-				cmd.Dir = dir
-				out, err := cmd.CombinedOutput()
-				if err != nil {
-					return fmt.Errorf("generate wire code: %v: %v", err, strings.TrimSuffix(string(out), "\n"))
-				}
-			}
-
-			return nil
-		})
-		if err != nil {
-			fmt.Printf("generate wire code: %v\n", err)
-			return
-		}
-	}
-
+func buildFunc(mod *tool.Mod, output string, flags []string, cluster bool) {
 	flags1, flags2 := []string{}, []string{}
 	if len(flags) == 0 {
 		flags = mod.Flags
