@@ -83,6 +83,7 @@ import (
 	"github.com/lack-io/vine"
 	log "github.com/lack-io/vine/lib/logger"
 
+	"{{.Dir}}/pkg/runtime/inject"
 	"{{.Dir}}/pkg/service"
 	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
 )
@@ -96,7 +97,7 @@ type server struct{
 // Call is a single request handler called via client.Call or the generated client code
 func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
 	// TODO: Validate
-	s.h.Call()
+	s.H.Call()
 	// FIXME: fix call method
 	log.Info("Received {{title .Alias}}.Call request")
 	rsp.Msg = "Hello " + req.Name
@@ -108,7 +109,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
-	s.h.Stream()
+	s.H.Stream()
 	// FIXME: fix stream method
 
 	for i := 0; i < int(req.Count); i++ {
@@ -126,7 +127,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
 func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
-	s.h.PingPong()
+	s.H.PingPong()
 	// FIXME: fix stream pingpong
 
 	for {
@@ -185,6 +186,7 @@ import (
 	log "github.com/lack-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/{{.Name}}/service"
+	"{{.Dir}}/pkg/runtime/inject"
 	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
 )
 
@@ -197,7 +199,7 @@ type server struct{
 // Call is a single request handler called via client.Call or the generated client code
 func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
 	// TODO: Validate
-	s.h.Call()
+	s.H.Call()
 	// FIXME: fix call method
 	log.Info("Received {{title .Name}}.Call request")
 	rsp.Msg = "Hello " + req.Name
@@ -209,7 +211,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
-	s.h.Stream()
+	s.H.Stream()
 	// FIXME: fix stream method
 
 	for i := 0; i < int(req.Count); i++ {
@@ -227,7 +229,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
 func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
-	s.h.PingPong()
+	s.H.PingPong()
 	// FIXME: fix stream pingpong
 
 	for {

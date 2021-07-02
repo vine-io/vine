@@ -4,16 +4,12 @@ var (
 	ServiceSRV = `package service
 
 import (
-	"fmt"
-
 	"github.com/lack-io/foo/pkg/runtime/inject"
 	"github.com/lack-io/vine"
 )
 
 func init() {
-	if err := inject.Provide(new({{.Name}})); err != nil {
-		panic(err)
-	}
+	_ = inject.Provide(new({{.Name}}))
 }
 
 type {{title .Name}} interface {
@@ -26,7 +22,11 @@ type {{title .Name}} interface {
 var _ {{title .Name}} = (*{{.Name}})(nil)
 
 type {{.Name}} struct {
-	vine.Service +"` + "`inject:\"\"`" + `
+	vine.Service ` + "`inject:\"\"`" + `
+}
+
+func (s *{{.Name}}) Init() error {
+	return nil
 }
 
 func (s *{{.Name}}) Call() {

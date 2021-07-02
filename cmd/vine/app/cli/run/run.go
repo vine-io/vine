@@ -42,7 +42,6 @@ import (
 
 type Runner struct {
 	wg   sync.WaitGroup
-	kwg  sync.WaitGroup
 	cmd  *exec.Cmd
 	args []string
 }
@@ -51,29 +50,16 @@ func NewRunner(args ...string) *Runner {
 	return &Runner{args: args}
 }
 
-func (r *Runner) init() {
-	c := exec.Command("go", r.args...)
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	r.cmd = c
-}
-
 func (r *Runner) Run() {
 	r.wg.Add(1)
 	r.init()
 	go func() {
 		defer r.wg.Done()
-		r.kwg.Wait()
-		if err := r.cmd.Run(); err != nil {
-			fmt.Println(err)
-		}
+		r.cmd.Run()
 	}()
 }
 
 func (r *Runner) Kill() error {
-	r.kwg.Add(1)
-	defer r.kwg.Done()
 	for {
 		p := r.cmd.Process
 		if p != nil {
@@ -222,7 +208,9 @@ func run(c *cli.Context) error {
 				}
 				t = now
 
-				runner.Wait()
+				if err = runner.Wait(); err != nil {
+					fmt.Printf("kill go process faield: %v\n", err)
+				}
 				fmt.Printf("watching change, restart go binary: go %s\n", strings.Join(args, " "))
 				runner.Run()
 			}

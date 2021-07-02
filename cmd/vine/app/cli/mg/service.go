@@ -161,6 +161,7 @@ func runSRV(ctx *cli.Context) {
 		c.Files = []file{
 			{"cmd/" + name + "/main.go", t2.ClusterCMD},
 			{"pkg/runtime/doc.go", t2.Doc},
+			{"pkg/runtime/inject/inject.go", t2.Inject},
 			{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
 			{"pkg/" + name + "/app.go", t2.ClusterApp},
 			{"pkg/" + name + "/server/" + name + ".go", t2.ClusterSRV},
@@ -201,6 +202,7 @@ func runSRV(ctx *cli.Context) {
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
 			{"pkg/runtime/doc.go", t2.Doc},
+			{"pkg/runtime/inject/inject.go", t2.Inject},
 			{"pkg/plugin.go", t2.SinglePlugin},
 			{"pkg/app.go", t2.SingleApp},
 			{"pkg/server/" + name + ".go", t2.SingleSRV},
