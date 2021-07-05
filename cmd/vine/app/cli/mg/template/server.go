@@ -152,8 +152,6 @@ func (s *server) Init(opts ...vine.Option) error {
 
 	// TODO: inject more objects
 
-	// DOOd
-
 	if err = inject.Populate(); err != nil {
 		return err
 	}
@@ -253,8 +251,6 @@ func (s *server) Init(opts ...vine.Option) error {
 	}
 
 	// TODO: inject more objects
-
-	// DOOd
 
 	if err = inject.Populate(); err != nil {
 		return err

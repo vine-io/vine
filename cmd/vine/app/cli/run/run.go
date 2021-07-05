@@ -33,6 +33,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/lack-io/cli"
 	"gopkg.in/fsnotify.v1"
 
@@ -42,12 +43,13 @@ import (
 
 type Runner struct {
 	wg   sync.WaitGroup
+	tmp  string
 	cmd  *exec.Cmd
 	args []string
 }
 
 func NewRunner(args ...string) *Runner {
-	return &Runner{args: args}
+	return &Runner{tmp: filepath.Join(os.TempDir(), uuid.New().String()), args: args}
 }
 
 func (r *Runner) Run() {
@@ -55,7 +57,11 @@ func (r *Runner) Run() {
 	r.init()
 	go func() {
 		defer r.wg.Done()
-		r.cmd.Run()
+		if err := r.cmd.Start(); err != nil {
+			fmt.Printf("vine project started failed: %v\n", err)
+		}
+		fmt.Printf("vine project running at %d\n", r.cmd.Process.Pid)
+		r.cmd.Wait()
 	}()
 }
 
@@ -64,7 +70,10 @@ func (r *Runner) Kill() error {
 		p := r.cmd.Process
 		if p != nil {
 			fmt.Printf("kill process: %d\n", p.Pid)
-			return p.Kill()
+			if err := p.Kill(); err != nil {
+				return err
+			}
+			return r.cmd.Wait()
 		}
 		time.Sleep(time.Second * 2)
 	}
@@ -76,6 +85,11 @@ func (r *Runner) Wait() error {
 	}
 	r.wg.Wait()
 	return nil
+}
+
+func (r *Runner) Stop() error {
+	defer os.Remove(r.tmp)
+	return r.Wait()
 }
 
 func run(c *cli.Context) error {
@@ -112,48 +126,22 @@ func run(c *cli.Context) error {
 		return fmt.Errorf("not found service: " + name)
 	}
 
-	args := []string{"run", mod.Main}
+	args := []string{mod.Main}
 	if len(c.Args().Tail()) != 0 {
 		args = append(args, c.Args().Tail()...)
 	}
 
-	fmt.Printf("go %s\n", strings.Join(args, " "))
+	fmt.Printf("go run %s\n", strings.Join(args, " "))
 	runner := NewRunner(args...)
-	if !auto {
-		runner.Run()
-		return nil
-	}
 
 	done := make(chan struct{})
 	ech := make(chan fsnotify.Event, 1)
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return fmt.Errorf("start watching: %v", err)
 	}
 	defer watcher.Close()
-
-	go func() {
-		for {
-			select {
-			case <-done:
-				return
-			case e, ok := <-watcher.Events:
-				if !ok {
-					break
-				}
-
-				switch e.Op {
-				case fsnotify.Write, fsnotify.Create:
-					ech <- e
-				}
-			case err, ok := <-watcher.Errors:
-				if !ok {
-					break
-				}
-				fmt.Printf("watching error: %v", err)
-			}
-		}
-	}()
 
 	watchAdd := func(w *fsnotify.Watcher, dirs ...string) {
 		for _, d := range dirs {
@@ -171,15 +159,40 @@ func run(c *cli.Context) error {
 		}
 	}
 
-	switch cfg.Package.Kind {
-	case "cluster":
-		watchAdd(watcher, "cmd/"+name+"/", "pkg/"+name+"/", "proto/")
-	case "single":
-		watchAdd(watcher, "cmd/", "pkg/", "proto/")
-	}
+	if auto {
+		go func() {
+			for {
+				select {
+				case <-done:
+					return
+				case e, ok := <-watcher.Events:
+					if !ok {
+						break
+					}
 
-	if len(watches) > 0 {
-		watchAdd(watcher, watches...)
+					switch e.Op {
+					case fsnotify.Write, fsnotify.Create:
+						ech <- e
+					}
+				case err, ok := <-watcher.Errors:
+					if !ok {
+						break
+					}
+					fmt.Printf("watching error: %v", err)
+				}
+			}
+		}()
+
+		switch cfg.Package.Kind {
+		case "cluster":
+			watchAdd(watcher, "cmd/"+name+"/", "pkg/"+name+"/", "proto/")
+		case "single":
+			watchAdd(watcher, "cmd/", "pkg/", "proto/")
+		}
+
+		if len(watches) > 0 {
+			watchAdd(watcher, watches...)
+		}
 	}
 
 	go func() {
@@ -222,7 +235,7 @@ func run(c *cli.Context) error {
 	signal.Notify(ch, signalutil.Shutdown()...)
 	<-ch
 	close(ch)
-	return runner.Wait()
+	return runner.Stop()
 }
 
 func Commands() []*cli.Command {
