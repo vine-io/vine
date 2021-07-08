@@ -29,7 +29,7 @@ package runtime
 const Namespace = "{{.Toml.Package.Namespace}}"
 {{if .Toml.Pkg}}
 const {{title .Toml.Pkg.Name}}Name = "{{.Toml.Pkg.Alias}}"
-const {{title .Toml.Pkg.Name}}ID = "{{uuid}}"
+const {{title .Toml.Pkg.Name}}Id = "{{uuid}}"
 {{end}}
 {{if eq .Toml.Package.Kind "cluster"}}
 const ({{range .Toml.Mod}}
@@ -37,7 +37,7 @@ const ({{range .Toml.Mod}}
 )
 
 var ({{range .Toml.Mod}}
-	{{title .Name}}ID = "{{uuid}}"{{end}}
+	{{title .Name}}Id = "{{uuid}}"{{end}}
 )
 {{end}}
 var (
@@ -91,8 +91,20 @@ func Provide(vv ...interface{}) error {
 	return nil
 }
 
+func ProvidePanic(vv ...interface{}) error {
+	if err := Provide(vv...); err != nil {
+		panic(err)
+	}
+}
+
 func ProvideWithName(v interface{}, name string) error {
 	return g.Provide(&inject.Object{Value: v, Name: name})
+}
+
+func ProvideWithNamePanic(v interface{}, name string) error {
+	if err := ProvideWithName(v, name); err != nil {
+		panic(err)
+	}
 }
 
 func Populate() error {
@@ -138,7 +150,7 @@ import (
 func Run() {
 	s := server.New(
 		vine.Name(runtime.{{title .Name}}Name),
-		vine.Id(runtime.{{title .Name}}ID),
+		vine.Id(runtime.{{title .Name}}Id),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
@@ -167,7 +179,7 @@ import (
 func Run() {
 	s := server.New(
 		vine.Name(runtime.{{title .Name}}Name),
-		vine.Id(runtime.{{title .Name}}ID),
+		vine.Id(runtime.{{title .Name}}Id),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
@@ -250,7 +262,7 @@ func Run() {
 	// initialise service
 	svc := vine.NewService(
 		vine.Name(runtime.{{title .Name}}Name),
-		vine.Id(runtime.{{title .Name}}ID),
+		vine.Id(runtime.{{title .Name}}Id),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"api-address": Address,
@@ -359,7 +371,7 @@ import (
 func Run() {
 	s := web.NewService(
 		web.Name(runtime.{{title .Name}}Name),
-		web.Id(runtime.{{title .Name}}ID),
+		web.Id(runtime.{{title .Name}}Id),
 		web.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
 		}),
@@ -392,7 +404,7 @@ import (
 func Run() {
 	s := web.NewService(
 		web.Name(runtime.{{title .Name}}Name),
-		web.Id(runtime.{{title .Name}}ID),
+		web.Id(runtime.{{title .Name}}Id),
 		web.Metadata(map[string]string{
 			"namespace": runtime.Namespace,
 		}),
