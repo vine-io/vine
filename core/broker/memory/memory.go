@@ -45,21 +45,6 @@ type memoryBroker struct {
 	Subscribers map[string][]*memorySubscriber
 }
 
-type memoryEvent struct {
-	opts    broker.Options
-	topic   string
-	err     error
-	message interface{}
-}
-
-type memorySubscriber struct {
-	id      string
-	topic   string
-	exit    chan bool
-	handler broker.Handler
-	opts    broker.SubscribeOptions
-}
-
 func (m *memoryBroker) Options() broker.Options {
 	return m.opts
 }
@@ -201,6 +186,13 @@ func (m *memoryBroker) String() string {
 	return "memory"
 }
 
+type memoryEvent struct {
+	opts    broker.Options
+	topic   string
+	err     error
+	message interface{}
+}
+
 func (m *memoryEvent) Topic() string {
 	return m.topic
 }
@@ -227,6 +219,14 @@ func (m *memoryEvent) Ack() error {
 
 func (m *memoryEvent) Error() error {
 	return m.err
+}
+
+type memorySubscriber struct {
+	id      string
+	topic   string
+	exit    chan bool
+	handler broker.Handler
+	opts    broker.SubscribeOptions
 }
 
 func (m *memorySubscriber) Options() broker.SubscribeOptions {
