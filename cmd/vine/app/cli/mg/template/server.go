@@ -91,7 +91,7 @@ import (
 type server struct{
 	vine.Service
 
-	H service.{{title .Name}}` + "`inject:\"\"`" + `
+	H service.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -160,7 +160,7 @@ func (s *server) Init(opts ...vine.Option) error {
 		return err
 	}
 
-	if err = pb.RegisterFooServiceHandler(s.Service.Server(), s); err != nil {
+	if err = pb.Register{{title .Name}}ServiceHandler(s.Service.Server(), s); err != nil {
 		return err
 	}
 
@@ -260,7 +260,7 @@ func (s *server) Init(opts ...vine.Option) error {
 		return err
 	}
 
-	if err = pb.RegisterFooServiceHandler(s.Service.Server(), s); err != nil {
+	if err = pb.Register{{title .Name}}ServiceHandler(s.Service.Server(), s); err != nil {
 		return err
 	}
 
