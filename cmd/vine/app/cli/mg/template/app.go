@@ -107,6 +107,10 @@ func ProvideWithNamePanic(v interface{}, name string) error {
 	}
 }
 
+func PopulateTarget(target interface{}) error {
+	return g.PopulateTarget(target)
+}
+
 func Populate() error {
 	return g.Populate()
 }
@@ -426,7 +430,7 @@ func Run() {
 	DaoHandler = `package dao
 
 import (
-	"github.com/lack-io/foo/pkg/runtime/inject"
+	"{{.Dir}}/pkg/runtime/inject"
 	"github.com/lack-io/vine/util/runtime"
 )
 

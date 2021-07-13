@@ -4,7 +4,7 @@ var (
 	ServiceSRV = `package service
 
 import (
-	"github.com/lack-io/foo/pkg/runtime/inject"
+	"{{.Dir}}/pkg/runtime/inject"
 	"github.com/lack-io/vine"
 )
 
