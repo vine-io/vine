@@ -91,7 +91,7 @@ func Provide(vv ...interface{}) error {
 	return nil
 }
 
-func ProvidePanic(vv ...interface{}) error {
+func ProvidePanic(vv ...interface{}) {
 	if err := Provide(vv...); err != nil {
 		panic(err)
 	}
@@ -101,7 +101,7 @@ func ProvideWithName(v interface{}, name string) error {
 	return g.Provide(&inject.Object{Value: v, Name: name})
 }
 
-func ProvideWithNamePanic(v interface{}, name string) error {
+func ProvideWithNamePanic(v interface{}, name string) {
 	if err := ProvideWithName(v, name); err != nil {
 		panic(err)
 	}
