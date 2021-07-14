@@ -205,7 +205,7 @@ func (g *deepcopy) generateRepeatedField(file *generator.FileDescriptor, msg *ge
 		if strings.HasPrefix(alias, "*") {
 			g.P(`for i := range *in {`)
 			g.P(`if (*in)[i] != nil {`)
-			g.P(`in, out := &(*out)[i], &(*out)[i]`)
+			g.P(`in, out := &(*in)[i], &(*out)[i]`)
 			subMsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
 			g.P(fmt.Sprintf(`*out = new(%s)`, subMsg.Proto.GetName()))
 			g.P(`(*in).DeepCopyInto(*out)`)
