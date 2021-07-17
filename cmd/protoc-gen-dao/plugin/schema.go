@@ -40,6 +40,7 @@ const (
 	_int64   fieldType = "int64"
 	_uint32  fieldType = "uint32"
 	_uint64  fieldType = "uint64"
+	_bool    fieldType = "bool"
 	_string  fieldType = "string"
 	_map     fieldType = "map"
 	_slice   fieldType = "slice"
@@ -72,7 +73,7 @@ type Schema struct {
 	SDField *Field
 	Desc    *generator.MessageDescriptor
 	Table   string
-	Deep  bool
+	Deep    bool
 }
 
 type FieldTag struct {

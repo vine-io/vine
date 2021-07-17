@@ -55,7 +55,7 @@ type maxSendMsgSizeKey struct{}
 type grpcDialOptions struct{}
 type grpcCallOptions struct{}
 
-// maximum streams on a connection
+// PoolMaxStreams maximum streams on a connection
 func PoolMaxStreams(n int) client.Option {
 	return func(o *client.Options) {
 		if o.Context == nil {
@@ -65,7 +65,7 @@ func PoolMaxStreams(n int) client.Option {
 	}
 }
 
-// maximum idle conns of a pool
+// PoolMaxIdle maximum idle conns of a pool
 func PoolMaxIdle(d int) client.Option {
 	return func(o *client.Options) {
 		if o.Context == nil {
@@ -75,7 +75,7 @@ func PoolMaxIdle(d int) client.Option {
 	}
 }
 
-// gRPC Codec to be used to encode/decode requests for a given content type
+// Codec gRPC Codec to be used to encode/decode requests for a given content type
 func Codec(contentType string, c encoding.Codec) client.Option {
 	return func(o *client.Options) {
 		codecs := make(map[string]encoding.Codec)

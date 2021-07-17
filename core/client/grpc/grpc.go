@@ -180,6 +180,7 @@ func (g *grpcClient) call(ctx context.Context, node *regpb.Node, req client.Requ
 		if opts := g.getGrpcCallOptions(); opts != nil {
 			grpcCallOptions = append(grpcCallOptions, opts...)
 		}
+
 		err := cc.Invoke(ctx, methodToGRPC(req.Service(), req.Endpoint()), req.Body(), rsp, grpcCallOptions...)
 		ch <- vineError(err)
 	}()

@@ -25,8 +25,11 @@ package grpc
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"io/ioutil"
 	"net"
+	"net/http"
 	"reflect"
 	"runtime/debug"
 	"sort"
@@ -36,6 +39,7 @@ import (
 	"time"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/net/netutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -175,6 +179,30 @@ func (g *grpcServer) getCredentials() credentials.TransportCredentials {
 	if g.opts.Context != nil {
 		if v, ok := g.opts.Context.Value(tlsAuth{}).(*tls.Config); ok && v != nil {
 			return credentials.NewTLS(v)
+		}
+		if v, ok := g.opts.Context.Value(Grpc2Http{}).(*Grpc2Http); ok && v != nil {
+			cert, err := tls.LoadX509KeyPair(v.CertFile, v.KeyFile)
+			if err != nil {
+				log.Fatalf("tls.LoadX509KeyPair err: %v", err)
+			}
+
+			certPool := x509.NewCertPool()
+			ca, err := ioutil.ReadFile(v.CaFile)
+			if err != nil {
+				log.Fatalf("ioutil.ReadFile err: %v", err)
+			}
+
+			if ok := certPool.AppendCertsFromPEM(ca); !ok {
+				log.Fatalf("certPool.AppendCertsFromPEM err")
+			}
+
+			TLS := &tls.Config{
+				Certificates: []tls.Certificate{cert},
+				ClientAuth:   tls.RequireAndVerifyClientCert,
+				ClientCAs:    certPool,
+			}
+
+			return credentials.NewTLS(TLS)
 		}
 	}
 	return nil
@@ -899,8 +927,30 @@ func (g *grpcServer) Start() error {
 
 	// vine: go ts.Accept(s.accept)
 	go func() {
-		if err := g.svc.Serve(ts); err != nil {
-			log.Errorf("gRPC Server start error: %v", err)
+		if v, ok := g.Options().Context.Value(Grpc2Http{}).(*Grpc2Http); ok && v != nil {
+			mux := http.NewServeMux()
+
+			mux.Handle("/metrics", promhttp.Handler())
+			s := http.Server{
+				Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+						g.svc.ServeHTTP(w, r)
+					} else {
+						mux.ServeHTTP(w, r)
+					}
+
+					return
+				}),
+			}
+
+			if err := s.ServeTLS(ts, v.CertFile, v.KeyFile); err != nil {
+				log.Errorf("gRPC Server start error: %v", err)
+			}
+
+		} else {
+			if err := g.svc.Serve(ts); err != nil {
+				log.Errorf("gRPC Server start error: %v", err)
+			}
 		}
 	}()
 

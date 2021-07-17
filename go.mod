@@ -28,7 +28,7 @@ require (
 	github.com/imdario/mergo v0.3.11
 	github.com/jinzhu/inflection v1.0.0
 	github.com/jinzhu/now v1.1.1
-	github.com/json-iterator/go v1.1.10
+	github.com/json-iterator/go v1.1.11
 	github.com/kr/pretty v0.2.1
 	github.com/lack-io/cli v1.2.4
 	github.com/lack-io/gscheduler v0.2.0
@@ -39,6 +39,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/prometheus/client_golang v1.11.0
 	github.com/rakyll/statik v0.1.7
 	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
 	github.com/stretchr/testify v1.7.0

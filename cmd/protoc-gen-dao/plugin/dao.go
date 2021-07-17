@@ -424,7 +424,7 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 
 	for _, field := range schema.Fields {
 		switch field.Type {
-		case _float32, _float64, _int32, _int64, _uint32, _uint64, _string:
+		case _float32, _float64, _int32, _int64, _uint32, _uint64, _string, _bool:
 			g.P(fmt.Sprintf(`func (m *%s) Set%s(in %s) *%s {`, sname, field.Name, field.Type, sname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
@@ -527,6 +527,8 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 				g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
 			}
 			g.P("}")
+		case _bool:
+			continue
 		case _map:
 			g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
@@ -783,6 +785,8 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
 			g.P(fmt.Sprintf(`exprs = append(exprs, %s.Cond().Build("%s", m.%s))`, g.clausePkg.Use(), column, field.Name))
 			g.P("}")
+		case _bool:
+			continue
 		default:
 			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
 			g.P(fmt.Sprintf(`exprs = append(exprs,  %s.Cond().Build("%s", m.%s))`, g.clausePkg.Use(), column, field.Name))
@@ -835,6 +839,8 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
 			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
 			g.P("}")
+		case _bool:
+			continue
 		default:
 			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
 			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
@@ -877,6 +883,8 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
 			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
 			g.P("}")
+		case _bool:
+			continue
 		default:
 			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
 			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
@@ -959,6 +967,8 @@ func (g *dao) buildFieldTypeAndTags(field *generator.FieldDescriptor) (fieldType
 	case descriptor.FieldDescriptorProto_TYPE_STRING,
 		descriptor.FieldDescriptorProto_TYPE_BYTES:
 		typ, incre = _string, false
+	case descriptor.FieldDescriptorProto_TYPE_BOOL:
+		typ, incre = _bool, false
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 		typ, incre = _point, false
 	default:
@@ -1010,6 +1020,8 @@ func (g *dao) buildFieldGoType(file *generator.FileDescriptor, field *descriptor
 	case descriptor.FieldDescriptorProto_TYPE_FIXED64,
 		descriptor.FieldDescriptorProto_TYPE_UINT64:
 		return "uint64", nil
+	case descriptor.FieldDescriptorProto_TYPE_BOOL:
+		return "bool", nil
 	case descriptor.FieldDescriptorProto_TYPE_STRING:
 		return "string", nil
 	case descriptor.FieldDescriptorProto_TYPE_BYTES:
@@ -1099,7 +1111,7 @@ func toQuoted(text string) string {
 
 func (g *dao) isContains(dir, source, kind, name string) (ok bool) {
 	_ = filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
-		if ok || err != nil || info.IsDir() ||!strings.HasSuffix(info.Name(), ".go") {
+		if ok || err != nil || info.IsDir() || !strings.HasSuffix(info.Name(), ".go") {
 			return nil
 		}
 		fset := token.NewFileSet()

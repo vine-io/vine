@@ -40,6 +40,12 @@ type maxMsgSizeKey struct{}
 type maxConnKey struct{}
 type tlsAuth struct{}
 
+type Grpc2Http struct {
+	CertFile string
+	KeyFile  string
+	CaFile   string
+}
+
 // Codec gRPC Codec to be used to encode/decode requests for a given content type
 func Codec(contentType string, c encoding.Codec) server.Option {
 	return func(o *server.Options) {
@@ -58,6 +64,11 @@ func Codec(contentType string, c encoding.Codec) server.Option {
 // AuthTLS should be used to setup a secure authentication using TLS
 func AuthTLS(t *tls.Config) server.Option {
 	return setServerOption(tlsAuth{}, t)
+}
+
+// GrpcToHttp specifies http and grpc service
+func GrpcToHttp(t *Grpc2Http) server.Option {
+	return setServerOption(Grpc2Http{}, t)
 }
 
 // MaxConn specifies maximum number of max simultaneous connections to server
