@@ -8,7 +8,7 @@ require (
 	github.com/bwmarrin/discordgo v0.22.1
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/cloudflare/cloudflare-go v0.10.2
-	github.com/coreos/etcd v3.3.25+incompatible
+	github.com/coreos/etcd v3.3.25+incompatible // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -46,13 +46,16 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/valyala/fasthttp v1.23.0
 	github.com/xlab/treeprint v1.0.0
-	go.uber.org/zap v1.16.0 // indirect
+	go.etcd.io/etcd/api/v3 v3.5.0
+	go.etcd.io/etcd/client/v3 v3.5.0
+	go.uber.org/tools v0.0.0-20190618225709-2cfd321de3ee // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
-	golang.org/x/net v0.0.0-20210226101413-39120d07d75e
-	google.golang.org/grpc v1.35.0
+	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+	google.golang.org/grpc v1.38.0
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/telegram-bot-api.v4 v4.6.4
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	honnef.co/go/tools v0.0.1-2019.2.3 // indirect
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
+replace google.golang.org/grpc => google.golang.org/grpc v1.38.0

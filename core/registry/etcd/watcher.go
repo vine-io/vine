@@ -27,8 +27,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/coreos/etcd/clientv3"
 	"github.com/lack-io/vine/core/registry"
+	"go.etcd.io/etcd/client/v3"
 
 	regpb "github.com/lack-io/vine/proto/apis/registry"
 )
