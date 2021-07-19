@@ -109,6 +109,9 @@ func NewOptions(opt ...Option) Options {
 	if len(opts.Version) == 0 {
 		opts.Version = DefaultVersion
 	}
+	if opts.Context == nil {
+		opts.Context = context.Background()
+	}
 
 	return opts
 }
@@ -246,9 +249,6 @@ func WithRouter(r Router) Option {
 // wait against it on stop.
 func Wait(wg *sync.WaitGroup) Option {
 	return func(o *Options) {
-		if o.Context == nil {
-			o.Context = context.Background()
-		}
 		if wg == nil {
 			wg = new(sync.WaitGroup)
 		}

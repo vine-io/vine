@@ -927,7 +927,9 @@ func (g *grpcServer) Start() error {
 
 	// vine: go ts.Accept(s.accept)
 	go func() {
-		if v, ok := g.Options().Context.Value(Grpc2Http{}).(*Grpc2Http); ok && v != nil {
+		if v := g.Options().Context.Value(Grpc2Http{}); v != nil {
+			gh := v.(*Grpc2Http)
+
 			mux := http.NewServeMux()
 
 			mux.Handle("/metrics", promhttp.Handler())
@@ -943,7 +945,7 @@ func (g *grpcServer) Start() error {
 				}),
 			}
 
-			if err := s.ServeTLS(ts, v.CertFile, v.KeyFile); err != nil {
+			if err := s.ServeTLS(ts, gh.CertFile, gh.KeyFile); err != nil {
 				log.Errorf("gRPC Server start error: %v", err)
 			}
 
