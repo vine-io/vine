@@ -147,19 +147,11 @@ import (
 	"github.com/lack-io/vine"
 	log "github.com/lack-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/server"
 )
 
 func Run() {
-	s := server.New(
-		vine.Name(runtime.{{title .Name}}Name),
-		vine.Id(runtime.{{title .Name}}Id),
-		vine.Version(runtime.GetVersion()),
-		vine.Metadata(map[string]string{
-			"namespace": runtime.Namespace,
-		}),
-	)
+	s := server.New()
 
 	if err := s.Init(); err != nil {
 		log.Fatal(err)
@@ -176,19 +168,11 @@ import (
 	"github.com/lack-io/vine"
 	log "github.com/lack-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/server"
 )
 
 func Run() {
-	s := server.New(
-		vine.Name(runtime.{{title .Name}}Name),
-		vine.Id(runtime.{{title .Name}}Id),
-		vine.Version(runtime.GetVersion()),
-		vine.Metadata(map[string]string{
-			"namespace": runtime.Namespace,
-		}),
-	)
+	s := server.New()
 
 	if err := s.Init(); err != nil {
 		log.Fatal(err)

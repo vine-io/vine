@@ -83,6 +83,7 @@ import (
 	"github.com/lack-io/vine"
 	log "github.com/lack-io/vine/lib/logger"
 
+	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
 	"{{.Dir}}/pkg/service"
 	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
@@ -142,8 +143,18 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 	}
 }
 
-func (s *server) Init(opts ...vine.Option) error {
+func (s *server) Init() error {
 	var err error
+
+	opts := []vine.Option{
+		vine.Name(runtime.{{title .Name}}Name),
+		vine.Id(runtime.{{title .Name}}Id),
+		vine.Version(runtime.GetVersion()),
+		vine.Metadata(map[string]string{
+			"namespace": runtime.Namespace,
+		}),
+	}
+
 	s.Service.Init(opts...)
 
 	if err = inject.Provide(s.Service, s.Client(), s); err != nil {
@@ -183,6 +194,7 @@ import (
 	"github.com/lack-io/vine"
 	log "github.com/lack-io/vine/lib/logger"
 
+	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/service"
 	"{{.Dir}}/pkg/runtime/inject"
 	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
@@ -242,8 +254,18 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 	}
 }
 
-func (s *server) Init(opts ...vine.Option) error {
+func (s *server) Init() error {
 	var err error
+
+	opts := []vine.Option{
+		vine.Name(runtime.{{title .Name}}Name),
+		vine.Id(runtime.{{title .Name}}Id),
+		vine.Version(runtime.GetVersion()),
+		vine.Metadata(map[string]string{
+			"namespace": runtime.Namespace,
+		}),
+	}
+
 	s.Service.Init(opts...)
 
 	if err = inject.Provide(s.Service, s.Client(), s); err != nil {
