@@ -178,8 +178,8 @@ func (s *server) Init() error {
 	return err
 }
 
-func New(opts ...vine.Option) *server {
-	srv := vine.NewService(opts...)
+func New() *server {
+	srv := vine.NewService()
 	return &server{
 		Service: srv,
 	}
@@ -289,8 +289,8 @@ func (s *server) Init() error {
 	return err
 }
 
-func New(opts ...vine.Option) *server {
-	srv := vine.NewService(opts...)
+func New() *server {
+	srv := vine.NewService()
 	return &server{
 		Service: srv,
 	}
