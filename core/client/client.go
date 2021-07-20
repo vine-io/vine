@@ -126,7 +126,7 @@ var (
 	// DefaultRetry is the default check-for-retry function for retries
 	DefaultRetry = RetryOnError
 	// DefaultRetries is the default number of times a request is tried
-	DefaultRetries = 0
+	DefaultRetries = 1
 	// DefaultRequestTimeout is the default request timeout
 	DefaultRequestTimeout = time.Second * 10
 	// DefaultPoolSize sets the connection pool size

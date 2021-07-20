@@ -49,7 +49,7 @@ func RetryOnError(ctx context.Context, req Request, retryCount int, err error) (
 
 	switch e.Code {
 	// retry on timeout or internal server error
-	case 408, 500:
+	case 408, 503:
 		return true, nil
 	default:
 		return false, nil

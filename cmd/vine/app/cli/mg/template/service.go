@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	_ = inject.Provide(new({{.Name}}))
+	inject.ProvidePanic(new({{.Name}}))
 }
 
 type {{title .Name}} interface {

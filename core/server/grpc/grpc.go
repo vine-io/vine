@@ -931,7 +931,6 @@ func (g *grpcServer) Start() error {
 			gh := v.(*Grpc2Http)
 
 			mux := http.NewServeMux()
-
 			mux.Handle("/metrics", promhttp.Handler())
 			s := http.Server{
 				Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
