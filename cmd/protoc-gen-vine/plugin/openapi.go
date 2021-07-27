@@ -24,6 +24,7 @@ package plugin
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -164,10 +165,26 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods [
 		methodsMap[path][meth] = method
 	}
 
-	for path, ms := range methodsMap {
+	paths := make([]string, 0)
+	for k, _ := range methodsMap {
+		paths = append(paths, k)
+	}
+	sort.Strings(paths)
+
+	for _, path := range paths {
+		ms := methodsMap[path]
+
+		meths := make([]string, 0)
+		for k, _ := range ms {
+			meths = append(meths, k)
+		}
+		sort.Strings(meths)
+
 		pathParams := g.extractPathParams(path)
 		g.P(fmt.Sprintf(`"%s": &%s.OpenAPIPath{`, path, g.openApiPkg.Use()))
-		for meth, method := range ms {
+		for _, meth := range meths {
+			method := ms[meth]
+
 			methodName := method.Proto.GetName()
 			tags := g.extractTags(method.Comments)
 
