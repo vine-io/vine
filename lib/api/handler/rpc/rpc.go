@@ -146,6 +146,10 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 	}
 
 	ct := c.Get("Content-Type")
+	if ct == "" {
+		c.Request().Header.Set("Content-Type", "application/json")
+		ct = "application/json"
+	}
 
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
 	if idx := strings.IndexRune(ct, ';'); idx >= 0 {
@@ -501,7 +505,7 @@ func writeError(c *fiber.Ctx, err error) error {
 		c.Set("grpc-message", ce.Detail)
 	}
 
-	return fiber.NewError(int(ce.Code), ce.Error())
+	return nil
 }
 
 func writeResponse(c *fiber.Ctx, rsp []byte) {

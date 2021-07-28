@@ -42,7 +42,7 @@ type openAPI struct {
 
 func (o *openAPI) OpenAPIHandler(ctx *fiber.Ctx) error {
 	if ct := ctx.Get("Content-Type", ""); ct == "application/json" {
-		ctx.Set("Content-Type", ct)
+		ctx.Request().Header.Set("Content-Type", ct)
 		return nil
 	}
 	var tmpl string

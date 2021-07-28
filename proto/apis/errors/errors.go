@@ -30,6 +30,7 @@ import (
 	"strings"
 
 	json "github.com/json-iterator/go"
+	"google.golang.org/grpc/status"
 )
 
 // protoc -I. -I$GOPATH/src --gogofast_out=plugins=grpc:. --vine_out=:. errors.proto
@@ -204,6 +205,15 @@ func FromErr(err error) *Error {
 	if verr, ok := err.(*Error); ok && verr != nil {
 		return verr
 	}
+
+	if err != nil {
+		if se, ok := err.(interface {
+			GRPCStatus() *status.Status
+		}); ok {
+			return Parse(se.GRPCStatus().Message())
+		}
+	}
+
 
 	return Parse(err.Error())
 }
