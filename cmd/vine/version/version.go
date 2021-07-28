@@ -7,9 +7,9 @@ import (
 )
 
 var (
-	GitCommit = "755ed55a"
-	GitTag    = "v0.20.6"
-	BuildDate = "1627459818"
+	GitCommit = "d5a4741e"
+	GitTag    = "v0.20.7"
+	BuildDate = "1627461928"
 )
 
 func Version() string {
