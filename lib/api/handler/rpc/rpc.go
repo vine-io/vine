@@ -136,13 +136,13 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 		// try get service from router
 		s, err := h.opts.Router.Route(r)
 		if err != nil {
-			return writeError(c, errors.InternalServerError("go.vine.client", err.Error()))
+			return writeError(c, errors.InternalServerError("go.vine.api", err.Error()))
 
 		}
 		service = s
 	} else {
 		// we have no way of routing the request
-		return writeError(c, errors.InternalServerError("go.vine.client", "no route found"))
+		return writeError(c, errors.InternalServerError("go.vine.api", "no route found"))
 	}
 
 	ct := c.Get("Content-Type")
@@ -482,7 +482,7 @@ func writeError(c *fiber.Ctx, err error) error {
 	case 0:
 		// assuming it's totally screwed
 		ce.Code = 500
-		ce.Id = "go.vine.client"
+		ce.Id = "go.vine.api"
 		ce.Status = http.StatusText(500)
 		ce.Detail = "error during request: " + ce.Detail
 		c.Response().SetStatusCode(500)
@@ -505,7 +505,8 @@ func writeError(c *fiber.Ctx, err error) error {
 		c.Set("grpc-message", ce.Detail)
 	}
 
-	return nil
+	logger.Errorf("code=%d [%s] %s | %s", ce.Code, c.Method(), c.Path(), ce.Detail)
+	return c.JSON(ce)
 }
 
 func writeResponse(c *fiber.Ctx, rsp []byte) {
@@ -520,16 +521,19 @@ func writeResponse(c *fiber.Ctx, rsp []byte) {
 		c.Set("grpc-message", "")
 	}
 
+	code := http.StatusOK
 	// write 204 status if rsp is nil
 	if len(rsp) == 0 {
-		c.Response().SetStatusCode(http.StatusNoContent)
+		code = http.StatusNoContent
 	}
 
 	// write response
+	c.Response().SetStatusCode(code)
 	_, err := c.Write(rsp)
 	if err != nil {
 		logger.Error(err)
 	}
+	logger.Infof("code=%d [%s] %s", code, c.Method(), c.Path())
 }
 
 func NewHandler(opts ...handler.Option) handler.Handler {
