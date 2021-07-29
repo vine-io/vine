@@ -258,9 +258,6 @@ func Run() {
 		}),
 		vine.Flags(flags...),
 		vine.Action(func(ctx *cli.Context) error {
-			if len(ctx.String("server-address")) > 0 {
-				Address = ctx.String("server-address")
-			}
 			enableOpenAPI = ctx.Bool("enable-openapi")
 
 			if ctx.Bool("enable-tls") {

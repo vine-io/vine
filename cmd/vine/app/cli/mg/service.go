@@ -171,6 +171,7 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/config/" + name + ".ini", t2.ConfSRV},
 			{"deploy/systemd/" + name + ".service", t2.SystemedSRV},
 			{"proto/service/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
+			{"Makefile", t2.ClusterMakefile},
 			{"vine.toml", t2.TOML},
 		}
 	} else {
@@ -212,6 +213,7 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/" + name + ".ini", t2.ConfSRV},
 			{"deploy/" + name + ".service", t2.SystemedSRV},
 			{"proto/service/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
+			{"Makefile", t2.SingleMakefile},
 			{"vine.toml", t2.TOML},
 		}
 	}

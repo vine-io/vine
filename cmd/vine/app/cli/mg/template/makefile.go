@@ -2,90 +2,47 @@ package template
 
 var (
 	SingleMakefile = `
-GOPATH:=$(shell go env GOPATH)
+GIT_COMMIT=$(shell git rev-parse --short HEAD)
+GIT_TAG=$(shell git describe --abbrev=0 --tags --always --match "v*")
+GIT_VERSION=github.com/gpm2/gpm/pkg/runtime/doc
+CGO_ENABLED=0
+BUILD_DATE=$(shell date +%s)
+LDFLAGS=-X $(GIT_VERSION).GitCommit=$(GIT_COMMIT) -X $(GIT_VERSION).GitTag=$(GIT_TAG) -X $(GIT_VERSION).BuildDate=$(BUILD_DATE)
 
-.PHONY: install
+build-tag:
+	sed -i "" "s/GitTag     = ".*"/GitTag     = \"$(GIT_TAG)\"/g" pkg/runtime/doc.go
+	sed -i "" "s/GitCommit  = ".*"/GitCommit  = \"$(GIT_COMMIT)\"/g" pkg/runtime/doc.go
+	sed -i "" "s/BuildDate  = ".*"/BuildDate  = \"$(BUILD_DATE)\"/g" pkg/runtime/doc.go
+
 install:
-	go get github.com/google/wire
-	go get github.com/gogo/protobuf
-	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-	go get github.com/lack-io/vine/cmd/protoc-gen-vine
-	go get github.com/lack-io/vine/cmd/protoc-gen-validator
-	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-	go get github.com/lack-io/vine/cmd/protoc-gen-dao
 
-.PHONY: vendor
-vendor:
-	go mod vendor
+build:
 
-.PHONY: tidy
-tidy:
-	go mod tidy
+clean:
 
-.PHONY: test
-test:
-	go test -v ./... -cover
-
-.PHONY: docker
-docker:
-	docker build . -t {{.Name}}:latest
-
-{{if ne .Type "web"}}
-.PHONY: proto
-proto:
-	cd ${GOPATH}/src && \
-{{if eq .UseGoPath true}}	protoc -I=. -I=${GOPATH}/src:. --vine_out=:. --gogo_out=:. {{.Dir}}/proto/apis/apis.proto && \
-	protoc -I=. -I=${GOPATH}/src:. --vine_out=:. --gogo_out=:. {{.Dir}}/proto/service/{{.Name}}/{{.Name}}.proto
-{{end}}
-.PHONY: build-{{.Name}}
-build-{{.Name}}: proto
-{{else}}
-.PHONY: build
-build-{{.Name}}:{{end}}	
-	go build -a -installsuffix cgo -ldflags "-s -w" -o {{.Name}} {{.Dir}}/cmd/main.go
+.PHONY: build-tag install build clean
 `
 
 	ClusterMakefile = `
-GOPATH:=$(shell go env GOPATH)
+GIT_COMMIT=$(shell git rev-parse --short HEAD)
+GIT_TAG=$(shell git describe --abbrev=0 --tags --always --match "v*")
+GIT_VERSION=github.com/gpm2/gpm/pkg/runtime/doc
+CGO_ENABLED=0
+BUILD_DATE=$(shell date +%s)
+LDFLAGS=-X $(GIT_VERSION).GitCommit=$(GIT_COMMIT) -X $(GIT_VERSION).GitTag=$(GIT_TAG) -X $(GIT_VERSION).BuildDate=$(BUILD_DATE)
 
-.PHONY: install
+build-tag:
+	sed -i "" "s/GitTag     = ".*"/GitTag     = \"$(GIT_TAG)\"/g" pkg/runtime/doc.go
+	sed -i "" "s/GitCommit  = ".*"/GitCommit  = \"$(GIT_COMMIT)\"/g" pkg/runtime/doc.go
+	sed -i "" "s/BuildDate  = ".*"/BuildDate  = \"$(BUILD_DATE)\"/g" pkg/runtime/doc.go
+
 install:
-	go get github.com/google/wire
-	go get github.com/gogo/protobuf
-	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-	go get github.com/lack-io/vine/cmd/protoc-gen-vine
-	go get github.com/lack-io/vine/cmd/protoc-gen-validator
-	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-	go get github.com/lack-io/vine/cmd/protoc-gen-dao
 
-.PHONY: vendor
-vendor:
-	go mod vendor
+build:
 
-.PHONY: tidy
-tidy:
-	go mod tidy
+clean:
 
-.PHONY: test
-test:
-	go test -v ./... -cover
-
-.PHONY: docker
-docker:
-	docker build . -t {{.Name}}:latest
-
-{{if ne .Type "web"}}
-.PHONY: proto
-proto:
-	cd ${GOPATH}/src && \
-{{if eq .UseGoPath true}}	protoc -I=. -I=${GOPATH}/src:. --vine_out=:. --gogo_out=:. {{.Dir}}/proto/apis/apis.proto && \
-	protoc -I=. -I=${GOPATH}/src:. --vine_out=:. --gogo_out=:. {{.Dir}}/proto/service/{{.Name}}/{{.Name}}.proto
-{{end}}
-.PHONY: build
-build: proto
-{{else}}
-.PHONY: build
-build:{{end}}	go build -a -installsuffix cgo -ldflags "-s -w" -o {{.Name}} {{.Dir}}/cmd/{{.Name}}/main.go
+.PHONY: build-tag install build clean
 `
 
 	GenerateFile = `package main

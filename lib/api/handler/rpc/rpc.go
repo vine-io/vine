@@ -124,6 +124,12 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 	c.Context().SetBodyStream(c.Context().RequestBodyStream(), int(bsize))
 	var service *apipb.Service
 
+	ct := c.Get("Content-Type")
+	if ct == "" {
+		c.Request().Header.Set("Content-Type", "application/json")
+		ct = "application/json"
+	}
+
 	// create context
 	cx := ctx.FromRequest(c)
 	// set merged context to request
@@ -143,12 +149,6 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 	} else {
 		// we have no way of routing the request
 		return writeError(c, errors.InternalServerError("go.vine.api", "no route found"))
-	}
-
-	ct := c.Get("Content-Type")
-	if ct == "" {
-		c.Request().Header.Set("Content-Type", "application/json")
-		ct = "application/json"
 	}
 
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
