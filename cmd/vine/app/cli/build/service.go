@@ -194,12 +194,6 @@ func cmdSRV() *cli.Command {
 		Name:  "service",
 		Usage: "Build vine project",
 		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:    "wire",
-				Aliases: []string{"W"},
-				Usage:   "generate wire code before building vine project.",
-				Value:   true,
-			},
 			&cli.StringSliceFlag{
 				Name:    "flag",
 				Aliases: []string{"L"},
