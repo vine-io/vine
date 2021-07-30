@@ -309,7 +309,7 @@ func (r *staticRouter) endpoint(req *http.Request) (*endpoint, error) {
 				md = make(metadata.Metadata)
 			}
 			for k, v := range matches {
-				md[fmt.Sprintf("x-api-field-%s", k)] = v
+				md.Set("x-api-field-"+k, v)
 			}
 			md["x-api-body"] = ep.apiep.Body
 			*req = *req.Clone(metadata.NewContext(ctx, md))

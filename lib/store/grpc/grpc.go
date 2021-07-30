@@ -72,16 +72,16 @@ func (s *gRPCStore) Context() context.Context {
 	ctx := context.Background()
 	md := make(metadata.Metadata)
 	if len(s.Database) > 0 {
-		md["Vine-Database"] = s.Database
+		md.Set("Vine-Database", s.Database)
 	}
 
 	if len(s.Table) > 0 {
-		md["Vine-Table"] = s.Table
+		md.Set("Vine-Table", s.Table)
 	}
 	return metadata.NewContext(ctx, md)
 }
 
-// Sync all the known records
+// List sync all the known records
 func (s *gRPCStore) List(opts ...store.ListOption) ([]string, error) {
 	options := store.ListOptions{
 		Database: s.Database,

@@ -42,7 +42,7 @@ func RequestToContext(c *fiber.Ctx) context.Context {
 	ctx := context.Background()
 	md := make(metadata.Metadata)
 	c.Request().Header.VisitAll(func(key, value []byte) {
-		md[string(key)] = string(value)
+		md.Set(string(key), string(value))
 	})
 	return metadata.NewContext(ctx, md)
 }

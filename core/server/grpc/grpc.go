@@ -257,24 +257,24 @@ func (g *grpcServer) handler(svc interface{}, stream grpc.ServerStream) error {
 	// copy the metadata to vine.metadata
 	md := meta.Metadata{}
 	for k, v := range gmd {
-		md[k] = strings.Join(v, ", ")
+		md.Set(k, strings.Join(v, ", "))
 	}
 
 	// timeout for server deadline
-	to := md["timeout"]
+	to, _ := md.Get("timeout")
 
 	// get content type
 	ct := defaultContentType
 
-	if ctype, ok := md["x-content-type"]; ok {
+	if ctype, ok := md.Get("x-content-type"); ok {
 		ct = ctype
 	}
-	if ctype, ok := md["content-type"]; ok {
+	if ctype, ok := md.Get("content-type"); ok {
 		ct = ctype
 	}
 
-	delete(md, "x-content-type")
-	delete(md, "timeout")
+	md.Delete("x-content-type")
+	md.Delete("timeout")
 
 	// create new context
 	ctx := meta.NewContext(stream.Context(), md)

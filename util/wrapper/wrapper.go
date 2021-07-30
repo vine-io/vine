@@ -66,11 +66,11 @@ func (f *fromServiceWrapper) Publish(ctx context.Context, p client.Message, opts
 
 // FromService wraps a client to inject service and auth metadata
 func FromService(name string, c client.Client) client.Client {
+	md := metadata.Metadata{}
+	md.Set(HeaderPrefix+"From-Service", name)
 	return &fromServiceWrapper{
-		Client: c,
-		headers: metadata.Metadata{
-			HeaderPrefix + "From-Service": name,
-		},
+		Client:  c,
+		headers: md,
 	}
 }
 

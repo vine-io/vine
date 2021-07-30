@@ -370,9 +370,9 @@ func (r *registryRouter) Endpoint(c *ctx.RequestCtx) (*apipb.Service, error) {
 				md = make(metadata.Metadata)
 			}
 			for k, v := range matches {
-				md[fmt.Sprintf("x-api-field-%s", k)] = v
+				md.Set("x-api-field-"+ k, v)
 			}
-			md["x-api-body"] = ep.Body
+			md.Set("x-api-body", ep.Body)
 			// TODO: Req.Clone from context metadata
 			c = c.Clone(metadata.NewContext(ctx, md))
 			break

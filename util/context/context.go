@@ -43,7 +43,7 @@ func FromRequest(c *fiber.Ctx) context.Context {
 		case "Connection", "Content-Length":
 			return
 		}
-		md[textproto.CanonicalMIMEHeaderKey(key)] = string(value)
+		md.Set(textproto.CanonicalMIMEHeaderKey(key), string(value))
 	})
 	if v, ok := md.Get("X-Forwarded-For"); ok {
 		md["X-Forwarded-For"] = v + ", " + c.Context().RemoteAddr().String()
@@ -51,10 +51,10 @@ func FromRequest(c *fiber.Ctx) context.Context {
 		md["X-Forwarded-For"] = c.Context().RemoteAddr().String()
 	}
 	if _, ok = md.Get("Host"); !ok {
-		md["Host"] = string(c.Request().Host())
+		md.Set("Host", string(c.Request().Host()))
 	}
 	// pass http method
-	md["Method"] = c.Method()
+	md.Set("Method", c.Method())
 	return metadata.NewContext(ctx, md)
 }
 
