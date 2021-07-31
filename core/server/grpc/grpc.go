@@ -385,9 +385,21 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 			argv = argv.Elem()
 		}
 
+		var argvi interface{}
+		switch ct {
+		case "application/proto",
+			"application/protobuf",
+			"application/octet-stream",
+			"application/grpc",
+			"application/grpc+proto":
+			argvi = argv.Interface()
+		case "application/json", "application/grpc+json":
+			vv := argv.Interface()
+			argvi = &vv
+		}
+
 		// Unmarshal request
-		argvi := argv.Interface()
-		if err := stream.RecvMsg(&argvi); err != nil {
+		if err := stream.RecvMsg(argvi); err != nil {
 			return err
 		}
 
