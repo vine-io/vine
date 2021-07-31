@@ -281,7 +281,7 @@ func (g *grpcServer) handler(svc interface{}, stream grpc.ServerStream) error {
 
 	// get peer from context
 	if p, ok := peer.FromContext(stream.Context()); ok {
-		md["Remote"] = p.Addr.String()
+		md.Set("Remote", p.Addr.String())
 		ctx = peer.NewContext(ctx, p)
 	}
 
@@ -381,13 +381,14 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 			argIsValue = true
 		}
 
-		// Unmarshal request
-		if err := stream.RecvMsg(argv.Interface()); err != nil {
-			return err
-		}
-
 		if argIsValue {
 			argv = argv.Elem()
+		}
+
+		// Unmarshal request
+		argvi := argv.Interface()
+		if err := stream.RecvMsg(&argvi); err != nil {
+			return err
 		}
 
 		// reply value
@@ -400,7 +401,7 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 		if err != nil {
 			return errors.InternalServerError(server.DefaultName, err.Error())
 		}
-		b, err := cc.Marshal(argv.Interface())
+		b, err := cc.Marshal(argvi)
 		if err != nil {
 			return err
 		}
@@ -411,7 +412,7 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 			contentType: ct,
 			method:      fmt.Sprintf("%s.%s", service.name, mtype.method.Name),
 			body:        b,
-			payload:     argv.Interface(),
+			payload:     argvi,
 		}
 
 		// define the handler func
