@@ -24,6 +24,7 @@ package router
 
 import (
 	"github.com/lack-io/vine/core/registry"
+	"github.com/lack-io/vine/core/registry/mdns"
 	"github.com/lack-io/vine/lib/api/resolver"
 	"github.com/lack-io/vine/lib/api/resolver/vpath"
 )
@@ -44,6 +45,10 @@ func NewOptions(opts ...Option) Options {
 
 	for _, o := range opts {
 		o(&options)
+	}
+
+	if options.Registry == nil {
+		options.Registry = mdns.NewRegistry()
 	}
 
 	if options.Resolver == nil {

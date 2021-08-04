@@ -79,7 +79,9 @@ func serveWebSocket(r *ctx.RequestCtx, service *apipb.Service, c client.Client) 
 		ReadBufferSize:   1024,
 		WriteBufferSize:  1024,
 		//Subprotocols:      nil,
-		//Error:             nil,
+		Error: func(c *fasthttp.RequestCtx, status int, reason error) {
+
+		},
 		CheckOrigin: func(c *fasthttp.RequestCtx) bool {
 			return true
 		},

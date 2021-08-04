@@ -142,13 +142,15 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 		// try get service from router
 		s, err := h.opts.Router.Route(r)
 		if err != nil {
-			return writeError(c, errors.InternalServerError("go.vine.api", err.Error()))
-
+			if err.Error() == "service not found" {
+				return writeError(c, errors.NotFound("go.vine.api", "invalid url"))
+			}
+			return writeError(c, errors.BadGateway("go.vine.api", err.Error()))
 		}
 		service = s
 	} else {
 		// we have no way of routing the request
-		return writeError(c, errors.InternalServerError("go.vine.api", "no route found"))
+		return writeError(c, errors.BadGateway("go.vine.api", "no route found"))
 	}
 
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
