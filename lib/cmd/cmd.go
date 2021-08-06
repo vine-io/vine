@@ -23,6 +23,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -648,6 +649,13 @@ func (c *cmd) Before(ctx *cli.Context) error {
 	}
 
 	if dsn := ctx.String("dao-dsn"); len(dsn) > 0 {
+		if strings.HasPrefix(dsn, "base64:") {
+			b, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(dsn, "base64:"))
+			if err != nil {
+				log.Fatalf("Error configuring dialect dsn: decode base64 string: %v", err)
+			}
+			dsn = string(b)
+		}
 		if err := (*c.opts.Dialect).Init(dao.DSN(dsn)); err != nil {
 			log.Fatalf("Error configuring dialect dsn: %v", err)
 		}
