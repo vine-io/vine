@@ -32,7 +32,6 @@ import (
 	"github.com/lack-io/vine/core/client/selector"
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/core/transport"
 	"github.com/lack-io/vine/lib/config"
 	"github.com/lack-io/vine/lib/dao"
 	"github.com/lack-io/vine/lib/debug/profile"
@@ -53,7 +52,6 @@ type Options struct {
 	Broker    *broker.Broker
 	Registry  *registry.Registry
 	Selector  *selector.Selector
-	Transport *transport.Transport
 	Config    *config.Config
 	Client    *client.Client
 	Server    *server.Server
@@ -69,7 +67,6 @@ type Options struct {
 	Registries map[string]func(...registry.Option) registry.Registry
 	Selectors  map[string]func(...selector.Option) selector.Selector
 	Servers    map[string]func(...server.Option) server.Server
-	Transports map[string]func(...transport.Option) transport.Transport
 	Runtimes   map[string]func(...runtime.Option) runtime.Runtime
 	Dialects   map[string]func(...dao.Option) dao.Dialect
 	Stores     map[string]func(...store.Option) store.Store
@@ -137,12 +134,6 @@ func Registry(r *registry.Registry) Option {
 func Runtime(r *runtime.Runtime) Option {
 	return func(o *Options) {
 		o.Runtime = r
-	}
-}
-
-func Transport(t *transport.Transport) Option {
-	return func(o *Options) {
-		o.Transport = t
 	}
 }
 
@@ -214,13 +205,6 @@ func NewSelector(name string, s func(...selector.Option) selector.Selector) Opti
 func NewServer(name string, s func(...server.Option) server.Server) Option {
 	return func(o *Options) {
 		o.Servers[name] = s
-	}
-}
-
-// NewTransport new transport func
-func NewTransport(name string, t func(...transport.Option) transport.Transport) Option {
-	return func(o *Options) {
-		o.Transports[name] = t
 	}
 }
 

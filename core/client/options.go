@@ -30,7 +30,6 @@ import (
 	"github.com/lack-io/vine/core/client/selector"
 	"github.com/lack-io/vine/core/codec"
 	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/core/transport"
 )
 
 type Options struct {
@@ -38,11 +37,10 @@ type Options struct {
 	ContentType string
 
 	// Plugged interfaces
-	Broker    broker.Broker
-	Codecs    map[string]codec.NewCodec
-	Registry  registry.Registry
-	Selector  selector.Selector
-	Transport transport.Transport
+	Broker   broker.Broker
+	Codecs   map[string]codec.NewCodec
+	Registry registry.Registry
+	Selector selector.Selector
 
 	// Router sets the router
 	Router Router
@@ -122,15 +120,15 @@ func NewOptions(options ...Option) Options {
 			Backoff:        DefaultBackoff,
 			Retry:          DefaultRetry,
 			Retries:        DefaultRetries,
+			DialTimeout:    DefaultRequestTimeout,
 			RequestTimeout: DefaultRequestTimeout,
-			DialTimeout:    transport.DefaultDialTimeout,
+			StreamTimeout:  DefaultRequestTimeout,
 		},
-		PoolSize:  DefaultPoolSize,
-		PoolTTL:   DefaultPoolTTL,
-		Broker:    broker.DefaultBroker,
-		Selector:  selector.DefaultSelector,
-		Registry:  registry.DefaultRegistry,
-		Transport: transport.DefaultTransport,
+		PoolSize: DefaultPoolSize,
+		PoolTTL:  DefaultPoolTTL,
+		Broker:   broker.DefaultBroker,
+		Selector: selector.DefaultSelector,
+		Registry: registry.DefaultRegistry,
 	}
 
 	for _, o := range options {
@@ -181,13 +179,6 @@ func Registry(r registry.Registry) Option {
 		o.Registry = r
 		// set in the selector
 		o.Selector.Init(selector.Registry(r))
-	}
-}
-
-// Transport to use for communication e.g http, rabbitmq, etc
-func Transport(t transport.Transport) Option {
-	return func(o *Options) {
-		o.Transport = t
 	}
 }
 

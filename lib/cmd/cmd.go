@@ -36,7 +36,6 @@ import (
 	"github.com/lack-io/vine/core/broker/memory"
 	"github.com/lack-io/vine/core/client"
 	cGrpc "github.com/lack-io/vine/core/client/grpc"
-	"github.com/lack-io/vine/core/client/mucp"
 	"github.com/lack-io/vine/core/client/selector"
 	"github.com/lack-io/vine/core/client/selector/dns"
 	"github.com/lack-io/vine/core/client/selector/static"
@@ -46,7 +45,6 @@ import (
 	"github.com/lack-io/vine/core/registry/mdns"
 	regMemory "github.com/lack-io/vine/core/registry/memory"
 	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/core/transport"
 	"github.com/lack-io/vine/lib/config"
 	configMemory "github.com/lack-io/vine/lib/config/memory"
 	configSrc "github.com/lack-io/vine/lib/config/source"
@@ -61,15 +59,10 @@ import (
 
 	// servers
 	sgrpc "github.com/lack-io/vine/core/server/grpc"
-	smucp "github.com/lack-io/vine/core/server/mucp"
 
 	// runtimes
 	svcRuntime "github.com/lack-io/vine/lib/runtime/grpc"
 	lRuntime "github.com/lack-io/vine/lib/runtime/local"
-
-	// transports
-	thttp "github.com/lack-io/vine/core/transport/http"
-	tmem "github.com/lack-io/vine/core/transport/memory"
 
 	daoNop "github.com/lack-io/vine/lib/dao/nop"
 
@@ -346,7 +339,6 @@ var (
 	}
 
 	DefaultClients = map[string]func(...client.Option) client.Client{
-		"mucp": mucp.NewClient,
 		"grpc": cGrpc.NewClient,
 	}
 
@@ -363,13 +355,7 @@ var (
 	}
 
 	DefaultServers = map[string]func(...server.Option) server.Server{
-		"mucp": smucp.NewServer,
 		"grpc": sgrpc.NewServer,
-	}
-
-	DefaultTransports = map[string]func(...transport.Option) transport.Transport{
-		"memory": tmem.NewTransport,
-		"http":   thttp.NewTransport,
 	}
 
 	DefaultRuntimes = map[string]func(...runtime.Option) runtime.Runtime{
@@ -408,7 +394,6 @@ func newCmd(opts ...Option) Cmd {
 		Registry:  &registry.DefaultRegistry,
 		Server:    &server.DefaultServer,
 		Selector:  &selector.DefaultSelector,
-		Transport: &transport.DefaultTransport,
 		Runtime:   &runtime.DefaultRuntime,
 		Store:     &store.DefaultStore,
 		Dialect:   &dao.DefaultDialect,
@@ -421,7 +406,6 @@ func newCmd(opts ...Option) Cmd {
 		Registries: DefaultRegistries,
 		Selectors:  DefaultSelectors,
 		Servers:    DefaultServers,
-		Transports: DefaultTransports,
 		Runtimes:   DefaultRuntimes,
 		Dialects:   DefaultDialects,
 		Stores:     DefaultStores,
@@ -602,18 +586,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		clientOpts = append(clientOpts, client.Selector(*c.opts.Selector))
 	}
 
-	// Set the transport
-	if name := ctx.String("transport"); len(name) > 0 && (*c.opts.Transport).String() != name {
-		t, ok := c.opts.Transports[name]
-		if !ok {
-			return fmt.Errorf("transport %s not found", name)
-		}
-
-		*c.opts.Transport = t()
-		serverOpts = append(serverOpts, server.Transport(*c.opts.Transport))
-		clientOpts = append(clientOpts, client.Transport(*c.opts.Transport))
-	}
-
 	// Parse the server options
 	metadata := make(map[string]string)
 	for _, d := range ctx.StringSlice("server-metadata") {
@@ -639,12 +611,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 	if addrs := ctx.String("registry-address"); len(addrs) > 0 {
 		if err := (*c.opts.Registry).Init(registry.Addrs(strings.Split(addrs, ",")...)); err != nil {
 			log.Fatalf("Error configuring registry: %v", err)
-		}
-	}
-
-	if addrs := ctx.String("transport-address"); len(addrs) > 0 {
-		if err := (*c.opts.Transport).Init(transport.Addrs(strings.Split(addrs, ",")...)); err != nil {
-			log.Fatalf("Error configuring store: %v", err)
 		}
 	}
 

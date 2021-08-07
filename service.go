@@ -94,7 +94,6 @@ func (s *service) Init(opts ...Option) {
 				cmd.Broker(&s.opts.Broker),
 				cmd.Registry(&s.opts.Registry),
 				cmd.Runtime(&s.opts.Runtime),
-				cmd.Transport(&s.opts.Transport),
 				cmd.Client(&s.opts.Client),
 				cmd.Config(&s.opts.Config),
 				cmd.Server(&s.opts.Server),

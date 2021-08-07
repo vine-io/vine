@@ -34,7 +34,6 @@ import (
 	"github.com/lack-io/vine/core/client/selector"
 	"github.com/lack-io/vine/core/registry"
 	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/core/transport"
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/config"
 	"github.com/lack-io/vine/lib/dao"
@@ -56,7 +55,6 @@ type Options struct {
 	Store     store.Store
 	Registry  registry.Registry
 	Runtime   runtime.Runtime
-	Transport transport.Transport
 	Profile   profile.Profile
 	Scheduler gscheduler.Scheduler
 
@@ -84,7 +82,6 @@ func newOptions(opts ...Option) Options {
 		Store:     store.DefaultStore,
 		Registry:  registry.DefaultRegistry,
 		Runtime:   runtime.DefaultRuntime,
-		Transport: transport.DefaultTransport,
 		Scheduler: defaultScheduler,
 		Context:   context.Background(),
 		Signal:    true,
@@ -196,17 +193,6 @@ func Config(c config.Config) Option {
 func Selector(s selector.Selector) Option {
 	return func(o *Options) {
 		_ = o.Client.Init(client.Selector(s))
-	}
-}
-
-// Transport sets the transport for the service
-// and the underlying components
-func Transport(t transport.Transport) Option {
-	return func(o *Options) {
-		o.Transport = t
-		// Update Client and Server
-		_ = o.Client.Init(client.Transport(t))
-		_ = o.Server.Init(server.Transport(t))
 	}
 }
 

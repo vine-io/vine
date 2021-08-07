@@ -33,8 +33,6 @@ import (
 	rreg "github.com/lack-io/vine/core/router/registry"
 	"github.com/lack-io/vine/core/server"
 	serverGrpc "github.com/lack-io/vine/core/server/grpc"
-	"github.com/lack-io/vine/core/transport"
-	transportHTTP "github.com/lack-io/vine/core/transport/http"
 	"github.com/lack-io/vine/lib/config"
 	configMemory "github.com/lack-io/vine/lib/config/memory"
 	"github.com/lack-io/vine/lib/dao"
@@ -48,8 +46,6 @@ import (
 func init() {
 	// default registry
 	registry.DefaultRegistry = mdns.NewRegistry()
-	// default transport
-	transport.DefaultTransport = transportHTTP.NewTransport()
 	// default broker
 	broker.DefaultBroker = http.NewBroker()
 	// default client

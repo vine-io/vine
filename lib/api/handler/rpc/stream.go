@@ -75,9 +75,9 @@ func serveWebSocket(r *ctx.RequestCtx, service *apipb.Service, c client.Client) 
 	}
 
 	upgrader := websocket.FastHTTPUpgrader{
-		HandshakeTimeout: 5 * time.Second,
-		ReadBufferSize:   1024,
-		WriteBufferSize:  1024,
+		HandshakeTimeout: 30 * time.Second,
+		ReadBufferSize:   1024 * 32,
+		WriteBufferSize:  1024 * 32,
 		//Subprotocols:      nil,
 		Error: func(c *fasthttp.RequestCtx, status int, reason error) {
 
