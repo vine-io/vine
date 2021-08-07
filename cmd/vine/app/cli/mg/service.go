@@ -100,6 +100,8 @@ func runSRV(ctx *cli.Context) {
 		}
 	}
 
+	withAPI := ctx.Bool("with-api")
+
 	goDir := dir
 	if runtime.GOOS == "windows" {
 		dir = strings.TrimPrefix(dir, goPath+"\\src\\")
@@ -158,13 +160,17 @@ func runSRV(ctx *cli.Context) {
 			},
 		)
 		// create service config
+		srvTpl := t2.ClusterSRV
+		if withAPI {
+			srvTpl = t2.ClusterSRVWithAPI
+		}
 		c.Files = []file{
 			{"cmd/" + name + "/main.go", t2.ClusterCMD},
 			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/runtime/inject/inject.go", t2.Inject},
 			{"pkg/" + name + "/plugin.go", t2.ClusterPlugin},
 			{"pkg/" + name + "/app.go", t2.ClusterApp},
-			{"pkg/" + name + "/server/" + name + ".go", t2.ClusterSRV},
+			{"pkg/" + name + "/server/" + name + ".go", srvTpl},
 			{"pkg/" + name + "/service/" + name + ".go", t2.ServiceSRV},
 			{"pkg/" + name + "/dao/" + name + ".go", t2.DaoHandler},
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
@@ -200,13 +206,17 @@ func runSRV(ctx *cli.Context) {
 			},
 		)
 		// create service config
+		srvTpl := t2.SingleSRV
+		if withAPI {
+			srvTpl = t2.SingleSRVWithAPI
+		}
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
 			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/runtime/inject/inject.go", t2.Inject},
 			{"pkg/plugin.go", t2.SinglePlugin},
 			{"pkg/app.go", t2.SingleApp},
-			{"pkg/server/" + name + ".go", t2.SingleSRV},
+			{"pkg/server/" + name + ".go", srvTpl},
 			{"pkg/service/" + name + ".go", t2.ServiceSRV},
 			{"pkg/dao/" + name + ".go", t2.DaoHandler},
 			{"deploy/Dockerfile", t2.DockerSRV},
@@ -232,6 +242,10 @@ func cmdSRV() *cli.Command {
 			&cli.StringSliceFlag{
 				Name:  "plugin",
 				Usage: "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times",
+			},
+			&cli.BoolFlag{
+				Name:  "with-api",
+				Usage: "Specify restful api code for service",
 			},
 		},
 		Action: func(c *cli.Context) error {
