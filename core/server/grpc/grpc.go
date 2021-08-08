@@ -30,6 +30,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/http/pprof"
 	"reflect"
 	"runtime/debug"
 	"sort"
@@ -945,16 +946,24 @@ func (g *grpcServer) Start() error {
 
 			mux := http.NewServeMux()
 			mux.Handle("/metrics", promhttp.Handler())
-			s := http.Server{
-				Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
-						g.svc.ServeHTTP(w, r)
-					} else {
-						mux.ServeHTTP(w, r)
-					}
+			mux.HandleFunc("/debug/pprof/", pprof.Index)
+			mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+			mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+			mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+			mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+					g.svc.ServeHTTP(w, r)
 					return
-				}),
+				}
+
+				mux.ServeHTTP(w, r)
+				return
+			})
+
+			s := http.Server{
+				Handler:           handler,
 			}
 
 			if err := s.ServeTLS(ts, gh.CertFile, gh.KeyFile); err != nil {
