@@ -117,7 +117,7 @@ func (r *registryRouter) process(res *regpb.Result) {
 	// get entry from cache
 	service, err := r.rc.GetService(res.Service.Name)
 	if err != nil {
-		logger.Errorf("unable to get service: %v", err)
+		logger.Errorf("unable to get service '%s': %v", res.Service.Name, err)
 		return
 	}
 
@@ -370,7 +370,7 @@ func (r *registryRouter) Endpoint(c *ctx.RequestCtx) (*apipb.Service, error) {
 				md = make(metadata.Metadata)
 			}
 			for k, v := range matches {
-				md.Set("x-api-field-"+ k, v)
+				md.Set("x-api-field-"+k, v)
 			}
 			md.Set("x-api-body", ep.Body)
 			// TODO: Req.Clone from context metadata
