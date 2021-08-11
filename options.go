@@ -28,7 +28,6 @@ import (
 
 	"github.com/lack-io/cli"
 	"github.com/lack-io/gscheduler"
-	"github.com/lack-io/vine/lib/trace"
 
 	"github.com/lack-io/vine/core/broker"
 	"github.com/lack-io/vine/core/client"
@@ -38,6 +37,7 @@ import (
 	"github.com/lack-io/vine/lib/cmd"
 	"github.com/lack-io/vine/lib/config"
 	"github.com/lack-io/vine/lib/dao"
+	"github.com/lack-io/vine/lib/trace"
 )
 
 // Options for vine service
@@ -46,9 +46,9 @@ type Options struct {
 	Cmd       cmd.Cmd
 	Client    client.Client
 	Config    config.Config
-	Server  server.Server
-	Trace   trace.Tracer
-	Dialect dao.Dialect
+	Server    server.Server
+	Trace     trace.Tracer
+	Dialect   dao.Dialect
 	Registry  registry.Registry
 	Scheduler gscheduler.Scheduler
 

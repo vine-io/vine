@@ -160,15 +160,6 @@ func (s *service) Stop() error {
 }
 
 func (s *service) Run() error {
-	// register the debug handler
-	if err := s.opts.Server.Handle(
-		s.opts.Server.NewHandler(
-			server.InternalHandler(true),
-		),
-	); err != nil {
-		return err
-	}
-
 	// start the profiler
 	logger.Infof("Starting [service] %s", s.Name())
 	logger.Infof("service [version] %s", s.Options().Server.Options().Version)

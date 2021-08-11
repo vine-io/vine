@@ -37,8 +37,6 @@ import (
 	configMemory "github.com/lack-io/vine/lib/config/memory"
 	"github.com/lack-io/vine/lib/dao"
 	daoNop "github.com/lack-io/vine/lib/dao/nop"
-	"github.com/lack-io/vine/lib/store"
-	storeMem "github.com/lack-io/vine/lib/store/memory"
 	"github.com/lack-io/vine/lib/trace"
 	traceMem "github.com/lack-io/vine/lib/trace/memory"
 )
@@ -58,8 +56,6 @@ func init() {
 	config.DefaultConfig = configMemory.NewConfig()
 	// default dao
 	dao.DefaultDialect = daoNop.NewDialect()
-	// default store
-	store.DefaultStore = storeMem.NewStore()
 	// default trace
 	trace.DefaultTracer = traceMem.NewTracer()
 }
