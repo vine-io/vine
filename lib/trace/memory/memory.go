@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lack-io/vine/lib/trace"
 
-	"github.com/lack-io/vine/lib/debug/trace"
 	"github.com/lack-io/vine/util/ring"
 )
 

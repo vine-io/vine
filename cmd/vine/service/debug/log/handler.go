@@ -26,7 +26,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/lack-io/vine/lib/debug/log"
+	"github.com/lack-io/vine/lib/logger/log"
 	"github.com/lack-io/vine/proto/apis/errors"
 	pb "github.com/lack-io/vine/proto/services/debug/log"
 )

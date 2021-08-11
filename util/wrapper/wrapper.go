@@ -28,8 +28,7 @@ import (
 
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/lib/debug/stats"
-	"github.com/lack-io/vine/lib/debug/trace"
+	"github.com/lack-io/vine/lib/trace"
 	"github.com/lack-io/vine/util/context/metadata"
 )
 
@@ -71,22 +70,6 @@ func FromService(name string, c client.Client) client.Client {
 	return &fromServiceWrapper{
 		Client:  c,
 		headers: md,
-	}
-}
-
-// HandlerStats wraps a server handler to generate request/error stats
-func HandlerStats(stats stats.Stats) server.HandlerWrapper {
-	// return a handler wrapper
-	return func(h server.HandlerFunc) server.HandlerFunc {
-		// return a function that returns a function
-		return func(ctx context.Context, req server.Request, rsp interface{}) error {
-			// execute the handler
-			err := h(ctx, req, rsp)
-			// record the stats
-			stats.Record(err)
-			// return the error
-			return err
-		}
 	}
 }
 

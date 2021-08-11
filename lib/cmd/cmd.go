@@ -49,31 +49,17 @@ import (
 	configMemory "github.com/lack-io/vine/lib/config/memory"
 	configSrc "github.com/lack-io/vine/lib/config/source"
 	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/debug/profile"
-	"github.com/lack-io/vine/lib/debug/profile/http"
-	"github.com/lack-io/vine/lib/debug/profile/pprof"
-	"github.com/lack-io/vine/lib/debug/trace"
 	log "github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/lib/runtime"
-	"github.com/lack-io/vine/lib/store"
+	"github.com/lack-io/vine/lib/trace"
+	memTracer "github.com/lack-io/vine/lib/trace/memory"
 
 	// servers
 	sgrpc "github.com/lack-io/vine/core/server/grpc"
 
-	// runtimes
-	svcRuntime "github.com/lack-io/vine/lib/runtime/grpc"
-	lRuntime "github.com/lack-io/vine/lib/runtime/local"
-
 	daoNop "github.com/lack-io/vine/lib/dao/nop"
-
-	svcStore "github.com/lack-io/vine/lib/store/grpc"
-	memStore "github.com/lack-io/vine/lib/store/memory"
 
 	// config
 	configSrv "github.com/lack-io/vine/lib/config/source/service"
-
-	// tracers
-	memTracer "github.com/lack-io/vine/lib/debug/trace/memory"
 )
 
 func init() {
@@ -183,11 +169,6 @@ var (
 			Usage:   "Comma-separated list of broker addresses",
 		},
 		&cli.StringFlag{
-			Name:    "profile",
-			Usage:   "Debug profiler for cpu and memory stats",
-			EnvVars: []string{"VINE_DEBUG_PROFILE"},
-		},
-		&cli.StringFlag{
 			Name:    "registry",
 			EnvVars: []string{"VINE_REGISTRY"},
 			Usage:   "Registry for discovery. etcd, mdns",
@@ -196,18 +177,6 @@ var (
 			Name:    "registry-address",
 			EnvVars: []string{"VINE_REGISTRY_ADDRESS"},
 			Usage:   "Comma-separated list of registry addresses",
-		},
-		&cli.StringFlag{
-			Name:    "runtime",
-			Usage:   "Runtime for building and running services e.g local",
-			EnvVars: []string{"VINE_RUNTIME"},
-			Value:   "local",
-		},
-		&cli.StringFlag{
-			Name:    "runtime-source",
-			Usage:   "Runtime source for building and running services e.g github.com/lack-io/services",
-			EnvVars: []string{"VINE_RUNTIME_SOURCE"},
-			Value:   "github.com/lack-io/services",
 		},
 		&cli.StringFlag{
 			Name:    "selector",
@@ -225,34 +194,9 @@ var (
 			Usage:   "DSN database driver name for underlying dao",
 		},
 		&cli.StringFlag{
-			Name:    "store",
-			EnvVars: []string{"VINE_STORE"},
-			Usage:   "Store used for key-value storage",
-		},
-		&cli.StringFlag{
-			Name:    "store-address",
-			EnvVars: []string{"VINE_STORE_ADDRESS"},
-			Usage:   "Comma-separated list of store addresses",
-		},
-		&cli.StringFlag{
-			Name:    "store-database",
-			EnvVars: []string{"VINE_STORE_DATABASE"},
-			Usage:   "Database option for the underlying store",
-		},
-		&cli.StringFlag{
-			Name:    "store-table",
-			EnvVars: []string{"VINE_STORE_TABLE"},
-			Usage:   "Table option for the underlying store",
-		},
-		&cli.StringFlag{
-			Name:    "transport",
-			EnvVars: []string{"VINE_TRANSPORT"},
-			Usage:   "Transport mechanism used; http",
-		},
-		&cli.StringFlag{
-			Name:    "transport-address",
-			EnvVars: []string{"VINE_TRANSPORT_ADDRESS"},
-			Usage:   "Comma-separated list of transport addresses",
+			Name:    "config",
+			EnvVars: []string{"VINE_CONFIG"},
+			Usage:   "The source of the config to be used to get configuration",
 		},
 		&cli.StringFlag{
 			Name:    "tracer",
@@ -263,72 +207,6 @@ var (
 			Name:    "tracer-address",
 			EnvVars: []string{"VINE_TRACER_ADDRESS"},
 			Usage:   "Comma-separated list of tracer addresses",
-		},
-		&cli.StringFlag{
-			Name:    "auth",
-			EnvVars: []string{"VINE_AUTH"},
-			Usage:   "Auth for role based access control, e.g. service",
-		},
-		&cli.StringFlag{
-			Name:    "auth-id",
-			EnvVars: []string{"VINE_AUTH_ID"},
-			Usage:   "Account ID used for client authentication",
-		},
-		&cli.StringFlag{
-			Name:    "auth-secret",
-			EnvVars: []string{"VINE_AUTH_SECRET"},
-			Usage:   "Account secret used for client authentication",
-		},
-		&cli.StringFlag{
-			Name:    "auth-namespace",
-			EnvVars: []string{"VINE_AUTH_NAMESPACE"},
-			Usage:   "Namespace for the services auth account",
-			Value:   "go.vine",
-		},
-		&cli.StringFlag{
-			Name:    "auth-public-key",
-			EnvVars: []string{"VINE_AUTH_PUBLIC_KEY"},
-			Usage:   "Public key for JWT auth (base64 encoded PEM)",
-		},
-		&cli.StringFlag{
-			Name:    "auth-private-key",
-			EnvVars: []string{"VINE_AUTH_PRIVATE_KEY"},
-			Usage:   "Private key for JWT auth (base64 encoded PEM)",
-		},
-		&cli.StringFlag{
-			Name:    "auth-provider",
-			EnvVars: []string{"VINE_AUTH_PROVIDER"},
-			Usage:   "Auth provider used to login user",
-		},
-		&cli.StringFlag{
-			Name:    "auth-provide-client-id",
-			EnvVars: []string{"VINE_AUTH_PROVIDER_CLIENT_ID"},
-			Usage:   "The client id to be used for oauth",
-		},
-		&cli.StringFlag{
-			Name:    "auth-provider-client-secret",
-			EnvVars: []string{"VINE_AUTH_PROVIDER_CLIENT_SECRET"},
-			Usage:   "The client secret to be used for oauth",
-		},
-		&cli.StringFlag{
-			Name:    "auth-provider-endpoint",
-			EnvVars: []string{"VINE_AUTH_PROVIDER_ENDPOINT"},
-			Usage:   "The endpoint to be used for oauth",
-		},
-		&cli.StringFlag{
-			Name:    "auth-provider-redirect",
-			EnvVars: []string{"VINE_AUTH_PROVIDER_REDIRECT"},
-			Usage:   "The redirect to be used for oauth",
-		},
-		&cli.StringFlag{
-			Name:    "auth-provider-scope",
-			EnvVars: []string{"VINE_AUTH_PROVIDER_SCOPE"},
-			Usage:   "The scope to be used for oauth",
-		},
-		&cli.StringFlag{
-			Name:    "config",
-			EnvVars: []string{"VINE_CONFIG"},
-			Usage:   "The source of the config to be used to get configuration",
 		},
 	}
 
@@ -358,28 +236,13 @@ var (
 		"grpc": sgrpc.NewServer,
 	}
 
-	DefaultRuntimes = map[string]func(...runtime.Option) runtime.Runtime{
-		"local":   lRuntime.NewRuntime,
-		"service": svcRuntime.NewRuntime,
-	}
-
 	DefaultDialects = map[string]func(...dao.Option) dao.Dialect{
 		"nop": daoNop.NewDialect,
-	}
-
-	DefaultStores = map[string]func(...store.Option) store.Store{
-		"memory":  memStore.NewStore,
-		"service": svcStore.NewStore,
 	}
 
 	DefaultTracers = map[string]func(...trace.Option) trace.Tracer{
 		"memory": memTracer.NewTracer,
 		// "jaeger": jTracer.NewTracer,
-	}
-
-	DefaultProfiles = map[string]func(...profile.Option) profile.Profile{
-		"http":  http.NewProfile,
-		"pprof": pprof.NewProfile,
 	}
 
 	DefaultConfigs = map[string]func(...config.Option) config.Config{
@@ -394,11 +257,8 @@ func newCmd(opts ...Option) Cmd {
 		Registry:  &registry.DefaultRegistry,
 		Server:    &server.DefaultServer,
 		Selector:  &selector.DefaultSelector,
-		Runtime:   &runtime.DefaultRuntime,
-		Store:     &store.DefaultStore,
 		Dialect:   &dao.DefaultDialect,
 		Tracer:    &trace.DefaultTracer,
-		Profile:   &profile.DefaultProfile,
 		Config:    &config.DefaultConfig,
 
 		Brokers:    DefaultBrokers,
@@ -406,11 +266,8 @@ func newCmd(opts ...Option) Cmd {
 		Registries: DefaultRegistries,
 		Selectors:  DefaultSelectors,
 		Servers:    DefaultServers,
-		Runtimes:   DefaultRuntimes,
 		Dialects:   DefaultDialects,
-		Stores:     DefaultStores,
 		Tracers:    DefaultTracers,
-		Profiles:   DefaultProfiles,
 		Configs:    DefaultConfigs,
 	}
 
@@ -474,15 +331,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 	// after the cache client since the wrappers are applied in reverse order and the cache will use
 	vineClient := client.DefaultClient
 
-	// Set the store
-	if name := ctx.String("store"); len(name) > 0 {
-		s, ok := c.opts.Stores[name]
-		if !ok {
-			return fmt.Errorf("unsuported store: %s", name)
-		}
-
-		*c.opts.Store = s(store.WithClient(vineClient))
-	}
 	// Set the dialect
 	if name := ctx.String("dao-dialect"); len(name) > 0 {
 		d, ok := c.opts.Dialects[name]
@@ -491,16 +339,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 
 		*c.opts.Dialect = d()
-	}
-
-	// Set the runtime
-	if name := ctx.String("runtime"); len(name) > 0 {
-		r, ok := c.opts.Runtimes[name]
-		if !ok {
-			return fmt.Errorf("unsupport runtime: %s", name)
-		}
-
-		*c.opts.Runtime = r(runtime.WithClient(vineClient))
 	}
 
 	// Set the tracer
@@ -549,16 +387,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		if err := (*c.opts.Broker).Init(broker.Registry(*c.opts.Registry)); err != nil {
 			log.Errorf("Error configuring broker: %v", err)
 		}
-	}
-
-	// Set the profile
-	if name := ctx.String("profile"); len(name) > 0 {
-		p, ok := c.opts.Profiles[name]
-		if !ok {
-			return fmt.Errorf("unsupport profile: %s", name)
-		}
-
-		*c.opts.Profile = p()
 	}
 
 	// Set the broker
@@ -627,24 +455,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 	}
 
-	if addrs := ctx.String("store-address"); len(addrs) > 0 {
-		if err := (*c.opts.Store).Init(store.Nodes(strings.Split(addrs, ",")...)); err != nil {
-			log.Fatalf("Error configuring store: %v", err)
-		}
-	}
-
-	if db := ctx.String("store-database"); len(db) > 0 {
-		if err := (*c.opts.Store).Init(store.Database(db)); err != nil {
-			log.Fatalf("Error configuring store database option: %v", err)
-		}
-	}
-
-	if table := ctx.String("store-table"); len(table) > 0 {
-		if err := (*c.opts.Store).Init(store.Table(table)); err != nil {
-			log.Fatalf("Error configuring store table option: %v", err)
-		}
-	}
-
 	if name := ctx.String("server-name"); len(name) > 0 {
 		serverOpts = append(serverOpts, server.Name(name))
 	}
@@ -671,12 +481,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 
 	if val := time.Duration(ctx.Int("register-interval")); val >= 0 {
 		serverOpts = append(serverOpts, server.RegisterInterval(val*time.Second))
-	}
-
-	if source := ctx.String("runtime-source"); len(source) > 0 {
-		if err := (*c.opts.Runtime).Init(runtime.WithSource(source)); err != nil {
-			log.Fatalf("Error configuring runtime: %v", err)
-		}
 	}
 
 	if ctx.String("config") == "service" {

@@ -34,10 +34,7 @@ import (
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/lib/config"
 	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/debug/profile"
-	"github.com/lack-io/vine/lib/debug/trace"
-	"github.com/lack-io/vine/lib/runtime"
-	"github.com/lack-io/vine/lib/store"
+	"github.com/lack-io/vine/lib/trace"
 )
 
 type Options struct {
@@ -55,11 +52,8 @@ type Options struct {
 	Config    *config.Config
 	Client    *client.Client
 	Server    *server.Server
-	Runtime   *runtime.Runtime
 	Dialect   *dao.Dialect
-	Store     *store.Store
 	Tracer    *trace.Tracer
-	Profile   *profile.Profile
 
 	Brokers    map[string]func(...broker.Option) broker.Broker
 	Configs    map[string]func(...config.Option) config.Config
@@ -67,11 +61,8 @@ type Options struct {
 	Registries map[string]func(...registry.Option) registry.Registry
 	Selectors  map[string]func(...selector.Option) selector.Selector
 	Servers    map[string]func(...server.Option) server.Server
-	Runtimes   map[string]func(...runtime.Option) runtime.Runtime
 	Dialects   map[string]func(...dao.Option) dao.Dialect
-	Stores     map[string]func(...store.Option) store.Store
 	Tracers    map[string]func(...trace.Option) trace.Tracer
-	Profiles   map[string]func(...profile.Option) profile.Profile
 
 	// Other options for implementations of the interfaces
 	// can be stored in a context
@@ -131,12 +122,6 @@ func Registry(r *registry.Registry) Option {
 	}
 }
 
-func Runtime(r *runtime.Runtime) Option {
-	return func(o *Options) {
-		o.Runtime = r
-	}
-}
-
 func Client(c *client.Client) Option {
 	return func(o *Options) {
 		o.Client = c
@@ -155,21 +140,9 @@ func Dialect(d *dao.Dialect) Option {
 	}
 }
 
-func Store(s *store.Store) Option {
-	return func(o *Options) {
-		o.Store = s
-	}
-}
-
 func Tracer(t *trace.Tracer) Option {
 	return func(o *Options) {
 		o.Tracer = t
-	}
-}
-
-func Profile(p *profile.Profile) Option {
-	return func(o *Options) {
-		o.Profile = p
 	}
 }
 
@@ -205,13 +178,6 @@ func NewSelector(name string, s func(...selector.Option) selector.Selector) Opti
 func NewServer(name string, s func(...server.Option) server.Server) Option {
 	return func(o *Options) {
 		o.Servers[name] = s
-	}
-}
-
-// NewRuntime new runtime func
-func NewRuntime(name string, r func(...runtime.Option) runtime.Runtime) Option {
-	return func(o *Options) {
-		o.Runtimes[name] = r
 	}
 }
 

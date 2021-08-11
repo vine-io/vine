@@ -20,46 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package process executes a binary
-package process
+package noop
 
 import (
-	"io"
-
-	"github.com/lack-io/vine/lib/runtime/local/build"
+	log2 "github.com/lack-io/vine/lib/logger/log"
 )
 
-// Process manages a running process
-type Process interface {
-	// Exec executes a process to completion
-	Exec(*Executable) error
-	// Fork creates a new process
-	Fork(*Executable) (*PID, error)
-	// Kill kills the process
-	Kill(*PID) error
-	// Wait waits for a process to exit
-	Wait(*PID) error
+type noop struct{}
+
+func (n *noop) Read(...log2.ReadOption) ([]log2.Record, error) {
+	return nil, nil
 }
 
-type Executable struct {
-	// Package containing executable
-	Package *build.Package
-	// The env variables
-	Env []string
-	// Args to pass
-	Args []string
-	// Initial working directory
-	Dir string
+func (n *noop) Write(log2.Record) error {
+	return nil
 }
 
-// PID is the running process
-type PID struct {
-	// ID of the process
-	ID string
-	// Stdin
-	Input io.Writer
-	// Stdout
-	Output io.Reader
-	// Stderr
-	Error io.Reader
+func (n *noop) Stream() (log2.Stream, error) {
+	return nil, nil
+}
+
+func NewLog(opts ...log2.Option) log2.Log {
+	return new(noop)
 }

@@ -37,10 +37,10 @@ import (
 	configMemory "github.com/lack-io/vine/lib/config/memory"
 	"github.com/lack-io/vine/lib/dao"
 	daoNop "github.com/lack-io/vine/lib/dao/nop"
-	"github.com/lack-io/vine/lib/debug/trace"
-	traceMem "github.com/lack-io/vine/lib/debug/trace/memory"
 	"github.com/lack-io/vine/lib/store"
 	storeMem "github.com/lack-io/vine/lib/store/memory"
+	"github.com/lack-io/vine/lib/trace"
+	traceMem "github.com/lack-io/vine/lib/trace/memory"
 )
 
 func init() {

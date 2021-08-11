@@ -25,17 +25,13 @@ package vine
 import (
 	"os"
 	"os/signal"
-	"runtime"
 	"sync"
 
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/server"
 	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/lib/debug/handler"
-	"github.com/lack-io/vine/lib/debug/stats"
-	"github.com/lack-io/vine/lib/debug/trace"
 	"github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/lib/store"
+	"github.com/lack-io/vine/lib/trace"
 	signalutil "github.com/lack-io/vine/util/signal"
 	"github.com/lack-io/vine/util/wrapper"
 )
@@ -59,7 +55,6 @@ func newService(opts ...Option) Service {
 
 	// wrap the server to provided handler stats
 	_ = options.Server.Init(
-		server.WrapHandler(wrapper.HandlerStats(stats.DefaultStats)),
 		server.WrapHandler(wrapper.TraceHandler(trace.DefaultTracer)),
 	)
 
@@ -93,13 +88,10 @@ func (s *service) Init(opts ...Option) {
 			if err := s.opts.Cmd.Init(
 				cmd.Broker(&s.opts.Broker),
 				cmd.Registry(&s.opts.Registry),
-				cmd.Runtime(&s.opts.Runtime),
 				cmd.Client(&s.opts.Client),
 				cmd.Config(&s.opts.Config),
 				cmd.Server(&s.opts.Server),
-				cmd.Store(&s.opts.Store),
 				cmd.Dialect(&s.opts.Dialect),
-				cmd.Profile(&s.opts.Profile),
 			); err != nil {
 				logger.Fatal(err)
 			}
@@ -110,9 +102,6 @@ func (s *service) Init(opts ...Option) {
 			return nil
 		})
 
-		// Explicitly set the table name to the service name
-		name := s.opts.Server.Options().Name
-		_ = s.opts.Store.Init(store.Table(name))
 	})
 }
 
@@ -174,24 +163,10 @@ func (s *service) Run() error {
 	// register the debug handler
 	if err := s.opts.Server.Handle(
 		s.opts.Server.NewHandler(
-			handler.NewHandler(s.opts.Client),
 			server.InternalHandler(true),
 		),
 	); err != nil {
 		return err
-	}
-
-	// start the profiler
-	if s.opts.Profile != nil {
-		// to view mutex contention
-		runtime.SetMutexProfileFraction(5)
-		// to view blocking profile
-		runtime.SetBlockProfileRate(1)
-
-		if err := s.opts.Profile.Start(); err != nil {
-			return err
-		}
-		defer s.opts.Profile.Stop()
 	}
 
 	// start the profiler

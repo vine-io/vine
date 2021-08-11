@@ -20,25 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package source retrieves source code
-package source
+package memory
 
-// Source retrieves source code
-type Source interface {
-	// Fetch repo from a url
-	Fetch(url string) (*Repository, error)
-	// Commit and upload repo
-	Commit(*Repository) error
-	// String the sourcerer
-	String() string
+import (
+	"github.com/lack-io/vine/lib/logger/log"
+)
+
+type logStream struct {
+	stream <-chan log.Record
+	stop   chan bool
 }
 
-// Repository is the source repository
-type Repository struct {
-	// Name or repo
-	Name string
-	// Local path where repo is stored
-	Path string
-	// URL from which repo was retrieved
-	URL string
+func (l *logStream) Chan() <-chan log.Record {
+	return l.stream
+}
+
+func (l *logStream) Stop() error {
+	select {
+	case <-l.stop:
+		return nil
+	default:
+		close(l.stop)
+	}
+	return nil
 }

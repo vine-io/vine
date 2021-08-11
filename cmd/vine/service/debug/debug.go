@@ -25,13 +25,13 @@ package debug
 
 import (
 	"github.com/lack-io/cli"
+	log2 "github.com/lack-io/vine/lib/logger/log"
 
 	"github.com/lack-io/vine"
 	logHandler "github.com/lack-io/vine/cmd/vine/service/debug/log"
 	statshandler "github.com/lack-io/vine/cmd/vine/service/debug/stats"
 	tracehandler "github.com/lack-io/vine/cmd/vine/service/debug/trace"
 	dservice "github.com/lack-io/vine/lib/debug"
-	"github.com/lack-io/vine/lib/debug/log"
 	ulog "github.com/lack-io/vine/lib/logger"
 	pblog "github.com/lack-io/vine/proto/services/debug/log"
 	pbstats "github.com/lack-io/vine/proto/services/debug/stats"
@@ -66,20 +66,20 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	svc := vine.NewService(svcOpts...)
 
 	// default log initialiser
-	newLog := func(service string) log.Log {
+	newLog := func(service string) log2.Log {
 		// service log calls the actual service for the log
 		return dservice.NewLog(
 			// log with service name
-			log.Name(service),
+			log2.Name(service),
 		)
 	}
 
 	source := ctx.String("log")
 	switch source {
 	case "service":
-		newLog = func(service string) log.Log {
+		newLog = func(service string) log2.Log {
 			return dservice.NewLog(
-				log.Name(service),
+				log2.Name(service),
 			)
 		}
 		//case "kubernetes":
@@ -101,7 +101,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		// log handler
 		lgHandler := &logHandler.Log{
 			// create the log map
-			Logs: make(map[string]log.Log),
+			Logs: make(map[string]log2.Log),
 			// Create the new func
 			New: newLog,
 		}
