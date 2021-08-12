@@ -29,11 +29,9 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strings"
 
 	ccli "github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/cmd/vine/service/runtime/profile"
 	"github.com/lack-io/vine/util/config"
 )
 
@@ -71,52 +69,6 @@ var defaultEnvs = map[string]Env{
 		Name:         EnvPlatform,
 		ProxyAddress: platformProxyAddress,
 	},
-}
-
-// SetupCommand includes things that should run for each command.
-func SetupCommand(ctx *ccli.Context) {
-	switch ctx.Args().First() {
-	case "new", "server", "help":
-		return
-	}
-	if ctx.Args().Len() >= 1 && ctx.Args().First() == "env" {
-		return
-	}
-
-	toFlag := func(s string) string {
-		return strings.ToLower(strings.ReplaceAll(s, "VINE_", ""))
-	}
-	setFlags := func(envars []string) {
-		for _, envar := range envars {
-			// setting both env and flags here
-			// as the proxy settings for example did not take effect
-			// with only flags
-			parts := strings.Split(envar, "=")
-			key := toFlag(parts[0])
-			os.Setenv(parts[0], parts[1])
-			ctx.Set(key, parts[1])
-		}
-	}
-
-	env := GetEnv(ctx)
-
-	// if we're running a local environment return here
-	if len(env.ProxyAddress) == 0 || env.Name == EnvLocal {
-		return
-	}
-
-	switch env.Name {
-	case EnvServer:
-		setFlags(profile.ServerCLI())
-	case EnvPlatform:
-		setFlags(profile.PlatformCLI())
-	default:
-		// default case for ad hoc envs, see comments above about tests
-		setFlags(profile.ServerCLI())
-	}
-
-	// Set the proxy
-	setFlags([]string{"VINE_PROXY=" + env.ProxyAddress})
 }
 
 type Env struct {

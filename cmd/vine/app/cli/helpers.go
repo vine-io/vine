@@ -37,8 +37,6 @@ import (
 	"github.com/lack-io/vine/core/client"
 	"github.com/lack-io/vine/core/codec/bytes"
 	"github.com/lack-io/vine/lib/cmd"
-	clic "github.com/lack-io/vine/util/command/cli"
-	"github.com/lack-io/vine/util/file"
 )
 
 type exec func(*cli.Context, []string) ([]byte, error)
@@ -55,81 +53,6 @@ func Print(e exec) func(*cli.Context) error {
 		}
 		return nil
 	}
-}
-
-func list(c *cli.Context, args []string) ([]byte, error) {
-	// no args
-	if len(args) == 0 {
-		return clic.ListServices(c)
-	}
-
-	// check first arg
-	switch args[0] {
-	case "services":
-		return clic.ListServices(c)
-	case "nodes":
-		return clic.NetworkNodes(c)
-	case "routes":
-		return clic.NetworkRoutes(c)
-	}
-
-	return nil, errors.New("unknown command")
-}
-
-func networkConnect(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkConnect(c, args)
-}
-
-func networkConnections(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkConnections(c)
-}
-
-func networkGraph(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkGraph(c)
-}
-
-func networkServices(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkServices(c)
-}
-
-func netNodes(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkNodes(c)
-}
-
-func netRoutes(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkRoutes(c)
-}
-
-func netDNSAdvertise(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkDNSAdvertise(c)
-}
-
-func netDNSRemove(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkDNSRemove(c)
-}
-
-func netDNSResolve(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkDNSResolve(c)
-}
-
-func listServices(c *cli.Context, args []string) ([]byte, error) {
-	return clic.ListServices(c)
-}
-
-func registerService(c *cli.Context, args []string) ([]byte, error) {
-	return clic.RegisterService(c, args)
-}
-
-func deregisterService(c *cli.Context, args []string) ([]byte, error) {
-	return clic.DeregisterService(c, args)
-}
-
-func getService(c *cli.Context, args []string) ([]byte, error) {
-	return clic.GetService(c, args)
-}
-
-func callService(c *cli.Context, args []string) ([]byte, error) {
-	return clic.CallService(c, args)
 }
 
 func getEnv(c *cli.Context, args []string) ([]byte, error) {
@@ -181,12 +104,6 @@ func addEnv(c *cli.Context, args []string) ([]byte, error) {
 	return nil, nil
 }
 
-// netCall calls services through the network
-func netCall(c *cli.Context, args []string) ([]byte, error) {
-	os.Setenv("VINE_PROXY", "go.vine.network")
-	return clic.CallService(c, args)
-}
-
 // TODO: stream via HTTP
 func streamService(c *cli.Context, args []string) ([]byte, error) {
 	if len(args) < 2 {
@@ -229,29 +146,3 @@ func streamService(c *cli.Context, args []string) ([]byte, error) {
 	}
 }
 
-func publish(c *cli.Context, args []string) ([]byte, error) {
-	if err := clic.Publish(c, args); err != nil {
-		return nil, err
-	}
-	return []byte(`ok`), nil
-}
-
-func queryHealth(c *cli.Context, args []string) ([]byte, error) {
-	return clic.QueryHealth(c, args)
-}
-
-func queryStats(c *cli.Context, args []string) ([]byte, error) {
-	return clic.QueryStats(c, args)
-}
-
-func upload(ctx *cli.Context, args []string) ([]byte, error) {
-	if ctx.Args().Len() == 0 {
-		return nil, errors.New("Required filename to upload")
-	}
-
-	filename := ctx.Args().Get(0)
-	localfile := ctx.Args().Get(1)
-
-	fileClient := file.New("go.vine.server", client.DefaultClient)
-	return nil, fileClient.Upload(filename, localfile)
-}

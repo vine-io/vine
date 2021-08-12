@@ -30,9 +30,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/lack-io/vine/lib/api/server"
-	"github.com/lack-io/vine/lib/logger"
+	log "github.com/lack-io/vine/lib/logger"
 )
+
+var DefaultBodyLimit = 1024 * 1024 * 1024 * 1024 * 1024
 
 type httpServer struct {
 	app  *fiber.App
@@ -51,7 +54,7 @@ func NewServer(address string, opts ...server.Option) server.Server {
 
 	return &httpServer{
 		opts:    options,
-		app:     fiber.New(fiber.Config{DisableStartupMessage: true}),
+		app:     fiber.New(fiber.Config{BodyLimit: DefaultBodyLimit, DisableStartupMessage: true}),
 		address: address,
 		exit:    make(chan chan error),
 	}
@@ -71,7 +74,6 @@ func (s *httpServer) Init(opts ...server.Option) error {
 }
 
 func (s *httpServer) Handle(path string, app *fiber.App) {
-	// TODO: move this stuff out to one place with ServeHTTP
 
 	// apply the wrappers, e.g. auth
 	for _, wrapper := range s.opts.Wrappers {
@@ -87,6 +89,7 @@ func (s *httpServer) Handle(path string, app *fiber.App) {
 	// wrap with logger
 	//handler = loggingHandler(handler)
 
+	s.app.Use(logger.New())
 	s.app.Mount(path, app)
 }
 
@@ -104,14 +107,14 @@ func (s *httpServer) Start() error {
 		return err
 	}
 
-	logger.Infof("HTTP API Listening on %s", l.Addr().String())
+	log.Infof("HTTP API Listening on %s", l.Addr().String())
 
 	s.mtx.Lock()
 	s.address = l.Addr().String()
 	s.mtx.Unlock()
 
 	go func() {
-		if err := s.app.Listener(l); err != nil {
+		if err = s.app.Listener(l); err != nil {
 			// temporary fix
 			//logger.Fatal(err)
 		}
