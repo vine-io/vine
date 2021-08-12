@@ -89,7 +89,13 @@ func (s *httpServer) Handle(path string, app *fiber.App) {
 	// wrap with logger
 	//handler = loggingHandler(handler)
 
-	s.app.Use(logger.New())
+	s.app.Use(logger.New(logger.Config{
+		Format:       "[${time}] ${status} - ${latency} ${method} ${path}\n",
+		TimeFormat:   "15:04:05",
+		TimeZone:     "Local",
+		TimeInterval: 0,
+		Output:       log.DefaultLogger.Options().Out,
+	}))
 	s.app.Mount(path, app)
 }
 
