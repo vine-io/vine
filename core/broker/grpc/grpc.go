@@ -26,10 +26,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/lib/logger"
-	pb "github.com/lack-io/vine/proto/services/broker"
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/lib/logger"
+	pb "github.com/vine-io/vine/proto/services/broker"
 )
 
 type gRPCBroker struct {

@@ -32,7 +32,7 @@ import (
 
 	"github.com/patrickmn/go-cache"
 
-	"github.com/lack-io/vine/lib/store"
+	"github.com/vine-io/vine/lib/store"
 )
 
 // NewStore returns a memory store

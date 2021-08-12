@@ -1,13 +1,13 @@
 NAME=vine
-IMAGE_NAME=lack-io/$(NAME)
+IMAGE_NAME=vine-io/$(NAME)
 GIT_COMMIT=$(shell git rev-parse --short HEAD)
 GIT_TAG=$(shell git describe --abbrev=0 --tags --always --match "v*")
-GIT_VERSION=github.com/lack-io/vine/cmd/vine/version
+GIT_VERSION=github.com/vine-io/vine/cmd/vine/version
 CGO_ENABLED=0
 BUILD_DATE=$(shell date +%s)
 LDFLAGS=-X $(GIT_VERSION).GitCommit=$(GIT_COMMIT) -X $(GIT_VERSION).GitTag=$(GIT_TAG) -X $(GIT_VERSION).BuildDate=$(BUILD_DATE)
 IMAGE_TAG=$(GIT_TAG)-$(GIT_COMMIT)
-ROOT=github.com/lack-io/vine
+ROOT=github.com/vine-io/vine
 TOOLS=$(shell echo "vine protoc-gen-gogo protoc-gen-vine protoc-gen-dao protoc-gen-validator protoc-gen-deepcopy protoc-gen-cli" )
 
 all: build
@@ -83,12 +83,12 @@ build-linux-tool:
 install:
 	go get github.com/rakyll/statik
 	go get github.com/gogo/protobuf
-	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-	go get github.com/lack-io/vine/cmd/protoc-gen-vine
-	go get github.com/lack-io/vine/cmd/protoc-gen-validator
-	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-	go get github.com/lack-io/vine/cmd/protoc-gen-dao
-	go get github.com/lack-io/vine/cmd/protoc-gen-cli
+	go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+	go get github.com/vine-io/vine/cmd/protoc-gen-vine
+	go get github.com/vine-io/vine/cmd/protoc-gen-validator
+	go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+	go get github.com/vine-io/vine/cmd/protoc-gen-dao
+	go get github.com/vine-io/vine/cmd/protoc-gen-cli
 
 protoc:
 	cd $(GOPATH)/src && \

@@ -177,7 +177,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 func (g *gogo) decodeVarint(varName string, typName string) {

@@ -34,7 +34,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/xlab/treeprint"
 
-	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
+	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 )
 
 var defaultFlag = []string{"-a", "-installsuffix", "cgo", `-ldflags "-s -w"`}
@@ -47,11 +47,11 @@ func protoComments(goDir, name string) []string {
 		"cd " + goDir,
 		"\ninstall dependencies:",
 		"\tgo get github.com/gogo/protobuf",
-		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-gogo",
-		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-vine",
-		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-validator",
-		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-deepcopy",
-		"\tgo get github.com/lack-io/vine/cmd/protoc-gen-dao\n",
+		"\tgo get github.com/vine-io/vine/cmd/protoc-gen-gogo",
+		"\tgo get github.com/vine-io/vine/cmd/protoc-gen-vine",
+		"\tgo get github.com/vine-io/vine/cmd/protoc-gen-validator",
+		"\tgo get github.com/vine-io/vine/cmd/protoc-gen-deepcopy",
+		"\tgo get github.com/vine-io/vine/cmd/protoc-gen-dao\n",
 		"cd " + goDir,
 		"\tvine build " + name,
 	}

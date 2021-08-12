@@ -23,7 +23,7 @@
 package grpc
 
 import (
-	"github.com/lack-io/vine/core/client"
+	"github.com/vine-io/vine/core/client"
 )
 
 type grpcEvent struct {

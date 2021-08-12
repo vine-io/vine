@@ -29,7 +29,7 @@ import (
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 var TagString = "gen"
@@ -134,7 +134,7 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
 	} else {
 		vv := v.Value
-		pkg := g.NewImport("github.com/lack-io/vine/util/runtime", "runtime")
+		pkg := g.NewImport("github.com/vine-io/vine/util/runtime", "runtime")
 		g.P(fmt.Sprintf(`// GVK is an auto-generated gvk function, get the information like group, version and name of %s.`, mname))
 		var group, version string
 		if vv != "" {

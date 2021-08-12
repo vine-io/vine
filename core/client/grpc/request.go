@@ -26,8 +26,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/codec"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/codec"
 )
 
 type grpcRequest struct {

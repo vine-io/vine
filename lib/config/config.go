@@ -23,9 +23,9 @@
 package config
 
 import (
-	"github.com/lack-io/vine/lib/config/reader"
-	"github.com/lack-io/vine/lib/config/source"
-	"github.com/lack-io/vine/lib/config/source/file"
+	"github.com/vine-io/vine/lib/config/reader"
+	"github.com/vine-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source/file"
 )
 
 // Config is an interface abstraction for dynamic configuration

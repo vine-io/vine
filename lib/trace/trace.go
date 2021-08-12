@@ -27,7 +27,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 // Tracer is an interface for distributed tracing

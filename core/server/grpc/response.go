@@ -23,7 +23,7 @@
 package grpc
 
 import (
-	"github.com/lack-io/vine/core/codec"
+	"github.com/vine-io/vine/core/codec"
 )
 
 type rpcResponse struct {

@@ -26,7 +26,7 @@ import (
 	"reflect"
 	"testing"
 
-	log2 "github.com/lack-io/vine/lib/logger/log"
+	log2 "github.com/vine-io/vine/lib/logger/log"
 )
 
 func TestLogger(t *testing.T) {

@@ -29,7 +29,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/net/publicsuffix"
 
-	log "github.com/lack-io/vine/lib/logger"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 func NewResolver(svcType, namespace string) *Resolver {

@@ -63,7 +63,7 @@ var (
 
 import (
 	"github.com/lack-io/pkg/inject"
-	log "github.com/lack-io/vine/lib/logger"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 type logger struct{}
@@ -144,8 +144,8 @@ import ({{range .Plugins}}
 	SingleApp = `package pkg
 
 import (
-	"github.com/lack-io/vine"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine"
+	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/server"
 )
@@ -165,8 +165,8 @@ func Run() {
 	ClusterApp = `package {{.Name}}
 
 import (
-	"github.com/lack-io/vine"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine"
+	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/{{.Name}}/server"
 )
@@ -192,24 +192,24 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine"
-	ahandler "github.com/lack-io/vine/lib/api/handler"
-	"github.com/lack-io/vine/lib/api/handler/openapi"
-	arpc "github.com/lack-io/vine/lib/api/handler/rpc"
-	"github.com/lack-io/vine/lib/api/resolver"
-	"github.com/lack-io/vine/lib/api/resolver/grpc"
-	"github.com/lack-io/vine/lib/api/router"
-	regRouter "github.com/lack-io/vine/lib/api/router/registry"
-	"github.com/lack-io/vine/lib/api/server"
-	httpapi "github.com/lack-io/vine/lib/api/server/http"
-	log "github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/util/helper"
-	"github.com/lack-io/vine/util/namespace"
+	"github.com/vine-io/vine"
+	ahandler "github.com/vine-io/vine/lib/api/handler"
+	"github.com/vine-io/vine/lib/api/handler/openapi"
+	arpc "github.com/vine-io/vine/lib/api/handler/rpc"
+	"github.com/vine-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/resolver/grpc"
+	"github.com/vine-io/vine/lib/api/router"
+	regRouter "github.com/vine-io/vine/lib/api/router/registry"
+	"github.com/vine-io/vine/lib/api/server"
+	httpapi "github.com/vine-io/vine/lib/api/server/http"
+	log "github.com/vine-io/vine/lib/logger"
+	"github.com/vine-io/vine/util/helper"
+	"github.com/vine-io/vine/util/namespace"
 	"github.com/rakyll/statik/fs"
 
 	"{{.Dir}}/pkg/runtime"
 
-	_ "github.com/lack-io/vine/lib/api/handler/openapi/statik"
+	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
 )
 
 var (
@@ -347,8 +347,8 @@ func Run() {
 import (
 	"github.com/gofiber/fiber/v2"
 
-	log "github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/lib/web"
+	log "github.com/vine-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/web"
 
 	"{{.Dir}}/pkg/runtime"
 )
@@ -380,8 +380,8 @@ func Run() {
 import (
 	"github.com/gofiber/fiber/v2"
 
-	log "github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/lib/web"
+	log "github.com/vine-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/web"
 
 	"{{.Dir}}/pkg/runtime"
 )
@@ -412,7 +412,7 @@ func Run() {
 
 import (
 	"{{.Dir}}/pkg/runtime/inject"
-	"github.com/lack-io/vine/util/runtime"
+	"github.com/vine-io/vine/util/runtime"
 )
 
 func init() {

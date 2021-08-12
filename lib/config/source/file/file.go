@@ -27,7 +27,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 type file struct {

@@ -26,8 +26,8 @@ import (
 	"context"
 	"crypto/tls"
 
-	"github.com/lack-io/vine/core/codec"
-	"github.com/lack-io/vine/core/registry"
+	"github.com/vine-io/vine/core/codec"
+	"github.com/vine-io/vine/core/registry"
 )
 
 type Options struct {

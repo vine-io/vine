@@ -26,7 +26,7 @@ import (
 	"crypto/tls"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/resolver"
 )
 
 type Option func(o *Options)

@@ -24,8 +24,8 @@
 package static
 
 import (
-	"github.com/lack-io/vine/core/client/selector"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/client/selector"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 // staticSelector is a static selector

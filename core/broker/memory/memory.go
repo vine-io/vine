@@ -30,10 +30,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/lib/logger"
-	maddr "github.com/lack-io/vine/util/addr"
-	mnet "github.com/lack-io/vine/util/net"
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/lib/logger"
+	maddr "github.com/vine-io/vine/util/addr"
+	mnet "github.com/vine-io/vine/util/net"
 )
 
 type memoryBroker struct {

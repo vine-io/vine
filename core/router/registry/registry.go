@@ -31,10 +31,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lack-io/vine/core/registry"
-	rr "github.com/lack-io/vine/core/router"
-	log "github.com/lack-io/vine/lib/logger"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
+	rr "github.com/vine-io/vine/core/router"
+	log "github.com/vine-io/vine/lib/logger"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 var (

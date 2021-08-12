@@ -5,7 +5,7 @@ var (
 
 import (
 	"{{.Dir}}/pkg/runtime/inject"
-	"github.com/lack-io/vine"
+	"github.com/vine-io/vine"
 )
 
 func init() {

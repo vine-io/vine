@@ -27,10 +27,10 @@ import (
 	"errors"
 	"time"
 
-	"github.com/lack-io/vine/core/registry"
+	"github.com/vine-io/vine/core/registry"
 	"go.etcd.io/etcd/client/v3"
 
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type etcdWatcher struct {

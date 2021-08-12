@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 func TestRequestToContext(t *testing.T) {

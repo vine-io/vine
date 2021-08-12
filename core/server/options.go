@@ -28,9 +28,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/core/codec"
-	"github.com/lack-io/vine/core/registry"
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/codec"
+	"github.com/vine-io/vine/core/registry"
 )
 
 type Options struct {

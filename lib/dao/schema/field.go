@@ -34,7 +34,7 @@ import (
 
 	"github.com/jinzhu/now"
 
-	"github.com/lack-io/vine/lib/dao/utils"
+	"github.com/vine-io/vine/lib/dao/utils"
 )
 
 type DataType string

@@ -24,8 +24,8 @@
 package proxy
 
 import (
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/router"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/router"
 )
 
 type Options struct {

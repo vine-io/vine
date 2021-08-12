@@ -50,17 +50,17 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/core/server"
-	log "github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/proto/apis/errors"
-	openapipb "github.com/lack-io/vine/proto/apis/openapi"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	"github.com/lack-io/vine/util/addr"
-	"github.com/lack-io/vine/util/backoff"
-	meta "github.com/lack-io/vine/util/context/metadata"
-	mnet "github.com/lack-io/vine/util/net"
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/core/server"
+	log "github.com/vine-io/vine/lib/logger"
+	"github.com/vine-io/vine/proto/apis/errors"
+	openapipb "github.com/vine-io/vine/proto/apis/openapi"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/util/addr"
+	"github.com/vine-io/vine/util/backoff"
+	meta "github.com/vine-io/vine/util/context/metadata"
+	mnet "github.com/vine-io/vine/util/net"
 )
 
 var (

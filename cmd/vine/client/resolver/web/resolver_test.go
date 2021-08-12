@@ -26,11 +26,11 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/core/client/selector"
-	"github.com/lack-io/vine/core/client/selector/dns"
-	"github.com/lack-io/vine/core/registry/memory"
-	"github.com/lack-io/vine/lib/api/resolver"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/core/client/selector/dns"
+	"github.com/vine-io/vine/core/registry/memory"
+	"github.com/vine-io/vine/lib/api/resolver"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 func TestWebResolver(t *testing.T) {

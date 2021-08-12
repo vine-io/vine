@@ -5,8 +5,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 type UserWithCallback struct {

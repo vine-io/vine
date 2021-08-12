@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lack-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/clause"
 )
 
 func TestSet(t *testing.T) {

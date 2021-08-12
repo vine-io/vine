@@ -38,16 +38,16 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/lack-io/cli"
 
-	svc "github.com/lack-io/vine"
-	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/lib/logger"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	maddr "github.com/lack-io/vine/util/addr"
-	"github.com/lack-io/vine/util/backoff"
-	mhttp "github.com/lack-io/vine/util/http"
-	mnet "github.com/lack-io/vine/util/net"
-	signalutil "github.com/lack-io/vine/util/signal"
-	mls "github.com/lack-io/vine/util/tls"
+	svc "github.com/vine-io/vine"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/lib/logger"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	maddr "github.com/vine-io/vine/util/addr"
+	"github.com/vine-io/vine/util/backoff"
+	mhttp "github.com/vine-io/vine/util/http"
+	mnet "github.com/vine-io/vine/util/net"
+	signalutil "github.com/vine-io/vine/util/signal"
+	mls "github.com/vine-io/vine/util/tls"
 )
 
 type service struct {

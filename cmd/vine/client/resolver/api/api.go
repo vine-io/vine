@@ -25,7 +25,7 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/resolver"
 )
 
 // Resolver default resolver for legacy purposes

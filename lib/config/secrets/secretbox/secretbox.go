@@ -31,7 +31,7 @@ import (
 
 	"golang.org/x/crypto/nacl/secretbox"
 
-	"github.com/lack-io/vine/lib/config/secrets"
+	"github.com/vine-io/vine/lib/config/secrets"
 )
 
 const keyLength = 32

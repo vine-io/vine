@@ -37,8 +37,8 @@ import (
 	"github.com/lack-io/cli"
 	"gopkg.in/fsnotify.v1"
 
-	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
-	signalutil "github.com/lack-io/vine/util/signal"
+	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
+	signalutil "github.com/vine-io/vine/util/signal"
 )
 
 type Runner struct {

@@ -26,7 +26,7 @@ import (
 	"strings"
 	"testing"
 
-	apipb "github.com/lack-io/vine/proto/apis/api"
+	apipb "github.com/vine-io/vine/proto/apis/api"
 )
 
 func TestEncoding(t *testing.T) {

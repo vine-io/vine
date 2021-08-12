@@ -25,7 +25,7 @@ package server
 import (
 	"context"
 
-	openapipb "github.com/lack-io/vine/proto/apis/openapi"
+	openapipb "github.com/vine-io/vine/proto/apis/openapi"
 )
 
 type HandlerOption func(*HandlerOptions)

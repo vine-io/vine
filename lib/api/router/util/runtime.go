@@ -29,7 +29,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/logger"
 )
 
 var (

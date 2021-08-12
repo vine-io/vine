@@ -31,15 +31,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/core/registry/cache"
-	"github.com/lack-io/vine/lib/api"
-	"github.com/lack-io/vine/lib/api/router"
-	"github.com/lack-io/vine/lib/api/router/util"
-	"github.com/lack-io/vine/lib/logger"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	ctx "github.com/lack-io/vine/util/context"
-	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/vine-io/vine/core/registry/cache"
+	"github.com/vine-io/vine/lib/api"
+	"github.com/vine-io/vine/lib/api/router"
+	"github.com/vine-io/vine/lib/api/router/util"
+	"github.com/vine-io/vine/lib/logger"
+	apipb "github.com/vine-io/vine/proto/apis/api"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	ctx "github.com/vine-io/vine/util/context"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 // endpoint struct, that holds compiled pcre

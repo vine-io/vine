@@ -28,7 +28,7 @@ import (
 	"io"
 
 	json "github.com/json-iterator/go"
-	"github.com/lack-io/vine/core/codec"
+	"github.com/vine-io/vine/core/codec"
 )
 
 type jsonCodec struct {

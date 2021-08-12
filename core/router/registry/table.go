@@ -28,8 +28,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	rr "github.com/lack-io/vine/core/router"
-	log "github.com/lack-io/vine/lib/logger"
+	rr "github.com/vine-io/vine/core/router"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 var (

@@ -25,8 +25,8 @@ package memory
 import (
 	"errors"
 
-	"github.com/lack-io/vine/core/registry"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type Watcher struct {

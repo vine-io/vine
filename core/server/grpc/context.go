@@ -25,7 +25,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/lack-io/vine/core/server"
+	"github.com/vine-io/vine/core/server"
 )
 
 func setServerOption(k, v interface{}) server.Option {

@@ -26,7 +26,7 @@ package proxy
 import (
 	"context"
 
-	"github.com/lack-io/vine/core/server"
+	"github.com/vine-io/vine/core/server"
 )
 
 // Proxy can be used as a proxy server for vine services

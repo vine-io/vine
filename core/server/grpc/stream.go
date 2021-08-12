@@ -27,7 +27,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/lack-io/vine/core/server"
+	"github.com/vine-io/vine/core/server"
 )
 
 // rpcStream implements a server side Stream.

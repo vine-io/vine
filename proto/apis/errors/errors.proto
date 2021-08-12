@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package errors;
 
-option go_package = "github.com/lack-io/vine/proto/apis/errors;errors";
+option go_package = "github.com/vine-io/vine/proto/apis/errors;errors";
 
 message Error {
   string id = 1;

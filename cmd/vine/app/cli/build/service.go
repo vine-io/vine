@@ -35,7 +35,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lack-io/cli"
-	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
+	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 )
 
 func runSRV(ctx *cli.Context) {

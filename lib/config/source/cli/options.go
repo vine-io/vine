@@ -27,7 +27,7 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 type contextKey struct{}

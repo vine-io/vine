@@ -28,10 +28,10 @@ import (
 
 	"github.com/imdario/mergo"
 
-	"github.com/lack-io/vine/lib/config/encoder"
-	"github.com/lack-io/vine/lib/config/encoder/json"
-	"github.com/lack-io/vine/lib/config/reader"
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/encoder"
+	"github.com/vine-io/vine/lib/config/encoder/json"
+	"github.com/vine-io/vine/lib/config/reader"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 type jsonReader struct {

@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/resolver"
 )
 
 type Resolver struct {

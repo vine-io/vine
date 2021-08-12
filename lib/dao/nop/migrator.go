@@ -1,9 +1,9 @@
 package nop
 
 import (
-	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 type Migrator struct {

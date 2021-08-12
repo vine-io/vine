@@ -27,8 +27,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/dao/utils"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/utils"
 )
 
 var embeddedCacheKey = "embedded_cache_store"

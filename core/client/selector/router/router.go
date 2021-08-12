@@ -29,13 +29,13 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/client/selector"
-	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/core/router"
-	rreg "github.com/lack-io/vine/core/router/registry"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	pb "github.com/lack-io/vine/proto/services/router"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/core/router"
+	rreg "github.com/vine-io/vine/core/router/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	pb "github.com/vine-io/vine/proto/services/router"
 )
 
 type routerSelector struct {

@@ -25,7 +25,7 @@ package file
 import (
 	"testing"
 
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 func TestFormat(t *testing.T) {

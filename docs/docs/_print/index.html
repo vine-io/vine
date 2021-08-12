@@ -86,7 +86,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -94,7 +94,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine" target="_blank" ><span>GitHub</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine" target="_blank" ><span>GitHub</span></a>
 			</li>
 			
 			
@@ -141,7 +141,7 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/lack/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/lack-io/vine"><img src="https://api.travis-ci.org/lack-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/lack-io/vine"><img src="https://goreportcard.com/badge/lack-io/vine" alt="Go Report Card"></a></p>
+      <p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/lack/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/lack-io/vine"><img src="https://api.travis-ci.org/lack-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/vine-io/vine"><img src="https://goreportcard.com/badge/lack-io/vine" alt="Go Report Card"></a></p>
 <p>Vine (<em>/vaɪn/</em>) 一套简单、高效、可插拔的分布式 RPC 框架。</p>
 <h2 id="简介">简介</h2>
 <p><strong>Vine</strong> 基于 <a href="https://github.com/asim/go-micro">go-micro</a> 框架，因此继承了它的优点。并在此基础上增加性能和可用性。</p>
@@ -183,7 +183,7 @@ This the multi-page printable view of this section.
 <p>Vine 遵守 Apache 2.0 开源许可.</p>
 <h2 id="起步">起步</h2>
 <h3 id="安装">安装</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/lack-io/vine/cmd/vine
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/vine-io/vine/cmd/vine
 </code></pre></div><h3 id="初始化项目">初始化项目</h3>
 <p>创建项目目录</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
@@ -243,11 +243,11 @@ download protobuf <span style="color:#ff79c6">for</span> vine:
 
 install dependencies:
         go get github.com/gogo/protobuf
-        go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-        go get github.com/lack-io/vine/cmd/protoc-gen-vine
-        go get github.com/lack-io/vine/cmd/protoc-gen-validator
-        go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-        go get github.com/lack-io/vine/cmd/protoc-gen-dao
+        go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+        go get github.com/vine-io/vine/cmd/protoc-gen-vine
+        go get github.com/vine-io/vine/cmd/protoc-gen-validator
+        go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+        go get github.com/vine-io/vine/cmd/protoc-gen-dao
 
 <span style="color:#8be9fd;font-style:italic">cd</span> example
         vine build <span style="color:#8be9fd;font-style:italic">echo</span>
@@ -313,7 +313,7 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
 </code></pre></div><h2 id="开始">开始</h2>
 <h3 id="1初始化">1.初始化</h3>
 <p>使用 <code>service.NewService</code> 创建服务</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
 
 service = vine.<span style="color:#50fa7b">NewService</span>()
 </code></pre></div><p>创建时使用选项</p>
@@ -321,14 +321,14 @@ service = vine.<span style="color:#50fa7b">NewService</span>()
     vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;greeter&#34;</span>),
     vine.<span style="color:#50fa7b">Version</span>(<span style="color:#f1fa8c">&#34;latest&#34;</span>),
 )
-</code></pre></div><p>支持的选项，请看<a href="https://pkg.go.dev/github.com/lack-io/vine/service#Option">这里</a></p>
+</code></pre></div><p>支持的选项，请看<a href="https://pkg.go.dev/github.com/vine-io/vine/service#Option">这里</a></p>
 <p><strong>Vine</strong> 同时支持使用<code>service.Flags</code> 来提供命令行参数:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
 <span style="color:#ff79c6">import</span> (
 	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
 
 	<span style="color:#f1fa8c">&#34;github.com/lack-io/cli&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
 )
 
 	service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
@@ -348,7 +348,7 @@ service = vine.<span style="color:#50fa7b">NewService</span>()
 			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
 		}),
 	)
-</code></pre></div><p><code>service.Init</code> 支持的选择看<a href="https://pkg.go.dev/github.com/lack-io/vine/service/config/cmd#pkg-variables">这里</a></p>
+</code></pre></div><p><code>service.Init</code> 支持的选择看<a href="https://pkg.go.dev/github.com/vine-io/vine/service/config/cmd#pkg-variables">这里</a></p>
 <h3 id="2定义-api">2.定义 API</h3>
 <p>使用 protobuf 文件定义服务的 API 接口。它可以能便利的提供严谨的 API 接口，同时为服务端和客户端提供具体的接口。
 greeter.proto</p>
@@ -370,13 +370,13 @@ greeter.proto</p>
 <p>你需要以下的工具来生成 protobuf 代码</p>
 <ul>
 <li><a href="https://github.com/protocolbuffers/protobuf">protoc</a></li>
-<li><a href="https://github.com/lack-io/vine/tree/master/cmd/protoc-gen-gogo">protoc-gen-gogo</a></li>
-<li><a href="https://github.com/lack-io/vine/tree/master/cmd/protoc-gen-vine">protoc-gen-vine</a></li>
+<li><a href="https://github.com/vine-io/vine/tree/master/cmd/protoc-gen-gogo">protoc-gen-gogo</a></li>
+<li><a href="https://github.com/vine-io/vine/tree/master/cmd/protoc-gen-vine">protoc-gen-vine</a></li>
 </ul>
 <p>使用 protoc、protoc-gen-gogo、protoc-gen-vine 来生成 protobuf code</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-go get github.com/lack-io/vine/cmd/protoc-gen-vine
+go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+go get github.com/vine-io/vine/cmd/protoc-gen-vine
 </code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/protobuf/protobuf --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>. greeter.proto
 </code></pre></div><p>它会生成以下代码:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Request <span style="color:#8be9fd;font-style:italic">struct</span> {
@@ -459,7 +459,7 @@ pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(service.Server, <sp
         <span style="color:#f1fa8c">&#34;log&#34;</span>
         <span style="color:#f1fa8c">&#34;context&#34;</span>
 
-        <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
+        <span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
         pb <span style="color:#f1fa8c">&#34;github.com/lack-io/examples/service/proto&#34;</span>
 )
 
@@ -559,11 +559,11 @@ download protobuf <span style="color:#ff79c6">for</span> vine:
 install dependencies:
         go get github.com/google/wire/cmd/wire
         go get github.com/gogo/protobuf
-        go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-        go get github.com/lack-io/vine/cmd/protoc-gen-vine
-        go get github.com/lack-io/vine/cmd/protoc-gen-validator
-        go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-        go get github.com/lack-io/vine/cmd/protoc-gen-dao
+        go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+        go get github.com/vine-io/vine/cmd/protoc-gen-vine
+        go get github.com/vine-io/vine/cmd/protoc-gen-validator
+        go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+        go get github.com/vine-io/vine/cmd/protoc-gen-dao
 
 <span style="color:#8be9fd;font-style:italic">cd</span> example
         vine build <span style="color:#8be9fd;font-style:italic">echo</span>
@@ -821,7 +821,7 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
-    <span style="color:#f1fa8c">&#34;github.com/lack-io/vine&#34;</span>
+    <span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
 
     <span style="color:#6272a4">// consul registry
 </span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/lack-io/plugins/registry/consul&#34;</span>
@@ -849,7 +849,7 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 }
 </code></pre></div><h2 id="编写插件">编写插件</h2>
 <p>插件是一个建立在 Go 接口上的概念。每个包都维护一个高级接口抽象。只需实现接口并将其作为服务选项传递给它即可.</p>
-<p>服务发现接口称为 <a href="https://pkg.go.dev/github.com/lack-io/vine/service/registry#Registry">Registry</a>. 实现此接口的任何内容都可以用作 <strong>Registry</strong>。这同样适用于其他包.</p>
+<p>服务发现接口称为 <a href="https://pkg.go.dev/github.com/vine-io/vine/service/registry#Registry">Registry</a>. 实现此接口的任何内容都可以用作 <strong>Registry</strong>。这同样适用于其他包.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
 	<span style="color:#50fa7b">Options</span>() Options
@@ -1089,12 +1089,12 @@ json 配置实例：</p>
 }
 </code></pre></div><h3 id="创建-config">创建 Config</h3>
 <p>创建一个新 <strong>Config</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/services/config&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
 
 conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
 </code></pre></div><h3 id="加载文件">加载文件</h3>
 <p>从文件加载配置，根据文件扩展名来确定配置格式。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/services/config&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
 
 <span style="color:#6272a4">// 加载 json 配置文件
 </span><span style="color:#6272a4"></span>config.<span style="color:#50fa7b">LoadFile</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>)
@@ -1102,10 +1102,10 @@ conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Ne
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config/encoder/toml&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config/source&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config/source/file&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/encoder/toml&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source/file&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
@@ -1259,8 +1259,8 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 	<span style="color:#f1fa8c">&#34;time&#34;</span>
 
 	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/registry&#34;</span>
-	regpb <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/proto/registry&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/registry&#34;</span>
+	regpb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/registry&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
@@ -1482,7 +1482,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 }
 </code></pre></div><p>使用 topic 注册消息处理程序</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
-</code></pre></div><p>完整实例可以看 <a href="https://github.com/lack-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
+</code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
 <h2 id="单独使用-broker">单独使用 Broker</h2>
 <p><code>Broker</code> 也可以单独使用：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
@@ -1491,8 +1491,8 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
 	<span style="color:#f1fa8c">&#34;time&#34;</span>
 
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/broker&#34;</span>
-	log <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/logger&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/broker&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/logger&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
@@ -1835,7 +1835,7 @@ rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get
 	<h1 id="pg-4e6f1a16fe16bccc289270367abbb60d">3.1 - Vine</h1>
     <div class="lead">在 <strong>vine</strong> 框架下我们提供一套命令行管理工具，用来管理项目和实现与 <strong>vine</strong> 服务的交互</div>
 	<h2 id="安装-vine-工具">安装 vine 工具</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/vine
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/vine
 </code></pre></div><p>验证安装结果</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine --help
 NAME:
@@ -1927,11 +1927,11 @@ download protobuf <span style="color:#ff79c6">for</span> vine:
 install dependencies:
    go get github.com/google/wire/cmd/wire
 	go get github.com/gogo/protobuf
-	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-	go get github.com/lack-io/vine/cmd/protoc-gen-vine
-	go get github.com/lack-io/vine/cmd/protoc-gen-validator
-	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-	go get github.com/lack-io/vine/cmd/protoc-gen-dao
+	go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+	go get github.com/vine-io/vine/cmd/protoc-gen-vine
+	go get github.com/vine-io/vine/cmd/protoc-gen-validator
+	go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+	go get github.com/vine-io/vine/cmd/protoc-gen-dao
 
 <span style="color:#8be9fd;font-style:italic">cd</span> example
 	vine build example
@@ -1939,11 +1939,11 @@ install dependencies:
 <p>根据提示，安装依赖</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/google/wire/cmd/wire
 $ go get github.com/gogo/protobuf
-$ go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-$ go get github.com/lack-io/vine/cmd/protoc-gen-vine
-$ go get github.com/lack-io/vine/cmd/protoc-gen-validator
-$ go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-$ go get github.com/lack-io/vine/cmd/protoc-gen-dao
+$ go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+$ go get github.com/vine-io/vine/cmd/protoc-gen-vine
+$ go get github.com/vine-io/vine/cmd/protoc-gen-validator
+$ go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+$ go get github.com/vine-io/vine/cmd/protoc-gen-dao
 </code></pre></div><h3 id="编译项目">编译项目</h3>
 <p>生成 <code>*.pb.go</code> 代码:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine build proto --type<span style="color:#ff79c6">=</span>service  --group<span style="color:#ff79c6">=</span>example example
@@ -2148,7 +2148,7 @@ OPTIONS:
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> email <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
 }
 </code></pre></div><h3 id="2安装-protoc-gen-validator">2.安装 protoc-gen-validator</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/protoc-gen-validator
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-validator
 </code></pre></div><h3 id="3生成-validate-方法">3.生成 Validate() 方法</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:.  --validator_out<span style="color:#ff79c6">=</span>:. proto/validator.proto
 </code></pre></div><p>执行完成后生成以下代码:</p>
@@ -2436,9 +2436,9 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
 
 <span style="color:#ff79c6">package</span> testdata;
-<span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/testdata/proto;testdata&#34;</span>;
+<span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/proto;testdata&#34;</span>;
 
-<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/proto/api/api.proto&#34;</span>;
+<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/api/api.proto&#34;</span>;
 
 <span style="color:#6272a4">// +gen:openapi
 </span><span style="color:#6272a4">// +gen:term_name=vine
@@ -2475,7 +2475,7 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
 
 
 </code></pre></div><h3 id="2安装-protoc-gen-vine">2.安装 protoc-gen-vine</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/protoc-gen-vine
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-vine
 </code></pre></div><h3 id="3生成-swagger-文档">3.生成 swagger 文档</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>:. proto/helloworld.proto
 </code></pre></div><p>执行完成后生成以下代码:</p>
@@ -2723,7 +2723,7 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
   <span style="color:#8be9fd">string</span> v <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
 }
 </code></pre></div><h3 id="2安装-protoc-gen-dao">2.安装 protoc-gen-dao</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/protoc-gen-dao
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-dao
 </code></pre></div><h3 id="3生成curd代码">3.生成CURD代码</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:.  --dao_out<span style="color:#ff79c6">=</span>:. proto/dao.proto
 </code></pre></div><p>执行完成后生成以下文件:</p>
@@ -2955,7 +2955,7 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
 <h3 id="语法支持">语法支持</h3>
 <h4 id="代码输出路径">代码输出路径</h4>
 <p><code>protoc-gen-dao</code> 支持将CURD代码输出到指定路径</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/lack-io/vine/testdata/db/dao;dao
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/vine-io/vine/testdata/db/dao;dao
 </span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
 <span style="color:#ff79c6">...</span>
 </code></pre></div><p>使用 <code>+dao:output=</code>为开头，写在 protobuf 文件头部，指定生成的路径(对应$GOPATH)和生成 package 名称。</p>

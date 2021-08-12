@@ -29,8 +29,8 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	json "github.com/json-iterator/go"
-	"github.com/lack-io/vine/core/codec"
-	mjsonpb "github.com/lack-io/vine/util/jsonpb"
+	"github.com/vine-io/vine/core/codec"
+	mjsonpb "github.com/vine-io/vine/util/jsonpb"
 )
 
 type Codec struct {

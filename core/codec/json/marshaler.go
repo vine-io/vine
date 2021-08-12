@@ -31,7 +31,7 @@ import (
 	json "github.com/json-iterator/go"
 	"github.com/oxtoacart/bpool"
 
-	mjsonpb "github.com/lack-io/vine/util/jsonpb"
+	mjsonpb "github.com/vine-io/vine/util/jsonpb"
 )
 
 var jsonbMarshaler = &mjsonpb.Marshaler{}

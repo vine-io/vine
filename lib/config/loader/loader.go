@@ -26,8 +26,8 @@ package loader
 import (
 	"context"
 
-	"github.com/lack-io/vine/lib/config/reader"
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/reader"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 // Loader manages loading sources

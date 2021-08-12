@@ -23,7 +23,7 @@
 package callbacks
 
 import (
-	"github.com/lack-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao"
 )
 
 func BeginTransaction(db *dao.DB) {

@@ -23,9 +23,9 @@
 package grpc
 
 import (
-	"github.com/lack-io/vine/core/registry"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	regsvcpb "github.com/lack-io/vine/proto/services/registry"
+	"github.com/vine-io/vine/core/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	regsvcpb "github.com/vine-io/vine/proto/services/registry"
 )
 
 type serviceWatcher struct {

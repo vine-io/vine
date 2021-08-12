@@ -24,7 +24,7 @@
         
         
         &lt;h2 id=&#34;安装-vine-工具&#34;&gt;安装 vine 工具&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/lack-io/vine/cmd/vine
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/vine-io/vine/cmd/vine
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;验证安装结果&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ vine --help
 NAME:
@@ -116,11 +116,11 @@ download protobuf &lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; vin
 install dependencies:
    go get github.com/google/wire/cmd/wire
 	go get github.com/gogo/protobuf
-	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-	go get github.com/lack-io/vine/cmd/protoc-gen-vine
-	go get github.com/lack-io/vine/cmd/protoc-gen-validator
-	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-	go get github.com/lack-io/vine/cmd/protoc-gen-dao
+	go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+	go get github.com/vine-io/vine/cmd/protoc-gen-vine
+	go get github.com/vine-io/vine/cmd/protoc-gen-validator
+	go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+	go get github.com/vine-io/vine/cmd/protoc-gen-dao
 
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;cd&lt;/span&gt; example
 	vine build example
@@ -128,11 +128,11 @@ install dependencies:
 &lt;p&gt;根据提示，安装依赖&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ go get github.com/google/wire/cmd/wire
 $ go get github.com/gogo/protobuf
-$ go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-$ go get github.com/lack-io/vine/cmd/protoc-gen-vine
-$ go get github.com/lack-io/vine/cmd/protoc-gen-validator
-$ go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-$ go get github.com/lack-io/vine/cmd/protoc-gen-dao
+$ go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+$ go get github.com/vine-io/vine/cmd/protoc-gen-vine
+$ go get github.com/vine-io/vine/cmd/protoc-gen-validator
+$ go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+$ go get github.com/vine-io/vine/cmd/protoc-gen-dao
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;编译项目&#34;&gt;编译项目&lt;/h3&gt;
 &lt;p&gt;生成 &lt;code&gt;*.pb.go&lt;/code&gt; 代码:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;$ vine build proto --type&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;service  --group&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;example example
@@ -321,7 +321,7 @@ OPTIONS:
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; email &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2安装-protoc-gen-validator&#34;&gt;2.安装 protoc-gen-validator&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/lack-io/vine/cmd/protoc-gen-validator
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/vine-io/vine/cmd/protoc-gen-validator
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3生成-validate-方法&#34;&gt;3.生成 Validate() 方法&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src --gogo_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:.  --validator_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/validator.proto
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下代码:&lt;/p&gt;
@@ -593,9 +593,9 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;proto3&amp;#34;&lt;/span&gt;;
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; testdata;
-&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; go_package &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/testdata/proto;testdata&amp;#34;&lt;/span&gt;;
+&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; go_package &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/testdata/proto;testdata&amp;#34;&lt;/span&gt;;
 
-&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/proto/api/api.proto&amp;#34;&lt;/span&gt;;
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/proto/api/api.proto&amp;#34;&lt;/span&gt;;
 
 &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:openapi
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:term_name=vine
@@ -632,7 +632,7 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
 
 
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2安装-protoc-gen-vine&#34;&gt;2.安装 protoc-gen-vine&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/lack-io/vine/cmd/protoc-gen-vine
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/vine-io/vine/cmd/protoc-gen-vine
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3生成-swagger-文档&#34;&gt;3.生成 swagger 文档&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src/github.com/gogo/googleapis --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:. --vine_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/helloworld.proto
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下代码:&lt;/p&gt;
@@ -864,7 +864,7 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
   &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; v &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2安装-protoc-gen-dao&#34;&gt;2.安装 protoc-gen-dao&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/lack-io/vine/cmd/protoc-gen-dao
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/vine-io/vine/cmd/protoc-gen-dao
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3生成curd代码&#34;&gt;3.生成CURD代码&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:.  --dao_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/dao.proto
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下文件:&lt;/p&gt;
@@ -1096,7 +1096,7 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
 &lt;h3 id=&#34;语法支持&#34;&gt;语法支持&lt;/h3&gt;
 &lt;h4 id=&#34;代码输出路径&#34;&gt;代码输出路径&lt;/h4&gt;
 &lt;p&gt;&lt;code&gt;protoc-gen-dao&lt;/code&gt; 支持将CURD代码输出到指定路径&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:output=github.com/lack-io/vine/testdata/db/dao;dao
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:output=github.com/vine-io/vine/testdata/db/dao;dao
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;protoc&amp;#34;&lt;/span&gt;
 &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;+dao:output=&lt;/code&gt;为开头，写在 protobuf 文件头部，指定生成的路径(对应$GOPATH)和生成 package 名称。&lt;/p&gt;

@@ -89,7 +89,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -97,7 +97,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine" target="_blank" ><span>GitHub</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine" target="_blank" ><span>GitHub</span></a>
 			</li>
 			
 			
@@ -145,7 +145,7 @@ This the multi-page printable view of this section.
 
 <div class="content">
       <h2 id="安装-vine-工具">安装 vine 工具</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/vine
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/vine
 </code></pre></div><p>验证安装结果</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine --help
 NAME:
@@ -237,11 +237,11 @@ download protobuf <span style="color:#ff79c6">for</span> vine:
 install dependencies:
    go get github.com/google/wire/cmd/wire
 	go get github.com/gogo/protobuf
-	go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-	go get github.com/lack-io/vine/cmd/protoc-gen-vine
-	go get github.com/lack-io/vine/cmd/protoc-gen-validator
-	go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-	go get github.com/lack-io/vine/cmd/protoc-gen-dao
+	go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+	go get github.com/vine-io/vine/cmd/protoc-gen-vine
+	go get github.com/vine-io/vine/cmd/protoc-gen-validator
+	go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+	go get github.com/vine-io/vine/cmd/protoc-gen-dao
 
 <span style="color:#8be9fd;font-style:italic">cd</span> example
 	vine build example
@@ -249,11 +249,11 @@ install dependencies:
 <p>根据提示，安装依赖</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/google/wire/cmd/wire
 $ go get github.com/gogo/protobuf
-$ go get github.com/lack-io/vine/cmd/protoc-gen-gogo
-$ go get github.com/lack-io/vine/cmd/protoc-gen-vine
-$ go get github.com/lack-io/vine/cmd/protoc-gen-validator
-$ go get github.com/lack-io/vine/cmd/protoc-gen-deepcopy
-$ go get github.com/lack-io/vine/cmd/protoc-gen-dao
+$ go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+$ go get github.com/vine-io/vine/cmd/protoc-gen-vine
+$ go get github.com/vine-io/vine/cmd/protoc-gen-validator
+$ go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+$ go get github.com/vine-io/vine/cmd/protoc-gen-dao
 </code></pre></div><h3 id="编译项目">编译项目</h3>
 <p>生成 <code>*.pb.go</code> 代码:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine build proto --type<span style="color:#ff79c6">=</span>service  --group<span style="color:#ff79c6">=</span>example example

@@ -25,9 +25,9 @@ package source
 import (
 	"context"
 
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/lib/config/encoder"
-	"github.com/lack-io/vine/lib/config/encoder/json"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/lib/config/encoder"
+	"github.com/vine-io/vine/lib/config/encoder/json"
 )
 
 type Options struct {

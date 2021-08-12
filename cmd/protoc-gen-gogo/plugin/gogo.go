@@ -28,7 +28,7 @@ import (
 
 	"github.com/gogo/protobuf/gogoproto"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 var TagString = "gen"

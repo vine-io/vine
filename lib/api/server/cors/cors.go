@@ -24,7 +24,7 @@ package cors
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/lib/api/handler"
+	"github.com/vine-io/vine/lib/api/handler"
 )
 
 // CombinedCORSHandler wraps a server and provides CORS headers

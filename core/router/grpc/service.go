@@ -29,9 +29,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/core/client"
-	rr "github.com/lack-io/vine/core/router"
-	pb "github.com/lack-io/vine/proto/services/router"
+	"github.com/vine-io/vine/core/client"
+	rr "github.com/vine-io/vine/core/router"
+	pb "github.com/vine-io/vine/proto/services/router"
 )
 
 type svc struct {

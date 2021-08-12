@@ -29,12 +29,12 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/core/server"
-	log "github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/proto/apis/errors"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/server"
+	log "github.com/vine-io/vine/lib/logger"
+	"github.com/vine-io/vine/proto/apis/errors"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 const (

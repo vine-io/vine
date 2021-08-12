@@ -25,7 +25,7 @@ package clause_test
 import (
 	"testing"
 
-	"github.com/lack-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/clause"
 )
 
 func checkBuildClauses(t *testing.T, clauses []clause.Interface, result string, vars []interface{}) {

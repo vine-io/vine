@@ -26,7 +26,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/util/backoff"
+	"github.com/vine-io/vine/util/backoff"
 )
 
 type BackoffFunc func(ctx context.Context, req Request, attemps int) (time.Duration, error)

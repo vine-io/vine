@@ -33,10 +33,10 @@ import (
 	"text/tabwriter"
 
 	"github.com/lack-io/cli"
-	"github.com/lack-io/vine/cmd/vine/app/cli/util"
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/codec/bytes"
-	"github.com/lack-io/vine/lib/cmd"
+	"github.com/vine-io/vine/cmd/vine/app/cli/util"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/codec/bytes"
+	"github.com/vine-io/vine/lib/cmd"
 )
 
 type exec func(*cli.Context, []string) ([]byte, error)

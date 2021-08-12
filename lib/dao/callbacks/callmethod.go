@@ -25,7 +25,7 @@ package callbacks
 import (
 	"reflect"
 
-	"github.com/lack-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao"
 )
 
 func callMethod(db *dao.DB, fc func(value interface{}, tx *dao.DB) bool) {

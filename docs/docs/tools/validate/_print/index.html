@@ -89,7 +89,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -97,7 +97,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine" target="_blank" ><span>GitHub</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine" target="_blank" ><span>GitHub</span></a>
 			</li>
 			
 			
@@ -163,7 +163,7 @@ This the multi-page printable view of this section.
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> email <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
 }
 </code></pre></div><h3 id="2安装-protoc-gen-validator">2.安装 protoc-gen-validator</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/lack-io/vine/cmd/protoc-gen-validator
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-validator
 </code></pre></div><h3 id="3生成-validate-方法">3.生成 Validate() 方法</h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:.  --validator_out<span style="color:#ff79c6">=</span>:. proto/validator.proto
 </code></pre></div><p>执行完成后生成以下代码:</p>

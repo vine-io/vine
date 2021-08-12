@@ -5,7 +5,7 @@ var (
 
 import (
 	"context"
-	log "github.com/lack-io/vine/lib/logger"
+	log "github.com/vine-io/vine/lib/logger"
 
 	{{.Name}} "{{.Dir}}/proto/{{.Name}}"
 )
@@ -28,11 +28,11 @@ func Handler(ctx context.Context, msg *{{.Name}}.Message) error {
 import (
 	"context"
 	"encoding/json"
-	log "github.com/lack-io/vine/lib/logger"
+	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/client"
-	"github.com/lack-io/vine/proto/apis/errors"
-	"github.com/lack-io/vine/proto/services/api"
+	"github.com/vine-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/proto/services/api"
 	{{.Name}} "path/to/service/proto/{{.Name}}"
 )
 
@@ -80,8 +80,8 @@ func (e *{{title .Alias}}) Call(ctx context.Context, req *api.Request, rsp *api.
 import (
 	"context"
 
-	"github.com/lack-io/vine"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine"
+	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
@@ -191,8 +191,8 @@ func New() *server {
 import (
 	"context"
 
-	"github.com/lack-io/vine"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine"
+	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
@@ -302,8 +302,8 @@ func New() *server {
 import (
 	"context"
 
-	"github.com/lack-io/vine"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine"
+	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/service"
@@ -413,8 +413,8 @@ func New() *server {
 import (
 	"context"
 
-	"github.com/lack-io/vine"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine"
+	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/service"

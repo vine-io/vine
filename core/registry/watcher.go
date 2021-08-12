@@ -23,7 +23,7 @@
 package registry
 
 import (
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 // Watcher is an interface that returns updates

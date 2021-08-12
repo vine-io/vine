@@ -28,9 +28,9 @@ import (
 	"net"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/core/client/selector"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/client/selector"
+	apipb "github.com/vine-io/vine/proto/apis/api"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/oxtoacart/bpool"
 )
 

@@ -28,8 +28,8 @@ import (
 	"encoding/json"
 	"reflect"
 
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 type DeletedAt sql.NullTime

@@ -29,7 +29,7 @@ import (
 	"os/exec"
 
 	"github.com/lack-io/cli"
-	"github.com/lack-io/vine/util/helper"
+	"github.com/vine-io/vine/util/helper"
 )
 
 func Commands() []*cli.Command {

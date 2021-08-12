@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 func checkStructRelation(t *testing.T, data interface{}, relations ...Relation) {

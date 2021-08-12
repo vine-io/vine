@@ -30,8 +30,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/lack-io/vine/lib/dao/schema"
-	"github.com/lack-io/vine/lib/dao/utils"
+	"github.com/vine-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/utils"
 )
 
 func initializeCallbacks(db *DB) *callbacks {

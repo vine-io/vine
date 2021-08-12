@@ -7,10 +7,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/dao/schema"
-	"github.com/lack-io/vine/lib/dao/utils/tests"
+	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/utils/tests"
 )
 
 var db *dao.DB

@@ -31,7 +31,7 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
-	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
+	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 )
 
 func runProto(ctx *cli.Context) {

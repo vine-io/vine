@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lack-io/vine/lib/config/secrets"
+	"github.com/vine-io/vine/lib/config/secrets"
 )
 
 func TestSecretBox(t *testing.T) {

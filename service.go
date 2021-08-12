@@ -27,13 +27,13 @@ import (
 	"os/signal"
 	"sync"
 
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/lib/trace"
-	signalutil "github.com/lack-io/vine/util/signal"
-	"github.com/lack-io/vine/util/wrapper"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/trace"
+	signalutil "github.com/vine-io/vine/util/signal"
+	"github.com/vine-io/vine/util/wrapper"
 )
 
 type service struct {

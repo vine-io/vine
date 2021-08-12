@@ -37,7 +37,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 const name = "gogo"

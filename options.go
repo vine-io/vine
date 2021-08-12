@@ -29,15 +29,15 @@ import (
 	"github.com/lack-io/cli"
 	"github.com/lack-io/gscheduler"
 
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/client/selector"
-	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/lib/config"
-	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/trace"
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/lib/config"
+	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/trace"
 )
 
 // Options for vine service

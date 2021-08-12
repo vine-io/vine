@@ -26,7 +26,7 @@ import (
 	"github.com/hashicorp/hcl"
 	json "github.com/json-iterator/go"
 
-	"github.com/lack-io/vine/lib/config/encoder"
+	"github.com/vine-io/vine/lib/config/encoder"
 )
 
 type hclEncoder struct{}

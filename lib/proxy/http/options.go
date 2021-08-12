@@ -23,8 +23,8 @@
 package http
 
 import (
-	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/core/server"
+	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/core/server"
 )
 
 // WithBackend provides an option to set the http backend url

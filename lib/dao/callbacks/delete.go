@@ -26,9 +26,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 func BeforeDelete(db *dao.DB) {

@@ -27,7 +27,7 @@ import (
 	gosync "sync"
 	"time"
 
-	"github.com/lack-io/vine/lib/sync"
+	"github.com/vine-io/vine/lib/sync"
 )
 
 type memorySync struct {

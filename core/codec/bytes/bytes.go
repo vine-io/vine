@@ -28,7 +28,7 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/lack-io/vine/core/codec"
+	"github.com/vine-io/vine/core/codec"
 )
 
 type Codec struct {

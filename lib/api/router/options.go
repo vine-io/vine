@@ -23,10 +23,10 @@
 package router
 
 import (
-	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/core/registry/mdns"
-	"github.com/lack-io/vine/lib/api/resolver"
-	"github.com/lack-io/vine/lib/api/resolver/vpath"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/core/registry/mdns"
+	"github.com/vine-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/resolver/vpath"
 )
 
 type Options struct {

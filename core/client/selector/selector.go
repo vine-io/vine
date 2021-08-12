@@ -26,7 +26,7 @@ package selector
 import (
 	"errors"
 
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 // Selector builds on the registry as a mechanism to pick nodes

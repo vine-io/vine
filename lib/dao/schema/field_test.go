@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/lib/dao/schema"
-	"github.com/lack-io/vine/lib/dao/utils/tests"
+	"github.com/vine-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/utils/tests"
 )
 
 func TestFieldValuerAndSetter(t *testing.T) {

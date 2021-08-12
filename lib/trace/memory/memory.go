@@ -27,9 +27,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lack-io/vine/lib/trace"
+	"github.com/vine-io/vine/lib/trace"
 
-	"github.com/lack-io/vine/util/ring"
+	"github.com/vine-io/vine/util/ring"
 )
 
 type Tracer struct {

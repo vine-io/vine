@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/lib/dao/utils"
+	"github.com/vine-io/vine/lib/dao/utils"
 )
 
 func AssertObjEqual(t *testing.T, r, e interface{}, names ...string) {

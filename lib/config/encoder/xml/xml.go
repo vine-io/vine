@@ -25,7 +25,7 @@ package xml
 import (
 	"encoding/xml"
 
-	"github.com/lack-io/vine/lib/config/encoder"
+	"github.com/vine-io/vine/lib/config/encoder"
 )
 
 type xmlEncoder struct{}

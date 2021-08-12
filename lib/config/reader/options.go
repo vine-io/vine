@@ -23,11 +23,11 @@
 package reader
 
 import (
-	"github.com/lack-io/vine/lib/config/encoder"
-	"github.com/lack-io/vine/lib/config/encoder/hcl"
-	"github.com/lack-io/vine/lib/config/encoder/json"
-	"github.com/lack-io/vine/lib/config/encoder/toml"
-	"github.com/lack-io/vine/lib/config/encoder/yaml"
+	"github.com/vine-io/vine/lib/config/encoder"
+	"github.com/vine-io/vine/lib/config/encoder/hcl"
+	"github.com/vine-io/vine/lib/config/encoder/json"
+	"github.com/vine-io/vine/lib/config/encoder/toml"
+	"github.com/vine-io/vine/lib/config/encoder/yaml"
 )
 
 type Options struct {

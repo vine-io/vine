@@ -28,8 +28,8 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/lack-io/vine/core/client/selector"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/client/selector"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type dnsSelector struct {

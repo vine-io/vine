@@ -29,10 +29,10 @@ import (
 
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/lib/config"
-	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/lib/config"
+	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 func TestCliSourceDefault(t *testing.T) {

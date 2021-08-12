@@ -23,7 +23,7 @@
 package memory
 
 import (
-	"github.com/lack-io/vine/lib/logger/log"
+	"github.com/vine-io/vine/lib/logger/log"
 )
 
 type logStream struct {

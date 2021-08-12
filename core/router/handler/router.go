@@ -27,9 +27,9 @@ import (
 	"io"
 	"time"
 
-	rr "github.com/lack-io/vine/core/router"
-	"github.com/lack-io/vine/proto/apis/errors"
-	pb "github.com/lack-io/vine/proto/services/router"
+	rr "github.com/vine-io/vine/core/router"
+	"github.com/vine-io/vine/proto/apis/errors"
+	pb "github.com/vine-io/vine/proto/services/router"
 )
 
 // Router implements router handler

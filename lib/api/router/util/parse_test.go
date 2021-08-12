@@ -30,7 +30,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/logger"
 )
 
 func TestTokenize(t *testing.T) {

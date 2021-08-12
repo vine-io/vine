@@ -30,7 +30,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 
-	"github.com/lack-io/vine/core/server"
+	"github.com/vine-io/vine/core/server"
 )
 
 type codecsKey struct{}

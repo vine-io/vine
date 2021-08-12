@@ -29,10 +29,10 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/dao/logger"
-	"github.com/lack-io/vine/lib/dao/schema"
-	"github.com/lack-io/vine/lib/dao/utils"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/logger"
+	"github.com/vine-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/utils"
 )
 
 // Create insert the value into database

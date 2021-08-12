@@ -30,7 +30,7 @@ import (
 
 	"github.com/kr/pretty"
 
-	"github.com/lack-io/vine/lib/store"
+	"github.com/vine-io/vine/lib/store"
 )
 
 func TestMemoryReInit(t *testing.T) {

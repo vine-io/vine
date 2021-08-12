@@ -25,7 +25,7 @@ package namespace
 import (
 	"context"
 
-	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 const (

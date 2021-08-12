@@ -32,7 +32,7 @@ import (
 
 	ccli "github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/util/config"
+	"github.com/vine-io/vine/util/config"
 )
 
 const (

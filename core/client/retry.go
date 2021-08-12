@@ -25,7 +25,7 @@ package client
 import (
 	"context"
 
-	"github.com/lack-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/proto/apis/errors"
 )
 
 // RetryFunc note that returning either false or a non-nil error will result in the call not being retried

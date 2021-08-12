@@ -30,8 +30,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/core/registry"
+	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/core/registry"
 )
 
 // Options for web

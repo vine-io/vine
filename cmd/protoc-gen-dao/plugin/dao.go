@@ -34,8 +34,8 @@ import (
 	"strings"
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-	"github.com/lack-io/vine/cmd/generator"
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/cmd/generator"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 var TagString = "gen"
@@ -129,9 +129,9 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	g.DriverPkg = g.NewImport("database/sql/driver", "driver")
 	g.jsonPkg = g.NewImport("github.com/json-iterator/go", "json")
 	g.errPkg = g.NewImport("errors", "errors")
-	g.daoPkg = g.NewImport("github.com/lack-io/vine/lib/dao", "dao")
-	g.clausePkg = g.NewImport("github.com/lack-io/vine/lib/dao/clause", "clause")
-	g.runtimePkg = g.NewImport("github.com/lack-io/vine/util/runtime", "runtime")
+	g.daoPkg = g.NewImport("github.com/vine-io/vine/lib/dao", "dao")
+	g.clausePkg = g.NewImport("github.com/vine-io/vine/lib/dao/clause", "clause")
+	g.runtimePkg = g.NewImport("github.com/vine-io/vine/util/runtime", "runtime")
 	if g.gen.OutPut.Load {
 		g.sourcePkg = string(g.gen.AddImport(generator.GoImportPath(g.gen.OutPut.SourcePkgPath)))
 	}

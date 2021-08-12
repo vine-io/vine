@@ -1,4 +1,4 @@
-module github.com/lack-io/vine
+module github.com/vine-io/vine
 
 go 1.15
 

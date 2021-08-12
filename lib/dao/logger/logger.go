@@ -27,8 +27,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lack-io/vine/lib/dao/utils"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/dao/utils"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 type LogLevel int

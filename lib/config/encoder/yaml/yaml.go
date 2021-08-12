@@ -25,7 +25,7 @@ package yaml
 import (
 	"gopkg.in/yaml.v3"
 
-	"github.com/lack-io/vine/lib/config/encoder"
+	"github.com/vine-io/vine/lib/config/encoder"
 )
 
 type yamlEncoder struct{}

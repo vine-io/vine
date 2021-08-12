@@ -28,13 +28,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/lack-io/vine/core/registry/memory"
-	"github.com/lack-io/vine/lib/api/handler"
-	"github.com/lack-io/vine/lib/api/resolver"
-	"github.com/lack-io/vine/lib/api/resolver/vpath"
-	"github.com/lack-io/vine/lib/api/router"
-	regRouter "github.com/lack-io/vine/lib/api/router/registry"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry/memory"
+	"github.com/vine-io/vine/lib/api/handler"
+	"github.com/vine-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/resolver/vpath"
+	"github.com/vine-io/vine/lib/api/router"
+	regRouter "github.com/vine-io/vine/lib/api/router/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 func testHttp(t *testing.T, path, service, ns string) {

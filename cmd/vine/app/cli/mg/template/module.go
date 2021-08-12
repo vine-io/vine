@@ -6,7 +6,7 @@ var (
 go {{.GoVersion}}
 
 require (
-	github.com/lack-io/vine {{.VineVersion}}
+	github.com/vine-io/vine {{.VineVersion}}
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.38.0

@@ -24,8 +24,8 @@ package router
 
 import (
 	"github.com/google/uuid"
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/registry"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/registry"
 )
 
 // Options are router options

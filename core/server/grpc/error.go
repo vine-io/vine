@@ -27,7 +27,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 
-	"github.com/lack-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/proto/apis/errors"
 )
 
 func vineError(err *errors.Error) codes.Code {

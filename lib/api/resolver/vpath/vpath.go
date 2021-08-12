@@ -29,7 +29,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/resolver"
 )
 
 func NewResolver(opts ...resolver.Option) resolver.Resolver {

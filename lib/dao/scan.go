@@ -30,7 +30,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 func prepareValues(values []interface{}, db *DB, columnTypes []*sql.ColumnType, columns []string) {

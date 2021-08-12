@@ -29,7 +29,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
 
-	"github.com/lack-io/vine/core/client"
+	"github.com/vine-io/vine/core/client"
 )
 
 var (

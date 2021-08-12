@@ -26,7 +26,7 @@ package mdns
 import (
 	"context"
 
-	"github.com/lack-io/vine/core/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
 // NewRegistry returns a new mdns registry

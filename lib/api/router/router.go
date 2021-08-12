@@ -24,8 +24,8 @@
 package router
 
 import (
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	ctx "github.com/lack-io/vine/util/context"
+	apipb "github.com/vine-io/vine/proto/apis/api"
+	ctx "github.com/vine-io/vine/util/context"
 )
 
 // Router is used to determine an endpoint for a request

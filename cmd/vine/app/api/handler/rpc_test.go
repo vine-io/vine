@@ -31,12 +31,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	 "github.com/lack-io/vine/core/client"
-	 "github.com/lack-io/vine/core/client/selector"
-	 "github.com/lack-io/vine/core/registry/memory"
-	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/util/context/metadata"
+	 "github.com/vine-io/vine/core/client"
+	 "github.com/vine-io/vine/core/client/selector"
+	 "github.com/vine-io/vine/core/registry/memory"
+	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 type TestHandler struct {

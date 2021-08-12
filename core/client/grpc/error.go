@@ -25,7 +25,7 @@ package grpc
 import (
 	"google.golang.org/grpc/status"
 
-	"github.com/lack-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/proto/apis/errors"
 )
 
 func vineError(err error) error {

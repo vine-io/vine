@@ -24,9 +24,9 @@
 package main
 
 import (
-	"github.com/lack-io/vine/cmd/generator/vanity"
-	"github.com/lack-io/vine/cmd/generator/vanity/command"
-	gogo "github.com/lack-io/vine/cmd/protoc-gen-gogo/plugin"
+	"github.com/vine-io/vine/cmd/generator/vanity"
+	"github.com/vine-io/vine/cmd/generator/vanity/command"
+	gogo "github.com/vine-io/vine/cmd/protoc-gen-gogo/plugin"
 )
 
 func main() {

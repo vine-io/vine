@@ -28,8 +28,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/lack-io/vine/lib/store"
-	"github.com/lack-io/vine/lib/store/memory"
+	"github.com/vine-io/vine/lib/store"
+	"github.com/vine-io/vine/lib/store/memory"
 )
 
 func TestCache(t *testing.T) {

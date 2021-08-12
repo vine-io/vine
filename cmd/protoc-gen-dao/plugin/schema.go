@@ -28,7 +28,7 @@ import (
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 type fieldType string

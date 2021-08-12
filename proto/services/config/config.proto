@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package config;
 
-option go_package = "github.com/lack-io/vine/proto/services/config;config";
+option go_package = "github.com/vine-io/vine/proto/services/config;config";
 
 service Config {
   rpc Create (CreateRequest) returns (CreateResponse) {}

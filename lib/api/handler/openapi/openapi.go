@@ -29,10 +29,10 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine"
-	openapipb "github.com/lack-io/vine/proto/apis/openapi"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	maddr "github.com/lack-io/vine/util/addr"
+	"github.com/vine-io/vine"
+	openapipb "github.com/vine-io/vine/proto/apis/openapi"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	maddr "github.com/vine-io/vine/util/addr"
 )
 
 type openAPI struct {

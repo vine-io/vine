@@ -32,7 +32,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/lack-io/vine/lib/dao/utils"
+	"github.com/vine-io/vine/lib/dao/utils"
 )
 
 const (

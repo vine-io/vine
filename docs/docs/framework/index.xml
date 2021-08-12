@@ -171,7 +171,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
-    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
 
     &lt;span style=&#34;color:#6272a4&#34;&gt;// consul registry
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/registry/consul&amp;#34;&lt;/span&gt;
@@ -199,7 +199,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;编写插件&#34;&gt;编写插件&lt;/h2&gt;
 &lt;p&gt;插件是一个建立在 Go 接口上的概念。每个包都维护一个高级接口抽象。只需实现接口并将其作为服务选项传递给它即可.&lt;/p&gt;
-&lt;p&gt;服务发现接口称为 &lt;a href=&#34;https://pkg.go.dev/github.com/lack-io/vine/service/registry#Registry&#34;&gt;Registry&lt;/a&gt;. 实现此接口的任何内容都可以用作 &lt;strong&gt;Registry&lt;/strong&gt;。这同样适用于其他包.&lt;/p&gt;
+&lt;p&gt;服务发现接口称为 &lt;a href=&#34;https://pkg.go.dev/github.com/vine-io/vine/service/registry#Registry&#34;&gt;Registry&lt;/a&gt;. 实现此接口的任何内容都可以用作 &lt;strong&gt;Registry&lt;/strong&gt;。这同样适用于其他包.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
@@ -407,12 +407,12 @@ json 配置实例：&lt;/p&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;创建-config&#34;&gt;创建 Config&lt;/h3&gt;
 &lt;p&gt;创建一个新 &lt;strong&gt;Config&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/services/config&amp;#34;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/services/config&amp;#34;&lt;/span&gt;
 
 conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewConfig&lt;/span&gt;()
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;加载文件&#34;&gt;加载文件&lt;/h3&gt;
 &lt;p&gt;从文件加载配置，根据文件扩展名来确定配置格式。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/services/config&amp;#34;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/services/config&amp;#34;&lt;/span&gt;
 
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 加载 json 配置文件
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;config.&lt;span style=&#34;color:#50fa7b&#34;&gt;LoadFile&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/tmp/config.json&amp;#34;&lt;/span&gt;)
@@ -420,10 +420,10 @@ conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span s
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/config&amp;#34;&lt;/span&gt;
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/config/encoder/toml&amp;#34;&lt;/span&gt;
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/config/source&amp;#34;&lt;/span&gt;
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/config/source/file&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/config&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/config/encoder/toml&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/config/source&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/config/source/file&amp;#34;&lt;/span&gt;
 )
 
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
@@ -561,8 +561,8 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
 
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/google/uuid&amp;#34;&lt;/span&gt;
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/registry&amp;#34;&lt;/span&gt;
-	regpb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/proto/registry&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/registry&amp;#34;&lt;/span&gt;
+	regpb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/proto/registry&amp;#34;&lt;/span&gt;
 )
 
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
@@ -752,7 +752,7 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 topic 注册消息处理程序&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, ProcessEvent)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;完整实例可以看 &lt;a href=&#34;https://github.com/lack-io/vine-example/tree/main/pubsub&#34;&gt;example/pubsub&lt;/a&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;完整实例可以看 &lt;a href=&#34;https://github.com/vine-io/vine-example/tree/main/pubsub&#34;&gt;example/pubsub&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;单独使用-broker&#34;&gt;单独使用 Broker&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;Broker&lt;/code&gt; 也可以单独使用：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
@@ -761,8 +761,8 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
 
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/broker&amp;#34;&lt;/span&gt;
-	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/vine/service/logger&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/broker&amp;#34;&lt;/span&gt;
+	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/logger&amp;#34;&lt;/span&gt;
 )
 
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {

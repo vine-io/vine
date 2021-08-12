@@ -28,7 +28,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 // vine is an implementation of the Go protocol buffer compiler's
@@ -87,11 +87,11 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	}
 
 	g.contextPkg = g.NewImport("context", "context")
-	g.apiPbPkg = g.NewImport("github.com/lack-io/vine/proto/apis/api", "apipb")
-	g.openApiPkg = g.NewImport("github.com/lack-io/vine/proto/apis/openapi", "openapi")
-	g.apiPkg = g.NewImport("github.com/lack-io/vine/lib/api", "api")
-	g.clientPkg = g.NewImport("github.com/lack-io/vine/core/client", "client")
-	g.serverPkg = g.NewImport("github.com/lack-io/vine/core/server", "server")
+	g.apiPbPkg = g.NewImport("github.com/vine-io/vine/proto/apis/api", "apipb")
+	g.openApiPkg = g.NewImport("github.com/vine-io/vine/proto/apis/openapi", "openapi")
+	g.apiPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
+	g.clientPkg = g.NewImport("github.com/vine-io/vine/core/client", "client")
+	g.serverPkg = g.NewImport("github.com/vine-io/vine/core/server", "server")
 
 	for i, service := range file.TagServices() {
 		g.generateService(file, service, i)

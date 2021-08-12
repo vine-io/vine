@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package broker;
 
-option go_package = "github.com/lack-io/vine/proto/services/broker;broker";
+option go_package = "github.com/vine-io/vine/proto/services/broker;broker";
 
 service Broker {
   rpc Publish(PublishRequest) returns (Empty) {};

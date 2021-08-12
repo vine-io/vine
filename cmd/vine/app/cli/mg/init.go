@@ -30,10 +30,10 @@ import (
 	"strings"
 
 	"github.com/lack-io/cli"
-	"github.com/lack-io/vine/cmd/vine/version"
+	"github.com/vine-io/vine/cmd/vine/version"
 
-	t2 "github.com/lack-io/vine/cmd/vine/app/cli/mg/template"
-	"github.com/lack-io/vine/cmd/vine/app/cli/util/tool"
+	t2 "github.com/vine-io/vine/cmd/vine/app/cli/mg/template"
+	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 )
 
 func runInit(ctx *cli.Context) {

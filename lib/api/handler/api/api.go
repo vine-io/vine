@@ -27,12 +27,12 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/client/selector"
-	"github.com/lack-io/vine/lib/api/handler"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	"github.com/lack-io/vine/proto/apis/errors"
-	ctx "github.com/lack-io/vine/util/context"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/lib/api/handler"
+	apipb "github.com/vine-io/vine/proto/apis/api"
+	"github.com/vine-io/vine/proto/apis/errors"
+	ctx "github.com/vine-io/vine/util/context"
 )
 
 const (

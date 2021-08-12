@@ -25,7 +25,7 @@ package json
 import (
 	"testing"
 
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 func TestReader(t *testing.T) {

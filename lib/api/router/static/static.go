@@ -30,13 +30,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lack-io/vine/lib/api"
-	"github.com/lack-io/vine/lib/api/router"
-	"github.com/lack-io/vine/lib/api/router/util"
-	"github.com/lack-io/vine/lib/logger"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/vine-io/vine/lib/api"
+	"github.com/vine-io/vine/lib/api/router"
+	"github.com/vine-io/vine/lib/api/router/util"
+	"github.com/vine-io/vine/lib/logger"
+	apipb "github.com/vine-io/vine/proto/apis/api"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 type endpoint struct {

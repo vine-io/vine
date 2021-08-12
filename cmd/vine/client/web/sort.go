@@ -23,7 +23,7 @@
 package web
 
 import (
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type sortedServices struct {

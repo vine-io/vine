@@ -27,12 +27,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/client/grpc"
-	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/proto/apis/errors"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	regSvc "github.com/lack-io/vine/proto/services/registry"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/client/grpc"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/proto/apis/errors"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	regSvc "github.com/vine-io/vine/proto/services/registry"
 )
 
 var (

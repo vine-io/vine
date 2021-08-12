@@ -25,8 +25,8 @@ package service
 import (
 	"time"
 
-	"github.com/lack-io/vine/lib/config/source"
-	proto "github.com/lack-io/vine/proto/services/config"
+	"github.com/vine-io/vine/lib/config/source"
+	proto "github.com/vine-io/vine/proto/services/config"
 )
 
 func toChangeSet(c *proto.ChangeSet) *source.ChangeSet {

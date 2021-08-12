@@ -32,9 +32,9 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/lib/proxy"
-	"github.com/lack-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/proxy"
+	"github.com/vine-io/vine/proto/apis/errors"
 )
 
 // Proxy will proxy rpc requests as http POST requests. It is a server.Proxy

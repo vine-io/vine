@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package router;
 
-option go_package = "github.com/lack-io/vine/proto/services/router;router";
+option go_package = "github.com/vine-io/vine/proto/services/router;router";
 
 // Router service is used by the proxy to lookup routes
 service Router {

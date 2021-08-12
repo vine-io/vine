@@ -23,8 +23,8 @@
 package service
 
 import (
-	"github.com/lack-io/vine/lib/config/source"
-	proto "github.com/lack-io/vine/proto/services/config"
+	"github.com/vine-io/vine/lib/config/source"
+	proto "github.com/vine-io/vine/proto/services/config"
 )
 
 type watcher struct {

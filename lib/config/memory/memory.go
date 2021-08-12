@@ -27,12 +27,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/lib/config"
-	"github.com/lack-io/vine/lib/config/loader"
-	m "github.com/lack-io/vine/lib/config/loader/memory"
-	"github.com/lack-io/vine/lib/config/reader"
-	"github.com/lack-io/vine/lib/config/reader/json"
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config"
+	"github.com/vine-io/vine/lib/config/loader"
+	m "github.com/vine-io/vine/lib/config/loader/memory"
+	"github.com/vine-io/vine/lib/config/reader"
+	"github.com/vine-io/vine/lib/config/reader/json"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 type memory struct {

@@ -28,10 +28,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/dao/schema"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/schema"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 // Migrator m struct

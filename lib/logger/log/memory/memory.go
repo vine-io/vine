@@ -26,8 +26,8 @@ package memory
 import (
 	"fmt"
 
-	log2 "github.com/lack-io/vine/lib/logger/log"
-	"github.com/lack-io/vine/util/ring"
+	log2 "github.com/vine-io/vine/lib/logger/log"
+	"github.com/vine-io/vine/util/ring"
 )
 
 var (

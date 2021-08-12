@@ -25,7 +25,7 @@ package memory
 import (
 	"time"
 
-	"github.com/lack-io/vine/lib/config/reader"
+	"github.com/vine-io/vine/lib/config/reader"
 )
 
 type value struct{}

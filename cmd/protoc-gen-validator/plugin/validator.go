@@ -28,7 +28,7 @@ import (
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 var TagString = "gen"
@@ -128,7 +128,7 @@ func (g *validator) Generate(file *generator.FileDescriptor) {
 		return
 	}
 
-	g.isPkg = g.NewImport("github.com/lack-io/vine/util/is", "is")
+	g.isPkg = g.NewImport("github.com/vine-io/vine/util/is", "is")
 	g.stringsPkg = g.NewImport("strings", "")
 
 	for i, msg := range file.Messages() {

@@ -23,9 +23,9 @@
 package grpc
 
 import (
-	"github.com/lack-io/vine/core/broker"
-	"github.com/lack-io/vine/lib/logger"
-	pb "github.com/lack-io/vine/proto/services/broker"
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/lib/logger"
+	pb "github.com/vine-io/vine/proto/services/broker"
 )
 
 type serviceSub struct {

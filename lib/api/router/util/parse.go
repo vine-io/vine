@@ -28,7 +28,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/logger"
 )
 
 // InvalidTemplateError indicates that the path template is not valid.

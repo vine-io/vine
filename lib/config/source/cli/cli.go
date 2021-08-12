@@ -32,8 +32,8 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 type cliSource struct {

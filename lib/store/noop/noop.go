@@ -22,7 +22,7 @@
 
 package noop
 
-import "github.com/lack-io/vine/lib/store"
+import "github.com/vine-io/vine/lib/store"
 
 type noopStore struct{}
 

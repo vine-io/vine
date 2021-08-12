@@ -33,9 +33,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/core/server"
-	"github.com/lack-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/proto/apis/errors"
 )
 
 // Router will proxy rpc requests as http POST requests. It is a server.Router

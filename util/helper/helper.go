@@ -35,7 +35,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/lack-io/cli"
 
-	"github.com/lack-io/vine/util/context/metadata"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 func RequestToContext(c *fiber.Ctx) context.Context {

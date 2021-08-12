@@ -32,7 +32,7 @@ import (
 
 	"github.com/jinzhu/now"
 
-	"github.com/lack-io/vine/lib/dao/logger"
+	"github.com/vine-io/vine/lib/dao/logger"
 )
 
 type JSON json.RawMessage

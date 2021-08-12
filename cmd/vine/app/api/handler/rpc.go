@@ -31,11 +31,11 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/lib/api/server/cors"
-	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/proto/apis/errors"
-	"github.com/lack-io/vine/util/helper"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/lib/api/server/cors"
+	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/util/helper"
 )
 
 type rpcRequest struct {

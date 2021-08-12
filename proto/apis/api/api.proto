@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package api;
 
-option go_package = "github.com/lack-io/vine/proto/apis/api;api";
+option go_package = "github.com/vine-io/vine/proto/apis/api;api";
 
-import "github.com/lack-io/vine/proto/apis/registry/registry.proto";
+import "github.com/vine-io/vine/proto/apis/registry/registry.proto";
 
 message Pair {
   string key = 1;

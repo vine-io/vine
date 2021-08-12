@@ -25,7 +25,7 @@ package file
 import (
 	"strings"
 
-	"github.com/lack-io/vine/lib/config/encoder"
+	"github.com/vine-io/vine/lib/config/encoder"
 )
 
 func format(p string, e encoder.Encoder) string {

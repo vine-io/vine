@@ -30,15 +30,15 @@ import (
 	"sort"
 
 	ccli "github.com/lack-io/cli"
-	"github.com/lack-io/vine/cmd/vine/version"
+	"github.com/vine-io/vine/cmd/vine/version"
 
-	"github.com/lack-io/vine"
-	"github.com/lack-io/vine/cmd/vine/app/api"
-	cliBuild "github.com/lack-io/vine/cmd/vine/app/cli/build"
-	cliMg "github.com/lack-io/vine/cmd/vine/app/cli/mg"
-	cliRun "github.com/lack-io/vine/cmd/vine/app/cli/run"
-	"github.com/lack-io/vine/lib/cmd"
-	"github.com/lack-io/vine/util/helper"
+	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/cmd/vine/app/api"
+	cliBuild "github.com/vine-io/vine/cmd/vine/app/cli/build"
+	cliMg "github.com/vine-io/vine/cmd/vine/app/cli/mg"
+	cliRun "github.com/vine-io/vine/cmd/vine/app/cli/run"
+	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/util/helper"
 )
 
 var (

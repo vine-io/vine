@@ -23,9 +23,9 @@
 package memory
 
 import (
-	"github.com/lack-io/vine/lib/config/loader"
-	"github.com/lack-io/vine/lib/config/reader"
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/loader"
+	"github.com/vine-io/vine/lib/config/reader"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 // WithSource appends a source to list of sources

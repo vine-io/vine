@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/lack-io/vine/lib/dao/schema"
-	"github.com/lack-io/vine/lib/dao/utils/tests"
+	"github.com/vine-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/utils/tests"
 )
 
 func checkSchema(t *testing.T, s *schema.Schema, v schema.Schema, primaryFields []string) {

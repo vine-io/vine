@@ -30,10 +30,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/vine/core/codec"
-	log "github.com/lack-io/vine/lib/logger"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
-	signalutil "github.com/lack-io/vine/util/signal"
+	"github.com/vine-io/vine/core/codec"
+	log "github.com/vine-io/vine/lib/logger"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
+	signalutil "github.com/vine-io/vine/util/signal"
 )
 
 // Server is a simple vine server abstraction

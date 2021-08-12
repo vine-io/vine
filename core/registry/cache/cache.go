@@ -28,9 +28,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lack-io/vine/core/registry"
-	"github.com/lack-io/vine/lib/logger"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/lib/logger"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 // Cache is the registry cache interface

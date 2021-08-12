@@ -30,8 +30,8 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/lack-io/vine/lib/dao/clause"
-	"github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/logger"
 )
 
 // ErrUnsupportedDataType unsupported data type

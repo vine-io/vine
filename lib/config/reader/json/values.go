@@ -31,8 +31,8 @@ import (
 	simple "github.com/bitly/go-simplejson"
 	json "github.com/json-iterator/go"
 
-	"github.com/lack-io/vine/lib/config/reader"
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/reader"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 type jsonValues struct {

@@ -31,12 +31,12 @@ import (
 	"github.com/fasthttp/websocket"
 	"github.com/gofiber/fiber/v2"
 	json "github.com/json-iterator/go"
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/client/selector"
-	"github.com/lack-io/vine/core/codec/bytes"
-	"github.com/lack-io/vine/lib/logger"
-	apipb "github.com/lack-io/vine/proto/apis/api"
-	ctx "github.com/lack-io/vine/util/context"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/core/codec/bytes"
+	"github.com/vine-io/vine/lib/logger"
+	apipb "github.com/vine-io/vine/proto/apis/api"
+	ctx "github.com/vine-io/vine/util/context"
 	"github.com/valyala/fasthttp"
 )
 

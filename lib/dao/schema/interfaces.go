@@ -22,7 +22,7 @@
 
 package schema
 
-import "github.com/lack-io/vine/lib/dao/clause"
+import "github.com/vine-io/vine/lib/dao/clause"
 
 type DataTypeInterface interface {
 	DaoDataType() string

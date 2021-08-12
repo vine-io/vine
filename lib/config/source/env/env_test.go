@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 func TestEnv_Read(t *testing.T) {

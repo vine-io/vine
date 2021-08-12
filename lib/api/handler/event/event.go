@@ -36,9 +36,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/oxtoacart/bpool"
 
-	"github.com/lack-io/vine/lib/api/handler"
-	"github.com/lack-io/vine/proto/apis/api"
-	ctx "github.com/lack-io/vine/util/context"
+	"github.com/vine-io/vine/lib/api/handler"
+	"github.com/vine-io/vine/proto/apis/api"
+	ctx "github.com/vine-io/vine/util/context"
 )
 
 var (

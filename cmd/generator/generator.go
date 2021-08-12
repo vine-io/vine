@@ -53,7 +53,7 @@ import (
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 
-	"github.com/lack-io/vine/cmd/generator/internal/remap"
+	"github.com/vine-io/vine/cmd/generator/internal/remap"
 )
 
 // generatedCodeVersion indicates a version of the generated code.

@@ -32,9 +32,9 @@ import (
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/lack-io/vine/core/codec"
-	"github.com/lack-io/vine/core/codec/bytes"
-	"github.com/lack-io/vine/util/jsonpb"
+	"github.com/vine-io/vine/core/codec"
+	"github.com/vine-io/vine/core/codec/bytes"
+	"github.com/vine-io/vine/util/jsonpb"
 )
 
 type jsonCodec struct{}

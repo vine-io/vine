@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/lack-io/vine/lib/dao"
-	"github.com/lack-io/vine/lib/dao/utils/tests"
+	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/dao/utils/tests"
 )
 
 type User struct {

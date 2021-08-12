@@ -29,9 +29,9 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/vine/core/client/selector"
-	res "github.com/lack-io/vine/lib/api/resolver"
-	"github.com/lack-io/vine/util/namespace"
+	"github.com/vine-io/vine/core/client/selector"
+	res "github.com/vine-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/util/namespace"
 	"golang.org/x/net/publicsuffix"
 )
 

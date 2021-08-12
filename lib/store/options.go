@@ -26,7 +26,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/vine/core/client"
+	"github.com/vine-io/vine/core/client"
 )
 
 // Options contains configuration for the Store

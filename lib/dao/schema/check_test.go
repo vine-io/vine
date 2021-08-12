@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/lack-io/vine/lib/dao/schema"
+	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 type UserCheck struct {

@@ -30,7 +30,7 @@ import (
 
 	"github.com/jinzhu/inflection"
 
-	"github.com/lack-io/vine/lib/dao/clause"
+	"github.com/vine-io/vine/lib/dao/clause"
 )
 
 // RelationshipType relationship type

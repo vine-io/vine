@@ -30,8 +30,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/lack-io/vine/core/server"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/core/server"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 var (

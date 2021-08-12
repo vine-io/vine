@@ -23,9 +23,9 @@
 package handler
 
 import (
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/core/client/grpc"
-	"github.com/lack-io/vine/lib/api/router"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/client/grpc"
+	"github.com/vine-io/vine/lib/api/router"
 )
 
 var (

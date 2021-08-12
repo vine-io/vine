@@ -25,8 +25,8 @@ package grpc
 import (
 	"reflect"
 
-	"github.com/lack-io/vine/core/server"
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/server"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type rpcHandler struct {

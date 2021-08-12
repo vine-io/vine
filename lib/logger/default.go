@@ -34,7 +34,7 @@ import (
 	"sync"
 	"time"
 
-	dlog "github.com/lack-io/vine/lib/logger/log"
+	dlog "github.com/vine-io/vine/lib/logger/log"
 )
 
 var logSourceDir string

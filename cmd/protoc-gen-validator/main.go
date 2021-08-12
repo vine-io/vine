@@ -45,8 +45,8 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/lack-io/vine/cmd/generator"
-	"github.com/lack-io/vine/cmd/protoc-gen-validator/plugin"
+	"github.com/vine-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/protoc-gen-validator/plugin"
 )
 
 func main() {

@@ -22,7 +22,7 @@
 
 package callbacks
 
-import "github.com/lack-io/vine/lib/dao"
+import "github.com/vine-io/vine/lib/dao"
 
 type BeforeCreateInterface interface {
 	BeforeCreate(*dao.DB) error

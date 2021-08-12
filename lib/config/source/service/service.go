@@ -26,11 +26,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/lack-io/vine/core/client"
-	"github.com/lack-io/vine/lib/config/source"
-	"github.com/lack-io/vine/lib/logger"
-	"github.com/lack-io/vine/proto/apis/errors"
-	proto "github.com/lack-io/vine/proto/services/config"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/logger"
+	"github.com/vine-io/vine/proto/apis/errors"
+	proto "github.com/vine-io/vine/proto/services/config"
 )
 
 var (

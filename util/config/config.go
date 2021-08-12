@@ -29,10 +29,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	conf "github.com/lack-io/vine/lib/config"
-	"github.com/lack-io/vine/lib/config/memory"
-	"github.com/lack-io/vine/lib/config/source/file"
-	log "github.com/lack-io/vine/lib/logger"
+	conf "github.com/vine-io/vine/lib/config"
+	"github.com/vine-io/vine/lib/config/memory"
+	"github.com/vine-io/vine/lib/config/source/file"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 // FileName for global vine config

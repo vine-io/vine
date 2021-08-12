@@ -26,7 +26,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 func TestValues(t *testing.T) {

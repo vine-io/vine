@@ -31,8 +31,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/lack-io/vine/lib/api/server"
-	log "github.com/lack-io/vine/lib/logger"
+	"github.com/vine-io/vine/lib/api/server"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 var DefaultBodyLimit = 1024 * 1024 * 1024 * 1024 * 1024

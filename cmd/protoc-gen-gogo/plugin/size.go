@@ -125,9 +125,9 @@ import (
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
-	vanity2 "github.com/lack-io/vine/cmd/generator/vanity"
+	vanity2 "github.com/vine-io/vine/cmd/generator/vanity"
 
-	"github.com/lack-io/vine/cmd/generator"
+	"github.com/vine-io/vine/cmd/generator"
 )
 
 func wireToType(wire string) int {

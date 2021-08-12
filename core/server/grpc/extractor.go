@@ -27,7 +27,7 @@ import (
 	"reflect"
 	"strings"
 
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 func extractValue(v reflect.Type, d int) *regpb.Value {

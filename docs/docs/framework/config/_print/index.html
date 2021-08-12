@@ -89,7 +89,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -97,7 +97,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/lack-io/vine" target="_blank" ><span>GitHub</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/vine" target="_blank" ><span>GitHub</span></a>
 			</li>
 			
 			
@@ -264,12 +264,12 @@ json 配置实例：</p>
 }
 </code></pre></div><h3 id="创建-config">创建 Config</h3>
 <p>创建一个新 <strong>Config</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/services/config&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
 
 conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
 </code></pre></div><h3 id="加载文件">加载文件</h3>
 <p>从文件加载配置，根据文件扩展名来确定配置格式。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/vine/services/config&#34;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
 
 <span style="color:#6272a4">// 加载 json 配置文件
 </span><span style="color:#6272a4"></span>config.<span style="color:#50fa7b">LoadFile</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>)
@@ -277,10 +277,10 @@ conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Ne
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config/encoder/toml&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config/source&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/lack-io/vine/service/config/source/file&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/encoder/toml&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source/file&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {

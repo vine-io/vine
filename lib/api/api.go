@@ -27,8 +27,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lack-io/vine/core/server"
-	apipb "github.com/lack-io/vine/proto/apis/api"
+	"github.com/vine-io/vine/core/server"
+	apipb "github.com/vine-io/vine/proto/apis/api"
 )
 
 type Api interface {

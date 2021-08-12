@@ -25,7 +25,7 @@ package client
 import (
 	"context"
 
-	regpb "github.com/lack-io/vine/proto/apis/registry"
+	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 // CallFunc represents the individual call func

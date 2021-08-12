@@ -23,7 +23,7 @@
 package main
 
 import (
-	"github.com/lack-io/vine/cmd/vine/app"
+	"github.com/vine-io/vine/cmd/vine/app"
 )
 
 func main() {

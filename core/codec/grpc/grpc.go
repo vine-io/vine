@@ -31,7 +31,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	json "github.com/json-iterator/go"
-	"github.com/lack-io/vine/core/codec"
+	"github.com/vine-io/vine/core/codec"
 )
 
 type Codec struct {

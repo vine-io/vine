@@ -25,7 +25,7 @@ package reader
 import (
 	"time"
 
-	"github.com/lack-io/vine/lib/config/source"
+	"github.com/vine-io/vine/lib/config/source"
 )
 
 // Reader is an interface for merging changesets
