@@ -29,7 +29,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 	"github.com/vine-io/vine/core/broker"
 	brokerGrpc "github.com/vine-io/vine/core/broker/grpc"
 	brokerHttp "github.com/vine-io/vine/core/broker/http"

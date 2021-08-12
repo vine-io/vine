@@ -1,4 +1,4 @@
-module github.com/lack-io/gscheduler
+module github.com/vine-io/gscheduler
 
 go 1.16
 

@@ -1,12 +1,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vine – 框架</title>
-    <link>https://lack-io.github.io/vine/docs/framework/</link>
+    <link>https://vine-io.github.io/vine/docs/framework/</link>
     <description>Recent content in 框架 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Tue, 29 Dec 2020 10:54:20 +0800</lastBuildDate>
     
-	  <atom:link href="https://lack-io.github.io/vine/docs/framework/index.xml" rel="self" type="application/rss+xml" />
+	  <atom:link href="https://vine-io.github.io/vine/docs/framework/index.xml" rel="self" type="application/rss+xml" />
     
     
       
@@ -16,10 +16,10 @@
     
     <item>
       <title>Docs: 接口</title>
-      <link>https://lack-io.github.io/vine/docs/framework/interface/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/interface/</link>
       <pubDate>Tue, 29 Dec 2020 11:15:20 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/interface/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/interface/</guid>
       <description>
         
         
@@ -44,7 +44,7 @@
 &lt;li&gt;&lt;strong&gt;tunnel&lt;/strong&gt; - vpn 隧道&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;broker&#34;&gt;Broker&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;Broker&lt;/strong&gt; 为异步 pub/sub 子通讯提供消息代理的接口。这是事件驱动结构和微服务的基本要求之一。在默认情况下，我们使用 HTTP 协议实现 Broker 接口，以减少依赖。在 &lt;a href=&#34;github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt; 中有许多 Broker 的实现。例如：RabbitMQ，NATS，NSQ等。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Broker&lt;/strong&gt; 为异步 pub/sub 子通讯提供消息代理的接口。这是事件驱动结构和微服务的基本要求之一。在默认情况下，我们使用 HTTP 协议实现 Broker 接口，以减少依赖。在 &lt;a href=&#34;github.com/vine-io/plugins&#34;&gt;plugins&lt;/a&gt; 中有许多 Broker 的实现。例如：RabbitMQ，NATS，NSQ等。&lt;/p&gt;
 &lt;h2 id=&#34;client&#34;&gt;Client&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;Client&lt;/strong&gt; 提供一个接口来向服务发出请求。和 Server 一样，它构建在其他包上并提供统一的接口。使用 Registry 来查找服务，使用Transport进行同步请求。&lt;/p&gt;
 &lt;h2 id=&#34;codec&#34;&gt;Codec&lt;/h2&gt;
@@ -67,10 +67,10 @@
     
     <item>
       <title>Docs: 错误</title>
-      <link>https://lack-io.github.io/vine/docs/framework/errors/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/errors/</link>
       <pubDate>Tue, 29 Dec 2020 14:55:02 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/errors/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/errors/</guid>
       <description>
         
         
@@ -137,16 +137,16 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
     
     <item>
       <title>Docs: 插件</title>
-      <link>https://lack-io.github.io/vine/docs/framework/plugins/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/plugins/</link>
       <pubDate>Tue, 29 Dec 2020 14:56:43 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/plugins/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/plugins/</guid>
       <description>
         
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 构建在 Go 接口之上。因此这些接口的实现是可插拔的。&lt;/p&gt;
-&lt;p&gt;默认情况下，&lt;strong&gt;Vine&lt;/strong&gt; 只提供核心上每个接口的几个实现，但它完全是可插拔的。而额外的实现保存在 &lt;a href=&#34;https://github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;默认情况下，&lt;strong&gt;Vine&lt;/strong&gt; 只提供核心上每个接口的几个实现，但它完全是可插拔的。而额外的实现保存在 &lt;a href=&#34;https://github.com/vine-io/plugins&#34;&gt;plugins&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id=&#34;添加插件&#34;&gt;添加插件&lt;/h2&gt;
 &lt;p&gt;如果要集成插件，只需将它们链接到单独的文件中并重新生成。
 创建 plugins.go 文件并导入所需的插件：&lt;/p&gt;
@@ -154,11 +154,11 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
     &lt;span style=&#34;color:#6272a4&#34;&gt;// consul registry
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/registry/consul&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/registry/consul&amp;#34;&lt;/span&gt;
     &lt;span style=&#34;color:#6272a4&#34;&gt;// rabbitmq transport
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/transport/rabbitmq&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/transport/rabbitmq&amp;#34;&lt;/span&gt;
     &lt;span style=&#34;color:#6272a4&#34;&gt;// kafka broker
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/broker/kafka&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    _ &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/broker/kafka&amp;#34;&lt;/span&gt;
 )
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过包含插件文件来构建应用程序：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go build -o service main.go plugins.go
@@ -174,11 +174,11 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
 
     &lt;span style=&#34;color:#6272a4&#34;&gt;// consul registry
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/registry/consul&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/registry/consul&amp;#34;&lt;/span&gt;
     &lt;span style=&#34;color:#6272a4&#34;&gt;// rabbitmq transport
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/transport/rabbitmq&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/transport/rabbitmq&amp;#34;&lt;/span&gt;
     &lt;span style=&#34;color:#6272a4&#34;&gt;// kafka broker
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/plugins/broker/kafka&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/broker/kafka&amp;#34;&lt;/span&gt;
 )
 
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
@@ -210,17 +210,17 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查阅 &lt;a href=&#34;https://github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt; 可以更好地了解实现细节。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查阅 &lt;a href=&#34;https://github.com/vine-io/plugins&#34;&gt;plugins&lt;/a&gt; 可以更好地了解实现细节。&lt;/p&gt;
 
       </description>
     </item>
     
     <item>
       <title>Docs: 选项</title>
-      <link>https://lack-io.github.io/vine/docs/framework/options/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/options/</link>
       <pubDate>Tue, 29 Dec 2020 14:55:49 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/options/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/options/</guid>
       <description>
         
         
@@ -280,10 +280,10 @@ store &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; service.&lt;span
     
     <item>
       <title>Docs: 配置</title>
-      <link>https://lack-io.github.io/vine/docs/framework/config/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/config/</link>
       <pubDate>Tue, 29 Dec 2020 14:56:14 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/config/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/config/</guid>
       <description>
         
         
@@ -531,10 +531,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: 服务发现</title>
-      <link>https://lack-io.github.io/vine/docs/framework/registry/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/registry/</link>
       <pubDate>Tue, 29 Dec 2020 14:57:27 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/registry/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/registry/</guid>
       <description>
         
         
@@ -625,10 +625,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: API处理器</title>
-      <link>https://lack-io.github.io/vine/docs/framework/api/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/api/</link>
       <pubDate>Tue, 29 Dec 2020 14:58:34 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/api/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/api/</guid>
       <description>
         
         
@@ -718,10 +718,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: 订阅发布</title>
-      <link>https://lack-io.github.io/vine/docs/framework/broker/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/broker/</link>
       <pubDate>Tue, 29 Dec 2020 14:59:08 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/broker/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/broker/</guid>
       <description>
         
         
@@ -738,7 +738,7 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Subscribe&lt;/span&gt;(topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, h Handler, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;SubscribeOption) (Subscriber, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;默认情况下，vine 实现点对点 http 代理，但可以通过 &lt;a href=&#34;https://github.com/lack-io/plugins&#34;&gt;plugins&lt;/a&gt; 替换实现。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;默认情况下，vine 实现点对点 http 代理，但可以通过 &lt;a href=&#34;https://github.com/vine-io/plugins&#34;&gt;plugins&lt;/a&gt; 替换实现。&lt;/p&gt;
 &lt;h2 id=&#34;发布消息&#34;&gt;发布消息&lt;/h2&gt;
 &lt;p&gt;使用 topic 名称和服务客户端创建一个新的发布者&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEvent&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
@@ -801,10 +801,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: 服务端</title>
-      <link>https://lack-io.github.io/vine/docs/framework/server/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/server/</link>
       <pubDate>Tue, 29 Dec 2020 15:00:10 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/server/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/server/</guid>
       <description>
         
         
@@ -814,10 +814,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: 客户端</title>
-      <link>https://lack-io.github.io/vine/docs/framework/client/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/client/</link>
       <pubDate>Tue, 29 Dec 2020 14:59:49 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/client/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/client/</guid>
       <description>
         
         
@@ -827,10 +827,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: 身份验证</title>
-      <link>https://lack-io.github.io/vine/docs/framework/auth/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/auth/</link>
       <pubDate>Tue, 29 Dec 2020 15:00:40 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/auth/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/auth/</guid>
       <description>
         
         
@@ -840,10 +840,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: 网络服务</title>
-      <link>https://lack-io.github.io/vine/docs/framework/network/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/network/</link>
       <pubDate>Tue, 29 Dec 2020 15:00:45 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/network/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/network/</guid>
       <description>
         
         
@@ -853,10 +853,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: 数据存储</title>
-      <link>https://lack-io.github.io/vine/docs/framework/store/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/store/</link>
       <pubDate>Tue, 29 Dec 2020 15:01:40 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/store/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/store/</guid>
       <description>
         
         
@@ -866,10 +866,10 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     
     <item>
       <title>Docs: web服务</title>
-      <link>https://lack-io.github.io/vine/docs/framework/web/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/web/</link>
       <pubDate>Tue, 29 Dec 2020 15:01:46 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/web/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/web/</guid>
       <description>
         
         
@@ -927,10 +927,10 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; c.&lt;span st
     
     <item>
       <title>Docs: 请求代理</title>
-      <link>https://lack-io.github.io/vine/docs/framework/proxy/</link>
+      <link>https://vine-io.github.io/vine/docs/framework/proxy/</link>
       <pubDate>Tue, 29 Dec 2020 15:03:13 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/framework/proxy/</guid>
+      <guid>https://vine-io.github.io/vine/docs/framework/proxy/</guid>
       <description>
         
         

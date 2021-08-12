@@ -34,7 +34,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 	"gopkg.in/fsnotify.v1"
 
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"

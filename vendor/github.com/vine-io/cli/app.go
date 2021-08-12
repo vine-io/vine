@@ -26,7 +26,7 @@ import (
 )
 
 var (
-	changeLogURL            = "https://github.com/lack-io/cli/blob/master/docs/CHANGELOG.md"
+	changeLogURL            = "https://github.com/vine-io/cli/blob/master/docs/CHANGELOG.md"
 	appActionDeprecationURL = fmt.Sprintf("%s#deprecated-cli-app-action-signature", changeLogURL)
 	contactSysadmin         = "This is an error in the application.  Please contact the distributor of this application if this is not you."
 	errInvalidActionType    = NewExitError("ERROR invalid Action type. "+

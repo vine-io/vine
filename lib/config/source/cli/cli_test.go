@@ -27,7 +27,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/lib/config"

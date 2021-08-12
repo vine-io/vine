@@ -29,7 +29,7 @@ import (
 	"os/exec"
 	"sort"
 
-	ccli "github.com/lack-io/cli"
+	ccli "github.com/vine-io/cli"
 	"github.com/vine-io/vine/cmd/vine/version"
 
 	"github.com/vine-io/vine"

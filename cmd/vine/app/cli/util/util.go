@@ -30,7 +30,7 @@ import (
 	"net"
 	"os"
 
-	ccli "github.com/lack-io/cli"
+	ccli "github.com/vine-io/cli"
 
 	"github.com/vine-io/vine/util/config"
 )

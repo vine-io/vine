@@ -27,7 +27,7 @@ import (
 	"flag"
 	"strings"
 
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 )
 
 func copyFlag(name string, ff *flag.Flag, set *flag.FlagSet) {

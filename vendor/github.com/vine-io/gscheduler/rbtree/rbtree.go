@@ -71,9 +71,9 @@ func (t *Rbtree) leftRotate(x *Node) {
 	//          |                                  |
 	//          X                                  Y
 	//         / \         left rotate            / \
-	//        α  Y       ------------->         X   γ
+	//        α   Y       ------------->         X   γ
 	//           / \                            / \
-	//          β  γ                         α  β
+	//          β   γ                          α   β
 	//
 	// It should be note that during the rotating we do not change
 	// the Nodes' color.
@@ -109,9 +109,9 @@ func (t *Rbtree) rightRotate(x *Node) {
 	//          |                                  |
 	//          X                                  Y
 	//         / \         right rotate           / \
-	//        Y   γ      ------------->         α  X
+	//        Y   γ      ------------->          α   X
 	//       / \                                    / \
-	//      α  β                                 β  γ
+	//      α   β                                  β   γ
 	//
 	// It should be note that during the rotating we do not change
 	// the Nodes' color.

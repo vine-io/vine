@@ -94,14 +94,6 @@ github.com/klauspost/compress/zlib
 github.com/kr/pretty
 # github.com/kr/text v0.1.0
 github.com/kr/text
-# github.com/lack-io/cli v1.2.4
-## explicit
-github.com/lack-io/cli
-# github.com/lack-io/gscheduler v0.2.0
-## explicit
-github.com/lack-io/gscheduler
-github.com/lack-io/gscheduler/cron
-github.com/lack-io/gscheduler/rbtree
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/miekg/dns v1.1.35
@@ -164,6 +156,14 @@ github.com/valyala/fasthttp/reuseport
 github.com/valyala/fasthttp/stackless
 # github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a
 github.com/valyala/tcplisten
+# github.com/vine-io/cli v1.3.0
+## explicit
+github.com/vine-io/cli
+# github.com/vine-io/gscheduler v0.3.0
+## explicit
+github.com/vine-io/gscheduler
+github.com/vine-io/gscheduler/cron
+github.com/vine-io/gscheduler/rbtree
 # github.com/xlab/treeprint v1.0.0
 ## explicit
 github.com/xlab/treeprint

@@ -25,7 +25,7 @@ package cli
 import (
 	"context"
 
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine/lib/config/source"
 )

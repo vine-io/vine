@@ -30,7 +30,7 @@ import (
 	"time"
 
 	"github.com/imdario/mergo"
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/config/source"

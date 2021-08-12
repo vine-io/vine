@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lack-io/gscheduler"
+	"github.com/vine-io/gscheduler"
 )
 
 func main() {

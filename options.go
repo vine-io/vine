@@ -26,8 +26,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/lack-io/cli"
-	"github.com/lack-io/gscheduler"
+	"github.com/vine-io/cli"
+	"github.com/vine-io/gscheduler"
 
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/client"

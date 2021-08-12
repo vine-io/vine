@@ -28,7 +28,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/lack-io/gscheduler/cron"
+	"github.com/vine-io/gscheduler/cron"
 )
 
 type Empty struct{}

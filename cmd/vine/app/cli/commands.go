@@ -6,7 +6,7 @@ import (
 	"sort"
 	"text/tabwriter"
 
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 )
 
 func quit(c *cli.Context, args []string) ([]byte, error) {

@@ -1,4 +1,4 @@
-module github.com/lack-io/cli
+module github.com/vine-io/cli
 
 go 1.15
 

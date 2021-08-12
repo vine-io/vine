@@ -1,12 +1,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vine – 工具</title>
-    <link>https://lack-io.github.io/vine/docs/tools/</link>
+    <link>https://vine-io.github.io/vine/docs/tools/</link>
     <description>Recent content in 工具 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Tue, 29 Dec 2020 15:04:24 +0800</lastBuildDate>
     
-	  <atom:link href="https://lack-io.github.io/vine/docs/tools/index.xml" rel="self" type="application/rss+xml" />
+	  <atom:link href="https://vine-io.github.io/vine/docs/tools/index.xml" rel="self" type="application/rss+xml" />
     
     
       
@@ -16,10 +16,10 @@
     
     <item>
       <title>Docs: Vine</title>
-      <link>https://lack-io.github.io/vine/docs/tools/vine/</link>
+      <link>https://vine-io.github.io/vine/docs/tools/vine/</link>
       <pubDate>Fri, 04 Jun 2021 17:08:23 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/tools/vine/</guid>
+      <guid>https://vine-io.github.io/vine/docs/tools/vine/</guid>
       <description>
         
         
@@ -295,10 +295,10 @@ OPTIONS:
     
     <item>
       <title>Docs: Validate</title>
-      <link>https://lack-io.github.io/vine/docs/tools/validate/</link>
+      <link>https://vine-io.github.io/vine/docs/tools/validate/</link>
       <pubDate>Mon, 18 Jan 2021 11:11:29 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/tools/validate/</guid>
+      <guid>https://vine-io.github.io/vine/docs/tools/validate/</guid>
       <description>
         
         
@@ -579,15 +579,15 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
     
     <item>
       <title>Docs: OpenAPI</title>
-      <link>https://lack-io.github.io/vine/docs/tools/openapi/</link>
+      <link>https://vine-io.github.io/vine/docs/tools/openapi/</link>
       <pubDate>Mon, 25 Jan 2021 18:42:52 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/tools/openapi/</guid>
+      <guid>https://vine-io.github.io/vine/docs/tools/openapi/</guid>
       <description>
         
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;Vine&lt;/em&gt; 内部集成 openapi3.0，&lt;code&gt;protoc-gen-vine&lt;/code&gt; 通过识别 protobuf 文件的注释生成 Openapi3.0 文档。类似 &lt;a href=&#34;https://lack-io.github.io/vine/docs/tools/validate/&#34;&gt;Validator&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Vine&lt;/em&gt; 内部集成 openapi3.0，&lt;code&gt;protoc-gen-vine&lt;/code&gt; 通过识别 protobuf 文件的注释生成 Openapi3.0 文档。类似 &lt;a href=&#34;https://vine-io.github.io/vine/docs/tools/validate/&#34;&gt;Validator&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
 &lt;h3 id=&#34;1先编写-helloworldproto-文件&#34;&gt;1.先编写 helloworld.proto 文件&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;proto3&amp;#34;&lt;/span&gt;;
@@ -830,10 +830,10 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
     
     <item>
       <title>Docs: Dao</title>
-      <link>https://lack-io.github.io/vine/docs/tools/dao/</link>
+      <link>https://vine-io.github.io/vine/docs/tools/dao/</link>
       <pubDate>Mon, 18 Jan 2021 11:11:29 +0800</pubDate>
       
-      <guid>https://lack-io.github.io/vine/docs/tools/dao/</guid>
+      <guid>https://vine-io.github.io/vine/docs/tools/dao/</guid>
       <description>
         
         

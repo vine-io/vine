@@ -3,7 +3,7 @@ package gscheduler
 import (
 	"fmt"
 
-	"github.com/lack-io/gscheduler/rbtree"
+	"github.com/vine-io/gscheduler/rbtree"
 )
 
 type Store interface {

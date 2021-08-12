@@ -31,7 +31,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 	t2 "github.com/vine-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 	"github.com/vine-io/vine/cmd/vine/version"

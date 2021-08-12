@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lack-io/gscheduler/cron"
-	"github.com/lack-io/gscheduler/rbtree"
+	"github.com/vine-io/gscheduler/cron"
+	"github.com/vine-io/gscheduler/rbtree"
 )
 
 type Status string

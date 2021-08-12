@@ -25,7 +25,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/client"

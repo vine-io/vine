@@ -18,8 +18,8 @@ require (
 	github.com/jinzhu/now v1.1.1
 	github.com/json-iterator/go v1.1.11
 	github.com/kr/pretty v0.2.1
-	github.com/lack-io/cli v1.2.4
-	github.com/lack-io/gscheduler v0.2.0
+	github.com/vine-io/cli v1.3.0
+	github.com/vine-io/gscheduler v0.3.0
 	github.com/miekg/dns v1.1.35
 	github.com/mitchellh/hashstructure v1.1.0
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c

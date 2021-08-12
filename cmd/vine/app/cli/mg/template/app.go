@@ -190,7 +190,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine"
 	ahandler "github.com/vine-io/vine/lib/api/handler"

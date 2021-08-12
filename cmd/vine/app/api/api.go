@@ -30,7 +30,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
 	"github.com/rakyll/statik/fs"
 

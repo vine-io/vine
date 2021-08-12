@@ -23,7 +23,7 @@
 
 package vine
 
-import "github.com/lack-io/gscheduler"
+import "github.com/vine-io/gscheduler"
 
 var defaultScheduler gscheduler.Scheduler
 

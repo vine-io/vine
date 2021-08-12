@@ -32,7 +32,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/lack-io/cli"
+	"github.com/vine-io/cli"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
 	"github.com/vine-io/vine/cmd/vine/client/resolver/web"
