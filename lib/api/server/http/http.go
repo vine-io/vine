@@ -35,7 +35,7 @@ import (
 	log "github.com/vine-io/vine/lib/logger"
 )
 
-var DefaultBodyLimit = 1024 * 1024 * 1024 * 1024 * 1024
+var DefaultBodyLimit = 1024 * 1024 * 1024 * 1024 * 1024 // 1 PB
 
 type httpServer struct {
 	app  *fiber.App
@@ -90,8 +90,8 @@ func (s *httpServer) Handle(path string, app *fiber.App) {
 	//handler = loggingHandler(handler)
 
 	s.app.Use(logger.New(logger.Config{
-		Format:       "[${time}] ${status} - ${latency} ${method} ${path}\n",
-		TimeFormat:   "15:04:05",
+		Format:       "${time} ${status} - [${latency}] | [${method}]  ${path}\n",
+		TimeFormat:   "2006-01-02 15:04:05",
 		TimeZone:     "Local",
 		TimeInterval: 0,
 		Output:       log.DefaultLogger.Options().Out,

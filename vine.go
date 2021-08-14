@@ -42,10 +42,10 @@ type Service interface {
 	Init(...Option)
 	// Options returns the current options
 	Options() Options
-	// Client is used to call services
-	Client() client.Client
 	// Server is for handling requests and events
 	Server() server.Server
+	// Client is used to call services
+	Client() client.Client
 	// Run the service
 	Run() error
 	// String The service implementation
