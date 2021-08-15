@@ -22,42 +22,44 @@
 
 package noop
 
-import "github.com/vine-io/vine/lib/store"
+import (
+	"github.com/vine-io/vine/lib/cache"
+)
 
-type noopStore struct{}
+type noopCache struct{}
 
-func (n *noopStore) Init(opts ...store.Option) error {
+func (n *noopCache) Init(opts ...cache.Option) error {
 	return nil
 }
 
-func (n *noopStore) Options() store.Options {
-	return store.Options{}
+func (n *noopCache) Options() cache.Options {
+	return cache.Options{}
 }
 
-func (n *noopStore) String() string {
+func (n *noopCache) String() string {
 	return "noop"
 }
 
-func (n *noopStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
-	return []*store.Record{}, nil
+func (n *noopCache) Get(key string, opts ...cache.GetOption) ([]*cache.Record, error) {
+	return []*cache.Record{}, nil
 }
 
-func (n *noopStore) Write(r *store.Record, opts ...store.WriteOption) error {
+func (n *noopCache) Put(r *cache.Record, opts ...cache.PutOption) error {
 	return nil
 }
 
-func (n *noopStore) Delete(key string, opts ...store.DeleteOption) error {
+func (n *noopCache) Del(key string, opts ...cache.DelOption) error {
 	return nil
 }
 
-func (n *noopStore) List(opts ...store.ListOption) ([]string, error) {
+func (n *noopCache) List(opts ...cache.ListOption) ([]string, error) {
 	return []string{}, nil
 }
 
-func (n *noopStore) Close() error {
+func (n *noopCache) Close() error {
 	return nil
 }
 
-func NewStore() store.Store {
-	return new(noopStore)
+func NewCache(opts ...cache.Option) cache.Cache {
+	return new(noopCache)
 }

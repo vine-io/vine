@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package store
+package cache
 
 import (
 	"context"
@@ -29,7 +29,7 @@ import (
 	"github.com/vine-io/vine/core/client"
 )
 
-// Options contains configuration for the Store
+// Options contains configuration for the Cache
 type Options struct {
 	// Nodes contains the addresses or other connection information of the backing storage.
 	// For example, an etcd implementation would contain the nodes of the cluster.
@@ -85,8 +85,8 @@ func WithClient(c client.Client) Option {
 	}
 }
 
-// ReadOptions configures an individual Read operation
-type ReadOptions struct {
+// GetOptions configures an individual Get operation
+type GetOptions struct {
 	Database, Table string
 	// Prefix returns all records that are prefixed with key
 	Prefix bool
@@ -98,48 +98,48 @@ type ReadOptions struct {
 	Offset uint
 }
 
-// ReadOption sets values in ReadOptions
-type ReadOption func(r *ReadOptions)
+// GetOption sets values in GetOptions
+type GetOption func(r *GetOptions)
 
-// ReadFrom the database and table
-func ReadFrom(database, table string) ReadOption {
-	return func(r *ReadOptions) {
+// GetFrom the database and table
+func GetFrom(database, table string) GetOption {
+	return func(r *GetOptions) {
 		r.Database = database
 		r.Table = table
 	}
 }
 
-// ReadPrefix returns all records that are prefixed with key
-func ReadPrefix() ReadOption {
-	return func(r *ReadOptions) {
+// GetPrefix returns all records that are prefixed with key
+func GetPrefix() GetOption {
+	return func(r *GetOptions) {
 		r.Prefix = true
 	}
 }
 
-// ReadSuffix returns all records that have the suffix key
-func ReadSuffix() ReadOption {
-	return func(r *ReadOptions) {
+// GetSuffix returns all records that have the suffix key
+func GetSuffix() GetOption {
+	return func(r *GetOptions) {
 		r.Suffix = true
 	}
 }
 
-// ReadLimit limits the number of responses to l
-func ReadLimit(l uint) ReadOption {
-	return func(r *ReadOptions) {
+// GetLimit limits the number of responses to l
+func GetLimit(l uint) GetOption {
+	return func(r *GetOptions) {
 		r.Limit = l
 	}
 }
 
-// ReadOffset starts returning responses from o. Use in conjunction with Limit for pagination
-func ReadOffset(o uint) ReadOption {
-	return func(r *ReadOptions) {
+// GetOffset starts returning responses from o. Use in conjunction with Limit for pagination
+func GetOffset(o uint) GetOption {
+	return func(r *GetOptions) {
 		r.Offset = o
 	}
 }
 
-// WriteOptions configures an individual Write operation
+// PutOptions configures an individual Put operation
 // If Expiry and TTL are set TTL takes precedence
-type WriteOptions struct {
+type PutOptions struct {
 	Database, Table string
 	// Expiry is the time the record expires
 	Expiry time.Time
@@ -147,42 +147,42 @@ type WriteOptions struct {
 	TTL time.Duration
 }
 
-// WriteOption sets values in WriteOptions
-type WriteOption func(w *WriteOptions)
+// PutOption sets values in PutOptions
+type PutOption func(w *PutOptions)
 
-// WriteTo the database and table
-func WriteTo(database, table string) WriteOption {
-	return func(w *WriteOptions) {
+// PutTo the database and table
+func PutTo(database, table string) PutOption {
+	return func(w *PutOptions) {
 		w.Database = database
 		w.Table = table
 	}
 }
 
-// WriteExpiry is the time the record expires
-func WriteExpiry(t time.Time) WriteOption {
-	return func(w *WriteOptions) {
+// PutExpiry is the time the record expires
+func PutExpiry(t time.Time) PutOption {
+	return func(w *PutOptions) {
 		w.Expiry = t
 	}
 }
 
-// WriteTTL is the time the record expires
-func WriteTTL(d time.Duration) WriteOption {
-	return func(w *WriteOptions) {
+// PutTTL is the time the record expires
+func PutTTL(d time.Duration) PutOption {
+	return func(w *PutOptions) {
 		w.TTL = d
 	}
 }
 
-// DeleteOptions configures an individual Delete operation
-type DeleteOptions struct {
+// DelOptions configures an individual Del operation
+type DelOptions struct {
 	Database, Table string
 }
 
-// DeleteOption sets values in DeleteOptions
-type DeleteOption func(d *DeleteOptions)
+// DelOption sets values in DelOptions
+type DelOption func(d *DelOptions)
 
-// DeleteFrom the database and table
-func DeleteFrom(database, table string) DeleteOption {
-	return func(d *DeleteOptions) {
+// DelFrom the database and table
+func DelFrom(database, table string) DelOption {
+	return func(d *DelOptions) {
 		d.Database = database
 		d.Table = table
 	}

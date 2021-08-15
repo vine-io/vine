@@ -32,6 +32,7 @@ import (
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/config"
 	"github.com/vine-io/vine/lib/dao"
 	"github.com/vine-io/vine/lib/trace"
@@ -46,14 +47,15 @@ type Options struct {
 	app *cli.App
 
 	// We need pointers to things so we can swap them out if needed.
-	Broker    *broker.Broker
-	Registry  *registry.Registry
-	Selector  *selector.Selector
-	Config    *config.Config
-	Client    *client.Client
-	Server    *server.Server
-	Dialect   *dao.Dialect
-	Tracer    *trace.Tracer
+	Broker   *broker.Broker
+	Registry *registry.Registry
+	Selector *selector.Selector
+	Config   *config.Config
+	Client   *client.Client
+	Server   *server.Server
+	Dialect  *dao.Dialect
+	Cache    *cache.Cache
+	Tracer   *trace.Tracer
 
 	Brokers    map[string]func(...broker.Option) broker.Broker
 	Configs    map[string]func(...config.Option) config.Config
@@ -62,6 +64,7 @@ type Options struct {
 	Selectors  map[string]func(...selector.Option) selector.Selector
 	Servers    map[string]func(...server.Option) server.Server
 	Dialects   map[string]func(...dao.Option) dao.Dialect
+	Caches     map[string]func(...cache.Option) cache.Cache
 	Tracers    map[string]func(...trace.Option) trace.Tracer
 
 	// Other options for implementations of the interfaces
@@ -137,6 +140,12 @@ func Server(s *server.Server) Option {
 func Dialect(d *dao.Dialect) Option {
 	return func(o *Options) {
 		o.Dialect = d
+	}
+}
+
+func Cache(c *cache.Cache) Option {
+	return func(o *Options) {
+		o.Cache = c
 	}
 }
 

@@ -29,6 +29,7 @@ import (
 
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/lib/trace"
@@ -91,6 +92,7 @@ func (s *service) Init(opts ...Option) {
 				cmd.Client(&s.opts.Client),
 				cmd.Config(&s.opts.Config),
 				cmd.Server(&s.opts.Server),
+				cmd.Cache(&s.opts.Cache),
 				cmd.Dialect(&s.opts.Dialect),
 			); err != nil {
 				logger.Fatal(err)
@@ -102,6 +104,9 @@ func (s *service) Init(opts ...Option) {
 			return nil
 		})
 
+		// Explicitly set the table name to the service name
+		name := s.opts.Server.Options().Name
+		_ = s.opts.Cache.Init(cache.Table(name))
 	})
 }
 

@@ -34,6 +34,7 @@ import (
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/config"
 	"github.com/vine-io/vine/lib/dao"
@@ -49,6 +50,7 @@ type Options struct {
 	Server    server.Server
 	Trace     trace.Tracer
 	Dialect   dao.Dialect
+	Cache     cache.Cache
 	Registry  registry.Registry
 	Scheduler gscheduler.Scheduler
 
@@ -73,6 +75,7 @@ func newOptions(opts ...Option) Options {
 		Client:    client.DefaultClient,
 		Server:    server.DefaultServer,
 		Dialect:   dao.DefaultDialect,
+		Cache:     cache.DefaultCache,
 		Registry:  registry.DefaultRegistry,
 		Scheduler: defaultScheduler,
 		Context:   context.Background(),
@@ -137,6 +140,13 @@ func Server(s server.Server) Option {
 func Dialect(d dao.Dialect) Option {
 	return func(o *Options) {
 		o.Dialect = d
+	}
+}
+
+// Cache sets the cache to use
+func Cache(c cache.Cache) Option {
+	return func(o *Options) {
+		o.Cache = c
 	}
 }
 

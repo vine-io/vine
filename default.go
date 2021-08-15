@@ -33,6 +33,8 @@ import (
 	rreg "github.com/vine-io/vine/core/router/registry"
 	"github.com/vine-io/vine/core/server"
 	serverGrpc "github.com/vine-io/vine/core/server/grpc"
+	"github.com/vine-io/vine/lib/cache"
+	memCache "github.com/vine-io/vine/lib/cache/memory"
 	"github.com/vine-io/vine/lib/config"
 	configMemory "github.com/vine-io/vine/lib/config/memory"
 	"github.com/vine-io/vine/lib/dao"
@@ -56,6 +58,8 @@ func init() {
 	config.DefaultConfig = configMemory.NewConfig()
 	// default dao
 	dao.DefaultDialect = daoNop.NewDialect()
+	// default cache
+	cache.DefaultCache = memCache.NewCache()
 	// default trace
 	trace.DefaultTracer = traceMem.NewTracer()
 }

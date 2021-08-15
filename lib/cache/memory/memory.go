@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package memory is a in-memory store store
+// Package memory is a in-memory cache cache
 package memory
 
 import (
@@ -30,19 +30,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/patrickmn/go-cache"
+	gcache "github.com/patrickmn/go-cache"
 
-	"github.com/vine-io/vine/lib/store"
+	"github.com/vine-io/vine/lib/cache"
 )
 
-// NewStore returns a memory store
-func NewStore(opts ...store.Option) store.Store {
-	s := &memoryStore{
-		options: store.Options{
+// NewCache returns a memory cache
+func NewCache(opts ...cache.Option) cache.Cache {
+	s := &memoryCache{
+		options: cache.Options{
 			Database: "vine",
 			Table:    "vine",
 		},
-		store: cache.New(cache.NoExpiration, 5*time.Minute),
+		cache: gcache.New(gcache.NoExpiration, 5*time.Minute),
 	}
 	for _, o := range opts {
 		o(&s.options)
@@ -50,24 +50,24 @@ func NewStore(opts ...store.Option) store.Store {
 	return s
 }
 
-type memoryStore struct {
-	options store.Options
+type memoryCache struct {
+	options cache.Options
 
-	store *cache.Cache
+	cache *gcache.Cache
 }
 
-type storeRecord struct {
+type cacheRecord struct {
 	key       string
 	value     []byte
 	metadata  map[string]interface{}
 	expiresAt time.Time
 }
 
-func (m *memoryStore) key(prefix, key string) string {
+func (m *memoryCache) key(prefix, key string) string {
 	return filepath.Join(prefix, key)
 }
 
-func (m *memoryStore) prefix(database, table string) string {
+func (m *memoryCache) prefix(database, table string) string {
 	if len(database) == 0 {
 		database = m.options.Database
 	}
@@ -77,48 +77,48 @@ func (m *memoryStore) prefix(database, table string) string {
 	return filepath.Join(database, table)
 }
 
-func (m *memoryStore) get(prefix, key string) (*store.Record, error) {
+func (m *memoryCache) get(prefix, key string) (*cache.Record, error) {
 	key = m.key(prefix, key)
 
-	var storedRecord *storeRecord
-	r, found := m.store.Get(key)
+	var cachedRecord *cacheRecord
+	r, found := m.cache.Get(key)
 	if !found {
-		return nil, store.ErrNotFound
+		return nil, cache.ErrNotFound
 	}
 
-	storedRecord, ok := r.(*storeRecord)
+	cachedRecord, ok := r.(*cacheRecord)
 	if !ok {
-		return nil, errors.New("retrieved a non *storeRecord from the cache")
+		return nil, errors.New("retrieved a non *cacheRecord from the cache")
 	}
 
 	// Copy the record on the way out
-	newRecord := &store.Record{}
-	newRecord.Key = strings.TrimPrefix(storedRecord.key, prefix+"/")
-	newRecord.Value = make([]byte, len(storedRecord.value))
+	newRecord := &cache.Record{}
+	newRecord.Key = strings.TrimPrefix(cachedRecord.key, prefix+"/")
+	newRecord.Value = make([]byte, len(cachedRecord.value))
 	newRecord.Metadata = make(map[string]interface{})
 
 	// copy the value into the new record
-	copy(newRecord.Value, storedRecord.value)
+	copy(newRecord.Value, cachedRecord.value)
 
 	// check if we need to set the expiry
-	if !storedRecord.expiresAt.IsZero() {
-		newRecord.Expiry = time.Until(storedRecord.expiresAt)
+	if !cachedRecord.expiresAt.IsZero() {
+		newRecord.Expiry = time.Until(cachedRecord.expiresAt)
 	}
 
 	// copy in the metadata
-	for k, v := range storedRecord.metadata {
+	for k, v := range cachedRecord.metadata {
 		newRecord.Metadata[k] = v
 	}
 
 	return newRecord, nil
 }
 
-func (m *memoryStore) set(prefix string, r *store.Record) {
+func (m *memoryCache) set(prefix string, r *cache.Record) {
 	key := m.key(prefix, r.Key)
 
 	// copy the incoming record and then
 	// convert the expiry in to a hard timestamp
-	i := &storeRecord{}
+	i := &cacheRecord{}
 	i.key = r.Key
 	i.value = make([]byte, len(r.Value))
 	i.metadata = make(map[string]interface{})
@@ -136,16 +136,16 @@ func (m *memoryStore) set(prefix string, r *store.Record) {
 		i.metadata[k] = v
 	}
 
-	m.store.Set(key, i, r.Expiry)
+	m.cache.Set(key, i, r.Expiry)
 }
 
-func (m *memoryStore) delete(prefix, key string) {
+func (m *memoryCache) delete(prefix, key string) {
 	key = m.key(prefix, key)
-	m.store.Delete(key)
+	m.cache.Delete(key)
 }
 
-func (m *memoryStore) list(prefix string, limit, offset uint) []string {
-	allItems := m.store.Items()
+func (m *memoryCache) list(prefix string, limit, offset uint) []string {
+	allItems := m.cache.Items()
 	allKeys := make([]string, len(allItems))
 	i := 0
 
@@ -171,19 +171,19 @@ func (m *memoryStore) list(prefix string, limit, offset uint) []string {
 	return allKeys
 }
 
-func (m *memoryStore) Init(opts ...store.Option) error {
+func (m *memoryCache) Init(opts ...cache.Option) error {
 	for _, o := range opts {
 		o(&m.options)
 	}
 	return nil
 }
 
-func (m *memoryStore) Options() store.Options {
+func (m *memoryCache) Options() cache.Options {
 	return m.options
 }
 
-func (m *memoryStore) Read(key string, opts ...store.ReadOption) ([]*store.Record, error) {
-	readOpts := store.ReadOptions{}
+func (m *memoryCache) Get(key string, opts ...cache.GetOption) ([]*cache.Record, error) {
+	readOpts := cache.GetOptions{}
 	for _, o := range opts {
 		o(&readOpts)
 	}
@@ -211,7 +211,7 @@ func (m *memoryStore) Read(key string, opts ...store.ReadOption) ([]*store.Recor
 		keys = []string{key}
 	}
 
-	var results []*store.Record
+	var results []*cache.Record
 
 	for _, k := range keys {
 		r, err := m.get(prefix, k)
@@ -224,8 +224,8 @@ func (m *memoryStore) Read(key string, opts ...store.ReadOption) ([]*store.Recor
 	return results, nil
 }
 
-func (m *memoryStore) Write(r *store.Record, opts ...store.WriteOption) error {
-	writeOpts := store.WriteOptions{}
+func (m *memoryCache) Put(r *cache.Record, opts ...cache.PutOption) error {
+	writeOpts := cache.PutOptions{}
 	for _, o := range opts {
 		o(&writeOpts)
 	}
@@ -234,7 +234,7 @@ func (m *memoryStore) Write(r *store.Record, opts ...store.WriteOption) error {
 
 	if len(opts) > 0 {
 		// Copy the record before applying options, or the incoming record will be mutated
-		newRecord := store.Record{}
+		newRecord := cache.Record{}
 		newRecord.Key = r.Key
 		newRecord.Value = make([]byte, len(r.Value))
 		newRecord.Metadata = make(map[string]interface{})
@@ -262,8 +262,8 @@ func (m *memoryStore) Write(r *store.Record, opts ...store.WriteOption) error {
 	return nil
 }
 
-func (m *memoryStore) Delete(key string, opts ...store.DeleteOption) error {
-	deleteOptions := store.DeleteOptions{}
+func (m *memoryCache) Del(key string, opts ...cache.DelOption) error {
+	deleteOptions := cache.DelOptions{}
 	for _, o := range opts {
 		o(&deleteOptions)
 	}
@@ -273,8 +273,8 @@ func (m *memoryStore) Delete(key string, opts ...store.DeleteOption) error {
 	return nil
 }
 
-func (m *memoryStore) List(opts ...store.ListOption) ([]string, error) {
-	listOptions := store.ListOptions{}
+func (m *memoryCache) List(opts ...cache.ListOption) ([]string, error) {
+	listOptions := cache.ListOptions{}
 
 	for _, o := range opts {
 		o(&listOptions)
@@ -306,11 +306,11 @@ func (m *memoryStore) List(opts ...store.ListOption) ([]string, error) {
 	return keys, nil
 }
 
-func (m *memoryStore) Close() error {
-	m.store.Flush()
+func (m *memoryCache) Close() error {
+	m.cache.Flush()
 	return nil
 }
 
-func (m *memoryStore) String() string {
+func (m *memoryCache) String() string {
 	return "memory"
 }

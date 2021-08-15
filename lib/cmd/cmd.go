@@ -45,6 +45,7 @@ import (
 	"github.com/vine-io/vine/core/registry/mdns"
 	regMemory "github.com/vine-io/vine/core/registry/memory"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/config"
 	configMemory "github.com/vine-io/vine/lib/config/memory"
 	configSrc "github.com/vine-io/vine/lib/config/source"
@@ -57,6 +58,9 @@ import (
 	sgrpc "github.com/vine-io/vine/core/server/grpc"
 
 	daoNop "github.com/vine-io/vine/lib/dao/nop"
+
+	memCache "github.com/vine-io/vine/lib/cache/memory"
+	nopCache "github.com/vine-io/vine/lib/cache/noop"
 
 	// config
 	configSrv "github.com/vine-io/vine/lib/config/source/service"
@@ -199,6 +203,16 @@ var (
 			Usage:   "The source of the config to be used to get configuration",
 		},
 		&cli.StringFlag{
+			Name:    "cache",
+			EnvVars: []string{"VINE_CACHE"},
+			Usage:   "Cache used for key-value storage",
+		},
+		&cli.StringFlag{
+			Name:    "cache-address",
+			EnvVars: []string{"VINE_CACHE_ADDRESS"},
+			Usage:   "Comma-separated list of cache addresses",
+		},
+		&cli.StringFlag{
 			Name:    "tracer",
 			EnvVars: []string{"VINE_TRACER"},
 			Usage:   "Tracer for distributed tracing, e.g. memory, jaeger",
@@ -240,6 +254,11 @@ var (
 		"nop": daoNop.NewDialect,
 	}
 
+	DefaultCaches = map[string]func(...cache.Option) cache.Cache{
+		"memory": memCache.NewCache,
+		"noop":   nopCache.NewCache,
+	}
+
 	DefaultTracers = map[string]func(...trace.Option) trace.Tracer{
 		"memory": memTracer.NewTracer,
 		// "jaeger": jTracer.NewTracer,
@@ -252,14 +271,15 @@ var (
 
 func newCmd(opts ...Option) Cmd {
 	options := Options{
-		Broker:    &broker.DefaultBroker,
-		Client:    &client.DefaultClient,
-		Registry:  &registry.DefaultRegistry,
-		Server:    &server.DefaultServer,
-		Selector:  &selector.DefaultSelector,
-		Dialect:   &dao.DefaultDialect,
-		Tracer:    &trace.DefaultTracer,
-		Config:    &config.DefaultConfig,
+		Broker:   &broker.DefaultBroker,
+		Client:   &client.DefaultClient,
+		Registry: &registry.DefaultRegistry,
+		Server:   &server.DefaultServer,
+		Selector: &selector.DefaultSelector,
+		Dialect:  &dao.DefaultDialect,
+		Cache:    &cache.DefaultCache,
+		Tracer:   &trace.DefaultTracer,
+		Config:   &config.DefaultConfig,
 
 		Brokers:    DefaultBrokers,
 		Clients:    DefaultClients,
@@ -267,6 +287,7 @@ func newCmd(opts ...Option) Cmd {
 		Selectors:  DefaultSelectors,
 		Servers:    DefaultServers,
 		Dialects:   DefaultDialects,
+		Caches:     DefaultCaches,
 		Tracers:    DefaultTracers,
 		Configs:    DefaultConfigs,
 	}
@@ -331,6 +352,15 @@ func (c *cmd) Before(ctx *cli.Context) error {
 	// after the cache client since the wrappers are applied in reverse order and the cache will use
 	vineClient := client.DefaultClient
 
+	// Set the cache
+	if name := ctx.String("cache"); len(name) > 0 {
+		s, ok := c.opts.Caches[name]
+		if !ok {
+			return fmt.Errorf("unsuported cache: %s", name)
+		}
+
+		*c.opts.Cache = s(cache.WithClient(vineClient))
+	}
 	// Set the dialect
 	if name := ctx.String("dao-dialect"); len(name) > 0 {
 		d, ok := c.opts.Dialects[name]
@@ -452,6 +482,12 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 		if err := (*c.opts.Dialect).Init(dao.DSN(dsn)); err != nil {
 			log.Fatalf("Error configuring dialect dsn: %v", err)
+		}
+	}
+
+	if addrs := ctx.String("cache-address"); len(addrs) > 0 {
+		if err := (*c.opts.Cache).Init(cache.Nodes(strings.Split(addrs, ",")...)); err != nil {
+			log.Fatalf("Error configuring cache: %v", err)
 		}
 	}
 
