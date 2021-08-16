@@ -46,7 +46,7 @@ type Options struct {
 
 	app *cli.App
 
-	// We need pointers to things so we can swap them out if needed.
+	// We need pointers to things, so we can swap them out if needed.
 	Broker   *broker.Broker
 	Registry *registry.Registry
 	Selector *selector.Selector

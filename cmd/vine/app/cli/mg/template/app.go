@@ -144,7 +144,6 @@ import ({{range .Plugins}}
 	SingleApp = `package pkg
 
 import (
-	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/server"
@@ -165,7 +164,6 @@ func Run() {
 	ClusterApp = `package {{.Name}}
 
 import (
-	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/{{.Name}}/server"
