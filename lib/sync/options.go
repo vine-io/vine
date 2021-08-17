@@ -26,6 +26,24 @@ import (
 	"time"
 )
 
+type Options struct {
+	Nodes  []string
+	Prefix string
+}
+
+type Option func(o *Options)
+
+type LeaderOptions struct{}
+
+type LeaderOption func(o *LeaderOptions)
+
+type LockOptions struct {
+	TTL  time.Duration
+	Wait time.Duration
+}
+
+type LockOption func(o *LockOptions)
+
 // Nodes sets the addresses to use
 func Nodes(a ...string) Option {
 	return func(o *Options) {
