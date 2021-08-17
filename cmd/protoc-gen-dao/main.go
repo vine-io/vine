@@ -58,6 +58,7 @@ func main() {
 	generator.RegisterPlugin(dao)
 
 	g := generator.New("dao")
+	g.EasyHeader()
 
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {

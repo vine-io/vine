@@ -455,6 +455,7 @@ type Generator struct {
 	name string
 
 	enableEdit bool
+	easyHeader bool
 
 	Request  *plugin.CodeGeneratorRequest  // The input.
 	Response *plugin.CodeGeneratorResponse // The output.
@@ -511,6 +512,10 @@ func New(name string) *Generator {
 
 func (g *Generator) EnableEdit() {
 	g.enableEdit = true
+}
+
+func (g *Generator) EasyHeader() {
+	g.easyHeader = true
 }
 
 // Error reports a problem, including an error, and exits the program.
@@ -1254,16 +1259,18 @@ func (g *Generator) generate(file *FileDescriptor) {
 		g.usedPackageNames[name] = true
 	}
 
-	g.P("// This is a compile-time assertion to ensure that this generated file")
-	g.P("// is compatible with the proto package it is being compiled against.")
-	g.P("// A compilation error at this line likely means your copy of the")
-	g.P("// proto package needs to be updated.")
-	if gogoproto.ImportsGoGoProto(file.FileDescriptorProto) {
-		g.P("const _ = ", g.Pkg["proto"], ".GoGoProtoPackageIsVersion", generatedCodeVersion, " // please upgrade the proto package")
-	} else {
-		g.P("const _ = ", g.Pkg["proto"], ".ProtoPackageIsVersion", generatedCodeVersion, " // please upgrade the proto package")
+	if !g.easyHeader {
+		g.P("// This is a compile-time assertion to ensure that this generated file")
+		g.P("// is compatible with the proto package it is being compiled against.")
+		g.P("// A compilation error at this line likely means your copy of the")
+		g.P("// proto package needs to be updated.")
+		if gogoproto.ImportsGoGoProto(file.FileDescriptorProto) {
+			g.P("const _ = ", g.Pkg["proto"], ".GoGoProtoPackageIsVersion", generatedCodeVersion, " // please upgrade the proto package")
+		} else {
+			g.P("const _ = ", g.Pkg["proto"], ".ProtoPackageIsVersion", generatedCodeVersion, " // please upgrade the proto package")
+		}
+		g.P()
 	}
-	g.P()
 	// Reset on each file
 	g.writtenImports = make(map[string]bool)
 	for _, td := range g.file.imp {
@@ -1463,16 +1470,19 @@ func (g *Generator) generateImports() {
 	// do, which is tricky when there's a plugin, just import it and
 	// reference it later. The same argument applies to the fmt and math packages.
 	g.P("import (")
-	g.PrintImport(GoPackageName(g.Pkg["fmt"]), "fmt")
-	g.PrintImport(GoPackageName(g.Pkg["math"]), "math")
-	if gogoproto.ImportsGoGoProto(g.file.FileDescriptorProto) {
-		g.PrintImport(GoPackageName(g.Pkg["proto"]), GoImportPath(g.ImportPrefix)+GoImportPath("github.com/gogo/protobuf/proto"))
-		if gogoproto.RegistersGolangProto(g.file.FileDescriptorProto) {
-			g.PrintImport(GoPackageName(g.Pkg["golang_proto"]), GoImportPath(g.ImportPrefix)+GoImportPath("github.com/golang/protobuf/proto"))
+	if !g.easyHeader {
+		g.PrintImport(GoPackageName(g.Pkg["fmt"]), "fmt")
+		g.PrintImport(GoPackageName(g.Pkg["math"]), "math")
+		if gogoproto.ImportsGoGoProto(g.file.FileDescriptorProto) {
+			g.PrintImport(GoPackageName(g.Pkg["proto"]), GoImportPath(g.ImportPrefix)+GoImportPath("github.com/gogo/protobuf/proto"))
+			if gogoproto.RegistersGolangProto(g.file.FileDescriptorProto) {
+				g.PrintImport(GoPackageName(g.Pkg["golang_proto"]), GoImportPath(g.ImportPrefix)+GoImportPath("github.com/golang/protobuf/proto"))
+			}
+		} else {
+			g.PrintImport(GoPackageName(g.Pkg["proto"]), GoImportPath(g.ImportPrefix)+GoImportPath("github.com/golang/protobuf/proto"))
 		}
-	} else {
-		g.PrintImport(GoPackageName(g.Pkg["proto"]), GoImportPath(g.ImportPrefix)+GoImportPath("github.com/golang/protobuf/proto"))
 	}
+
 	for importPath, packageName := range imports {
 		g.P(packageName, " ", GoImportPath(g.ImportPrefix)+importPath)
 	}
@@ -1493,20 +1503,22 @@ func (g *Generator) generateImports() {
 	//}
 	g.P(")")
 
-	g.P("// Reference imports to suppress errors if they are not otherwise used.")
-	g.P("var _ = ", g.Pkg["proto"], ".Marshal")
-	if gogoproto.ImportsGoGoProto(g.file.FileDescriptorProto) && gogoproto.RegistersGolangProto(g.file.FileDescriptorProto) {
-		g.P("var _ = ", g.Pkg["golang_proto"], ".Marshal")
-	}
-	g.P("var _ = ", g.Pkg["fmt"], ".Errorf")
-	g.P("var _ = ", g.Pkg["math"], ".Inf")
-	for _, cimport := range g.customImports {
-		if cimport == "time" {
-			g.P("var _ = time.Kitchen")
-			break
+	if !g.easyHeader {
+		g.P("// Reference imports to suppress errors if they are not otherwise used.")
+		g.P("var _ = ", g.Pkg["proto"], ".Marshal")
+		if gogoproto.ImportsGoGoProto(g.file.FileDescriptorProto) && gogoproto.RegistersGolangProto(g.file.FileDescriptorProto) {
+			g.P("var _ = ", g.Pkg["golang_proto"], ".Marshal")
 		}
+		g.P("var _ = ", g.Pkg["fmt"], ".Errorf")
+		g.P("var _ = ", g.Pkg["math"], ".Inf")
+		for _, cimport := range g.customImports {
+			if cimport == "time" {
+				g.P("var _ = time.Kitchen")
+				break
+			}
+		}
+		g.P()
 	}
-	g.P()
 }
 
 func (g *Generator) generateImported(id *ImportedDescriptor) {

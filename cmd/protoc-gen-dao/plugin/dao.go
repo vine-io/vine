@@ -72,6 +72,7 @@ type dao struct {
 
 	sourcePkg  string
 	ctxPkg     generator.Single
+	fmtPkg     generator.Single
 	timePkg    generator.Single
 	stringPkg  generator.Single
 	errPkg     generator.Single
@@ -124,6 +125,7 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	}
 
 	g.ctxPkg = g.NewImport("context", "context")
+	g.fmtPkg = g.NewImport("fmt", "fmt")
 	g.timePkg = g.NewImport("time", "time")
 	g.stringPkg = g.NewImport("strings", "strings")
 	g.DriverPkg = g.NewImport("database/sql/driver", "driver")
@@ -363,7 +365,7 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, field *Field) {
 	g.P("case string:")
 	g.P("bytes = []byte(v)")
 	g.P("default:")
-	g.P(fmt.Sprintf(`return %s.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))`, g.errPkg.Use()))
+	g.P(fmt.Sprintf(`return %s.New(%s.Sprint("Failed to unmarshal JSONB value:", value))`, g.errPkg.Use(), g.fmtPkg.Use()))
 	g.P("}")
 	g.P()
 	g.P(fmt.Sprintf(`return %s.Unmarshal(bytes, &m)`, g.jsonPkg.Use()))
