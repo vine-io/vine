@@ -61,12 +61,12 @@ func (h *httpClient) next(request client.Request, opts client.CallOptions) (sele
 	service := request.Service()
 
 	// get proxy
-	if prx := os.Getenv("MICRO_PROXY"); len(prx) > 0 {
+	if prx := os.Getenv("VINE_PROXY"); len(prx) > 0 {
 		service = prx
 	}
 
 	// get proxy address
-	if prx := os.Getenv("MICRO_PROXY_ADDRESS"); len(prx) > 0 {
+	if prx := os.Getenv("VINE_PROXY_ADDRESS"); len(prx) > 0 {
 		opts.Address = []string{prx}
 	}
 
@@ -90,9 +90,9 @@ func (h *httpClient) next(request client.Request, opts client.CallOptions) (sele
 	// get next nodes from the selector
 	next, err := h.opts.Selector.Select(service, selectOptions...)
 	if err != nil && err == selector.ErrNotFound {
-		return nil, errors.NotFound("go.micro.client", err.Error())
+		return nil, errors.NotFound("go.vine.client", err.Error())
 	} else if err != nil {
-		return nil, errors.InternalServerError("go.micro.client", err.Error())
+		return nil, errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	return next, nil
@@ -116,13 +116,13 @@ func (h *httpClient) call(ctx context.Context, node *regpb.Node, req client.Requ
 	// get codec
 	cf, err := h.newHTTPCodec(req.ContentType())
 	if err != nil {
-		return errors.InternalServerError("go.micro.client", err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	// marshal request
 	b, err := cf.Marshal(req.Body())
 	if err != nil {
-		return errors.InternalServerError("go.micro.client", err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	buf := &buffer{bytes.NewBuffer(b)}
@@ -138,7 +138,7 @@ func (h *httpClient) call(ctx context.Context, node *regpb.Node, req client.Requ
 	// parse rawurl
 	URL, err := url.Parse(rawurl)
 	if err != nil {
-		return errors.InternalServerError("go.micro.client", err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	hreq := &http.Request{
@@ -153,19 +153,19 @@ func (h *httpClient) call(ctx context.Context, node *regpb.Node, req client.Requ
 	// make the request
 	hrsp, err := http.DefaultClient.Do(hreq.WithContext(ctx))
 	if err != nil {
-		return errors.InternalServerError("go.micro.client", err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 	defer hrsp.Body.Close()
 
 	// parse response
 	b, err = ioutil.ReadAll(hrsp.Body)
 	if err != nil {
-		return errors.InternalServerError("go.micro.client", err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	// unmarshal
 	if err := cf.Unmarshal(b, rsp); err != nil {
-		return errors.InternalServerError("go.micro.client", err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	return nil
@@ -189,12 +189,12 @@ func (h *httpClient) stream(ctx context.Context, node *regpb.Node, req client.Re
 	// get codec
 	cf, err := h.newHTTPCodec(req.ContentType())
 	if err != nil {
-		return nil, errors.InternalServerError("go.micro.client", err.Error())
+		return nil, errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	cc, err := net.Dial("tcp", address)
 	if err != nil {
-		return nil, errors.InternalServerError("go.micro.client", fmt.Sprintf("Error dialing: %v", err))
+		return nil, errors.InternalServerError("go.vine.client", fmt.Sprintf("Error dialing: %v", err))
 	}
 
 	return &httpStream{
@@ -213,7 +213,7 @@ func (h *httpClient) newHTTPCodec(contentType string) (Codec, error) {
 	if c, ok := defaultHTTPCodecs[contentType]; ok {
 		return c, nil
 	}
-	return nil, fmt.Errorf("Unsupported Content-Type: %s", contentType)
+	return nil, fmt.Errorf("unsupported Content-Type: %s", contentType)
 }
 
 func (h *httpClient) newCodec(contentType string) (codec.NewCodec, error) {
@@ -223,7 +223,7 @@ func (h *httpClient) newCodec(contentType string) (codec.NewCodec, error) {
 	if cf, ok := defaultRPCCodecs[contentType]; ok {
 		return cf, nil
 	}
-	return nil, fmt.Errorf("Unsupported Content-Type: %s", contentType)
+	return nil, fmt.Errorf("unsupported Content-Type: %s", contentType)
 }
 
 func (h *httpClient) Init(opts ...client.Option) error {
@@ -273,7 +273,7 @@ func (h *httpClient) Call(ctx context.Context, req client.Request, rsp interface
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return errors.New("go.micro.client", fmt.Sprintf("%v", ctx.Err()), 408)
+		return errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 	default:
 	}
 
@@ -285,12 +285,12 @@ func (h *httpClient) Call(ctx context.Context, req client.Request, rsp interface
 		hcall = callOpts.CallWrappers[i-1](hcall)
 	}
 
-	// return errors.New("go.micro.client", "request timeout", 408)
+	// return errors.New("go.vine.client", "request timeout", 408)
 	call := func(i int) error {
 		// call backoff first. Someone may want an initial start delay
 		t, err := callOpts.Backoff(ctx, req, i)
 		if err != nil {
-			return errors.InternalServerError("go.micro.client", err.Error())
+			return errors.InternalServerError("go.vine.client", err.Error())
 		}
 
 		// only sleep if greater than 0
@@ -301,9 +301,9 @@ func (h *httpClient) Call(ctx context.Context, req client.Request, rsp interface
 		// select next node
 		node, err := next()
 		if err != nil && err == selector.ErrNotFound {
-			return errors.NotFound("go.micro.client", err.Error())
+			return errors.NotFound("go.vine.client", err.Error())
 		} else if err != nil {
-			return errors.InternalServerError("go.micro.client", err.Error())
+			return errors.InternalServerError("go.vine.client", err.Error())
 		}
 
 		// make the call
@@ -322,7 +322,7 @@ func (h *httpClient) Call(ctx context.Context, req client.Request, rsp interface
 
 		select {
 		case <-ctx.Done():
-			return errors.New("go.micro.client", fmt.Sprintf("%v", ctx.Err()), 408)
+			return errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 		case err := <-ch:
 			// if the call succeeded lets bail early
 			if err == nil {
@@ -373,7 +373,7 @@ func (h *httpClient) Stream(ctx context.Context, req client.Request, opts ...cli
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return nil, errors.New("go.micro.client", fmt.Sprintf("%v", ctx.Err()), 408)
+		return nil, errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 	default:
 	}
 
@@ -381,7 +381,7 @@ func (h *httpClient) Stream(ctx context.Context, req client.Request, opts ...cli
 		// call backoff first. Someone may want an initial start delay
 		t, err := callOpts.Backoff(ctx, req, i)
 		if err != nil {
-			return nil, errors.InternalServerError("go.micro.client", err.Error())
+			return nil, errors.InternalServerError("go.vine.client", err.Error())
 		}
 
 		// only sleep if greater than 0
@@ -391,9 +391,9 @@ func (h *httpClient) Stream(ctx context.Context, req client.Request, opts ...cli
 
 		node, err := next()
 		if err != nil && err == selector.ErrNotFound {
-			return nil, errors.NotFound("go.micro.client", err.Error())
+			return nil, errors.NotFound("go.vine.client", err.Error())
 		} else if err != nil {
-			return nil, errors.InternalServerError("go.micro.client", err.Error())
+			return nil, errors.InternalServerError("go.vine.client", err.Error())
 		}
 
 		stream, err := h.stream(ctx, node, req, callOpts)
@@ -417,7 +417,7 @@ func (h *httpClient) Stream(ctx context.Context, req client.Request, opts ...cli
 
 		select {
 		case <-ctx.Done():
-			return nil, errors.New("go.micro.client", fmt.Sprintf("%v", ctx.Err()), 408)
+			return nil, errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
 		case rsp := <-ch:
 			// if the call succeeded lets bail early
 			if rsp.err == nil {
@@ -453,11 +453,11 @@ func (h *httpClient) Publish(ctx context.Context, p client.Message, opts ...clie
 		md = make(map[string]string)
 	}
 	md["Content-Type"] = p.ContentType()
-	md["Micro-Topic"] = p.Topic()
+	md["Vine-Topic"] = p.Topic()
 
 	cf, err := h.newCodec(p.ContentType())
 	if err != nil {
-		return errors.InternalServerError("go.micro.client", err.Error())
+		return errors.InternalServerError("go.vine.client", err.Error())
 	}
 
 	var body []byte
@@ -468,7 +468,7 @@ func (h *httpClient) Publish(ctx context.Context, p client.Message, opts ...clie
 	} else {
 		b := &buffer{bytes.NewBuffer(nil)}
 		if err := cf(b).Write(&codec.Message{Type: codec.Event}, p.Payload()); err != nil {
-			return errors.InternalServerError("go.micro.client", err.Error())
+			return errors.InternalServerError("go.vine.client", err.Error())
 		}
 		body = b.Bytes()
 	}
@@ -480,7 +480,7 @@ func (h *httpClient) Publish(ctx context.Context, p client.Message, opts ...clie
 	topic := p.Topic()
 
 	// get proxy
-	if prx := os.Getenv("MICRO_PROXY"); len(prx) > 0 {
+	if prx := os.Getenv("VINE_PROXY"); len(prx) > 0 {
 		options.Exchange = prx
 	}
 
