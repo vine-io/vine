@@ -28,6 +28,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/core/registry/memory"
 	"github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/api/resolver"
@@ -70,10 +71,10 @@ func testHttp(t *testing.T, path, service, ns string) {
 
 	// create new request and writer
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", path, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	//req, err := http.NewRequest("POST", path, nil)
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
 
 	// initialise the handler
 	rt := regRouter.NewRouter(
@@ -87,7 +88,8 @@ func testHttp(t *testing.T, path, service, ns string) {
 	p := NewHandler(handler.WithRouter(rt))
 
 	// execute the handler
-	p.ServeHTTP(w, req)
+	ctx := fiber.Ctx{}
+	p.Handle(&ctx)
 
 	if w.Code != 200 {
 		t.Fatalf("Expected 200 response got %d %s", w.Code, w.Body.String())

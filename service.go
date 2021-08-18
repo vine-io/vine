@@ -106,7 +106,9 @@ func (s *service) Init(opts ...Option) {
 
 		// Explicitly set the table name to the service name
 		name := s.opts.Server.Options().Name
-		_ = s.opts.Cache.Init(cache.Table(name))
+		if err := s.opts.Cache.Init(cache.Table(name)); err != nil {
+			logger.Fatal(err)
+		}
 	})
 }
 
