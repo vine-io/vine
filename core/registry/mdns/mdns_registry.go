@@ -630,8 +630,9 @@ func (m *mdnsWatcher) Next() (*regpb.Result, error) {
 			})
 
 			return &regpb.Result{
-				Action:  action,
-				Service: service,
+				Action:    action,
+				Service:   service,
+				Timestamp: time.Now().Unix(),
 			}, nil
 		case <-m.exit:
 			return nil, registry.ErrWatcherStopped

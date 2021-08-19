@@ -29,8 +29,8 @@ import (
 	"github.com/vine-io/vine/core/client/grpc"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/mdns"
-	"github.com/vine-io/vine/core/router"
-	rreg "github.com/vine-io/vine/core/router/registry"
+	//"github.com/vine-io/vine/core/router"
+	//rreg "github.com/vine-io/vine/core/router/registry"
 	"github.com/vine-io/vine/core/server"
 	serverGrpc "github.com/vine-io/vine/core/server/grpc"
 	"github.com/vine-io/vine/lib/cache"
@@ -52,8 +52,6 @@ func init() {
 	client.DefaultClient = grpc.NewClient()
 	// default server
 	server.DefaultServer = serverGrpc.NewServer()
-	// default router
-	router.DefaultRouter = rreg.NewRouter()
 	// default config
 	config.DefaultConfig = configMemory.NewConfig()
 	// default dao

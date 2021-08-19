@@ -97,8 +97,9 @@ func (ew *etcdWatcher) Next() (*regpb.Result, error) {
 				continue
 			}
 			return &regpb.Result{
-				Action:  action,
-				Service: service,
+				Action:    action,
+				Service:   service,
+				Timestamp: time.Now().Unix(),
 			}, nil
 		}
 	}
