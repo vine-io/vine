@@ -26,21 +26,37 @@ import (
 	"bytes"
 	"encoding/json"
 	"html/template"
+	"mime"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/vine-io/vine"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/rakyll/statik/fs"
+	"github.com/vine-io/vine/core/registry"
+	log "github.com/vine-io/vine/lib/logger"
 	openapipb "github.com/vine-io/vine/proto/apis/openapi"
 	regpb "github.com/vine-io/vine/proto/apis/registry"
 	maddr "github.com/vine-io/vine/util/addr"
+
+	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
 )
 
-type openAPI struct {
-	svc    vine.Service
-	prefix string
+var DefaultPrefix = "/openapi-ui/"
+
+func RegisterOpenAPI(app *fiber.App) {
+	mime.AddExtensionType(".svg", "image/svg+xml")
+	statikFs, err := fs.New()
+	if err != nil {
+		log.Fatalf("Starting OpenAPI: %v", err)
+	}
+	app.All(DefaultPrefix, openAPIHandler)
+	app.Use(DefaultPrefix, filesystem.New(filesystem.Config{Root: statikFs}))
+	app.Get("/openapi.json", openAPIJOSNHandler)
+	app.Get("/services", openAPIServiceHandler)
+	log.Infof("Starting OpenAPI at %v", DefaultPrefix)
 }
 
-func (o *openAPI) OpenAPIHandler(ctx *fiber.Ctx) error {
+func openAPIHandler(ctx *fiber.Ctx) error {
 	if ct := ctx.Get("Content-Type", ""); ct == "application/json" {
 		ctx.Request().Header.Set("Content-Type", ct)
 		return nil
@@ -57,8 +73,8 @@ func (o *openAPI) OpenAPIHandler(ctx *fiber.Ctx) error {
 	return render(ctx, tmpl, nil)
 }
 
-func (o *openAPI) OpenAPIJOSNHandler(ctx *fiber.Ctx) error {
-	services, err := o.svc.Options().Registry.ListServices()
+func openAPIJOSNHandler(ctx *fiber.Ctx) error {
+	services, err := registry.ListServices()
 	if err != nil {
 		return fiber.NewError(500, err.Error())
 	}
@@ -68,7 +84,7 @@ func (o *openAPI) OpenAPIJOSNHandler(ctx *fiber.Ctx) error {
 	security := &openapipb.SecuritySchemes{}
 	servers := make([]*openapipb.OpenAPIServer, 0)
 	for _, item := range services {
-		list, err := o.svc.Options().Registry.GetService(item.Name)
+		list, err := registry.GetService(item.Name)
 		if err != nil {
 			continue
 		}
@@ -145,22 +161,18 @@ func (o *openAPI) OpenAPIJOSNHandler(ctx *fiber.Ctx) error {
 	return ctx.Send(data)
 }
 
-func (o *openAPI) OpenAPIServiceHandler(ctx *fiber.Ctx) error {
-	services, err := o.svc.Options().Registry.ListServices()
+func openAPIServiceHandler(ctx *fiber.Ctx) error {
+	services, err := registry.ListServices()
 	if err != nil {
 		return fiber.NewError(500, err.Error())
 	}
 	out := make([]*regpb.Service, 0)
 	for _, item := range services {
-		list, _ := o.svc.Options().Registry.GetService(item.Name)
+		list, _ := registry.GetService(item.Name)
 		out = append(out, list...)
 	}
 	data, _ := json.MarshalIndent(out, "", " ")
 	return ctx.Send(data)
-}
-
-func New(svc vine.Service) *openAPI {
-	return &openAPI{svc: svc}
 }
 
 func render(ctx *fiber.Ctx, tmpl string, data interface{}) error {
