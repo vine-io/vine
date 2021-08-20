@@ -28,7 +28,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/vine-io/vine/lib/trace"
-
 	"github.com/vine-io/vine/util/ring"
 )
 
