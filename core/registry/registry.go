@@ -51,20 +51,6 @@ type Registry interface {
 	String() string
 }
 
-type Option func(*Options)
-
-type RegisterOption func(*RegisterOptions)
-
-type WatchOption func(*WatchOptions)
-
-type DeregisterOption func(*DeregisterOptions)
-
-type GetOption func(*GetOptions)
-
-type ListOption func(*ListOptions)
-
-type OpenAPIOption func(*OpenAPIOptions)
-
 // Register a service node. Additionally supply options such as TTL.
 func Register(s *regpb.Service, opts ...RegisterOption) error {
 	return DefaultRegistry.Register(s, opts...)

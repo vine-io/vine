@@ -25,14 +25,12 @@ package api
 
 import (
 	"fmt"
-	"mime"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/vine-io/cli"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
-	"github.com/rakyll/statik/fs"
+	"github.com/vine-io/vine/lib/api/handler/openapi"
 
 	"github.com/vine-io/vine"
 	rrvine "github.com/vine-io/vine/cmd/vine/client/resolver/api"
@@ -40,7 +38,6 @@ import (
 	aapi "github.com/vine-io/vine/lib/api/handler/api"
 	"github.com/vine-io/vine/lib/api/handler/event"
 	ahttp "github.com/vine-io/vine/lib/api/handler/http"
-	"github.com/vine-io/vine/lib/api/handler/openapi"
 	arpc "github.com/vine-io/vine/lib/api/handler/rpc"
 	aweb "github.com/vine-io/vine/lib/api/handler/web"
 	"github.com/vine-io/vine/lib/api/resolver"
@@ -55,8 +52,6 @@ import (
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
 	"github.com/vine-io/vine/util/stats"
-
-	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
 )
 
 var (
@@ -141,18 +136,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	if ctx.Bool("enable-openapi") {
-		openAPI := openapi.New(svc)
-		mime.AddExtensionType(".svg", "image/svg+xml")
-		statikFs, err := fs.New()
-		if err != nil {
-			log.Fatalf("Starting OpenAPI: %v", err)
-		}
-		prefix := "/openapi-ui/"
-		app.All(prefix, openAPI.OpenAPIHandler)
-		app.Use(prefix, filesystem.New(filesystem.Config{Root: statikFs}))
-		app.Get("/openapi.json", openAPI.OpenAPIJOSNHandler)
-		app.Get("/services", openAPI.OpenAPIServiceHandler)
-		log.Infof("Starting OpenAPI at %v", prefix)
+		openapi.RegisterOpenAPI(app)
 	}
 
 	app.Get("/", func(c *fiber.Ctx) error {

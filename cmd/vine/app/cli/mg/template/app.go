@@ -62,7 +62,7 @@ var (
 	Inject = `package inject
 
 import (
-	"github.com/lack-io/pkg/inject"
+	"github.com/vine-io/pkg/inject"
 	log "github.com/vine-io/vine/lib/logger"
 )
 
@@ -144,7 +144,6 @@ import ({{range .Plugins}}
 	SingleApp = `package pkg
 
 import (
-	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/server"
@@ -165,7 +164,6 @@ func Run() {
 	ClusterApp = `package {{.Name}}
 
 import (
-	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
 	"{{.Dir}}/pkg/{{.Name}}/server"
@@ -186,10 +184,7 @@ func Run() {
 	GatewayApp = `package {{.Name}}
 
 import (
-	"mime"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine"
@@ -205,11 +200,8 @@ import (
 	log "github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
-	"github.com/rakyll/statik/fs"
 
 	"{{.Dir}}/pkg/runtime"
-
-	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
 )
 
 var (
@@ -282,18 +274,7 @@ func Run() {
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 
 	if enableOpenAPI {
-		openAPI := openapi.New(svc)
-		_ = mime.AddExtensionType(".svg", "image/svg+xml")
-		sfs, err := fs.New()
-		if err != nil {
-			log.Fatalf("Starting OpenAPI: %v", err)
-		}
-		prefix := "/openapi-ui/"
-		app.All(prefix, openAPI.OpenAPIHandler)
-		app.Use(prefix, filesystem.New(filesystem.Config{Root: sfs}))
-		app.Get("/openapi.json", openAPI.OpenAPIJOSNHandler)
-		app.Get("/services", openAPI.OpenAPIServiceHandler)
-		log.Infof("Starting OpenAPI at %v", prefix)
+		openapi.RegisterOpenAPI(app)
 	}
 
 	// create the namespace resolver

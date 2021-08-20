@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2021 Lack
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,54 +20,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package sync
+package http
 
 import (
-	"time"
+	"context"
+
+	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/codec"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/core/server"
 )
 
-type Options struct {
-	Nodes  []string
-	Prefix string
-}
-
-type Option func(o *Options)
-
-type LeaderOptions struct{}
-
-type LeaderOption func(o *LeaderOptions)
-
-type LockOptions struct {
-	TTL  time.Duration
-	Wait time.Duration
-}
-
-type LockOption func(o *LockOptions)
-
-// Nodes sets the addresses to use
-func Nodes(a ...string) Option {
-	return func(o *Options) {
-		o.Nodes = a
+func newOptions(opt ...server.Option) server.Options {
+	opts := server.Options{
+		Codecs:   make(map[string]codec.NewCodec),
+		Metadata: map[string]string{},
+		Context:  context.Background(),
 	}
-}
 
-// Prefix sets a prefix to any lock ids used
-func Prefix(p string) Option {
-	return func(o *Options) {
-		o.Prefix = p
+	for _, o := range opt {
+		o(&opts)
 	}
-}
 
-// LockTTL sets the lock ttl
-func LockTTL(t time.Duration) LockOption {
-	return func(o *LockOptions) {
-		o.TTL = t
+	if opts.Broker == nil {
+		opts.Broker = broker.DefaultBroker
 	}
-}
 
-// LockWait sets the wait time
-func LockWait(t time.Duration) LockOption {
-	return func(o *LockOptions) {
-		o.Wait = t
+	if opts.Registry == nil {
+		opts.Registry = registry.DefaultRegistry
 	}
+
+	if len(opts.Address) == 0 {
+		opts.Address = server.DefaultAddress
+	}
+
+	if len(opts.Name) == 0 {
+		opts.Name = server.DefaultName
+	}
+
+	if len(opts.Id) == 0 {
+		opts.Id = server.DefaultId
+	}
+
+	if len(opts.Version) == 0 {
+		opts.Version = server.DefaultVersion
+	}
+
+	return opts
 }

@@ -58,6 +58,7 @@ func main() {
 	generator.RegisterPlugin(validator)
 
 	g := generator.New("validator")
+	g.EasyHeader()
 
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {

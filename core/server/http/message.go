@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2021 Lack
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,27 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package router
+package http
 
-import "testing"
+import "github.com/vine-io/vine/core/codec"
 
-func TestHash(t *testing.T) {
-	route1 := Route{
-		Service: "dest.svc",
-		Gateway: "dest.gw",
-		Network: "dest.network",
-		Link:    "det.link",
-		Metric:  10,
-	}
+type httpMessage struct {
+	topic string
+	payload interface{}
+	contentType string
+	header map[string]string
+	body []byte
+	codec codec.Reader
+}
 
-	// make a copy
-	route2 := route1
+func (r *httpMessage) Topic() string {
+	return r.topic
+}
 
-	route1Hash := route1.Hash()
-	route2Hash := route2.Hash()
+func (r *httpMessage) Payload() interface{} {
+	return r.payload
+}
 
-	// we should get the same hash
-	if route1Hash != route2Hash {
-		t.Errorf("identical routes result in different hashes")
-	}
+func (r *httpMessage) ContentType() string {
+	return r.contentType
+}
+
+func (r *httpMessage) Header() map[string]string {
+	return r.header
+}
+
+func (r *httpMessage) Body() []byte {
+	return r.body
+}
+
+func (r *httpMessage) Codec() codec.Reader {
+	return r.codec
 }

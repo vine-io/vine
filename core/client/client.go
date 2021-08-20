@@ -127,6 +127,8 @@ var (
 	DefaultRetry = RetryOnError
 	// DefaultRetries is the default number of times a request is tried
 	DefaultRetries = 1
+	// DefaultDialTimeout is the default dial timeout
+	DefaultDialTimeout = time.Second * 10
 	// DefaultRequestTimeout is the default request timeout
 	DefaultRequestTimeout = time.Second * 10
 	// DefaultPoolSize sets the connection pool size

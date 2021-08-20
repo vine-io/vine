@@ -34,6 +34,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/gofiber/fiber/v2"
 	json "github.com/json-iterator/go"
+	"github.com/oxtoacart/bpool"
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/codec"
@@ -47,7 +48,6 @@ import (
 	ctx "github.com/vine-io/vine/util/context"
 	"github.com/vine-io/vine/util/context/metadata"
 	"github.com/vine-io/vine/util/qson"
-	"github.com/oxtoacart/bpool"
 )
 
 const (
@@ -111,7 +111,7 @@ func (b *buffer) Write(_ []byte) (int, error) {
 func strategy(services []*regpb.Service) selector.Strategy {
 	return func(_ []*regpb.Service) selector.Next {
 		// ignore input to this function, use services above
-		return selector.Random(services)
+		return selector.RoundRobin(services)
 	}
 }
 

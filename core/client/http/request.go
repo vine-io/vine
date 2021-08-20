@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2021 Lack
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,54 +20,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package sync
+package http
 
 import (
-	"time"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/codec"
 )
 
-type Options struct {
-	Nodes  []string
-	Prefix string
+type httpRequest struct {
+	service     string
+	method      string
+	contentType string
+	request     interface{}
+	opts        client.RequestOptions
 }
 
-type Option func(o *Options)
+func newHTTPRequest(service, method string, request interface{}, contentType string, reqOpts ...client.RequestOption) client.Request {
+	var opts client.RequestOptions
+	for _, o := range reqOpts {
+		o(&opts)
+	}
 
-type LeaderOptions struct{}
+	if len(opts.ContentType) > 0 {
+		contentType = opts.ContentType
+	}
 
-type LeaderOption func(o *LeaderOptions)
-
-type LockOptions struct {
-	TTL  time.Duration
-	Wait time.Duration
-}
-
-type LockOption func(o *LockOptions)
-
-// Nodes sets the addresses to use
-func Nodes(a ...string) Option {
-	return func(o *Options) {
-		o.Nodes = a
+	return &httpRequest{
+		service:     service,
+		method:      method,
+		request:     request,
+		contentType: contentType,
+		opts:        opts,
 	}
 }
 
-// Prefix sets a prefix to any lock ids used
-func Prefix(p string) Option {
-	return func(o *Options) {
-		o.Prefix = p
-	}
+func (h *httpRequest) ContentType() string {
+	return h.contentType
 }
 
-// LockTTL sets the lock ttl
-func LockTTL(t time.Duration) LockOption {
-	return func(o *LockOptions) {
-		o.TTL = t
-	}
+func (h *httpRequest) Service() string {
+	return h.service
 }
 
-// LockWait sets the wait time
-func LockWait(t time.Duration) LockOption {
-	return func(o *LockOptions) {
-		o.Wait = t
-	}
+func (h *httpRequest) Method() string {
+	return h.method
+}
+
+func (h *httpRequest) Endpoint() string {
+	return h.method
+}
+
+func (h *httpRequest) Codec() codec.Writer {
+	return nil
+}
+
+func (h *httpRequest) Body() interface{} {
+	return h.request
+}
+
+func (h *httpRequest) Stream() bool {
+	return h.opts.Stream
 }

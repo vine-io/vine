@@ -745,7 +745,7 @@ func (g *grpcServer) Register() error {
 	}
 	g.RUnlock()
 
-	service := &regpb.Service{
+	svc := &regpb.Service{
 		Name:      config.Name,
 		Version:   config.Version,
 		Nodes:     []*regpb.Node{node},
@@ -762,7 +762,7 @@ func (g *grpcServer) Register() error {
 	}
 
 	// register the service
-	if err := regFunc(service); err != nil {
+	if err := regFunc(svc); err != nil {
 		return err
 	}
 
@@ -799,7 +799,7 @@ func (g *grpcServer) Register() error {
 
 	g.registered = true
 	if cacheService {
-		g.rsvc = service
+		g.rsvc = svc
 	}
 
 	return nil
@@ -842,14 +842,14 @@ func (g *grpcServer) Deregister() error {
 		Address: mnet.HostPort(addr, port),
 	}
 
-	service := &regpb.Service{
+	svc := &regpb.Service{
 		Name:    config.Name,
 		Version: config.Version,
 		Nodes:   []*regpb.Node{node},
 	}
 
 	log.Infof("Deregistering node: %s", node.Id)
-	if err := config.Registry.Deregister(service); err != nil {
+	if err := config.Registry.Deregister(svc); err != nil {
 		return err
 	}
 
@@ -963,7 +963,7 @@ func (g *grpcServer) Start() error {
 			})
 
 			s := http.Server{
-				Handler:           handler,
+				Handler: handler,
 			}
 
 			if err := s.ServeTLS(ts, gh.CertFile, gh.KeyFile); err != nil {

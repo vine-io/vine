@@ -25,7 +25,6 @@ package sync
 
 import (
 	"errors"
-	"time"
 )
 
 var (
@@ -50,26 +49,8 @@ type Sync interface {
 
 // Leader provides leadership election
 type Leader interface {
-	// Resign resign leadership
+	// Resign resigns leadership
 	Resign() error
 	// Status returns when leadership is lost
 	Status() chan bool
 }
-
-type Options struct {
-	Nodes  []string
-	Prefix string
-}
-
-type Option func(o *Options)
-
-type LeaderOptions struct{}
-
-type LeaderOption func(o *LeaderOptions)
-
-type LockOptions struct {
-	TTL  time.Duration
-	Wait time.Duration
-}
-
-type LockOption func(o *LockOptions)
