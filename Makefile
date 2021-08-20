@@ -19,7 +19,7 @@ build-tag:
 	sed -i "" "s/GitCommit = ".*"/GitCommit = \"$(GIT_COMMIT)\"/g" cmd/vine/version/version.go
 	sed -i "" "s/GitTag    = ".*"/GitTag    = \"$(GIT_TAG)\"/g" cmd/vine/version/version.go
 	sed -i "" "s/BuildDate = ".*"/BuildDate = \"$(BUILD_DATE)\"/g" cmd/vine/version/version.go
-	git tag -d $(GIT_TAG) && git add . && git commit -m "$(GIT_TAG)" && git tag $(GIT_TAG)
+	git tag -d $(GIT_TAG) && git add . && git commit -m "$(GIT_TAG)" && git tag $(GIT_TAG) && echo $(GIT_TAG)
 
 tar-windows:
 	mkdir -p _output/windows-amd64
