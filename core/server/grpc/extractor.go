@@ -78,6 +78,8 @@ func extractValue(v reflect.Type, d int) *regpb.Value {
 			p = p.Elem()
 		}
 		arg.Type = "[]" + p.Name()
+	case reflect.Map:
+		arg.Type = fmt.Sprintf(`map %s:%s`, v.Key().String(), v.Elem().String())
 	}
 
 	return arg
