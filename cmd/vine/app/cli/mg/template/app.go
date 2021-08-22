@@ -170,13 +170,13 @@ import (
 )
 
 func Run() {
-	s := server.New()
+	app := server.New()
 
-	if err := s.Init(); err != nil {
+	if err := app.Init(); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := s.Run(); err != nil {
+	if err := app.Run(); err != nil {
 		log.Fatal(err)
 	}
 }`
