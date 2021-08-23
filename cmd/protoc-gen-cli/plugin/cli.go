@@ -147,6 +147,7 @@ func (g *cli) generateTrait(file *generator.FileDescriptor, trait Trait) {
 	g.P(`}`)
 	g.P()
 
+	//TODO: service methods
 	//for _, meth := range trait.methods {
 	//
 	//}
