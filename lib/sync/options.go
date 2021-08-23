@@ -48,14 +48,38 @@ func Prefix(p string) Option {
 }
 
 type LeaderOptions struct {
-	TTL int64
+	TTL       int64
+	Namespace string
 }
 
 type LeaderOption func(o *LeaderOptions)
 
-type ListMembersOptions struct{}
+// LeaderTTL sets the leader ttl
+func LeaderTTL(t int64) LeaderOption {
+	return func(o *LeaderOptions) {
+		o.TTL = t
+	}
+}
+
+// LeaderNS sets the leader namespace
+func LeaderNS(ns string) LeaderOption {
+	return func(o *LeaderOptions) {
+		o.Namespace = ns
+	}
+}
+
+type ListMembersOptions struct {
+	Namespace string
+}
 
 type ListMembersOption func(o *ListMembersOptions)
+
+// MemberNS sets the list member namespace
+func MemberNS(ns string) ListMembersOption {
+	return func(o *ListMembersOptions) {
+		o.Namespace = ns
+	}
+}
 
 type LockOptions struct {
 	TTL  time.Duration

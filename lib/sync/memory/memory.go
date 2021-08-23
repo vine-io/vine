@@ -103,6 +103,11 @@ func (m *memorySync) Leader(id string, opts ...sync.LeaderOption) (sync.Leader, 
 }
 
 func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member, error) {
+	var options sync.ListMembersOptions
+	for _, opt := range opts {
+		opt(&options)
+	}
+
 	m.mtx.RLock()
 	defer m.mtx.RUnlock()
 
