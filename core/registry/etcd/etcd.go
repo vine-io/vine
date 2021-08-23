@@ -34,10 +34,10 @@ import (
 	"time"
 
 	json "github.com/json-iterator/go"
+	hash "github.com/mitchellh/hashstructure"
 	"github.com/vine-io/vine/core/registry"
 	log "github.com/vine-io/vine/lib/logger"
 	regpb "github.com/vine-io/vine/proto/apis/registry"
-	hash "github.com/mitchellh/hashstructure"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 	"go.etcd.io/etcd/client/v3"
 )
