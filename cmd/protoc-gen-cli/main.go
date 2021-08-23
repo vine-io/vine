@@ -58,6 +58,8 @@ func main() {
 	generator.RegisterPlugin(cli)
 
 	g := generator.New("cli")
+	g.EnableEdit()
+	g.EasyHeader()
 
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
