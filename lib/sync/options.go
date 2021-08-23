@@ -33,17 +33,6 @@ type Options struct {
 
 type Option func(o *Options)
 
-type LeaderOptions struct{}
-
-type LeaderOption func(o *LeaderOptions)
-
-type LockOptions struct {
-	TTL  time.Duration
-	Wait time.Duration
-}
-
-type LockOption func(o *LockOptions)
-
 // Nodes sets the addresses to use
 func Nodes(a ...string) Option {
 	return func(o *Options) {
@@ -57,6 +46,23 @@ func Prefix(p string) Option {
 		o.Prefix = p
 	}
 }
+
+type LeaderOptions struct {
+	TTL int64
+}
+
+type LeaderOption func(o *LeaderOptions)
+
+type ListMembersOptions struct{}
+
+type ListMembersOption func(o *ListMembersOptions)
+
+type LockOptions struct {
+	TTL  time.Duration
+	Wait time.Duration
+}
+
+type LockOption func(o *LockOptions)
 
 // LockTTL sets the lock ttl
 func LockTTL(t time.Duration) LockOption {

@@ -28,20 +28,23 @@ import (
 	"time"
 
 	"github.com/vine-io/vine/lib/sync"
+	"go.uber.org/atomic"
 )
 
 type memorySync struct {
 	options sync.Options
 
-	mtx   gosync.RWMutex
-	locks map[string]*memoryLock
+	curPrimary *atomic.String
+	mtx        gosync.RWMutex
+	locks      map[string]*memoryLock
 }
 
 type memoryLock struct {
-	id      string
-	time    time.Time
-	ttl     time.Duration
-	release chan bool
+	id       string
+	time     time.Time
+	ttl      time.Duration
+	release  chan bool
+	isLeader bool
 }
 
 type memoryLeader struct {
@@ -49,6 +52,17 @@ type memoryLeader struct {
 	id     string
 	resign func(id string) error
 	status chan bool
+}
+
+func (m *memorySync) Init(opts ...sync.Option) error {
+	for _, o := range opts {
+		o(&m.options)
+	}
+	return nil
+}
+
+func (m *memorySync) Options() sync.Options {
+	return m.options
 }
 
 func (m *memoryLeader) Resign() error {
@@ -67,9 +81,11 @@ func (m *memorySync) Leader(id string, opts ...sync.LeaderOption) (sync.Leader, 
 	}
 
 	// acquire a lock for the id
-	if err := m.Lock(id); err != nil {
+	if err := m.lock(id, true); err != nil {
 		return nil, err
 	}
+
+	m.curPrimary.Store(id)
 
 	// return the leader
 	return &memoryLeader{
@@ -86,33 +102,46 @@ func (m *memorySync) Leader(id string, opts ...sync.LeaderOption) (sync.Leader, 
 	}, nil
 }
 
-func (m *memorySync) Init(opts ...sync.Option) error {
-	for _, o := range opts {
-		o(&m.options)
-	}
-	return nil
-}
+func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member, error) {
+	m.mtx.RLock()
+	defer m.mtx.RUnlock()
 
-func (m *memorySync) Options() sync.Options {
-	return m.options
+	members := make([]*sync.Member, 0)
+	cur := m.curPrimary.Load()
+	for _, l := range m.locks {
+		if l.isLeader {
+			role := sync.Follow
+			if cur == l.id {
+				role = sync.Primary
+			}
+			members = append(members, &sync.Member{Id: l.id, Role: role})
+		}
+	}
+
+	return members, nil
 }
 
 func (m *memorySync) Lock(id string, opts ...sync.LockOption) error {
-	// lock our access
-	m.mtx.Lock()
+	return m.lock(id, false, opts...)
+}
 
+func (m *memorySync) lock(id string, isLeader bool, opts ...sync.LockOption) error {
 	var options sync.LockOptions
 	for _, o := range opts {
 		o(&options)
 	}
 
+	// lock our access
+	m.mtx.Lock()
+
 	lk, ok := m.locks[id]
 	if !ok {
 		m.locks[id] = &memoryLock{
-			id:      id,
-			time:    time.Now(),
-			ttl:     options.TTL,
-			release: make(chan bool),
+			id:       id,
+			time:     time.Now(),
+			ttl:      options.TTL,
+			release:  make(chan bool),
+			isLeader: isLeader,
 		}
 		// unlock
 		m.mtx.Unlock()
@@ -160,10 +189,11 @@ lockLoop:
 
 			// got chance to lock
 			m.locks[id] = &memoryLock{
-				id:      id,
-				time:    time.Now(),
-				ttl:     options.TTL,
-				release: make(chan bool),
+				id:       id,
+				time:     time.Now(),
+				ttl:      options.TTL,
+				release:  make(chan bool),
+				isLeader: isLeader,
 			}
 
 			m.mtx.Unlock()
@@ -218,7 +248,8 @@ func NewSync(opts ...sync.Option) sync.Sync {
 	}
 
 	return &memorySync{
-		options: options,
-		locks:   make(map[string]*memoryLock),
+		options:    options,
+		curPrimary: atomic.NewString(""),
+		locks:      make(map[string]*memoryLock),
 	}
 }

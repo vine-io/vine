@@ -31,6 +31,13 @@ var (
 	ErrLockTimeout = errors.New("lock timeout")
 )
 
+type Role string
+
+const (
+	Primary Role = "primary"
+	Follow  Role = "follow"
+)
+
 // Sync is an interface for distributed synchronization
 type Sync interface {
 	// Init Initialise options
@@ -39,12 +46,19 @@ type Sync interface {
 	Options() Options
 	// Leader Elect a leader
 	Leader(id string, opts ...LeaderOption) (Leader, error)
+	// ListMembers get all election member
+	ListMembers(opts ...ListMembersOption) ([]*Member, error)
 	// Lock acquires a lock
 	Lock(id string, opts ...LockOption) error
 	// Unlock releases a lock
 	Unlock(id string) error
 	// String Sync implementation
 	String() string
+}
+
+type Member struct {
+	Id   string `json:"id"`
+	Role Role   `json:"role"`
 }
 
 // Leader provides leadership election
