@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2021 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,22 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package zap
+package atomic
 
 import (
-	"flag"
-
-	"go.uber.org/zap/zapcore"
+	"sync/atomic"
+	"unsafe"
 )
 
-// LevelFlag uses the standard library's flag.Var to declare a global flag
-// with the specified name, default, and usage guidance. The returned value is
-// a pointer to the value of the flag.
-//
-// If you don't want to use the flag package's global state, you can use any
-// non-nil *Level as a flag.Value with your own *flag.FlagSet.
-func LevelFlag(name string, defaultLevel zapcore.Level, usage string) *zapcore.Level {
-	lvl := defaultLevel
-	flag.Var(&lvl, name, usage)
-	return &lvl
+// UnsafePointer is an atomic wrapper around unsafe.Pointer.
+type UnsafePointer struct {
+	_ nocmp // disallow non-atomic comparison
+
+	v unsafe.Pointer
+}
+
+// NewUnsafePointer creates a new UnsafePointer.
+func NewUnsafePointer(val unsafe.Pointer) *UnsafePointer {
+	return &UnsafePointer{v: val}
+}
+
+// Load atomically loads the wrapped value.
+func (p *UnsafePointer) Load() unsafe.Pointer {
+	return atomic.LoadPointer(&p.v)
+}
+
+// Store atomically stores the passed value.
+func (p *UnsafePointer) Store(val unsafe.Pointer) {
+	atomic.StorePointer(&p.v, val)
+}
+
+// Swap atomically swaps the wrapped unsafe.Pointer and returns the old value.
+func (p *UnsafePointer) Swap(val unsafe.Pointer) (old unsafe.Pointer) {
+	return atomic.SwapPointer(&p.v, val)
+}
+
+// CAS is an atomic compare-and-swap.
+func (p *UnsafePointer) CAS(old, new unsafe.Pointer) (swapped bool) {
+	return atomic.CompareAndSwapPointer(&p.v, old, new)
 }

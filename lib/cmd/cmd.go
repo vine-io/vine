@@ -40,7 +40,6 @@ import (
 	"github.com/vine-io/vine/core/client/selector/dns"
 	"github.com/vine-io/vine/core/client/selector/static"
 	"github.com/vine-io/vine/core/registry"
-	"github.com/vine-io/vine/core/registry/etcd"
 	"github.com/vine-io/vine/core/registry/grpc"
 	"github.com/vine-io/vine/core/registry/mdns"
 	regMemory "github.com/vine-io/vine/core/registry/memory"
@@ -235,7 +234,6 @@ var (
 	}
 
 	DefaultRegistries = map[string]func(...registry.Option) registry.Registry{
-		"etcd":    etcd.NewRegistry,
 		"service": grpc.NewRegistry,
 		"mdns":    mdns.NewRegistry,
 		"memory":  regMemory.NewRegistry,

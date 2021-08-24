@@ -98,11 +98,8 @@ func (g *grpcClient) next(request client.Request, opts client.CallOptions) (sele
 
 	// return remote address
 	if len(address) > 0 {
-		return func() (*regpb.Node, error) {
-			return &regpb.Node{
-				Address: address[0],
-			}, nil
-		}, nil
+		fn := func() (*regpb.Node, error) { return &regpb.Node{Address: address[0]}, nil }
+		return fn, nil
 	}
 
 	// get next nodes from the selector

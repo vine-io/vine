@@ -18,10 +18,7 @@ require (
 	github.com/jinzhu/now v1.1.1
 	github.com/json-iterator/go v1.1.11
 	github.com/kr/pretty v0.2.1
-	github.com/vine-io/cli v1.3.0
-	github.com/vine-io/gscheduler v0.3.0
 	github.com/miekg/dns v1.1.35
-	github.com/mitchellh/hashstructure v1.1.0
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.11.0
@@ -29,9 +26,10 @@ require (
 	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
 	github.com/stretchr/testify v1.7.0
 	github.com/valyala/fasthttp v1.23.0
+	github.com/vine-io/cli v1.3.0
+	github.com/vine-io/gscheduler v0.3.0
 	github.com/xlab/treeprint v1.0.0
-	go.etcd.io/etcd/api/v3 v3.5.0
-	go.etcd.io/etcd/client/v3 v3.5.0
+	go.uber.org/atomic v1.9.0
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 	google.golang.org/grpc v1.38.0
