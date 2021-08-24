@@ -226,9 +226,16 @@ func (g *grpcClient) stream(ctx context.Context, node *regpb.Node, req client.Re
 
 	wc := wrapCodec{cf}
 
+	maxRecvMsgSize := g.maxRecvMsgSizeValue()
+	maxSendMsgSize := g.maxSendMsgSizeValue()
+
 	grpcDialOptions := []grpc.DialOption{
 		grpc.WithTimeout(opts.DialTimeout),
 		g.secure(address),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(maxRecvMsgSize),
+			grpc.MaxCallSendMsgSize(maxSendMsgSize),
+		),
 	}
 
 	if opts := g.getGrpcDialOptions(); opts != nil {
