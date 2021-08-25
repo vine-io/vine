@@ -65,7 +65,7 @@ type dao struct {
 	generator.PluginImports
 	gen *generator.Generator
 
-	schemas     []*Schema
+	schemas     []*Repo
 	regTables   map[string]string
 	aliasTypes  map[string]string
 	aliasFields map[string]*Field
@@ -85,7 +85,7 @@ type dao struct {
 
 func New() *dao {
 	return &dao{
-		schemas:     []*Schema{},
+		schemas:     []*Repo{},
 		regTables:   map[string]string{},
 		aliasTypes:  map[string]string{},
 		aliasFields: map[string]*Field{},
@@ -139,7 +139,7 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 	}
 
 	for _, msg := range file.Messages() {
-		g.wrapSchemas(file, msg)
+		g.wrapRepos(file, msg)
 	}
 
 	g.generateRegTables(file)
@@ -166,11 +166,11 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 		if item.Desc.Proto.File().GetName() != file.GetName() {
 			continue
 		}
-		g.generateSchema(file, item)
+		g.generateRepo(file, item)
 	}
 }
 
-func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.MessageDescriptor) {
+func (g *dao) wrapRepos(file *generator.FileDescriptor, msg *generator.MessageDescriptor) {
 	if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
 		return
 	}
@@ -185,8 +185,8 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 		table = v.Value
 	}
 
-	s := &Schema{
-		Name:    msg.Proto.GetName() + "S",
+	s := &Repo{
+		Name:    msg.Proto.GetName() + "Repo",
 		Desc:    msg,
 		MFields: map[string]*Field{},
 		Table:   table,
@@ -211,7 +211,7 @@ func (g *dao) wrapSchemas(file *generator.FileDescriptor, msg *generator.Message
 	g.schemas = append(g.schemas, s)
 }
 
-func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDescriptor, s *Schema, n *int) {
+func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDescriptor, s *Repo, n *int) {
 	for _, item := range m.Fields {
 		fTags := g.extractTags(item.Comments)
 
@@ -285,7 +285,7 @@ func (g *dao) generateRegTables(_ *generator.FileDescriptor) {
 	for k, _ := range g.regTables {
 		name := g.wrapPkg(k)
 		pkg := g.runtimePkg.Use()
-		g.P(fmt.Sprintf(`sets.RegistrySchema(new(%s).GVK(), func(in %s.Object) %s.Schema {`, name, pkg, pkg))
+		g.P(fmt.Sprintf(`sets.RegisterRepo(new(%s).GVK(), func(in %s.Entity) %s.Repo {`, name, pkg, pkg))
 		g.P(fmt.Sprintf(`return From%s(in.(*%s))`, k, name))
 		g.P(`})`)
 	}
@@ -378,19 +378,19 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, field *Field) {
 	g.P()
 }
 
-func (g *dao) generateSchema(file *generator.FileDescriptor, schema *Schema) {
+func (g *dao) generateRepo(file *generator.FileDescriptor, schema *Repo) {
 
-	g.generateSchemaFields(file, schema)
+	g.generateRepoFields(file, schema)
 
-	g.generateSchemaIOMethods(file, schema)
+	g.generateRepoIOMethods(file, schema)
 
-	g.generateSchemaUtilMethods(file, schema)
+	g.generateRepoUtilMethods(file, schema)
 
-	g.generateSchemaCURDMethods(file, schema)
+	g.generateRepoCURDMethods(file, schema)
 }
 
-func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schema) {
-	g.P(fmt.Sprintf(`// %s the Schema for %s`, schema.Name, schema.Desc.Proto.GetName()))
+func (g *dao) generateRepoFields(file *generator.FileDescriptor, schema *Repo) {
+	g.P(fmt.Sprintf(`// %s the Repo for %s`, schema.Name, schema.Desc.Proto.GetName()))
 	g.P("type ", schema.Name, " struct {")
 	g.P(fmt.Sprintf(`tx *dao.DB %s`, toQuoted(`json:"-" dao:"-"`)))
 	g.P(fmt.Sprintf(`exprs []%s.Expression %s`, g.clausePkg.Use(), toQuoted(`json:"-" dao:"-"`)))
@@ -410,11 +410,11 @@ func (g *dao) generateSchemaFields(file *generator.FileDescriptor, schema *Schem
 	g.P()
 }
 
-func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Schema) {
+func (g *dao) generateRepoIOMethods(file *generator.FileDescriptor, schema *Repo) {
 	sname := schema.Name
 	pname := schema.Desc.Proto.GetName()
 
-	g.P(fmt.Sprintf(`func Registry%s() error {`, pname))
+	g.P(fmt.Sprintf(`func Register%s() error {`, pname))
 	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(&%s{})`, sname))
 	g.P("}")
 	g.P()
@@ -593,7 +593,7 @@ func (g *dao) generateSchemaIOMethods(file *generator.FileDescriptor, schema *Sc
 	g.P()
 }
 
-func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *Schema) {
+func (g *dao) generateRepoUtilMethods(file *generator.FileDescriptor, schema *Repo) {
 	g.P("func (", schema.Name, ") TableName() string {")
 	g.P(`return "`, schema.Table, `"`)
 	g.P("}")
@@ -609,10 +609,10 @@ func (g *dao) generateSchemaUtilMethods(file *generator.FileDescriptor, schema *
 	g.P()
 }
 
-func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *Schema) {
+func (g *dao) generateRepoCURDMethods(file *generator.FileDescriptor, schema *Repo) {
 	source, target := schema.Name, schema.Desc.Proto.GetName()
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int32) ([]%s.Object, int64, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int32) ([]%s.Entity, int64, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]*%s, int64, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -639,7 +639,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]%s.Entity, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -649,7 +649,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]%s.Entity, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -658,7 +658,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]%s.Entity, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -671,7 +671,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P("}")
 	g.P()
 	if schema.Deep {
-		g.P(fmt.Sprintf(`outs := make([]%s.Object, len(dest))`, g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`outs := make([]%s.Entity, len(dest))`, g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`outs := make([]*%s, len(dest))`, g.wrapPkg(target)))
 	}
@@ -695,7 +695,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (%s.Entity, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -713,7 +713,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindPureOne(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) FindPureOne(ctx %s.Context) (%s.Entity, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) FindPureOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -728,7 +728,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) %s.Schema {`, source, g.clausePkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) %s.Repo {`, source, g.clausePkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) *%s {`, source, g.clausePkg.Use(), source))
 	}
@@ -805,7 +805,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (%s.Entity, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}
@@ -859,7 +859,7 @@ func (g *dao) generateSchemaCURDMethods(file *generator.FileDescriptor, schema *
 	g.P()
 
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (%s.Entity, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
 	} else {
 		g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
 	}

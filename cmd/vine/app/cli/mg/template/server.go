@@ -7,7 +7,7 @@ import (
 	"context"
 	log "github.com/vine-io/vine/lib/logger"
 
-	{{.Name}} "{{.Dir}}/proto/{{.Name}}"
+	{{.Name}} "{{.Dir}}/api/{{.Name}}"
 )
 
 type {{title .Alias}} struct{}
@@ -86,7 +86,7 @@ import (
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
 	"{{.Dir}}/pkg/service"
-	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
+	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
 type server struct{
@@ -197,7 +197,7 @@ import (
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
 	"{{.Dir}}/pkg/service"
-	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
+	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
 type server struct{
@@ -308,7 +308,7 @@ import (
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/service"
 	"{{.Dir}}/pkg/runtime/inject"
-	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
+	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
 type server struct{
@@ -419,7 +419,7 @@ import (
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/service"
 	"{{.Dir}}/pkg/runtime/inject"
-	pb "{{.Dir}}/proto/service/{{.Group}}/{{.Version}}"
+	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
 type server struct{

@@ -104,7 +104,7 @@ func Secure(b bool) Option {
 	}
 }
 
-// Specify TLS Config
+// TLSConfig Specify TLS Config
 func TLSConfig(t *tls.Config) Option {
 	return func(o *Options) {
 		o.TLSConfig = t

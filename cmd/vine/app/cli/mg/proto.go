@@ -95,7 +95,7 @@ func runProto(ctx *cli.Context) {
 	switch atype {
 	case "service":
 		c.Files = []file{
-			{"proto/service/" + group + "/" + pv + "/" + name + ".proto", t2.ProtoNew},
+			{"api/service/" + group + "/" + pv + "/" + name + ".proto", t2.ProtoNew},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
@@ -108,12 +108,12 @@ func runProto(ctx *cli.Context) {
 		})
 	case "api":
 		c.Files = []file{
-			{"proto/apis/" + group + "/" + pv + "/" + name + ".proto", t2.ProtoType},
+			{"api/types/" + group + "/" + pv + "/" + name + ".proto", t2.ProtoType},
 			{"vine.toml", t2.TOML},
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "proto", "apis", group, pv, name+".proto"),
+			Pb:      filepath.Join(c.Dir, "api", "types", group, pv, name+".proto"),
 			Group:   group,
 			Version: pv,
 			Type:    "api",

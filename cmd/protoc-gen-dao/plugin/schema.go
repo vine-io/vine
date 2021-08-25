@@ -65,7 +65,7 @@ type MapFields struct {
 	Value *descriptor.FieldDescriptorProto
 }
 
-type Schema struct {
+type Repo struct {
 	Name    string
 	PK      *Field
 	MFields map[string]*Field

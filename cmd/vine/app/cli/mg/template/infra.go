@@ -23,43 +23,20 @@
 package template
 
 var (
-	SingleCMD = `package main
+	RepoHandler = `package repo
 
 import (
-	log "github.com/vine-io/vine/lib/logger"
-
-	"{{.Dir}}/pkg/server"
+	"{{.Dir}}/pkg/runtime/inject"
+	"github.com/vine-io/vine/util/runtime"
 )
 
-func main() {
-	s := server.New()
+func init() {
+	_ = inject.Provide(sets)
+}
 
-	if err := s.Init(); err != nil {
-		log.Fatal(err)
-	}
+var sets = runtime.NewRepoSet()
+`
 
-	if err := s.Run(); err != nil {
-		log.Fatal(err)
-	}
-}`
-
-	ClusterCMD = `package main
-
-import (
-	log "github.com/vine-io/vine/lib/logger"
-
-	"{{.Dir}}/pkg/{{.Name}}/server"
-)
-
-func main() {
-	app := server.New()
-
-	if err := app.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := app.Run(); err != nil {
-		log.Fatal(err)
-	}
-}`
+	CacheHandler = `package cache
+`
 )

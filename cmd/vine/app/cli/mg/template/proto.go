@@ -4,7 +4,7 @@ var (
 	ProtoType = `syntax = "proto3";
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/proto/apis/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option go_package = "{{.Dir}}/api/types/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
 
 // +gen:runtime={{.Group}}/{{.Version}}
 message {{title .Name}}Message {
@@ -16,7 +16,7 @@ message {{title .Name}}Message {
 
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/proto/service/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option go_package = "{{.Dir}}/api/service/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
 
 // +gen:openapi
 service {{title .Name}}Service {
@@ -56,7 +56,7 @@ message Pong {
 
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/proto/service/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option go_package = "{{.Dir}}/api/service/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
 
 // +gen:openapi
 service {{title .Name}}Service {

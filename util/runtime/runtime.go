@@ -31,7 +31,7 @@ import (
 	"github.com/vine-io/vine/lib/dao/clause"
 )
 
-// GroupVersionKind contains the information of Object, etc Group, Version, Kind
+// GroupVersionKind contains the information of Entity, etc Group, Version, Kind
 type GroupVersionKind struct {
 	Group   string
 	Version string
@@ -72,28 +72,28 @@ func FromGVK(s string) *GroupVersionKind {
 	return gvk
 }
 
-// Object is an interface that describes protocol message
-type Object interface {
-	// GVK get the GroupVersionKind of Object
+// Entity is an interface that describes protocol message
+type Entity interface {
+	// GVK get the GroupVersionKind of Entity
 	GVK() *GroupVersionKind
 	// DeepCopyFrom deep copy the struct from another
-	DeepCopyFrom(Object)
+	DeepCopyFrom(Entity)
 	// DeepCopy deep copy the struct
-	DeepCopy() Object
+	DeepCopy() Entity
 }
 
-var oset = NewObjectSet()
+var eset = NewEntitySet()
 
-type ObjectSet struct {
+type EntitySet struct {
 	sync.RWMutex
 
-	sets map[string]Object
+	sets map[string]Entity
 
-	OnCreate func(in Object) Object
+	OnCreate func(in Entity) Entity
 }
 
-// NewObj creates a new object, trigger OnCreate function
-func (os *ObjectSet) NewObj(gvk string) (Object, bool) {
+// NewEntity creates a new entity, trigger OnCreate function
+func (os *EntitySet) NewEntity(gvk string) (Entity, bool) {
 	os.RLock()
 	defer os.RUnlock()
 	out, ok := os.sets[gvk]
@@ -103,8 +103,8 @@ func (os *ObjectSet) NewObj(gvk string) (Object, bool) {
 	return os.OnCreate(out.DeepCopy()), true
 }
 
-// NewObjWithGVK creates a new object, trigger OnCreate function
-func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
+// NewEntWithGVK creates a new entity, trigger OnCreate function
+func (os *EntitySet) NewEntWithGVK(gvk *GroupVersionKind) (Entity, bool) {
 	os.RLock()
 	defer os.RUnlock()
 	out, ok := os.sets[gvk.String()]
@@ -114,14 +114,14 @@ func (os *ObjectSet) NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
 	return os.OnCreate(out.DeepCopy()), true
 }
 
-func (os *ObjectSet) IsExists(gvk *GroupVersionKind) bool {
+func (os *EntitySet) IsExists(gvk *GroupVersionKind) bool {
 	os.RLock()
 	defer os.RUnlock()
 	_, ok := os.sets[gvk.String()]
 	return ok
 }
 
-func (os *ObjectSet) GetObj(gvk *GroupVersionKind) (Object, bool) {
+func (os *EntitySet) GetEntity(gvk *GroupVersionKind) (Entity, bool) {
 	os.RLock()
 	defer os.RUnlock()
 	out, ok := os.sets[gvk.String()]
@@ -131,8 +131,8 @@ func (os *ObjectSet) GetObj(gvk *GroupVersionKind) (Object, bool) {
 	return out.DeepCopy(), true
 }
 
-// AddObj push objects to Set
-func (os *ObjectSet) AddObj(v ...Object) {
+// AddEnt push entities to Set
+func (os *EntitySet) AddEnt(v ...Entity) {
 	os.Lock()
 	for _, in := range v {
 		os.sets[in.GVK().String()] = in
@@ -140,57 +140,57 @@ func (os *ObjectSet) AddObj(v ...Object) {
 	os.Unlock()
 }
 
-// NewObj creates a new object, trigger OnCreate function
-func NewObj(gvk string) (Object, bool) {
-	return oset.NewObj(gvk)
+// NewEntity creates a new entity, trigger OnCreate function
+func NewEntity(gvk string) (Entity, bool) {
+	return eset.NewEntity(gvk)
 }
 
-// NewObjWithGVK creates a new object, trigger OnCreate function
-func NewObjWithGVK(gvk *GroupVersionKind) (Object, bool) {
-	return oset.NewObjWithGVK(gvk)
+// NewEntWithGVK creates a new entity, trigger OnCreate function
+func NewEntWithGVK(gvk *GroupVersionKind) (Entity, bool) {
+	return eset.NewEntWithGVK(gvk)
 }
 
-func AddObj(v ...Object) {
-	oset.AddObj(v...)
+func AddEnt(v ...Entity) {
+	eset.AddEnt(v...)
 }
 
-func NewObjectSet() *ObjectSet {
-	return &ObjectSet{
-		sets:     map[string]Object{},
-		OnCreate: func(in Object) Object { return in },
+func NewEntitySet() *EntitySet {
+	return &EntitySet{
+		sets:     map[string]Entity{},
+		OnCreate: func(in Entity) Entity { return in },
 	}
 }
 
-type Schema interface {
-	FindPage(ctx context.Context, page, size int32) ([]Object, int64, error)
-	FindAll(ctx context.Context) ([]Object, error)
-	FindPureAll(ctx context.Context) ([]Object, error)
+type Repo interface {
+	FindPage(ctx context.Context, page, size int32) ([]Entity, int64, error)
+	FindAll(ctx context.Context) ([]Entity, error)
+	FindPureAll(ctx context.Context) ([]Entity, error)
 	Count(ctx context.Context) (total int64, err error)
-	FindOne(ctx context.Context) (Object, error)
-	FindPureOne(ctx context.Context) (Object, error)
-	Cond(exprs ...clause.Expression) Schema
-	Create(ctx context.Context) (Object, error)
+	FindOne(ctx context.Context) (Entity, error)
+	FindPureOne(ctx context.Context) (Entity, error)
+	Cond(exprs ...clause.Expression) Repo
+	Create(ctx context.Context) (Entity, error)
 	BatchUpdates(ctx context.Context) error
-	Updates(ctx context.Context) (Object, error)
+	Updates(ctx context.Context) (Entity, error)
 	BatchDelete(ctx context.Context, soft bool) error
 	Delete(ctx context.Context, soft bool) error
 	Tx(ctx context.Context) *dao.DB
 }
 
-var sset = SchemaSet{sets: map[string]func(Object) Schema{}}
+var pset = RepoSet{sets: map[string]func(Entity) Repo{}}
 
-type SchemaSet struct {
+type RepoSet struct {
 	sync.RWMutex
-	sets map[string]func(Object) Schema
+	sets map[string]func(Entity) Repo
 }
 
-func (s *SchemaSet) RegistrySchema(g *GroupVersionKind, fn func(Object) Schema) {
+func (s *RepoSet) RegisterRepo(g *GroupVersionKind, fn func(Entity) Repo) {
 	s.Lock()
 	s.sets[g.String()] = fn
 	s.Unlock()
 }
 
-func (s *SchemaSet) NewSchema(in Object) (Schema, bool) {
+func (s *RepoSet) NewRepo(in Entity) (Repo, bool) {
 	s.RLock()
 	defer s.RUnlock()
 	fn, ok := s.sets[in.GVK().String()]
@@ -200,14 +200,14 @@ func (s *SchemaSet) NewSchema(in Object) (Schema, bool) {
 	return fn(in), true
 }
 
-func NewSchemaSet() *SchemaSet {
-	return &SchemaSet{sets: map[string]func(Object) Schema{}}
+func NewRepoSet() *RepoSet {
+	return &RepoSet{sets: map[string]func(Entity) Repo{}}
 }
 
-func RegistrySchema(g *GroupVersionKind, fn func(Object) Schema) {
-	sset.RegistrySchema(g, fn)
+func RegisterRepo(g *GroupVersionKind, fn func(Entity) Repo) {
+	pset.RegisterRepo(g, fn)
 }
 
-func NewSchema(in Object) (Schema, bool) {
-	return sset.NewSchema(in)
+func NewRepo(in Entity) (Repo, bool) {
+	return pset.NewRepo(in)
 }

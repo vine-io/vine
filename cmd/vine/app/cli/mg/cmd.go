@@ -37,7 +37,7 @@ func Commands() []*cli.Command {
 		{
 			Name:        "new",
 			Usage:       "Create vine resource template",
-			Subcommands: []*cli.Command{cmdSRV(), cmdGateway(), cmdWeb(), cmdProto()},
+			Subcommands: []*cli.Command{cmdSRV(), cmdGateway(), cmdProto()},
 			Action: func(c *cli.Context) error {
 				if c.Args().Len() > 0 {
 					command := c.Args().First()
