@@ -33,7 +33,7 @@ import (
 type serviceKey struct{}
 
 // Service is an interface that wraps the lower level libraries
-// within vine. Its a convenience method for building
+// within vine. It's a convenience method for building
 // and initialising services.
 type Service interface {
 	// Name The service name

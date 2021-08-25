@@ -54,7 +54,7 @@ type Options struct {
 	Registry  registry.Registry
 	Scheduler gscheduler.Scheduler
 
-	// Before and After funcs
+	// Before and After functions
 	BeforeStart []func() error
 	BeforeStop  []func() error
 	AfterStart  []func() error
@@ -303,21 +303,21 @@ func BeforeStart(fn func() error) Option {
 	}
 }
 
-// BeforeStop run funcs before service stops
+// BeforeStop run functions before service stops
 func BeforeStop(fn func() error) Option {
 	return func(o *Options) {
 		o.BeforeStop = append(o.BeforeStop, fn)
 	}
 }
 
-// AfterStart run funcs after service starts
+// AfterStart run functions after service starts
 func AfterStart(fn func() error) Option {
 	return func(o *Options) {
 		o.AfterStart = append(o.AfterStart, fn)
 	}
 }
 
-// AfterStop run funcs after service stops
+// AfterStop run functions after service stops
 func AfterStop(fn func() error) Option {
 	return func(o *Options) {
 		o.AfterStop = append(o.AfterStop, fn)

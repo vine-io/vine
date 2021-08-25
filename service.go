@@ -33,7 +33,7 @@ import (
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/lib/trace"
-	signalutil "github.com/vine-io/vine/util/signal"
+	usignal "github.com/vine-io/vine/util/signal"
 	"github.com/vine-io/vine/util/wrapper"
 )
 
@@ -69,7 +69,7 @@ func (s *service) Name() string {
 	return s.opts.Server.Options().Name
 }
 
-// Init initialises options. Additionally it calls cmd.Init
+// Init initialises options. Additionally, it calls cmd.Init
 // which parses command line flags. cmd.Init is only called
 // on first Init.
 func (s *service) Init(opts ...Option) {
@@ -177,7 +177,7 @@ func (s *service) Run() error {
 
 	ch := make(chan os.Signal, 1)
 	if s.opts.Signal {
-		signal.Notify(ch, signalutil.Shutdown()...)
+		signal.Notify(ch, usignal.Shutdown()...)
 	}
 
 	select {

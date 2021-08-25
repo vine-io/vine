@@ -87,7 +87,7 @@ func TLSConfig(ctx *cli.Context) (*tls.Config, error) {
 func UnexpectedSubcommand(ctx *cli.Context) error {
 	if first := ctx.Args().First(); first != "" {
 		// received something that isn't a subcommand
-		return fmt.Errorf("Unrecognized subcommand for %s: %s. Please refer to '%s help'", ctx.App.Name, first, ctx.App.Name)
+		return fmt.Errorf("unrecognized subcommand for %s: %s. Please refer to '%s help'", ctx.App.Name, first, ctx.App.Name)
 	}
 	return nil
 }
@@ -101,5 +101,5 @@ func UnexpectedCommand(ctx *cli.Context) error {
 			commandName = arg
 		}
 	}
-	return fmt.Errorf("Unrecognized vine command: %s. Please refer to 'vine help'", commandName)
+	return fmt.Errorf("unrecognized vine command: %s. Please refer to 'vine help'", commandName)
 }
