@@ -160,17 +160,18 @@ func runSRV(ctx *cli.Context) {
 			},
 		)
 		// create service config
-		srvTpl := t2.ClusterSRV
+		srvTpl := t2.ClusterINF
 		if withAPI {
-			srvTpl = t2.ClusterSRVWithAPI
+			srvTpl = t2.ClusterINFWithAPI
 		}
 		c.Files = []file{
 			{"cmd/" + name + "/main.go", t2.ClusterCMD},
 			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/runtime/inject/inject.go", t2.Inject},
-			{"pkg/" + name + "/app.go", t2.ClusterApp},
-			{"pkg/" + name + "/server/" + name + ".go", srvTpl},
-			{"pkg/" + name + "/service/" + name + ".go", t2.ServiceSRV},
+			{"pkg/" + name + "/app.go", t2.ClusterEntry},
+			{"pkg/" + name + "/interfaces/" + name + ".go", srvTpl},
+			{"pkg/" + name + "/app/" + name + ".go", t2.ClusterApp},
+			{"pkg/" + name + "/domain/" + name + ".go", t2.DomainSRV},
 			{"pkg/" + name + "/infra/repo/repo.go", t2.RepoHandler},
 			{"pkg/" + name + "/infra/cache/cache.go", t2.CacheHandler},
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
@@ -206,17 +207,18 @@ func runSRV(ctx *cli.Context) {
 			},
 		)
 		// create service config
-		srvTpl := t2.SingleSRV
+		srvTpl := t2.SingleINF
 		if withAPI {
-			srvTpl = t2.SingleSRVWithAPI
+			srvTpl = t2.SingleINFWithAPI
 		}
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
 			{"pkg/runtime/doc.go", t2.Doc},
 			{"pkg/runtime/inject/inject.go", t2.Inject},
-			{"pkg/app.go", t2.SingleApp},
-			{"pkg/server/" + name + ".go", srvTpl},
-			{"pkg/service/" + name + ".go", t2.ServiceSRV},
+			{"pkg/app.go", t2.SingleEntry},
+			{"pkg/interfaces/" + name + ".go", srvTpl},
+			{"pkg/app/" + name + ".go", t2.SingleApp},
+			{"pkg/domain/" + name + ".go", t2.DomainSRV},
 			{"pkg/infra/repo/repo.go", t2.RepoHandler},
 			{"pkg/infra/cache/cache.go", t2.CacheHandler},
 			{"deploy/Dockerfile", t2.DockerSRV},

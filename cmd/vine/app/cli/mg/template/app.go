@@ -23,215 +23,97 @@
 package template
 
 var (
-	SingleApp = ``
-
-	ClusterApp = ``
-
-	GatewayServer = `package {{.Name}}
+	SingleApp = `package app
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/vine-io/cli"
+	"context"
 
+	"{{.Dir}}/pkg/runtime/inject"
 	"github.com/vine-io/vine"
-	ahandler "github.com/vine-io/vine/lib/api/handler"
-	"github.com/vine-io/vine/lib/api/handler/openapi"
-	arpc "github.com/vine-io/vine/lib/api/handler/rpc"
-	"github.com/vine-io/vine/lib/api/resolver"
-	"github.com/vine-io/vine/lib/api/resolver/grpc"
-	"github.com/vine-io/vine/lib/api/router"
-	regRouter "github.com/vine-io/vine/lib/api/router/registry"
-	"github.com/vine-io/vine/lib/api/server"
-	httpapi "github.com/vine-io/vine/lib/api/server/http"
-	log "github.com/vine-io/vine/lib/logger"
-	"github.com/vine-io/vine/util/helper"
-	"github.com/vine-io/vine/util/namespace"
 
-	"{{.Dir}}/pkg/runtime"
+	"{{.Dir}}/pkg/domain"
 )
 
-var (
-	Address       = ":8080"
-	Handler       = "rpc"
-	Type          = "api"
-	APIPath       = "/"
-	enableOpenAPI = false
+func init() {
+	inject.ProvidePanic(new({{.Name}}))
+}
 
-	flags = []cli.Flag{
-		&cli.StringFlag{
-			Name:        "api-address",
-			Usage:       "The specify for api address",
-			EnvVars:     []string{"VINE_API_ADDRESS"},
-			Required:    true,
-			Value:       Address,
-			Destination: &Address,
-		},
-		&cli.BoolFlag{
-			Name:    "enable-openapi",
-			Usage:   "Enable OpenAPI3",
-			EnvVars: []string{"VINE_ENABLE_OPENAPI"},
-			Value:   true,
-		},
-		&cli.BoolFlag{
-			Name:    "enable-cors",
-			Usage:   "Enable CORS, allowing the API to be called by frontend applications",
-			EnvVars: []string{"VINE_API_ENABLE_CORS"},
-			Value:   true,
-		},
-	}
-)
+type {{title .Name}} interface {
+	Init() error
+	Call(ctx context.Context, name string) (string, error)
+	Stream()
+	PingPong()
+}
 
-func Run() {
-	// Init API
-	var opts []server.Option
+var _ {{title .Name}} = (*{{.Name}})(nil)
 
-	// initialise service
-	svc := vine.NewService(
-		vine.Name(runtime.{{title .Name}}Name),
-		vine.Id(runtime.{{title .Name}}Id),
-		vine.Version(runtime.GetVersion()),
-		vine.Metadata(map[string]string{
-			"api-address": Address,
-			"namespace": runtime.Namespace,
-		}),
-		vine.Flags(flags...),
-		vine.Action(func(ctx *cli.Context) error {
-			enableOpenAPI = ctx.Bool("enable-openapi")
+type {{.Name}} struct {
+	vine.Service ` + "`inject:\"\"`" + `
 
-			if ctx.Bool("enable-tls") {
-				config, err := helper.TLSConfig(ctx)
-				if err != nil {
-					log.Errorf(err.Error())
-					return err
-				}
+	Caller domain.Caller ` + "`inject:\"\"`" + `
+}
 
-				opts = append(opts, server.EnableTLS(true))
-				opts = append(opts, server.TLSConfig(config))
-			}
-			return nil
-		}),
-	)
+func (s *{{.Name}}) Init() error {
+	return nil
+}
 
-	svc.Init()
+func (s *{{.Name}}) Call(ctx context.Context, name string) (string, error) {
+	return s.Caller.Call(ctx, name)
+}
 
-	opts = append(opts, server.EnableCORS(true))
+func (s *{{.Name}}) Stream() {
+	panic("implement me")
+}
 
-	// create the router
-	app := fiber.New(fiber.Config{DisableStartupMessage: true})
-
-	if enableOpenAPI {
-		openapi.RegisterOpenAPI(app)
-	}
-
-	// create the namespace resolver
-	nsResolver := namespace.NewResolver(Type, runtime.Namespace)
-	// resolver options
-	ropts := []resolver.Option{
-		resolver.WithNamespace(nsResolver.ResolveWithType),
-		resolver.WithHandler(Handler),
-	}
-
-	log.Infof("Registering API RPC Handler at %s", APIPath)
-	rr := grpc.NewResolver(ropts...)
-	rt := regRouter.NewRouter(
-		router.WithHandler(arpc.Handler),
-		router.WithResolver(rr),
-		router.WithRegistry(svc.Options().Registry),
-	)
-	rp := arpc.NewHandler(
-		ahandler.WithNamespace(runtime.Namespace),
-		ahandler.WithRouter(rt),
-		ahandler.WithClient(svc.Client()),
-	)
-	app.Group(APIPath, rp.Handle)
-
-	api := httpapi.NewServer(Address)
-
-	if err := api.Init(opts...); err != nil {
-		log.Fatal(err)
-    }
-	api.Handle("/", app)
-
-	// Start API
-	if err := api.Start(); err != nil {
-		log.Fatal(err)
-	}
-
-	// Run server
-	if err := svc.Run(); err != nil {
-		log.Fatal(err)
-	}
-
-	// Stop API
-	if err := api.Stop(); err != nil {
-		log.Fatal(err)
-	}
+func (s *{{.Name}}) PingPong() {
+	panic("implement me")
 }
 `
 
-	SingleWebSRV = `package pkg
+	ClusterApp = `package app
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"context"
 
-	log "github.com/vine-io/vine/lib/logger"
-	"github.com/vine-io/vine/lib/web"
+	"{{.Dir}}/pkg/runtime/inject"
+	"github.com/vine-io/vine"
 
-	"{{.Dir}}/pkg/runtime"
+	"{{.Dir}}/pkg/{{.Name}}/domain"
 )
 
-func Run() {
-	s := web.NewService(
-		web.Name(runtime.{{title .Name}}Name),
-		web.Id(runtime.{{title .Name}}Id),
-		web.Metadata(map[string]string{
-			"namespace": runtime.Namespace,
-		}),
-	)
+func init() {
+	inject.ProvidePanic(new({{.Name}}))
+}
 
-	s.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
-		return c.SendString("hello world")
-	})
+type {{title .Name}} interface {
+	Init() error
+	Call(ctx context.Context, name string) (string, error)
+	Stream()
+	PingPong()
+}
 
-	if err := s.Init(); err != nil {
-		log.Fatal(err)
-	}
+var _ {{title .Name}} = (*{{.Name}})(nil)
 
-	if err := s.Run(); err != nil {
-		log.Fatal(err)
-	}
-}`
+type {{.Name}} struct {
+	vine.Service ` + "`inject:\"\"`" + `
 
-	ClusterWebSRV = `package {{.Name}}
+	Caller domain.Caller ` + "`inject:\"\"`" + `
+}
 
-import (
-	"github.com/gofiber/fiber/v2"
+func (s *{{.Name}}) Init() error {
+	return nil
+}
 
-	log "github.com/vine-io/vine/lib/logger"
-	"github.com/vine-io/vine/lib/web"
+func (s *{{.Name}}) Call(ctx context.Context, name string) (string, error) {
+	return s.Caller.Call(ctx, name)
+}
 
-	"{{.Dir}}/pkg/runtime"
-)
+func (s *{{.Name}}) Stream() {
+	panic("implement me")
+}
 
-func Run() {
-	s := web.NewService(
-		web.Name(runtime.{{title .Name}}Name),
-		web.Id(runtime.{{title .Name}}Id),
-		web.Metadata(map[string]string{
-			"namespace": runtime.Namespace,
-		}),
-	)
-
-	s.Handle(web.MethodGet, "/", func(c *fiber.Ctx) error {
-		return c.SendString("hello world")
-	})
-
-	if err := s.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := s.Run(); err != nil {
-		log.Fatal(err)
-	}
-}`
+func (s *{{.Name}}) PingPong() {
+	panic("implement me")
+}
+`
 )

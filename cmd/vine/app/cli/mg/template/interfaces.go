@@ -1,112 +1,38 @@
 package template
 
 var (
-	SubscriberSRV = `package subscriber
-
-import (
-	"context"
-	log "github.com/vine-io/vine/lib/logger"
-
-	{{.Name}} "{{.Dir}}/api/{{.Name}}"
-)
-
-type {{title .Alias}} struct{}
-
-func (e *{{title .Alias}}) Handle(ctx context.Context, msg *{{.Name}}.Message) error {
-	log.Info("Handler Received message: ", msg.Say)
-	return nil
-}
-
-func Handler(ctx context.Context, msg *{{.Name}}.Message) error {
-	log.Info("Function Received message: ", msg.Say)
-	return nil
-}
-`
-
-	HandlerAPI = `package handler
-
-import (
-	"context"
-	"encoding/json"
-	log "github.com/vine-io/vine/lib/logger"
-
-	"{{.Dir}}/client"
-	"github.com/vine-io/vine/proto/apis/errors"
-	"github.com/vine-io/vine/proto/services/api"
-	{{.Name}} "path/to/service/proto/{{.Name}}"
-)
-
-type {{title .Alias}} struct{}
-
-func extractValue(pair *api.Pair) string {
-	if pair == nil {
-		return ""
-	}
-	if len(pair.Values) == 0 {
-		return ""
-	}
-	return pair.Values[0]
-}
-
-// {{title .Alias}}.Call is called by the API as /{{.Name}}/call with post body {"name": "foo"}
-func (e *{{title .Alias}}) Call(ctx context.Context, req *api.Request, rsp *api.Response) error {
-	log.Info("Received {{title .Alias}}.Call request")
-
-	// extract the client from the context
-	{{.Name}}Client, ok := client.{{title .Alias}}FromContext(ctx)
-	if !ok {
-		return errors.InternalServerError("{{.Alias}}.{{.Name}}.call", "{{.Name}} client not found")
-	}
-
-	// make request
-	response, err := {{.Name}}Client.Call(ctx, &{{.Name}}.Request{
-		Name: extractValue(req.Post["name"]),
-	})
-	if err != nil {
-		return errors.InternalServerError("{{.Alias}}.{{.Name}}.call", err.Error())
-	}
-
-	b, _ := json.Marshal(response)
-
-	rsp.StatusCode = 200
-	rsp.Body = string(b)
-
-	return nil
-}
-`
-
-	SingleSRV = `package server
+	SingleINF = `package interfaces
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
+	verrs "github.com/vine-io/vine/proto/apis/errors"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
-	"{{.Dir}}/pkg/service"
+	"{{.Dir}}/pkg/app"
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
-type server struct{
+type {{title .Name}}API struct{
 	vine.Service
 
-	H service.{{title .Name}} ` + "`inject:\"\"`" + `
+	H app.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
-	// TODO: Validate
-	s.H.Call()
-	// FIXME: fix call method
-	log.Info("Received {{title .Alias}}.Call request")
-	rsp.Msg = "Hello " + req.Name
-	return nil
+func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+	if err = req.Validate(); err != nil {
+		return verrs.BadRequest(s.Name(), err.Error())
+	}
+	rsp.Msg, err = s.H.Call(ctx, req.Name)
+	return
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -126,7 +52,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -143,7 +69,7 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 	}
 }
 
-func (s *server) Init() error {
+func (s *{{title .Name}}API) Init() error {
 	var err error
 
 	opts := []vine.Option{
@@ -178,46 +104,46 @@ func (s *server) Init() error {
 	return err
 }
 
-func New() *server {
+func New() *{{title .Name}}API {
 	srv := vine.NewService()
-	return &server{
+	return &{{title .Name}}API{
 		Service: srv,
 	}
 }
 `
 
-	SingleSRVWithAPI = `package server
+	SingleINFWithAPI = `package interfaces
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
+	verrs "github.com/vine-io/vine/proto/apis/errors"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
-	"{{.Dir}}/pkg/service"
+	"{{.Dir}}/pkg/app"
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
-type server struct{
+type {{title .Name}}API struct{
 	vine.Service
 
-	H service.{{title .Name}} ` + "`inject:\"\"`" + `
+	H app.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
-	// TODO: Validate
-	s.H.Call()
-	// FIXME: fix call method
-	log.Info("Received {{title .Alias}}.Call request")
-	rsp.Msg = "Hello " + req.Name
-	return nil
+func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+	if err = req.Validate(); err != nil {
+		return verrs.BadRequest(s.Name(), err.Error())
+	}
+	rsp.Msg, err = s.H.Call(ctx, req.Name)
+	return
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -237,7 +163,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -254,7 +180,7 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 	}
 }
 
-func (s *server) Init() error {
+func (s *{{title .Name}}API) Init() error {
 	var err error
 
 	opts := []vine.Option{
@@ -289,46 +215,46 @@ func (s *server) Init() error {
 	return err
 }
 
-func New() *server {
+func New() *{{title .Name}}API {
 	srv := vine.NewService()
-	return &server{
+	return &{{title .Name}}API{
 		Service: srv,
 	}
 }
 `
 
-	ClusterSRV = `package server
+	ClusterINF = `package interfaces
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
+	verrs "github.com/vine-io/vine/proto/apis/errors"
 
 	"{{.Dir}}/pkg/runtime"
-	"{{.Dir}}/pkg/{{.Name}}/service"
+	"{{.Dir}}/pkg/{{.Name}}/app"
 	"{{.Dir}}/pkg/runtime/inject"
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
-type server struct{
+type {{title .Name}}API struct{
 	vine.Service
 
-	H service.{{title .Name}} ` + "`inject:\"\"`" + `
+	H app.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
-	// TODO: Validate
-	s.H.Call()
-	// FIXME: fix call method
-	log.Info("Received {{title .Name}}.Call request")
-	rsp.Msg = "Hello " + req.Name
-	return nil
+func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+	if err = req.Validate(); err != nil {
+		return verrs.BadRequest(s.Name(), err.Error())
+	}
+	rsp.Msg, err = s.H.Call(ctx, req.Name)
+	return
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -348,7 +274,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -365,7 +291,7 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 	}
 }
 
-func (s *server) Init() error {
+func (s *{{title .Name}}API) Init() error {
 	var err error
 
 	opts := []vine.Option{
@@ -400,46 +326,46 @@ func (s *server) Init() error {
 	return err
 }
 
-func New() *server {
+func New() *{{title .Name}}API {
 	srv := vine.NewService()
-	return &server{
+	return &{{title .Name}}API{
 		Service: srv,
 	}
 }
 `
 
-	ClusterSRVWithAPI = `package server
+	ClusterINFWithAPI = `package interfaces
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
+	verrs "github.com/vine-io/vine/proto/apis/errors"
 
 	"{{.Dir}}/pkg/runtime"
-	"{{.Dir}}/pkg/{{.Name}}/service"
+	"{{.Dir}}/pkg/{{.Name}}/app"
 	"{{.Dir}}/pkg/runtime/inject"
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
-type server struct{
+type {{title .Name}}API struct{
 	vine.Service
 
-	H service.{{title .Name}} ` + "`inject:\"\"`" + `
+	H app.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) error {
-	// TODO: Validate
-	s.H.Call()
-	// FIXME: fix call method
-	log.Info("Received {{title .Name}}.Call request")
-	rsp.Msg = "Hello " + req.Name
-	return nil
+func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+	if err = req.Validate(); err != nil {
+		return verrs.BadRequest(s.Name(), err.Error())
+	}
+	rsp.Msg, err = s.H.Call(ctx, req.Name)
+	return
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -459,7 +385,7 @@ func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -476,7 +402,7 @@ func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_
 	}
 }
 
-func (s *server) Init() error {
+func (s *{{title .Name}}API) Init() error {
 	var err error
 
 	opts := []vine.Option{
@@ -511,9 +437,9 @@ func (s *server) Init() error {
 	return err
 }
 
-func New() *server {
+func New() *{{title .Name}}API {
 	srv := vine.NewService()
-	return &server{
+	return &{{title .Name}}API{
 		Service: srv,
 	}
 }

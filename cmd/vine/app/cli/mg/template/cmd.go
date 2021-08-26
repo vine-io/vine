@@ -26,40 +26,22 @@ var (
 	SingleCMD = `package main
 
 import (
-	log "github.com/vine-io/vine/lib/logger"
-
-	"{{.Dir}}/pkg/server"
+	"{{.Dir}}/pkg"
 )
 
 func main() {
-	s := server.New()
-
-	if err := s.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := s.Run(); err != nil {
-		log.Fatal(err)
-	}
-}`
+	pkg.Run()
+}
+`
 
 	ClusterCMD = `package main
 
 import (
-	log "github.com/vine-io/vine/lib/logger"
-
-	"{{.Dir}}/pkg/{{.Name}}/server"
+	"{{.Dir}}/pkg/{{.Name}}"
 )
 
 func main() {
-	app := server.New()
-
-	if err := app.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := app.Run(); err != nil {
-		log.Fatal(err)
-	}
-}`
+	{{.Name}}.Run()
+}
+`
 )
