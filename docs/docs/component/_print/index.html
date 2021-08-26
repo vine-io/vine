@@ -1,0 +1,1392 @@
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.76.5" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/component/">
+<link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/index.xml">
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="shortcut icon" href="/vine/favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="/vine/favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="/vine/favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/vine/favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/vine/favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="/vine/favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="/vine/favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="/vine/favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/vine/favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
+
+<title>框架组件 | Vine</title><meta property="og:title" content="框架组件" />
+<meta property="og:description" content="我们将深入了解 Vine 框架内部各个组件以及使用方法。
+" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://vine-io.github.io/vine/docs/component/" />
+<meta property="og:updated_time" content="2020-12-29T10:54:20+08:00" /><meta property="og:site_name" content="Vine" />
+<meta itemprop="name" content="框架组件">
+<meta itemprop="description" content="我们将深入了解 Vine 框架内部各个组件以及使用方法。
+">
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="框架组件"/>
+<meta name="twitter:description" content="我们将深入了解 Vine 框架内部各个组件以及使用方法。
+"/>
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-00000000-0', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<link rel="preload" href="/vine/scss/main.min.edfbff3e2f22b0e1ddad9611bea759bc642cfab04338dd85167f6e03787ac178.css" as="style">
+<link href="/vine/scss/main.min.edfbff3e2f22b0e1ddad9611bea759bc642cfab04338dd85167f6e03787ac178.css" rel="stylesheet" integrity="">
+
+
+<script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
+
+
+
+
+  </head>
+  <body class="td-section">
+    <header>
+      
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+        <a class="navbar-brand" href="/vine/">
+		<span class="navbar-logo"><svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 500" style="enable-background:new 0 0 500 500"><g><path style="fill:#fff" d="M116.8525 421.9722c-5.7041.0-10.3442-4.3127-10.3442-9.6129V88.183c0-5.3002 4.6401-9.6117 10.3442-9.6117H320.858c3.0347.0 9.3959.5498 11.7506 2.6302l.3545.3442 58.905 63.2912c2.3101 2.491 2.9202 8.4928 2.9202 11.3184v256.2039c0 5.3002-4.6407 9.6129-10.3436 9.6129H116.8525z"/><g><g><g><path style="fill:#767676" d="M384.4445 423.2066H116.852c-6.3839.0-11.5786-4.8658-11.5786-10.8474V88.1831c0-5.9804 5.1947-10.8461 11.5786-10.8461h204.0062c.377.0 9.2786.0329 12.568 2.9389l.3947.3833 58.9508 63.337c3.2135 3.4652 3.2514 11.7924 3.2514 12.1593v256.2036C396.0231 418.3408 390.8284 423.2066 384.4445 423.2066zM116.5079 411.9189c.0848.0278.1999.0531.3441.0531h267.5925c.1442.0.2581-.0253.3441-.0531V156.1556c-.0076-.9033-.3593-3.7347-.7034-5.0037l-57.6527-61.9416c-1.4651-.3176-4.4533-.6389-5.5742-.6389H116.852c-.143.0-.2594.024-.3441.0531V411.9189zm267.4533-261.149zM327.0321 89.371v.0013V89.371z"/></g></g></g><g><g><path style="fill:#5b7fc0" d="M189.0874 210.1754l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4473C177.5953 212.627 183.0601 210.1742 189.0874 210.1754zM197.0804 232.033c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 234.1722 197.0804 232.033z"/><path style="opacity:.3;fill:#fff" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zM197.0839 232.0372c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/><g><defs><path id="SVGID_1_" d="M194.7376 237.6875c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 234.2399 196.1861 236.239 194.7376 237.6875z"/></defs><clipPath id="SVGID_2_"><use xlink:href="#SVGID_1_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_2_);fill:#fff" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/><path style="opacity:.13;clip-path:url(#SVGID_2_);fill:#020202" d="M190.0704 225.0237c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 225.7247 191.9774 225.0237 190.0704 225.0237z"/></g><g><defs><path id="SVGID_3_" d="M189.0898 210.176c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 212.6276 183.0612 210.176 189.0898 210.176zM197.0839 232.0372c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 236.239 197.0839 234.2399 197.0839 232.0372z"/></defs><clipPath id="SVGID_4_"><use xlink:href="#SVGID_3_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_4_);fill:#5b7fc0" d="M172.6595 215.6045c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8475-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 209.1953 176.6171 211.647 172.6595 215.6045z"/></g></g><rect x="198.8952" y="225.1043" style="fill:#5b7fc0" width="122.6266" height="13.8671"/></g><g><path style="fill:#d95140" d="M189.0874 155.7611l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.0249 2.454-11.4897 6.4116-15.4473C177.5953 158.2128 183.0601 155.7599 189.0874 155.7611zM197.0804 177.6188c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.2508 181.7667 197.0816 179.758 197.0804 177.6188z"/><path style="opacity:.3;fill:#fff" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zM197.0839 177.623c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/><g><defs><path id="SVGID_5_" d="M194.7376 183.2733c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 179.8256 196.1861 181.8248 194.7376 183.2733z"/></defs><clipPath id="SVGID_6_"><use xlink:href="#SVGID_5_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_6_);fill:#fff" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/><path style="opacity:.13;clip-path:url(#SVGID_6_);fill:#020202" d="M190.0704 170.6095c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9546.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.663-2.8588-6.116.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C193.7885 171.3104 191.9774 170.6095 190.0704 170.6095z"/></g><g><defs><path id="SVGID_7_" d="M189.0898 155.7617c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8066-21.8612-21.8613.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 158.2134 183.0612 155.7617 189.0898 155.7617zM197.0839 177.623c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 181.8248 197.0839 179.8256 197.0839 177.623z"/></defs><clipPath id="SVGID_8_"><use xlink:href="#SVGID_7_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_8_);fill:#d95140" d="M172.6595 161.1903c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 154.7811 176.6171 157.2327 172.6595 161.1903z"/></g><rect x="198.8952" y="170.69" style="fill:#d95140" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#56a55c" d="M189.5379 264.6147l.0012-.0012c7.7751.0012 15.0294 4.1862 18.932 10.9235 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3304-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032-5.8394.0-11.3281-2.2733-15.458-6.4032-4.13-4.13-6.4032-9.6186-6.4056-15.4628.0012-6.0249 2.454-11.4897 6.4116-15.4472C178.0458 267.0663 183.5105 264.6135 189.5379 264.6147zM197.5309 286.4723c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6538 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403C196.7013 290.6202 197.5321 288.6115 197.5309 286.4723z"/><path style="opacity:.3;fill:#fff" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zM197.5344 286.4765c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/><g><defs><path id="SVGID_9_" d="M195.1881 292.1268c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.9989 7.9942-7.9941 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.5344 288.6792 196.6366 290.6783 195.1881 292.1268z"/></defs><clipPath id="SVGID_10_"><use xlink:href="#SVGID_9_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_10_);fill:#fff" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/><path style="opacity:.13;clip-path:url(#SVGID_10_);fill:#020202" d="M190.5209 279.463c-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7446-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9941 2.3802-1e-4 4.616 1.0833 6.1218 2.8788C194.239 280.164 192.4279 279.463 190.5209 279.463z"/></g><g><defs><path id="SVGID_11_" d="M189.5403 264.6153c7.7763.0 15.0283 4.1826 18.926 10.9151 1.9201 3.3135 2.9377 7.0987 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8613-12.0547.0024-21.8636-9.8065-21.8612-21.8613.0-6.0285 2.4516-11.492 6.4116-15.452C178.0482 267.0669 183.5117 264.6153 189.5403 264.6153zM197.5344 286.4765c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9941.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.6366 290.6783 197.5344 288.6792 197.5344 286.4765z"/></defs><clipPath id="SVGID_12_"><use xlink:href="#SVGID_11_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_12_);fill:#56a55c" d="M173.11 270.0439c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8613 12.0547.0024 21.8636-9.797 21.8613-21.8613.0024-3.8474-1.0151-7.6326-2.9353-10.9462-3.8977-6.7325-11.1497-10.9151-18.926-10.9151C182.5311 263.6346 177.0676 266.0863 173.11 270.0439z"/></g></g><rect x="199.3456" y="279.5436" style="fill:#56a55c" width="122.6266" height="13.8671"/></g><g><g><path style="fill:#f1bc42" d="M189.0874 318.7208l.0012-.0012c7.7751.0012 15.0295 4.1862 18.932 10.9234 1.9177 3.3159 2.9305 7.1011 2.9293 10.9378.0 5.8394-2.2733 11.3305-6.4032 15.4604-4.1288 4.1288-9.6186 6.4032-15.458 6.4032s-11.328-2.2733-15.458-6.4032-6.4032-9.6186-6.4056-15.4628c.0012-6.025 2.454-11.4897 6.4116-15.4472C177.5953 321.1724 183.0601 318.7196 189.0874 318.7208zM197.0804 340.5784c.0012-1.4042-.3687-2.7868-1.063-3.9887-1.4293-2.4684-4.0833-3.9995-6.9299-4.0019-4.4077.0024-7.993 3.5877-7.993 7.993.0 2.1356.832 4.1431 2.3427 5.6539 1.5083 1.5083 3.5159 2.3403 5.6503 2.3415 2.1356.0 4.1443-.8308 5.6539-2.3403S197.0816 342.7176 197.0804 340.5784z"/><path style="opacity:.3;fill:#fff" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zM197.0839 340.5826c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/><g><defs><path id="SVGID_13_" d="M194.7376 346.2329c-1.4461 1.4461-3.4452 2.3439-5.6479 2.3439-4.4077-.0024-7.9918-3.5865-7.9942-7.9942.0024-4.4125 3.5937-7.999 7.9942-7.9942 2.8443.0 5.497 1.5323 6.924 3.9983.6991 1.2067 1.0702 2.5881 1.0702 3.9959C197.0839 342.7853 196.1861 344.7844 194.7376 346.2329z"/></defs><clipPath id="SVGID_14_"><use xlink:href="#SVGID_13_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_14_);fill:#fff" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/><path style="opacity:.13;clip-path:url(#SVGID_14_);fill:#020202" d="M190.0704 333.5691c-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0011 1.9547.7088 3.7452 1.8782 5.1354-1.7447-1.4674-2.8575-3.6631-2.8588-6.1161.0024-4.4125 3.5936-7.999 7.9942-7.9942 2.3802-1e-4 4.616 1.0834 6.1218 2.8788C193.7885 334.2701 191.9774 333.5691 190.0704 333.5691z"/></g><g><defs><path id="SVGID_15_" d="M189.0898 318.7214c7.7763.0 15.0283 4.1826 18.926 10.915 1.9201 3.3136 2.9377 7.0988 2.9353 10.9462.0024 12.0643-9.8065 21.8636-21.8613 21.8612-12.0547.0024-21.8636-9.8065-21.8612-21.8612.0-6.0285 2.4516-11.4921 6.4116-15.452C177.5977 321.173 183.0612 318.7214 189.0898 318.7214zM197.0839 340.5826c0-1.4078-.3711-2.7892-1.0702-3.9959-1.4269-2.466-4.0797-3.9983-6.924-3.9983-4.4005-.0048-7.9918 3.5817-7.9942 7.9942.0024 4.4077 3.5865 7.9918 7.9942 7.9942 2.2027.0 4.2018-.8978 5.6479-2.3439C196.1861 344.7844 197.0839 342.7853 197.0839 340.5826z"/></defs><clipPath id="SVGID_16_"><use xlink:href="#SVGID_15_" style="overflow:visible"/></clipPath><path style="clip-path:url(#SVGID_16_);fill:#f1bc42" d="M172.6595 324.15c-3.96 3.96-6.4116 9.4235-6.4116 15.452-.0024 12.0547 9.8066 21.8636 21.8613 21.8612 12.0547.0024 21.8636-9.797 21.8613-21.8612.0024-3.8474-1.0151-7.6327-2.9353-10.9462-3.8977-6.7324-11.1497-10.9151-18.926-10.9151C182.0806 317.7407 176.6171 320.1924 172.6595 324.15z"/></g></g><rect x="198.8952" y="333.6497" style="fill:#f1bc42" width="122.6266" height="13.8671"/></g></g></svg></span><span class="text-uppercase font-weight-bold">Vine</span>
+	</a>
+	<div class="td-navbar-nav-scroll ml-md-auto" id="main_navbar">
+		<ul class="navbar-nav mt-2 mt-lg-0">
+			
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				
+				
+				<a  class="nav-link active" href="/vine/docs/" ><span class="active">文档</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+			</li>
+			
+			<li class="nav-item mr-4 mb-2 mb-lg-0">
+				
+				
+				
+				
+				<a  class="nav-link" href="https://github.com/vine-io/vine" target="_blank" ><span>GitHub</span></a>
+			</li>
+			
+			
+			
+		</ul>
+	</div>
+	<div class="navbar-nav d-none d-lg-block">
+<input type="search" class="form-control td-search-input" placeholder="&#xf002 站内搜索…" aria-label="站内搜索…" autocomplete="off">
+
+</div>
+</nav>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            
+
+
+
+
+<div class="td-content">
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This the multi-page printable view of this section.
+<a href="#" onclick="print();return false;">Click here to print</a>.
+</p><p>
+<a href="/vine/docs/component/">Return to the regular view of this page</a>.
+</p>
+</div>
+
+
+
+<h1 class="title">框架组件</h1>
+<div class="lead">我们将深入了解 Vine 框架内部各个组件以及使用方法。</div>
+
+
+
+
+
+<div class="content">
+      
+</div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-c574c70976ca4327de54d1224f699453">1 - 接口</h1>
+    <div class="lead">Vine 是一个可插拔的框架，它利用接口进行抽象和构建基础模块。这使我们能够为分布式系统的概念建立强定义的抽象和可替换的实现。</div>
+	<p><img src="2020-12-29-08-51-23.png" alt="service内部结构"></p>
+<h2 id="接口">接口</h2>
+<p><strong>Vine</strong> 内置以下的接口列表</p>
+<ul>
+<li><strong>Auth</strong> - 身份验证和授权</li>
+<li><strong>broker</strong> - 异步消息</li>
+<li><strong>client</strong> - 高级请求/响应和消息通知</li>
+<li><strong>config</strong> - 动态配置</li>
+<li><strong>codec</strong> - 消息编码和解码</li>
+<li><strong>debug</strong> - debug 日志，跟踪，统计信息</li>
+<li><strong>network</strong> - 多云下的网络</li>
+<li><strong>registry</strong> - 服务发现</li>
+<li><strong>runtime</strong> - 服务运行时状态</li>
+<li><strong>selector</strong> - 均衡负载</li>
+<li><strong>server</strong> - 处理请求和通知</li>
+<li><strong>store</strong> - 数据存储</li>
+<li><strong>sync</strong> - 同步，锁和领导选举</li>
+<li><strong>transport</strong> - 同步通讯</li>
+<li><strong>tunnel</strong> - vpn 隧道</li>
+</ul>
+<h2 id="broker">Broker</h2>
+<p><strong>Broker</strong> 为异步 pub/sub 子通讯提供消息代理的接口。这是事件驱动结构和微服务的基本要求之一。在默认情况下，我们使用 HTTP 协议实现 Broker 接口，以减少依赖。在 <a href="github.com/vine-io/plugins">plugins</a> 中有许多 Broker 的实现。例如：RabbitMQ，NATS，NSQ等。</p>
+<h2 id="client">Client</h2>
+<p><strong>Client</strong> 提供一个接口来向服务发出请求。和 Server 一样，它构建在其他包上并提供统一的接口。使用 Registry 来查找服务，使用Transport进行同步请求。</p>
+<h2 id="codec">Codec</h2>
+<p><strong>Codec</strong> 用于编码和解码消息。这些数据格式可能是 json, protobuf, beson 等。同时还是各种 RPC 数据格式，例如 PROTO-RPC, JSON-RPC, BSON-RPC等。它将编码解码与 Client/Server 分离，并提供继承其他系统的强大方法。</p>
+<h2 id="config">Config</h2>
+<p><strong>Config</strong> 是一个接口。用于从任意数量的源进行动态配置加载，这些源可以合并。大多数系统都主动要求有独立于代码进行更改的配置。通过<strong>Config</strong>接口，可以根据需要动态加载这些值，它还支持各种不同的配置格式。</p>
+<h2 id="server">Server</h2>
+<p><strong>Server</strong> 是编写服务器基础模块。在这里，你可以为服务命名，注册请求处理器，添加中间件等。该服务基于上述包，为服务请求提供统一接口。目前有 gRPC 和 HTTP 两种内置实现。<strong>Server</strong> 还允许你定义多个 Codec 以服务不同的编码消息。</p>
+<h2 id="store">Store</h2>
+<p><strong>Store</strong> 是一个简单的键值对存储接口，用于抽象轻量级的数据存储。我们不是在试图实现一个完整的 sql 语言或者存储，只是仅仅保存服务状态。</p>
+<h2 id="registry">Registry</h2>
+<p><strong>Registry</strong> 提供一种服务发现机制，能将服务名称解析为对应的IP地址。它可以由 consul，etcd，zookeeper，dns等支持。服务在启动时注册到 <strong>Registry</strong> 中，并在关闭是注销。服务可能选择提供 TTL，并在这个间隔时间内重新注册，以确保服务在失效时进行清理。</p>
+<h2 id="selector">Selector</h2>
+<p><strong>Selector</strong> 是负载均衡的一种抽象，它建立在 <em>Registry</em> 上。它允许通过对应的策略选择服务，如随机，循环，最小等算法选择服务。<strong>Client</strong> 在请求时使用 <strong>Selector</strong> 来实现客户端均衡负载。</p>
+<h2 id="transport">Transport</h2>
+<p><strong>Transport</strong> 是服务之间同步请求/响应的接口。它类似与 golang 网络包，但提供一个更高级别的抽象，允许我们切换通讯机制，例如 http、rabbitmq、websocket、NATS等。它还支持双向流。</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-797b02a4bf0dfe71b512bbf7a2dce8be">2 - 错误</h1>
+    <div class="lead">Vine 为错误提供抽象和类型。通过提供一组核心错误和定义详细错误类型，我们可以始终如一地了解运行时出现的错误。</div>
+	<h2 id="概述">概述</h2>
+<p>我们定义以下错误类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Error <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Id       <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;id,omitempty&#34;`</span>
+	Code     <span style="color:#8be9fd">int32</span>      <span style="color:#f1fa8c">`json:&#34;code,omitempty&#34;`</span>
+	Detail   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;detail,omitempty&#34;`</span>
+	Status   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;status,omitempty&#34;`</span>
+    Position <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;position,omitempty&#34;`</span>
+    Child    <span style="color:#ff79c6">*</span>Child     <span style="color:#f1fa8c">`json:&#34;child,omitempty&#34;`</span>
+    Stacks   []<span style="color:#ff79c6">*</span>Stack   <span style="color:#f1fa8c">`json:&#34;stacks,omitempty&#34;`</span>
+}
+</code></pre></div><p>在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 <strong>Vine</strong> 错误，或者应该生成错误。默认情况下，我们返回 <code>errors.InternalServerError</code>，如果出现错误错误则返回 <code>errors.Timeout</code>。</p>
+<h2 id="使用">使用</h2>
+<p>让我们假设程序中发生错误，然后，你应该确定返回哪种错误，并执行以下操作。
+假设提供的数据无效：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">badRequest</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;invalid field&#34;</span>)
+</code></pre></div><p>如果发生内部错误</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    <span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">InternalServerError</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;failed to read db: %v&#34;</span>, err.<span style="color:#50fa7b">Error</span>())
+}
+</code></pre></div><p>如果你从客户端收到一些错误，可以按照以下方式处理:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.greeter&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
+rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Clinet</span>(ctx, req)
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    <span style="color:#6272a4">// parse out the error 
+</span><span style="color:#6272a4"></span>    e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Parse</span>(err.<span style="color:#50fa7b">Error</span>())
+
+    <span style="color:#6272a4">// inspect the value
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> e.Code <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">401</span> {
+        <span style="color:#6272a4">// unauthorized
+</span><span style="color:#6272a4"></span>    }
+}
+</code></pre></div><h2 id="错误列表">错误列表</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadGateway</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadRequest</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Conflict</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Forbidden</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">GatewayTimeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">InternalServerError</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">MethodNotAllowed</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotFound</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotImplemented</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ServiceUnavailable</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Timeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Unauthorized</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+</code></pre></div><h2 id="自定义错误">自定义错误</h2>
+<p>除了内置的错误类型之外，<strong>Vine</strong> 支持自定义错误类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 自定义错误，并记录错误位置
+</span><span style="color:#6272a4"></span>customErr <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;custom error&#34;</span>, <span style="color:#bd93f9">510</span>, <span style="color:#ff79c6">true</span>)
+</code></pre></div><h2 id="其他">其他</h2>
+<p>判断错误类型是否相同</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">b <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Equal</span>(err1, err2)
+</code></pre></div><p>链式调用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;name must be set&#34;</span>, <span style="color:#bd93f9">404</span>).
+        <span style="color:#50fa7b">WithChild</span>(<span style="color:#bd93f9">111</span>, <span style="color:#f1fa8c">&#34;%v&#34;</span>, <span style="color:#f1fa8c">&#34;child error&#34;</span>). <span style="color:#6272a4">// 添加额外错误
+</span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">WithPos</span>(). <span style="color:#6272a4">// 记录错误位置 
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">WithStack</span>(<span style="color:#bd93f9">10001</span>, <span style="color:#f1fa8c">&#34;stack context&#34;</span>) <span style="color:#6272a4">// 追加上下文信息 
+</span></code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-4e1a73836e2d2635ca8c80359f80fddf">3 - 插件</h1>
+    <div class="lead"><strong>Vine</strong> 是一个可插拔的框架。</div>
+	<h2 id="概述">概述</h2>
+<p><strong>Vine</strong> 构建在 Go 接口之上。因此这些接口的实现是可插拔的。</p>
+<p>默认情况下，<strong>Vine</strong> 只提供核心上每个接口的几个实现，但它完全是可插拔的。而额外的实现保存在 <a href="https://github.com/vine-io/plugins">plugins</a>。</p>
+<h2 id="添加插件">添加插件</h2>
+<p>如果要集成插件，只需将它们链接到单独的文件中并重新生成。
+创建 plugins.go 文件并导入所需的插件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+    <span style="color:#6272a4">// consul registry
+</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/consul&#34;</span>
+    <span style="color:#6272a4">// rabbitmq transport
+</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/transport/rabbitmq&#34;</span>
+    <span style="color:#6272a4">// kafka broker
+</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/kafka&#34;</span>
+)
+</code></pre></div><p>通过包含插件文件来构建应用程序：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go build -o service main.go plugins.go
+</code></pre></div><p>使用插件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">service --registry<span style="color:#ff79c6">=</span>consul --transport<span style="color:#ff79c6">=</span>nats --broker<span style="color:#ff79c6">=</span>kafka
+</code></pre></div><p>或者使用环境变量</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">VINE_REGISTRY</span><span style="color:#ff79c6">=</span>consule <span style="color:#8be9fd;font-style:italic">VINE_TRANSPORT</span><span style="color:#ff79c6">=</span>rabbitmq <span style="color:#8be9fd;font-style:italic">VINE_BROKER</span><span style="color:#ff79c6">=</span>kafka service
+</code></pre></div><h2 id="插件选项">插件选项</h2>
+<p>或者你可以将插件设置在选项中</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+    <span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+
+    <span style="color:#6272a4">// consul registry
+</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/consul&#34;</span>
+    <span style="color:#6272a4">// rabbitmq transport
+</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/transport/rabbitmq&#34;</span>
+    <span style="color:#6272a4">// kafka broker
+</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/kafka&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    registry <span style="color:#ff79c6">:=</span> consul.<span style="color:#50fa7b">NewRegistry</span>()
+    broker <span style="color:#ff79c6">:=</span> kafka.<span style="color:#50fa7b">NewBroker</span>()
+    transport <span style="color:#ff79c6">:=</span> rabbitmq.<span style="color:#50fa7b">NewTransport</span>()
+
+    service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+        vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;greeter&#34;</span>),
+        vine.<span style="color:#50fa7b">Registry</span>(registry),
+        vine.<span style="color:#50fa7b">Broker</span>(broker),
+        vine.<span style="color:#50fa7b">Transport</span>(transport),
+    )
+
+    service.<span style="color:#50fa7b">Init</span>()
+
+    service.<span style="color:#50fa7b">Run</span>()
+}
+</code></pre></div><h2 id="编写插件">编写插件</h2>
+<p>插件是一个建立在 Go 接口上的概念。每个包都维护一个高级接口抽象。只需实现接口并将其作为服务选项传递给它即可.</p>
+<p>服务发现接口称为 <a href="https://pkg.go.dev/github.com/vine-io/vine/service/registry#Registry">Registry</a>. 实现此接口的任何内容都可以用作 <strong>Registry</strong>。这同样适用于其他包.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><p>查阅 <a href="https://github.com/vine-io/plugins">plugins</a> 可以更好地了解实现细节。</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-71b132aaed9b436554cc5244d106942f">4 - 选项</h1>
+    <div class="lead"><strong>Vine</strong> 使用可变选项模型来设计包的创建和初始化传递参数，以及作为方法的可选参数。这为扩展跨插件的选项使用提供了灵活性</div>
+	<h2 id="概述">概述</h2>
+<p>创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
+选项通常定义如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Options <span style="color:#8be9fd;font-style:italic">struct</span> {
+    Name        <span style="color:#8be9fd">string</span>
+    Version     <span style="color:#8be9fd">string</span>
+    Broker      broker.Broker
+    Registry    registry.Registry
+}
+
+
+<span style="color:#8be9fd;font-style:italic">type</span> Option <span style="color:#8be9fd;font-style:italic">func</span>(<span style="color:#ff79c6">*</span>Options)
+
+<span style="color:#6272a4">// set the name
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Name</span>(n <span style="color:#8be9fd">string</span>) Option {
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
+        o.Name = n
+    }
+}
+
+<span style="color:#6272a4">// set the broker
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Broker</span>(b broker.Broker) Option {
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
+        o.Broker = b
+    }
+}
+</code></pre></div><p>然后这安装如下方式设置这些选项</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
+    vine.<span style="color:#50fa7b">Broker</span>(broker),
+)
+</code></pre></div><h2 id="服务选项">服务选项</h2>
+<p>在 <strong>Vine</strong> 中，我们有许多选项可以设置，包括用于身份验证，配置和存储等内容的基础包。你可以使用 <code>service.Options()</code> 来访问这些。</p>
+<p>auth、config、registry、store 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 <code>service.Init()</code> 后生效。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4">## as an env vars</span>
+<span style="color:#8be9fd;font-style:italic">VINE_STORE</span><span style="color:#ff79c6">=</span>file go run main.go
+
+<span style="color:#6272a4">## or as a flag</span>
+go run main.go --store<span style="color:#ff79c6">=</span>file
+</code></pre></div><p>然后在内部，可以通过选项访问存储：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
+)
+
+service.<span style="color:#50fa7b">Init</span>()
+
+store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Options</span>().Store
+</code></pre></div><blockquote>
+<p><strong>Vine</strong> 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 <code>context.Context</code> 中。</p>
+</blockquote>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-a166f9ca5ae0b67e66da460ca61f73a2">5 - 配置</h1>
+    <div class="lead"><strong>Config</strong> 是一个可插拔的动态配置库</div>
+	<h2 id="概述">概述</h2>
+<p>应用程序中的大多数配置都是静态配置或者从多个源加载的复杂逻辑。<strong>Config</strong> 是其变得简单，可插拔和可合并。</p>
+<h2 id="特性">特性</h2>
+<ul>
+<li><strong>动态加载</strong> - 在需要时从多个源加载配置. <strong>Config</strong> 管理在后台监听配置源，并自动合并和更新内存中的配置文件源。</li>
+<li><strong>可插拔的源</strong> - 从任意数量的源中进行选择以加载和合并配置。后端源被抽象为内部使用并通过编码器解码的标准格式。源可以是 env vars, flags, etcd, k8s configmap, 等。</li>
+<li><strong>可合并配置</strong> - 如果指定多个配置源，无论格式如何，它们都将合并并在单个视图中显示。这极大地简化了基于环境的优先级顺序加载和更改。</li>
+<li><strong>改动监听</strong> - 可选择监听配置，以监控特定值的更改。使用 <strong>Config</strong> 的监听程序热加载你的应用。不必临时关机重新加载其他任何内容，只需继续读取配置并监听需要通知的更改。</li>
+<li><strong>安全恢复</strong> - 如果配置负载严重或由于未知原因完全擦除，则可以在直接访问任何配置值时指定回退值。这可确保在发生问题时始终读取某些合理的默认值。</li>
+</ul>
+<h2 id="内部实现">内部实现</h2>
+<p>下面介绍 <strong>Config</strong> 的实现，<strong>Config</strong> 有以下部分组成：</p>
+<ul>
+<li>source: 配置的来源</li>
+<li>encoder: 处理编码/解码源配置</li>
+<li>reader: 将多个编码源合并为单一格式</li>
+<li>loader：管理加载源</li>
+</ul>
+<h3 id="source">Source</h3>
+<p><code>Source</code> 作为配置的读取来源。可以同时使用多个源。
+支持以下源:</p>
+<ul>
+<li>cli : 从 CLI 标志读取</li>
+<li>env : 从环境变量中读取</li>
+<li>file : 从文件中读取</li>
+<li>flag : 从标志中读取</li>
+<li>memory : 从内存中读取</li>
+</ul>
+<h3 id="changeset">ChangeSet</h3>
+<p><strong>Source</strong> 将 <strong>Config</strong> 作为一个 <strong>ChangeSet</strong> 返回，作为多个源的单一内部抽象。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// ChangeSet represents a set of changes from a source
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> ChangeSet <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Data      []<span style="color:#8be9fd">byte</span>
+	CheckSum  <span style="color:#8be9fd">string</span>
+	Format    <span style="color:#8be9fd">string</span>
+	Source    <span style="color:#8be9fd">string</span>
+	Timestamp time.Time
+}
+</code></pre></div><h3 id="encoder">encoder</h3>
+<p><code>Encoder</code> 处理编码和解码。后端源可能以许多不停的格式存储。编码器使我们能够处理任何格式。如果未指定编码器，则默认为 json。
+支持以下编码格式：</p>
+<ul>
+<li>json</li>
+<li>yaml</li>
+<li>toml</li>
+<li>xml</li>
+<li>hcl</li>
+</ul>
+<h3 id="reader">reader</h3>
+<p><code>Reader</code> 将多个 <strong>ChangeSet</strong> 表示为单个合并和查询的集合</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Reader is an interface for merging changesets
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Reader <span style="color:#8be9fd;font-style:italic">interface</span> {
+    <span style="color:#6272a4">// Merge multiple changeset into a single format
+</span><span style="color:#6272a4"></span>    <span style="color:#50fa7b">Merge</span>(<span style="color:#ff79c6">...*</span>source.ChangeSet) (<span style="color:#ff79c6">*</span>source.ChangeSet, <span style="color:#8be9fd">error</span>)
+    <span style="color:#6272a4">// Return Go assertable values
+</span><span style="color:#6272a4"></span>    <span style="color:#50fa7b">Values</span>(<span style="color:#ff79c6">*</span>source.ChangeSet) (Values, <span style="color:#8be9fd">error</span>)
+    <span style="color:#6272a4">// Name of the reader e.g json reader
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><p><code>Reader</code> 使用 <code>Encoder</code> 将 <strong>ChangeSet</strong> 解码为 <code>map[string]Values</code>，然后将它们合并到单个 <strong>ChangeSet</strong> 中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Values is returned by the reader
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Values <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Bytes</span>() []<span style="color:#8be9fd">byte</span>
+	<span style="color:#50fa7b">Get</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>) Value
+	<span style="color:#50fa7b">Set</span>(val <span style="color:#8be9fd;font-style:italic">interface</span>{}, path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>)
+	<span style="color:#50fa7b">Del</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>)
+	<span style="color:#50fa7b">Map</span>() <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}
+	<span style="color:#50fa7b">Scan</span>(v <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+}
+</code></pre></div><p><code>Value</code> 接口允许强制转换，类型断言，返回默认值</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Value represents a value of any type
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Value <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Bool</span>(def <span style="color:#8be9fd">bool</span>) <span style="color:#8be9fd">bool</span>
+	<span style="color:#50fa7b">Int</span>(def <span style="color:#8be9fd">int64</span>) <span style="color:#8be9fd">int64</span>
+	<span style="color:#50fa7b">String</span>(def <span style="color:#8be9fd">string</span>) <span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">Float64</span>(def <span style="color:#8be9fd">float64</span>) <span style="color:#8be9fd">float64</span>
+	<span style="color:#50fa7b">Duration</span>(def time.Duration) time.Duration
+	<span style="color:#50fa7b">StringSlice</span>(def []<span style="color:#8be9fd">string</span>) []<span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">StringMap</span>(def <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>) <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">Scan</span>(val <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Bytes</span>() []<span style="color:#8be9fd">byte</span>
+}
+</code></pre></div><h3 id="config">Config</h3>
+<p><strong>Config</strong> 管理所有配置，抽象 source，encoder，reader。
+它从多个源读取，同步，监听，并将它们合并为单个可查询的源。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Config is an interface abstraction for dynamic configuration
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Config <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#6272a4">// provide the reader.Values interface
+</span><span style="color:#6272a4"></span>	reader.Values
+	<span style="color:#6272a4">// Init the config
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(opts <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Options in the config
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#6272a4">// Stop the config loader/watcher
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Load config sources
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Load</span>(source <span style="color:#ff79c6">...</span>source.Source) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Force a source changeset sync
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Sync</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Watch a value for changes
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Watch</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>) (Watcher, <span style="color:#8be9fd">error</span>)
+}
+</code></pre></div><h2 id="使用">使用</h2>
+<h3 id="实例配置">实例配置</h3>
+<p>只要我们有一个编码器来支持它，配置文件就可以是任务格式的。
+json 配置实例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;hosts&#34;</span>: {
+        <span style="color:#ff79c6">&#34;database&#34;</span>: {
+            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.0.0.1&#34;</span>,
+            <span style="color:#ff79c6">&#34;port&#34;</span>: <span style="color:#bd93f9">3306</span>
+        },
+        <span style="color:#ff79c6">&#34;cache&#34;</span>: {
+            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.0.0.2&#34;</span>,
+            <span style="color:#ff79c6">&#34;port&#34;</span>: <span style="color:#bd93f9">6379</span>
+        }
+    }
+}
+</code></pre></div><h3 id="创建-config">创建 Config</h3>
+<p>创建一个新 <strong>Config</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
+
+conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
+</code></pre></div><h3 id="加载文件">加载文件</h3>
+<p>从文件加载配置，根据文件扩展名来确定配置格式。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
+
+<span style="color:#6272a4">// 加载 json 配置文件
+</span><span style="color:#6272a4"></span>config.<span style="color:#50fa7b">LoadFile</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>)
+</code></pre></div><p>如果扩展不存在，可指定 <code>encoder</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/encoder/toml&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source/file&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	enc <span style="color:#ff79c6">:=</span> toml.<span style="color:#50fa7b">NewEncoder</span>()
+	
+	<span style="color:#6272a4">// 通过编码器加载 toml 文件
+</span><span style="color:#6272a4"></span>	config.<span style="color:#50fa7b">Load</span>(
+		file.<span style="color:#50fa7b">NewSource</span>(
+			file.<span style="color:#50fa7b">WithPath</span>(<span style="color:#f1fa8c">&#34;/tmp/config&#34;</span>),
+			source.<span style="color:#50fa7b">WithEncoder</span>(enc),
+		),
+	)
+}
+</code></pre></div><h3 id="读取配置">读取配置</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Map</span>()
+
+fmt.<span style="color:#50fa7b">Println</span>(conf[<span style="color:#f1fa8c">&#34;hosts&#34;</span>])
+</code></pre></div><p>扫描配置到结构体</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Host <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Address <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;address&#34;`</span>
+	Port <span style="color:#8be9fd">int</span> <span style="color:#f1fa8c">`json:&#34;port&#34;`</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">type</span> Config <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Hosts <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]Host <span style="color:#f1fa8c">`json:&#34;hosts&#34;`</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	pwd, _ <span style="color:#ff79c6">:=</span> os.<span style="color:#50fa7b">Getwd</span>()
+	err <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">LoadFile</span>(pwd <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;/config/&#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;config.json&#34;</span>)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+
+	<span style="color:#8be9fd;font-style:italic">var</span> cfg Config
+	config.<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>cfg)
+
+	fmt.<span style="color:#50fa7b">Println</span>(cfg.Hosts[<span style="color:#f1fa8c">&#34;database&#34;</span>].Address)
+}
+</code></pre></div><h3 id="读取值">读取值</h3>
+<p>从配置扫描值到结构体</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Host <span style="color:#8be9fd;font-style:italic">struct</span> {
+    Address <span style="color:#8be9fd">string</span>  <span style="color:#f1fa8c">`json:&#34;address&#34;`</span>
+    Port    <span style="color:#8be9fd">int</span>     <span style="color:#f1fa8c">`json:&#34;port&#34;`</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">var</span> host Host
+
+config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>).<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>host)
+
+<span style="color:#6272a4">// 10.0.0.1 3306
+</span><span style="color:#6272a4"></span>fmt.<span style="color:#50fa7b">Println</span>(host.Address, host.Port)
+</code></pre></div><p>读取单个值作为 Go 类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Get address. Set default to localhost as fallback
+</span><span style="color:#6272a4"></span>address <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>, <span style="color:#f1fa8c">&#34;address&#34;</span>).<span style="color:#50fa7b">String</span>(<span style="color:#f1fa8c">&#34;localhost&#34;</span>)
+
+<span style="color:#6272a4">// Get port. Set default to 3000 as fallback
+</span><span style="color:#6272a4"></span>port <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>, <span style="color:#f1fa8c">&#34;port&#34;</span>).<span style="color:#50fa7b">Int</span>(<span style="color:#bd93f9">3000</span>)
+</code></pre></div><h3 id="监听配置">监听配置</h3>
+<p>监听配置文件。当文件更改时，更新到新值:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">w, err <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Watch</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>)
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    <span style="color:#6272a4">// do something
+</span><span style="color:#6272a4"></span>}
+
+<span style="color:#6272a4">// wait for next value
+</span><span style="color:#6272a4"></span>v, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    <span style="color:#6272a4">// do something
+</span><span style="color:#6272a4"></span>}
+
+<span style="color:#8be9fd;font-style:italic">var</span> host Host
+
+v.<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>host)
+</code></pre></div><h3 id="多源">多源</h3>
+<p>可以加载和合并多个源。合并优先级顺序相反:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">config.<span style="color:#50fa7b">Load</span>(
+    <span style="color:#6272a4">// base config from env
+</span><span style="color:#6272a4"></span>    env.<span style="color:#50fa7b">NewSource</span>()
+    <span style="color:#6272a4">// override env with flags
+</span><span style="color:#6272a4"></span>    flag.<span style="color:#50fa7b">NewSource</span>()
+    <span style="color:#6272a4">// override flags with file
+</span><span style="color:#6272a4"></span>    file.<span style="color:#50fa7b">NewSource</span>(file.<span style="color:#50fa7b">WatchPath</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>))
+)
+</code></pre></div><h3 id="设置源编码器">设置源编码器</h3>
+<p>源要求编码器对数据进行编码 / 解码并指定更改集格式.</p>
+<p>默认的编码器是 json. 要更改编码器可调整对应的类型选项.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> yaml.<span style="color:#50fa7b">NewEncoder</span>()
+
+s <span style="color:#ff79c6">:=</span> consul.<span style="color:#50fa7b">NewSource</span>(
+    source.<span style="color:#50fa7b">WithEncoder</span>(e),
+)
+</code></pre></div><h3 id="添加读取器编码器">添加读取器编码器</h3>
+<p>读取器使用编码器从不同格式的源解码数据.</p>
+<p>默认的读取器支持 json, yaml, xml, toml 和 hcl. 它将合并的配置表示为 json.</p>
+<p>可以通过指定的选项来添加一个新的编码器.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> yaml.<span style="color:#50fa7b">NewEncoder</span>()
+
+r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewReader</span>(
+    reader.<span style="color:#50fa7b">WithEncoder</span>(e),
+)
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-4bf4097c812f2b345e3a8236e52dae1a">6 - 服务发现</h1>
+    <div class="lead">用于服务注册和服务名称解析</div>
+	<h2 id="概述">概述</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// The registry provides an interface for service discovery
+</span><span style="color:#6272a4">// and an abstraction over varying implementations
+</span><span style="color:#6272a4">// {consul, etcd, zookeeper, ...}
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (regpb.Watcher, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><h2 id="完整实例">完整实例</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/registry&#34;</span>
+	regpb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/registry&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// create new registry
+</span><span style="color:#6272a4"></span>	r <span style="color:#ff79c6">:=</span> registry.<span style="color:#50fa7b">NewRegistry</span>()
+
+	<span style="color:#6272a4">// initialize registry
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
+
+	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>regpb.Service{
+		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
+		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
+		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
+		Endpoints: []<span style="color:#ff79c6">*</span>regpb.Endpoint{{
+			Request: <span style="color:#ff79c6">&amp;</span>regpb.Value{},
+		}},
+		Nodes: []<span style="color:#ff79c6">*</span>regpb.Node{<span style="color:#ff79c6">&amp;</span>regpb.Node{
+			Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
+			Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
+		}},
+	}
+
+	<span style="color:#6272a4">// registry service
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Register</span>(s)
+
+	<span style="color:#6272a4">// watch registry
+</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>))
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		<span style="color:#ff79c6">return</span>
+	}
+	<span style="color:#ff79c6">defer</span> w.<span style="color:#50fa7b">Stop</span>()
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#ff79c6">for</span> {
+			<span style="color:#6272a4">// blocking
+</span><span style="color:#6272a4"></span>			r, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
+			<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+				<span style="color:#ff79c6">return</span>
+			}
+
+			log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;watch [%v] %v&#34;</span>, r.Action, r.Service)
+		}
+	}()
+
+	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+	<span style="color:#6272a4">// get service
+</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%+v\n&#34;</span>, service)
+
+	<span style="color:#6272a4">// destroy registry
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Deregister</span>(s)
+
+	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+}
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-f375a1b0338deecef74fa867c6bb7ed5">7 - API处理器</h1>
+    <div class="lead">用于定义 api 路由和处理程序的包</div>
+	<h2 id="概述">概述</h2>
+<p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
+<p><strong>API</strong> 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 <strong>API</strong> 使用在 <strong>Registry</strong> 元数据中定义的路由来生成路由规则并服务 http 请求.</p>
+<p><img src="2020-12-30-11-14-15.png" alt="vine api"></p>
+<p><code>vine api</code> 基于 <strong>API</strong>。</p>
+<h2 id="handler">handler</h2>
+<p>处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。</p>
+<ul>
+<li>api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。</li>
+<li>broker - 实现 vine 代理接口的 http 处理程序。</li>
+<li>event - 处理任何 HTTP 请求并发布到消息总线。</li>
+<li>http - 处理任何 HTTP 请求，并作为反向代理转发。</li>
+<li>registry - 实现 vine <strong>Registry</strong> 接口的 http 处理程序。</li>
+<li>rpc - 处理 json 和原始 POST 请求。转发为 RPC。</li>
+<li>web - 包含 websocket 支持的 HTTP 处理程序。</li>
+</ul>
+<h2 id="api-handler">API handler</h2>
+<p>API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.</p>
+<ul>
+<li>Content-Type：任何</li>
+<li>Body： 任何</li>
+<li>Forward Format: api.Request/api.Response</li>
+<li>Path: /[service]/[method]</li>
+<li>Resolver: 路径用于解析服务和方法的路径</li>
+</ul>
+<h2 id="proxy-handler">proxy handler</h2>
+<p>代理处理程序是一个 http 处理程序，它服务于 vine 代理接口</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP</li>
+<li>PATH: /</li>
+<li>Resolver: 指定为查询参数的主题</li>
+</ul>
+<p>发布请求并将发布</p>
+<h2 id="event-handler">event handler</h2>
+<p>事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.</p>
+<ul>
+<li>Content-Type: Any</li>
+<li>Body: Any</li>
+<li>Forward Format: 请求格式为 go-api/proto.Event</li>
+<li>Path：/[topic]/[event]</li>
+<li>Resolver: 用于解析主题和事件名称路径</li>
+</ul>
+<h2 id="http-handler">http handler</h2>
+<p>http 处理程序是具有内置服务发现的 http 反向代理.</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP 反向代理</li>
+<li>Path: /[service]</li>
+<li>Resolver: 用于解析服务名称路径</li>
+</ul>
+<h2 id="registry-handler">registry handler</h2>
+<p>registry handler 是一个 http 处理程序，它为 vine <strong>Registry</strong> 接口提供服务</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: JSON</li>
+<li>Forward Format: HTTP</li>
+<li>Path: /</li>
+<li>Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法</li>
+</ul>
+<h2 id="rpc-handler">rpc handler</h2>
+<p>rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.</p>
+<ul>
+<li>Content-Type: application/json 或 application/protobuf</li>
+<li>Body: JSON 或 Protobuf</li>
+<li>Forward Format: 基于内容的 json-rpc 或 proto-rpc</li>
+<li>Path: /[service]/[method]</li>
+<li>Resolver: 用于解析服务和方法路径</li>
+</ul>
+<h2 id="web-handler">web handler</h2>
+<p>web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP 反向代理，包括 websocket</li>
+<li>Path: /[service]</li>
+<li>Resolver: 用于解析服务名称路径</li>
+</ul>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-59586a1fa5b90047cde9c17a0fe343a1">8 - 订阅发布</h1>
+    <div class="lead">用 <strong>Broker</strong> 构建微服务的发布订阅事件驱动</div>
+	<h2 id="概述">概述</h2>
+<p>微服务是一种事件驱动的体系结构模式，因此 <strong>Vine</strong> 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Broker is an interface used for asynchronous messaging.
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Broker <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">Address</span>() <span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">Connect</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Disconnect</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Publish</span>(topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/vine-io/plugins">plugins</a> 替换实现。</p>
+<h2 id="发布消息">发布消息</h2>
+<p>使用 topic 名称和服务客户端创建一个新的发布者</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
+</code></pre></div><p>发布 proto 消息</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>proto.Event{Name: <span style="color:#f1fa8c">&#34;event&#34;</span>})
+</code></pre></div><h2 id="订阅">订阅</h2>
+<p>创建消息处理程序。它的签名应该是 <code>func(context.Context, v interface{}) error</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
+    fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;Got event %+v\n&#34;</span>, event)
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+</code></pre></div><p>使用 topic 注册消息处理程序</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
+</code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
+<h2 id="单独使用-broker">单独使用 Broker</h2>
+<p><code>Broker</code> 也可以单独使用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/broker&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	topic <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;go.vine.topic.foo&#34;</span>
+
+	b <span style="color:#ff79c6">:=</span> broker.<span style="color:#50fa7b">NewBroker</span>()
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Init error: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Connect</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Connect error: %v&#34;</span>, err)
+	}
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#6272a4">// receive message from broker
+</span><span style="color:#6272a4"></span>		b.<span style="color:#50fa7b">Subscribe</span>(topic, <span style="color:#8be9fd;font-style:italic">func</span>(p broker.Event) <span style="color:#8be9fd">error</span> {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[sub] received message:&#34;</span>, <span style="color:#8be9fd;font-style:italic">string</span>(p.<span style="color:#50fa7b">Message</span>().Body), <span style="color:#f1fa8c">&#34;header&#34;</span>, p.<span style="color:#50fa7b">Message</span>().Header)
+			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+		})
+	}()
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
+		<span style="color:#6272a4">// publish message to broker
+</span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
+	}()
+
+    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
+    
+    b.<span style="color:#50fa7b">Disconnect</span>()
+}
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-d2d36bead0be0a3b9422b2b89dcb6a4f">9 - 服务端</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-890777915678ed57c745424af4cba2b8">10 - 客户端</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-d1efc05dbc1f94a35f917476dd627e6e">11 - 身份验证</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-4a7c3fa0ce93b45aff2619ab2d4fb923">12 - 网络服务</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-0ac0c93932ba970d9de5708069287fd7">13 - 数据存储</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-7ba1eb827575fa0a9c6d255ff7c928e8">14 - web服务</h1>
+    <div class="lead">Web 为 vine web 应用提供了一个接口</div>
+	<h2 id="概述">概述</h2>
+<p><strong>Web</strong> 提供了一个很小的 HTTP Web 服务器库，利用 <strong>Vine</strong> 创建 vine web 服务。它包装了 <strong>Vine</strong>, 为用户提供服务发现，检测信号以及将 web 应用创建为微服务的功能.</p>
+<h2 id="特性">特性</h2>
+<ul>
+<li>服务发现 - 服务在启动时自动注册在 <strong>Registry</strong> 中。<strong>Web</strong> 包括一个具有预初始化的 http.Client, 它利用服务发现，以便您可以使用 web 服务。</li>
+<li>健康检测 - <strong>Web</strong> 应用将定期使用服务发现进行检测信号，以提供实时更新。如果服务失败，将在预定义的过期时间后将其从 <strong>Registry</strong> 中删除.</li>
+<li>自定义处理程序 - 指定您自己的 http 路由器以处理请求。这允许您完全控制要路由到内部处理程序的方式.</li>
+<li>静态服务 - <strong>Web</strong> 自动检测本地静态 html 目录，如果未指定路由处理程序，则提供文件。对于那些希望将 JS Web 应用程序编写为微服务的用户的快速解决方案.</li>
+</ul>
+<h2 id="依赖">依赖</h2>
+<p>Web 使用 <strong>Vine</strong>, 这意味着它需要 <strong>Registry</strong></p>
+<h2 id="使用">使用</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
+)
+
+service.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/foo&#34;</span>, fooHandler)
+
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    log.<span style="color:#50fa7b">Fatal</span>(err)
+}
+
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    log.<span style="color:#50fa7b">Fatal</span>(err)
+}
+</code></pre></div><h2 id="设置-handler">设置 handler</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/gorilla/mux&#34;</span>
+
+r <span style="color:#ff79c6">:=</span> mux.<span style="color:#50fa7b">NewRouter</span>()
+r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/&#34;</span>, indexHandler)
+r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/objects/{object}&#34;</span>, objectHandler)
+
+service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Handler</span>(r)
+)
+</code></pre></div><h2 id="调用服务">调用服务</h2>
+<p>web 包括一个具有自定义 http.RoundTripper 并使用服务发现 http.Client</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">c <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Client</span>()
+
+rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;http://example.com/foo&#34;</span>)
+</code></pre></div><p>这将查找 example.com 服务发现以及路由到其中一个可用节点。</p>
+<h2 id="静态文件">静态文件</h2>
+<p><strong>Web</strong> 总是意味着注册 Web 应用， 其中大多数代码将用 JS 编写。 默认情况下， 如果 “/“ 上没有注册任何处理程序，并且我们发现本地的 “html” 目录，则将提供静态文件.</p>
+<p>如果要手动设置此路径，请使用 StaticDir 选项。如果指定了相对路径，我们将使用 <code>os.Getwd()</code> 和前缀.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
+    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
+    web.<span style="color:#50fa7b">StaticDir</span>(<span style="color:#f1fa8c">&#34;/tmp/example.com/html&#34;</span>),
+)
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-086541153674cbdfd7810a7afd543baa">15 - 请求代理</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+
+
+
+          </main>
+        </div>
+      </div>
+      
+<footer class="bg-dark py-5 row d-print-none">
+  <div class="container-fluid mx-sm-5">
+    <div class="row">
+      <div class="col-6 col-sm-4 text-xs-center order-sm-2">
+        
+        
+        
+      </div>
+      <div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item mx-2 h3" data-toggle="tooltip" data-placement="top" title="" aria-label="">
+    <a class="text-white" target="_blank" rel="noopener noreferrer" href="">
+      <i class=""></i>
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      </div>
+      <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
+	
+		<p class="mt-2"><a href="/vine/about/">about</a></p>
+	
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@8.8.1/dist/mermaid.min.js" integrity="sha384-to2w0I1OqmbJ9J6yTnIX+KYU8grNpZoD1dKPLjgEJvMe5L5+/7qvuNa2sQo8WAWj" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/vine/js/main.min.29905647551f406dcc99a8c3b25d4aa36d05b19c8134ef20684ff96a1f34e31e.js" integrity="sha256-KZBWR1UfQG3MmajDsl1Ko20FsZyBNO8gaE/5ah804x4=" crossorigin="anonymous"></script>
+
+
+
+
+  </body>
+</html>

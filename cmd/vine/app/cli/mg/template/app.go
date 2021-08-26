@@ -31,7 +31,7 @@ import (
 	"{{.Dir}}/pkg/runtime/inject"
 	"github.com/vine-io/vine"
 
-	"{{.Dir}}/pkg/domain"
+	"{{.Dir}}/pkg/biz"
 )
 
 func init() {
@@ -50,7 +50,7 @@ var _ {{title .Name}} = (*{{.Name}})(nil)
 type {{.Name}} struct {
 	vine.Service ` + "`inject:\"\"`" + `
 
-	Caller domain.Caller ` + "`inject:\"\"`" + `
+	Caller biz.Caller ` + "`inject:\"\"`" + `
 }
 
 func (s *{{.Name}}) Init() error {
@@ -78,7 +78,7 @@ import (
 	"{{.Dir}}/pkg/runtime/inject"
 	"github.com/vine-io/vine"
 
-	"{{.Dir}}/pkg/{{.Name}}/domain"
+	"{{.Dir}}/pkg/{{.Name}}/biz"
 )
 
 func init() {
@@ -97,7 +97,7 @@ var _ {{title .Name}} = (*{{.Name}})(nil)
 type {{.Name}} struct {
 	vine.Service ` + "`inject:\"\"`" + `
 
-	Caller domain.Caller ` + "`inject:\"\"`" + `
+	Caller biz.Caller ` + "`inject:\"\"`" + `
 }
 
 func (s *{{.Name}}) Init() error {

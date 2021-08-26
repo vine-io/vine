@@ -1,7 +1,7 @@
 package template
 
 var (
-	DomainSRV = `package domain
+	DomainSRV = `package biz
 
 import (
 	"context"
