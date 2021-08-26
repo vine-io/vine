@@ -12,5 +12,6 @@ testdata
 _output
 
 .vscode
+*.pb.*.go
 `
 )
