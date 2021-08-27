@@ -141,7 +141,248 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/lack/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/vine-io/vine"><img src="https://api.travis-ci.org/vine-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/vine-io/vine"><img src="https://goreportcard.com/badge/vine-io/vine" alt="Go Report Card"></a></p>
+      
+</div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-08b1b69f6319108b0455d24614fdd660">1 - 快速开始</h1>
+    
+	<p>这里提供一个简单的实例，帮助用户快速了解 <strong>Vine</strong> 框架。</p>
+<h2 id="定义接口">定义接口</h2>
+<h3 id="新建项目">新建项目</h3>
+<p>新建目录保存相关代码:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/greet
+</code></pre></div><blockquote>
+<p>建议项目保存在 $GOPATH 下</p>
+</blockquote>
+<h3 id="新建-proto-文件">新建 *.proto 文件</h3>
+<p><strong>Vine</strong> 内部使用 <code>gRPC</code> 作为服务端，<code>*.proto</code> 是 google 公司开源的一种数据交换协议，类似 <code>json</code>。关于 <code>protobuf</code> 更详细的语法可以参考<a href="https://developers.google.com/protocol-buffers/docs/gotutorial">protobuf</a>。</p>
+<p>这里我们新建 <code>greet.proto</code> 文件，内容如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// mysite/proto/greet.proto
+</span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+
+<span style="color:#ff79c6">package</span> greet;
+
+<span style="color:#8be9fd;font-style:italic">service</span> Greeter {
+  <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp) {}
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {
+  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {
+  <span style="color:#8be9fd">string</span> greeting <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+</code></pre></div><blockquote>
+<p>更多的关于 <strong>Vine</strong> 的语法规则可以参考 <a href="/vine/docs/guides/openapi/">protoc-gen-vine</a></p>
+</blockquote>
+<h3 id="生成-api-接口">生成 API 接口</h3>
+<p>你需要以下的工具来生成 proto 代码</p>
+<ul>
+<li><a href="https://github.com/protocolbuffers/protobuf">protoc</a></li>
+<li><a href="https://github.com/vine-io/vine/tree/master/cmd/protoc-gen-gogo">protoc-gen-gogo</a></li>
+<li><a href="https://github.com/vine-io/vine/tree/master/cmd/protoc-gen-vine">protoc-gen-vine</a></li>
+</ul>
+<p>使用 protoc、protoc-gen-gogo、protoc-gen-vine 来生成 protobuf code</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
+go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+go get github.com/vine-io/vine/cmd/protoc-gen-vine
+</code></pre></div><p>使用命令生成 <code>greet.pb.go</code> 和 <code>greet.vine.go</code> 文件:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src
+$ protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. mysite/proto/greet.proto
+</code></pre></div><p>执行成功后会生成新的文件:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mysite
+└── proto
+    ├── greet.pb.go       <span style="color:#6272a4"># 通过 protoc-gen-gogo 插件生成，包含结构体和 gRPC 的接口</span>
+    ├── greet.pb.vine.go  <span style="color:#6272a4"># 通过 protoc-gen-vine 插件生成，包含 Vine 框架接口</span>
+    └── greet.proto
+
+</code></pre></div><h2 id="定义服务">定义服务</h2>
+<h3 id="实现-vine-服务">实现 Vine 服务</h3>
+<p>有了 proto 文件后，接下来就是编写服务端代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ mkdir -p server
+$ touch mysite/server/main.go
+</code></pre></div><p>服务端代码:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;context&#34;</span>
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+	pb <span style="color:#f1fa8c">&#34;mysite/proto&#34;</span>
+)
+
+<span style="color:#6272a4">// greet 需要实现 pb.Greet 的接口
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> greet <span style="color:#8be9fd;font-style:italic">struct</span> {}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (g <span style="color:#ff79c6">*</span>greet) <span style="color:#50fa7b">Echo</span>(ctx context.Context, req <span style="color:#ff79c6">*</span>pb.EchoReq, rsp <span style="color:#ff79c6">*</span>pb.EchoRsp) <span style="color:#8be9fd">error</span> {
+	rsp.Greeting = <span style="color:#f1fa8c">&#34;hello: &#34;</span> <span style="color:#ff79c6">+</span> req.Name
+	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 构建新的服务
+</span><span style="color:#6272a4"></span>	app <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;greet&#34;</span>),
+	)
+
+	<span style="color:#6272a4">// 服务初始化
+</span><span style="color:#6272a4"></span>	app.<span style="color:#50fa7b">Init</span>()
+
+	<span style="color:#6272a4">// 注册服务
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(app.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>greet{}); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register greet hander: %v&#34;</span>, err)
+	}
+
+	<span style="color:#6272a4">// 服务启动
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> app.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;start greet server: %v&#34;</span>, err)
+	}
+}
+</code></pre></div><p>这样一个简易的 <strong>Vine</strong> 服务就完成了。</p>
+<blockquote>
+<p>更多服务端的内容请参考 <a href="/vine/docs/component/server/">内部服务</a></p>
+</blockquote>
+<h3 id="启动服务">启动服务</h3>
+<p>启动服务并绑定端口:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go run server/main.go
+2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:171 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting <span style="color:#ff79c6">[</span>service<span style="color:#ff79c6">]</span> greet
+2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:172 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info service <span style="color:#ff79c6">[</span>version<span style="color:#ff79c6">]</span> latest
+2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:920 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Server <span style="color:#ff79c6">[</span>grpc<span style="color:#ff79c6">]</span> Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:65235
+2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:761 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registry <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> Registering node: greet-d4d5e1a8-1bc0-4387-8fb2-1b5eda59055e
+2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>mdns/mdns_registry.go:266 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> registry create new service with ip: 192.168.11.167 <span style="color:#ff79c6">for</span>: 192.168.11.167
+</code></pre></div><p>如果用户没有指定 ip 和端口，则默认 ip 为 0.0.0.0，端口随机生成。</p>
+<blockquote>
+<p>关于 <strong>Vine</strong> 服务的命令行参数可以参考 <a href="/vine/docs/component/cmd/">命令行参数</a></p>
+</blockquote>
+<h2 id="客户端">客户端</h2>
+<p>接下来我们编写客户端的代码来请求服务端:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p client
+$ touch client/main.go
+</code></pre></div><p>客户端代码:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;context&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client/grpc&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/mysite/proto&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 选择 gRPC 客户端
+</span><span style="color:#6272a4"></span>	cc <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewClient</span>()
+	<span style="color:#6272a4">// 指定服务名称
+</span><span style="color:#6272a4"></span>	client <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;greet&#34;</span>, cc)
+
+	<span style="color:#6272a4">// 请求 Greet.Echo 接口
+</span><span style="color:#6272a4"></span>	rsp, err <span style="color:#ff79c6">:=</span> client.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.EchoReq{Name: <span style="color:#f1fa8c">&#34;lack&#34;</span>})
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+
+	log.<span style="color:#50fa7b">Infof</span>(<span style="color:#f1fa8c">&#34;greet result: %v&#34;</span>, rsp.Greeting)
+}
+</code></pre></div><p>执行命令输出如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go run client/main.go
+2021-08-27 13:24:41  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>client/main.go:20 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info greet result: hello: lack
+</code></pre></div><blockquote>
+<p>更多关于客户端的内容可以参考 <a href="/vine/docs/component/client/">内部请求</a></p>
+</blockquote>
+<h2 id="api-接口">API 接口</h2>
+<p><strong>Vine</strong> 服务可以同时支持 <code>gRPC</code> 和 <code>Restful</code> 接口。</p>
+<h3 id="修改-greetproto-文件">修改 greet.proto 文件</h3>
+<p>先修改 greet.proto 文件:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+
+<span style="color:#ff79c6">package</span> greet;
+
+<span style="color:#6272a4">// +gen:openapi
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Greeter {
+  <span style="color:#6272a4">// +gen:get=/api/v1/echo
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp) {}
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {
+  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {
+  <span style="color:#8be9fd">string</span> greeting <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+</code></pre></div><p>重新生成 <code>greet.pb.vine.go</code> 文件:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --vine_out<span style="color:#ff79c6">=</span>:.  github.com/vine-io/vine/testdata/mysite/proto/greet.proto
+</code></pre></div><h3 id="安装-vine">安装 <code>vine</code>:</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/vine-io/vine/cmd/vine
+</code></pre></div><h3 id="启动网关">启动网关</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi  
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>openapi/openapi.go:56 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting OpenAPI at /openapi-ui/
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>api/api.go:179 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registering API RPC Handler at /
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>http/http.go:116 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info HTTP API Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:8080
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:171 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting <span style="color:#ff79c6">[</span>service<span style="color:#ff79c6">]</span> go.vine.api
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:172 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info service <span style="color:#ff79c6">[</span>version<span style="color:#ff79c6">]</span> latest
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:920 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Server <span style="color:#ff79c6">[</span>grpc<span style="color:#ff79c6">]</span> Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:50405
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:761 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registry <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> Registering node: go.vine.api-b405ca1d-ba24-4470-a18e-b1feeb22c5f6
+2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>mdns/mdns_registry.go:266 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> registry create new service with ip: 192.168.11.167 <span style="color:#ff79c6">for</span>: 192.168.11.167
+</code></pre></div><p>使用以下命令验证:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ curl http://127.0.0.1:8080/api/v1/echo<span style="color:#f1fa8c">\?</span>name<span style="color:#f1fa8c">\=</span>lack
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;greeting&#34;</span>:<span style="color:#f1fa8c">&#34;hello: lack&#34;</span><span style="color:#ff79c6">}</span>%
+</code></pre></div><p>完成的目录结构如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mysite
+├── client
+│   └── main.go
+├── proto
+│   ├── greet.pb.go
+│   ├── greet.pb.vine.go
+│   └── greet.proto
+└── server
+    └── main.go
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-2ca5b21c2e8606490b4d2c267c683e14">1.1 - 框架简介</h1>
+    
+	<p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/vine-io/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/vine-io/vine"><img src="https://api.travis-ci.org/vine-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/vine-io/vine"><img src="https://goreportcard.com/badge/vine-io/vine" alt="Go Report Card"></a></p>
 <p>Vine (<em>/vaɪn/</em>) 一套简单、高效、可插拔的分布式 RPC 框架。</p>
 <h2 id="简介">简介</h2>
 <p><strong>Vine</strong> 基于 <a href="https://github.com/asim/go-micro">go-micro</a> 框架，因此继承了它的优点。并在此基础上增加性能和可用性。</p>
@@ -158,7 +399,7 @@ This the multi-page printable view of this section.
 <p><strong>数据存储 (Data Storage)</strong> - 一个简单的数据存储接口，用于查询，创建，删除数据记录。内置 memory，file，postgresSQL 等</p>
 </li>
 <li>
-<p><strong>服务发现 (Service disconvery)</strong> - 自动服务注册和名称解析。服务发现是微服务开发的核心功能。当服务A与服务B通讯时，需要知道服务B的IP地址等信息。<strong>Vine</strong> 内置(mdns)作为服务发现组件，它是零配置系统。</p>
+<p><strong>服务发现 (Service discovery)</strong> - 自动服务注册和名称解析。服务发现是微服务开发的核心功能。当服务A与服务B通讯时，需要知道服务B的IP地址等信息。<strong>Vine</strong> 内置(mdns)作为服务发现组件，它是零配置系统。</p>
 </li>
 <li>
 <p><strong>负载均衡 (Load Balancing)</strong> - 基于服务发现的客户端负载均衡。当内部存在多个服务实例的地址时，我们需要一种方式确定路由到哪个节点，默认使用随机指定其中一个地址。同时在请求错误时重试不同的节点。</p>
@@ -272,9 +513,11 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
 </code></pre></div><p>浏览器访问地址 <a href="127.0.0.1:8080/openapi-ui/">127.0.0.1:8080/openapi-ui/</a></p>
 
 </div>
-</div>
 
 
+
+    
+      
   
   
   
@@ -283,6 +526,10 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
   
   
 
+  
+
+    
+	
   
     
     
@@ -291,8 +538,8 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-08b1b69f6319108b0455d24614fdd660">1 - 快速开始</h1>
-    <div class="lead">快速入门和使用 vine 框架。</div>
+	<h1 id="pg-83087925151d27e6b8d84f40aff9cdee">1.2 - 新建服务</h1>
+    
 	<p><strong>Service</strong> 是其他主要组件服务的顶层接口，它将所有底层包包裹在一个更加方便的接口中。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Service <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#6272a4">// 服务名称
@@ -603,62 +850,6 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
   
 
   
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-2ca5b21c2e8606490b4d2c267c683e14">1.1 - 框架简介</h1>
-    <div class="lead">Vine 框架的简单说明。</div>
-	<p>// TODO</p>
-
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-83087925151d27e6b8d84f40aff9cdee">1.2 - 新建服务</h1>
-    <div class="lead">通过一个简单的项目入门 Vine 框架</div>
-	<p>// TODO</p>
-
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
 
     
 	
@@ -671,7 +862,7 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
 <div class="td-content" style="page-break-before: always">
     
 	<h1 id="pg-67790003301156bb2bbfd3d432c5d2f6">1.3 - 项目结构</h1>
-    <div class="lead">一个合理的 Vine 项目目录结构</div>
+    
 	<p>// TODO</p>
 
 </div>
@@ -693,10 +884,6 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
     
 	
   
-
-    
-	
-  
     
     
 	
@@ -704,71 +891,9 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-ceffc22118740feeb3d7861a1db173aa">2 - 框架组件</h1>
-    <div class="lead">我们将深入了解 Vine 框架内部各个组件以及使用方法。</div>
-	
-</div>
-
-
-
+	<h1 id="pg-79e475706ae8025baf8c0f923eec34bd">1.4 - 项目构建</h1>
     
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-    
-    
-	
-    
-
-<div class="td-content" style="">
-    
-	<h1 id="pg-c574c70976ca4327de54d1224f699453">2.1 - 接口</h1>
-    <div class="lead">Vine 是一个可插拔的框架，它利用接口进行抽象和构建基础模块。这使我们能够为分布式系统的概念建立强定义的抽象和可替换的实现。</div>
-	<p><img src="2020-12-29-08-51-23.png" alt="service内部结构"></p>
-<h2 id="接口">接口</h2>
-<p><strong>Vine</strong> 内置以下的接口列表</p>
-<ul>
-<li><strong>Auth</strong> - 身份验证和授权</li>
-<li><strong>broker</strong> - 异步消息</li>
-<li><strong>client</strong> - 高级请求/响应和消息通知</li>
-<li><strong>config</strong> - 动态配置</li>
-<li><strong>codec</strong> - 消息编码和解码</li>
-<li><strong>debug</strong> - debug 日志，跟踪，统计信息</li>
-<li><strong>network</strong> - 多云下的网络</li>
-<li><strong>registry</strong> - 服务发现</li>
-<li><strong>runtime</strong> - 服务运行时状态</li>
-<li><strong>selector</strong> - 均衡负载</li>
-<li><strong>server</strong> - 处理请求和通知</li>
-<li><strong>store</strong> - 数据存储</li>
-<li><strong>sync</strong> - 同步，锁和领导选举</li>
-<li><strong>transport</strong> - 同步通讯</li>
-<li><strong>tunnel</strong> - vpn 隧道</li>
-</ul>
-<h2 id="broker">Broker</h2>
-<p><strong>Broker</strong> 为异步 pub/sub 子通讯提供消息代理的接口。这是事件驱动结构和微服务的基本要求之一。在默认情况下，我们使用 HTTP 协议实现 Broker 接口，以减少依赖。在 <a href="github.com/vine-io/plugins">plugins</a> 中有许多 Broker 的实现。例如：RabbitMQ，NATS，NSQ等。</p>
-<h2 id="client">Client</h2>
-<p><strong>Client</strong> 提供一个接口来向服务发出请求。和 Server 一样，它构建在其他包上并提供统一的接口。使用 Registry 来查找服务，使用Transport进行同步请求。</p>
-<h2 id="codec">Codec</h2>
-<p><strong>Codec</strong> 用于编码和解码消息。这些数据格式可能是 json, protobuf, beson 等。同时还是各种 RPC 数据格式，例如 PROTO-RPC, JSON-RPC, BSON-RPC等。它将编码解码与 Client/Server 分离，并提供继承其他系统的强大方法。</p>
-<h2 id="config">Config</h2>
-<p><strong>Config</strong> 是一个接口。用于从任意数量的源进行动态配置加载，这些源可以合并。大多数系统都主动要求有独立于代码进行更改的配置。通过<strong>Config</strong>接口，可以根据需要动态加载这些值，它还支持各种不同的配置格式。</p>
-<h2 id="server">Server</h2>
-<p><strong>Server</strong> 是编写服务器基础模块。在这里，你可以为服务命名，注册请求处理器，添加中间件等。该服务基于上述包，为服务请求提供统一接口。目前有 gRPC 和 HTTP 两种内置实现。<strong>Server</strong> 还允许你定义多个 Codec 以服务不同的编码消息。</p>
-<h2 id="store">Store</h2>
-<p><strong>Store</strong> 是一个简单的键值对存储接口，用于抽象轻量级的数据存储。我们不是在试图实现一个完整的 sql 语言或者存储，只是仅仅保存服务状态。</p>
-<h2 id="registry">Registry</h2>
-<p><strong>Registry</strong> 提供一种服务发现机制，能将服务名称解析为对应的IP地址。它可以由 consul，etcd，zookeeper，dns等支持。服务在启动时注册到 <strong>Registry</strong> 中，并在关闭是注销。服务可能选择提供 TTL，并在这个间隔时间内重新注册，以确保服务在失效时进行清理。</p>
-<h2 id="selector">Selector</h2>
-<p><strong>Selector</strong> 是负载均衡的一种抽象，它建立在 <em>Registry</em> 上。它允许通过对应的策略选择服务，如随机，循环，最小等算法选择服务。<strong>Client</strong> 在请求时使用 <strong>Selector</strong> 来实现客户端均衡负载。</p>
-<h2 id="transport">Transport</h2>
-<p><strong>Transport</strong> 是服务之间同步请求/响应的接口。它类似与 golang 网络包，但提供一个更高级别的抽象，允许我们切换通讯机制，例如 http、rabbitmq、websocket、NATS等。它还支持双向流。</p>
+	<p>// TODO</p>
 
 </div>
 
@@ -796,66 +921,59 @@ $ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-797b02a4bf0dfe71b512bbf7a2dce8be">2.2 - 错误</h1>
-    <div class="lead">Vine 为错误提供抽象和类型。通过提供一组核心错误和定义详细错误类型，我们可以始终如一地了解运行时出现的错误。</div>
+	<h1 id="pg-1adf2527acb4bd9f3ca351337ddc8408">1.5 - 参数支持</h1>
+    
 	<h2 id="概述">概述</h2>
-<p>我们定义以下错误类型</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Error <span style="color:#8be9fd;font-style:italic">struct</span> {
-	Id       <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;id,omitempty&#34;`</span>
-	Code     <span style="color:#8be9fd">int32</span>      <span style="color:#f1fa8c">`json:&#34;code,omitempty&#34;`</span>
-	Detail   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;detail,omitempty&#34;`</span>
-	Status   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;status,omitempty&#34;`</span>
-    Position <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;position,omitempty&#34;`</span>
-    Child    <span style="color:#ff79c6">*</span>Child     <span style="color:#f1fa8c">`json:&#34;child,omitempty&#34;`</span>
-    Stacks   []<span style="color:#ff79c6">*</span>Stack   <span style="color:#f1fa8c">`json:&#34;stacks,omitempty&#34;`</span>
+<p>创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
+选项通常定义如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Options <span style="color:#8be9fd;font-style:italic">struct</span> {
+    Name        <span style="color:#8be9fd">string</span>
+    Version     <span style="color:#8be9fd">string</span>
+    Broker      broker.Broker
+    Registry    registry.Registry
 }
-</code></pre></div><p>在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 <strong>Vine</strong> 错误，或者应该生成错误。默认情况下，我们返回 <code>errors.InternalServerError</code>，如果出现错误错误则返回 <code>errors.Timeout</code>。</p>
-<h2 id="使用">使用</h2>
-<p>让我们假设程序中发生错误，然后，你应该确定返回哪种错误，并执行以下操作。
-假设提供的数据无效：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">badRequest</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;invalid field&#34;</span>)
-</code></pre></div><p>如果发生内部错误</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-    <span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">InternalServerError</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;failed to read db: %v&#34;</span>, err.<span style="color:#50fa7b">Error</span>())
-}
-</code></pre></div><p>如果你从客户端收到一些错误，可以按照以下方式处理:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.greeter&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
-rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Clinet</span>(ctx, req)
-<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-    <span style="color:#6272a4">// parse out the error 
-</span><span style="color:#6272a4"></span>    e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Parse</span>(err.<span style="color:#50fa7b">Error</span>())
 
-    <span style="color:#6272a4">// inspect the value
-</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> e.Code <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">401</span> {
-        <span style="color:#6272a4">// unauthorized
-</span><span style="color:#6272a4"></span>    }
+
+<span style="color:#8be9fd;font-style:italic">type</span> Option <span style="color:#8be9fd;font-style:italic">func</span>(<span style="color:#ff79c6">*</span>Options)
+
+<span style="color:#6272a4">// set the name
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Name</span>(n <span style="color:#8be9fd">string</span>) Option {
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
+        o.Name = n
+    }
 }
-</code></pre></div><h2 id="错误列表">错误列表</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadGateway</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadRequest</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Conflict</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Forbidden</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">GatewayTimeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">InternalServerError</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">MethodNotAllowed</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotFound</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotImplemented</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ServiceUnavailable</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Timeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Unauthorized</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
-</code></pre></div><h2 id="自定义错误">自定义错误</h2>
-<p>除了内置的错误类型之外，<strong>Vine</strong> 支持自定义错误类型</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 自定义错误，并记录错误位置
-</span><span style="color:#6272a4"></span>customErr <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;custom error&#34;</span>, <span style="color:#bd93f9">510</span>, <span style="color:#ff79c6">true</span>)
-</code></pre></div><h2 id="其他">其他</h2>
-<p>判断错误类型是否相同</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">b <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Equal</span>(err1, err2)
-</code></pre></div><p>链式调用</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;name must be set&#34;</span>, <span style="color:#bd93f9">404</span>).
-        <span style="color:#50fa7b">WithChild</span>(<span style="color:#bd93f9">111</span>, <span style="color:#f1fa8c">&#34;%v&#34;</span>, <span style="color:#f1fa8c">&#34;child error&#34;</span>). <span style="color:#6272a4">// 添加额外错误
-</span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">WithPos</span>(). <span style="color:#6272a4">// 记录错误位置 
-</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">WithStack</span>(<span style="color:#bd93f9">10001</span>, <span style="color:#f1fa8c">&#34;stack context&#34;</span>) <span style="color:#6272a4">// 追加上下文信息 
-</span></code></pre></div>
+
+<span style="color:#6272a4">// set the broker
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Broker</span>(b broker.Broker) Option {
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
+        o.Broker = b
+    }
+}
+</code></pre></div><p>然后这安装如下方式设置这些选项</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
+    vine.<span style="color:#50fa7b">Broker</span>(broker),
+)
+</code></pre></div><h2 id="服务选项">服务选项</h2>
+<p>在 <strong>Vine</strong> 中，我们有许多选项可以设置，包括用于身份验证，配置和存储等内容的基础包。你可以使用 <code>service.Options()</code> 来访问这些。</p>
+<p>auth、config、registry、store 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 <code>service.Init()</code> 后生效。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4">## as an env vars</span>
+<span style="color:#8be9fd;font-style:italic">VINE_STORE</span><span style="color:#ff79c6">=</span>file go run main.go
+
+<span style="color:#6272a4">## or as a flag</span>
+go run main.go --store<span style="color:#ff79c6">=</span>file
+</code></pre></div><p>然后在内部，可以通过选项访问存储：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
+)
+
+service.<span style="color:#50fa7b">Init</span>()
+
+store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Options</span>().Store
+</code></pre></div><blockquote>
+<p><strong>Vine</strong> 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 <code>context.Context</code> 中。</p>
+</blockquote>
+
 </div>
 
 
@@ -882,8 +1000,8 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-4e1a73836e2d2635ca8c80359f80fddf">2.3 - 插件</h1>
-    <div class="lead"><strong>Vine</strong> 是一个可插拔的框架。</div>
+	<h1 id="pg-6315071e53a7aa2cbc40cd1587b5d32b">1.6 - 插件中心</h1>
+    
 	<h2 id="概述">概述</h2>
 <p><strong>Vine</strong> 构建在 Go 接口之上。因此这些接口的实现是可插拔的。</p>
 <p>默认情况下，<strong>Vine</strong> 只提供核心上每个接口的几个实现，但它完全是可插拔的。而额外的实现保存在 <a href="https://github.com/vine-io/plugins">plugins</a>。</p>
@@ -971,6 +1089,10 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
     
 	
   
+
+    
+	
+  
     
     
 	
@@ -978,58 +1100,223 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-71b132aaed9b436554cc5244d106942f">2.4 - 选项</h1>
-    <div class="lead"><strong>Vine</strong> 使用可变选项模型来设计包的创建和初始化传递参数，以及作为方法的可选参数。这为扩展跨插件的选项使用提供了灵活性</div>
+	<h1 id="pg-ceffc22118740feeb3d7861a1db173aa">2 - 框架组件</h1>
+    <div class="lead">我们将深入了解 Vine 框架内部各个组件以及使用方法。</div>
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-4bf4097c812f2b345e3a8236e52dae1a">2.1 - 服务注册发现</h1>
+    
 	<h2 id="概述">概述</h2>
-<p>创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
-选项通常定义如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Options <span style="color:#8be9fd;font-style:italic">struct</span> {
-    Name        <span style="color:#8be9fd">string</span>
-    Version     <span style="color:#8be9fd">string</span>
-    Broker      broker.Broker
-    Registry    registry.Registry
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// The registry provides an interface for service discovery
+</span><span style="color:#6272a4">// and an abstraction over varying implementations
+</span><span style="color:#6272a4">// {consul, etcd, zookeeper, ...}
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (regpb.Watcher, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
+</code></pre></div><h2 id="完整实例">完整实例</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
 
-<span style="color:#8be9fd;font-style:italic">type</span> Option <span style="color:#8be9fd;font-style:italic">func</span>(<span style="color:#ff79c6">*</span>Options)
-
-<span style="color:#6272a4">// set the name
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Name</span>(n <span style="color:#8be9fd">string</span>) Option {
-    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
-        o.Name = n
-    }
-}
-
-<span style="color:#6272a4">// set the broker
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Broker</span>(b broker.Broker) Option {
-    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
-        o.Broker = b
-    }
-}
-</code></pre></div><p>然后这安装如下方式设置这些选项</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
-    vine.<span style="color:#50fa7b">Broker</span>(broker),
-)
-</code></pre></div><h2 id="服务选项">服务选项</h2>
-<p>在 <strong>Vine</strong> 中，我们有许多选项可以设置，包括用于身份验证，配置和存储等内容的基础包。你可以使用 <code>service.Options()</code> 来访问这些。</p>
-<p>auth、config、registry、store 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 <code>service.Init()</code> 后生效。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4">## as an env vars</span>
-<span style="color:#8be9fd;font-style:italic">VINE_STORE</span><span style="color:#ff79c6">=</span>file go run main.go
-
-<span style="color:#6272a4">## or as a flag</span>
-go run main.go --store<span style="color:#ff79c6">=</span>file
-</code></pre></div><p>然后在内部，可以通过选项访问存储：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
+	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/registry&#34;</span>
+	regpb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/registry&#34;</span>
 )
 
-service.<span style="color:#50fa7b">Init</span>()
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// create new registry
+</span><span style="color:#6272a4"></span>	r <span style="color:#ff79c6">:=</span> registry.<span style="color:#50fa7b">NewRegistry</span>()
 
-store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Options</span>().Store
-</code></pre></div><blockquote>
-<p><strong>Vine</strong> 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 <code>context.Context</code> 中。</p>
-</blockquote>
+	<span style="color:#6272a4">// initialize registry
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
+
+	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>regpb.Service{
+		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
+		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
+		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
+		Endpoints: []<span style="color:#ff79c6">*</span>regpb.Endpoint{{
+			Request: <span style="color:#ff79c6">&amp;</span>regpb.Value{},
+		}},
+		Nodes: []<span style="color:#ff79c6">*</span>regpb.Node{<span style="color:#ff79c6">&amp;</span>regpb.Node{
+			Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
+			Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
+		}},
+	}
+
+	<span style="color:#6272a4">// registry service
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Register</span>(s)
+
+	<span style="color:#6272a4">// watch registry
+</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>))
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		<span style="color:#ff79c6">return</span>
+	}
+	<span style="color:#ff79c6">defer</span> w.<span style="color:#50fa7b">Stop</span>()
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#ff79c6">for</span> {
+			<span style="color:#6272a4">// blocking
+</span><span style="color:#6272a4"></span>			r, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
+			<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+				<span style="color:#ff79c6">return</span>
+			}
+
+			log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;watch [%v] %v&#34;</span>, r.Action, r.Service)
+		}
+	}()
+
+	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+	<span style="color:#6272a4">// get service
+</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%+v\n&#34;</span>, service)
+
+	<span style="color:#6272a4">// destroy registry
+</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Deregister</span>(s)
+
+	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+}
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-f375a1b0338deecef74fa867c6bb7ed5">2.2 - 服务网关</h1>
+    <div class="lead">用于定义 api 路由和处理程序的包</div>
+	<h2 id="概述">概述</h2>
+<p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
+<p><strong>API</strong> 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 <strong>API</strong> 使用在 <strong>Registry</strong> 元数据中定义的路由来生成路由规则并服务 http 请求.</p>
+<p><img src="2020-12-30-11-14-15.png" alt="vine api"></p>
+<p><code>vine api</code> 基于 <strong>API</strong>。</p>
+<h2 id="handler">handler</h2>
+<p>处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。</p>
+<ul>
+<li>api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。</li>
+<li>broker - 实现 vine 代理接口的 http 处理程序。</li>
+<li>event - 处理任何 HTTP 请求并发布到消息总线。</li>
+<li>http - 处理任何 HTTP 请求，并作为反向代理转发。</li>
+<li>registry - 实现 vine <strong>Registry</strong> 接口的 http 处理程序。</li>
+<li>rpc - 处理 json 和原始 POST 请求。转发为 RPC。</li>
+<li>web - 包含 websocket 支持的 HTTP 处理程序。</li>
+</ul>
+<h2 id="api-handler">API handler</h2>
+<p>API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.</p>
+<ul>
+<li>Content-Type：任何</li>
+<li>Body： 任何</li>
+<li>Forward Format: api.Request/api.Response</li>
+<li>Path: /[service]/[method]</li>
+<li>Resolver: 路径用于解析服务和方法的路径</li>
+</ul>
+<h2 id="proxy-handler">proxy handler</h2>
+<p>代理处理程序是一个 http 处理程序，它服务于 vine 代理接口</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP</li>
+<li>PATH: /</li>
+<li>Resolver: 指定为查询参数的主题</li>
+</ul>
+<p>发布请求并将发布</p>
+<h2 id="event-handler">event handler</h2>
+<p>事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.</p>
+<ul>
+<li>Content-Type: Any</li>
+<li>Body: Any</li>
+<li>Forward Format: 请求格式为 go-api/proto.Event</li>
+<li>Path：/[topic]/[event]</li>
+<li>Resolver: 用于解析主题和事件名称路径</li>
+</ul>
+<h2 id="http-handler">http handler</h2>
+<p>http 处理程序是具有内置服务发现的 http 反向代理.</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP 反向代理</li>
+<li>Path: /[service]</li>
+<li>Resolver: 用于解析服务名称路径</li>
+</ul>
+<h2 id="registry-handler">registry handler</h2>
+<p>registry handler 是一个 http 处理程序，它为 vine <strong>Registry</strong> 接口提供服务</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: JSON</li>
+<li>Forward Format: HTTP</li>
+<li>Path: /</li>
+<li>Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法</li>
+</ul>
+<h2 id="rpc-handler">rpc handler</h2>
+<p>rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.</p>
+<ul>
+<li>Content-Type: application/json 或 application/protobuf</li>
+<li>Body: JSON 或 Protobuf</li>
+<li>Forward Format: 基于内容的 json-rpc 或 proto-rpc</li>
+<li>Path: /[service]/[method]</li>
+<li>Resolver: 用于解析服务和方法路径</li>
+</ul>
+<h2 id="web-handler">web handler</h2>
+<p>web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.</p>
+<ul>
+<li>Content-Type: 任何</li>
+<li>Body: 任何</li>
+<li>Forward Format: HTTP 反向代理，包括 websocket</li>
+<li>Path: /[service]</li>
+<li>Resolver: 用于解析服务名称路径</li>
+</ul>
 
 </div>
 
@@ -1057,8 +1344,251 @@ store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-a166f9ca5ae0b67e66da460ca61f73a2">2.5 - 配置</h1>
-    <div class="lead"><strong>Config</strong> 是一个可插拔的动态配置库</div>
+	<h1 id="pg-59586a1fa5b90047cde9c17a0fe343a1">2.3 - 订阅发布</h1>
+    
+	<h2 id="概述">概述</h2>
+<p>微服务是一种事件驱动的体系结构模式，因此 <strong>Vine</strong> 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Broker is an interface used for asynchronous messaging.
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Broker <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">Address</span>() <span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">Connect</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Disconnect</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Publish</span>(topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/vine-io/plugins">plugins</a> 替换实现。</p>
+<h2 id="发布消息">发布消息</h2>
+<p>使用 topic 名称和服务客户端创建一个新的发布者</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
+</code></pre></div><p>发布 proto 消息</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>proto.Event{Name: <span style="color:#f1fa8c">&#34;event&#34;</span>})
+</code></pre></div><h2 id="订阅">订阅</h2>
+<p>创建消息处理程序。它的签名应该是 <code>func(context.Context, v interface{}) error</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
+    fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;Got event %+v\n&#34;</span>, event)
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+</code></pre></div><p>使用 topic 注册消息处理程序</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
+</code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
+<h2 id="单独使用-broker">单独使用 Broker</h2>
+<p><code>Broker</code> 也可以单独使用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/broker&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	topic <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;go.vine.topic.foo&#34;</span>
+
+	b <span style="color:#ff79c6">:=</span> broker.<span style="color:#50fa7b">NewBroker</span>()
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Init error: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Connect</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Connect error: %v&#34;</span>, err)
+	}
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#6272a4">// receive message from broker
+</span><span style="color:#6272a4"></span>		b.<span style="color:#50fa7b">Subscribe</span>(topic, <span style="color:#8be9fd;font-style:italic">func</span>(p broker.Event) <span style="color:#8be9fd">error</span> {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[sub] received message:&#34;</span>, <span style="color:#8be9fd;font-style:italic">string</span>(p.<span style="color:#50fa7b">Message</span>().Body), <span style="color:#f1fa8c">&#34;header&#34;</span>, p.<span style="color:#50fa7b">Message</span>().Header)
+			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+		})
+	}()
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
+		<span style="color:#6272a4">// publish message to broker
+</span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
+	}()
+
+    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
+    
+    b.<span style="color:#50fa7b">Disconnect</span>()
+}
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-d2d36bead0be0a3b9422b2b89dcb6a4f">2.4 - 内部服务</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-890777915678ed57c745424af4cba2b8">2.5 - 内部请求</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-797b02a4bf0dfe71b512bbf7a2dce8be">2.6 - 错误处理</h1>
+    
+	<h2 id="概述">概述</h2>
+<p>我们定义以下错误类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Error <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Id       <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;id,omitempty&#34;`</span>
+	Code     <span style="color:#8be9fd">int32</span>      <span style="color:#f1fa8c">`json:&#34;code,omitempty&#34;`</span>
+	Detail   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;detail,omitempty&#34;`</span>
+	Status   <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;status,omitempty&#34;`</span>
+    Position <span style="color:#8be9fd">string</span>     <span style="color:#f1fa8c">`json:&#34;position,omitempty&#34;`</span>
+    Child    <span style="color:#ff79c6">*</span>Child     <span style="color:#f1fa8c">`json:&#34;child,omitempty&#34;`</span>
+    Stacks   []<span style="color:#ff79c6">*</span>Stack   <span style="color:#f1fa8c">`json:&#34;stacks,omitempty&#34;`</span>
+}
+</code></pre></div><p>在系统中，要求用户从处理程序返回错误或从客户端接收错误的任何位置，都应认为是 <strong>Vine</strong> 错误，或者应该生成错误。默认情况下，我们返回 <code>errors.InternalServerError</code>，如果出现错误错误则返回 <code>errors.Timeout</code>。</p>
+<h2 id="使用">使用</h2>
+<p>让我们假设程序中发生错误，然后，你应该确定返回哪种错误，并执行以下操作。
+假设提供的数据无效：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">badRequest</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;invalid field&#34;</span>)
+</code></pre></div><p>如果发生内部错误</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    <span style="color:#ff79c6">return</span> errors.<span style="color:#50fa7b">InternalServerError</span>(<span style="color:#f1fa8c">&#34;com.example.srv.service&#34;</span>, <span style="color:#f1fa8c">&#34;failed to read db: %v&#34;</span>, err.<span style="color:#50fa7b">Error</span>())
+}
+</code></pre></div><p>如果你从客户端收到一些错误，可以按照以下方式处理:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.greeter&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
+rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Clinet</span>(ctx, req)
+<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+    <span style="color:#6272a4">// parse out the error 
+</span><span style="color:#6272a4"></span>    e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Parse</span>(err.<span style="color:#50fa7b">Error</span>())
+
+    <span style="color:#6272a4">// inspect the value
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> e.Code <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">401</span> {
+        <span style="color:#6272a4">// unauthorized
+</span><span style="color:#6272a4"></span>    }
+}
+</code></pre></div><h2 id="错误列表">错误列表</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadGateway</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">BadRequest</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Conflict</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Forbidden</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">GatewayTimeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">InternalServerError</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">MethodNotAllowed</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotFound</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NotImplemented</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ServiceUnavailable</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Timeout</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Unauthorized</span>(id, format <span style="color:#8be9fd">string</span>, a <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#ff79c6">*</span>errors.Error
+</code></pre></div><h2 id="自定义错误">自定义错误</h2>
+<p>除了内置的错误类型之外，<strong>Vine</strong> 支持自定义错误类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 自定义错误，并记录错误位置
+</span><span style="color:#6272a4"></span>customErr <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;custom error&#34;</span>, <span style="color:#bd93f9">510</span>, <span style="color:#ff79c6">true</span>)
+</code></pre></div><h2 id="其他">其他</h2>
+<p>判断错误类型是否相同</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">b <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">Equal</span>(err1, err2)
+</code></pre></div><p>链式调用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;go.vine.srv.example&#34;</span>, <span style="color:#f1fa8c">&#34;name must be set&#34;</span>, <span style="color:#bd93f9">404</span>).
+        <span style="color:#50fa7b">WithChild</span>(<span style="color:#bd93f9">111</span>, <span style="color:#f1fa8c">&#34;%v&#34;</span>, <span style="color:#f1fa8c">&#34;child error&#34;</span>). <span style="color:#6272a4">// 添加额外错误
+</span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">WithPos</span>(). <span style="color:#6272a4">// 记录错误位置 
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">WithStack</span>(<span style="color:#bd93f9">10001</span>, <span style="color:#f1fa8c">&#34;stack context&#34;</span>) <span style="color:#6272a4">// 追加上下文信息 
+</span></code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-a166f9ca5ae0b67e66da460ca61f73a2">2.7 - 配置中心</h1>
+    
 	<h2 id="概述">概述</h2>
 <p>应用程序中的大多数配置都是静态配置或者从多个源加载的复杂逻辑。<strong>Config</strong> 是其变得简单，可插拔和可合并。</p>
 <h2 id="特性">特性</h2>
@@ -1324,325 +1854,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-4bf4097c812f2b345e3a8236e52dae1a">2.6 - 服务发现</h1>
-    <div class="lead">用于服务注册和服务名称解析</div>
-	<h2 id="概述">概述</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// The registry provides an interface for service discovery
-</span><span style="color:#6272a4">// and an abstraction over varying implementations
-</span><span style="color:#6272a4">// {consul, etcd, zookeeper, ...}
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (regpb.Watcher, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><h2 id="完整实例">完整实例</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-	<span style="color:#f1fa8c">&#34;log&#34;</span>
-	<span style="color:#f1fa8c">&#34;time&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/registry&#34;</span>
-	regpb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/registry&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	<span style="color:#6272a4">// create new registry
-</span><span style="color:#6272a4"></span>	r <span style="color:#ff79c6">:=</span> registry.<span style="color:#50fa7b">NewRegistry</span>()
-
-	<span style="color:#6272a4">// initialize registry
-</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
-
-	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>regpb.Service{
-		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
-		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
-		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
-		Endpoints: []<span style="color:#ff79c6">*</span>regpb.Endpoint{{
-			Request: <span style="color:#ff79c6">&amp;</span>regpb.Value{},
-		}},
-		Nodes: []<span style="color:#ff79c6">*</span>regpb.Node{<span style="color:#ff79c6">&amp;</span>regpb.Node{
-			Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
-			Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
-		}},
-	}
-
-	<span style="color:#6272a4">// registry service
-</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Register</span>(s)
-
-	<span style="color:#6272a4">// watch registry
-</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>))
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		<span style="color:#ff79c6">return</span>
-	}
-	<span style="color:#ff79c6">defer</span> w.<span style="color:#50fa7b">Stop</span>()
-	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		<span style="color:#ff79c6">for</span> {
-			<span style="color:#6272a4">// blocking
-</span><span style="color:#6272a4"></span>			r, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
-			<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-				<span style="color:#ff79c6">return</span>
-			}
-
-			log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;watch [%v] %v&#34;</span>, r.Action, r.Service)
-		}
-	}()
-
-	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
-	<span style="color:#6272a4">// get service
-</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>)
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatal</span>(err)
-	}
-	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%+v\n&#34;</span>, service)
-
-	<span style="color:#6272a4">// destroy registry
-</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Deregister</span>(s)
-
-	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
-}
-</code></pre></div>
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-f375a1b0338deecef74fa867c6bb7ed5">2.7 - API处理器</h1>
-    <div class="lead">用于定义 api 路由和处理程序的包</div>
-	<h2 id="概述">概述</h2>
-<p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
-<p><strong>API</strong> 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 <strong>API</strong> 使用在 <strong>Registry</strong> 元数据中定义的路由来生成路由规则并服务 http 请求.</p>
-<p><img src="2020-12-30-11-14-15.png" alt="vine api"></p>
-<p><code>vine api</code> 基于 <strong>API</strong>。</p>
-<h2 id="handler">handler</h2>
-<p>处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。</p>
-<ul>
-<li>api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。</li>
-<li>broker - 实现 vine 代理接口的 http 处理程序。</li>
-<li>event - 处理任何 HTTP 请求并发布到消息总线。</li>
-<li>http - 处理任何 HTTP 请求，并作为反向代理转发。</li>
-<li>registry - 实现 vine <strong>Registry</strong> 接口的 http 处理程序。</li>
-<li>rpc - 处理 json 和原始 POST 请求。转发为 RPC。</li>
-<li>web - 包含 websocket 支持的 HTTP 处理程序。</li>
-</ul>
-<h2 id="api-handler">API handler</h2>
-<p>API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.</p>
-<ul>
-<li>Content-Type：任何</li>
-<li>Body： 任何</li>
-<li>Forward Format: api.Request/api.Response</li>
-<li>Path: /[service]/[method]</li>
-<li>Resolver: 路径用于解析服务和方法的路径</li>
-</ul>
-<h2 id="proxy-handler">proxy handler</h2>
-<p>代理处理程序是一个 http 处理程序，它服务于 vine 代理接口</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP</li>
-<li>PATH: /</li>
-<li>Resolver: 指定为查询参数的主题</li>
-</ul>
-<p>发布请求并将发布</p>
-<h2 id="event-handler">event handler</h2>
-<p>事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.</p>
-<ul>
-<li>Content-Type: Any</li>
-<li>Body: Any</li>
-<li>Forward Format: 请求格式为 go-api/proto.Event</li>
-<li>Path：/[topic]/[event]</li>
-<li>Resolver: 用于解析主题和事件名称路径</li>
-</ul>
-<h2 id="http-handler">http handler</h2>
-<p>http 处理程序是具有内置服务发现的 http 反向代理.</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP 反向代理</li>
-<li>Path: /[service]</li>
-<li>Resolver: 用于解析服务名称路径</li>
-</ul>
-<h2 id="registry-handler">registry handler</h2>
-<p>registry handler 是一个 http 处理程序，它为 vine <strong>Registry</strong> 接口提供服务</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: JSON</li>
-<li>Forward Format: HTTP</li>
-<li>Path: /</li>
-<li>Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法</li>
-</ul>
-<h2 id="rpc-handler">rpc handler</h2>
-<p>rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.</p>
-<ul>
-<li>Content-Type: application/json 或 application/protobuf</li>
-<li>Body: JSON 或 Protobuf</li>
-<li>Forward Format: 基于内容的 json-rpc 或 proto-rpc</li>
-<li>Path: /[service]/[method]</li>
-<li>Resolver: 用于解析服务和方法路径</li>
-</ul>
-<h2 id="web-handler">web handler</h2>
-<p>web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP 反向代理，包括 websocket</li>
-<li>Path: /[service]</li>
-<li>Resolver: 用于解析服务名称路径</li>
-</ul>
-
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-59586a1fa5b90047cde9c17a0fe343a1">2.8 - 订阅发布</h1>
-    <div class="lead">用 <strong>Broker</strong> 构建微服务的发布订阅事件驱动</div>
-	<h2 id="概述">概述</h2>
-<p>微服务是一种事件驱动的体系结构模式，因此 <strong>Vine</strong> 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Broker is an interface used for asynchronous messaging.
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Broker <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">Address</span>() <span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">Connect</span>() <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Disconnect</span>() <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Publish</span>(topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/vine-io/plugins">plugins</a> 替换实现。</p>
-<h2 id="发布消息">发布消息</h2>
-<p>使用 topic 名称和服务客户端创建一个新的发布者</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
-</code></pre></div><p>发布 proto 消息</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>proto.Event{Name: <span style="color:#f1fa8c">&#34;event&#34;</span>})
-</code></pre></div><h2 id="订阅">订阅</h2>
-<p>创建消息处理程序。它的签名应该是 <code>func(context.Context, v interface{}) error</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
-    fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;Got event %+v\n&#34;</span>, event)
-    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-}
-</code></pre></div><p>使用 topic 注册消息处理程序</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
-</code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
-<h2 id="单独使用-broker">单独使用 Broker</h2>
-<p><code>Broker</code> 也可以单独使用：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-	<span style="color:#f1fa8c">&#34;time&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/broker&#34;</span>
-	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/logger&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	topic <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;go.vine.topic.foo&#34;</span>
-
-	b <span style="color:#ff79c6">:=</span> broker.<span style="color:#50fa7b">NewBroker</span>()
-
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Init error: %v&#34;</span>, err)
-	}
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Connect</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Connect error: %v&#34;</span>, err)
-	}
-
-	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		<span style="color:#6272a4">// receive message from broker
-</span><span style="color:#6272a4"></span>		b.<span style="color:#50fa7b">Subscribe</span>(topic, <span style="color:#8be9fd;font-style:italic">func</span>(p broker.Event) <span style="color:#8be9fd">error</span> {
-			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[sub] received message:&#34;</span>, <span style="color:#8be9fd;font-style:italic">string</span>(p.<span style="color:#50fa7b">Message</span>().Body), <span style="color:#f1fa8c">&#34;header&#34;</span>, p.<span style="color:#50fa7b">Message</span>().Header)
-			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-		})
-	}()
-
-	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
-		<span style="color:#6272a4">// publish message to broker
-</span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
-	}()
-
-    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
-    
-    b.<span style="color:#50fa7b">Disconnect</span>()
-}
-</code></pre></div>
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-d2d36bead0be0a3b9422b2b89dcb6a4f">2.9 - 服务端</h1>
+	<h1 id="pg-39fecad7477de2ef09d3e2a496ab8478">2.8 - 数据缓存</h1>
     
 	
 </div>
@@ -1671,7 +1883,37 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-890777915678ed57c745424af4cba2b8">2.10 - 客户端</h1>
+	<h1 id="pg-fa10acc15b4e6765d798505e47c766c2">2.9 - 序列化</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-086541153674cbdfd7810a7afd543baa">2.10 - 请求代理</h1>
     
 	
 </div>
@@ -1700,9 +1942,10 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-d1efc05dbc1f94a35f917476dd627e6e">2.11 - 身份验证</h1>
+	<h1 id="pg-153e4a0bca2441db25452191e5399846">2.11 - 命令行参数</h1>
     
-	
+	<p>// TODO</p>
+
 </div>
 
 
@@ -1729,9 +1972,10 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-4a7c3fa0ce93b45aff2619ab2d4fb923">2.12 - 网络服务</h1>
+	<h1 id="pg-a711fd4172b59f618933a2b52fdc23a0">2.12 - 日志接口</h1>
     
-	
+	<p>// TODO</p>
+
 </div>
 
 
@@ -1758,9 +2002,10 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-0ac0c93932ba970d9de5708069287fd7">2.13 - 数据存储</h1>
+	<h1 id="pg-06993b840e35b8603c1d1fa4e5390ca5">2.13 - 数据库接口</h1>
     
-	
+	<p>// TODO</p>
+
 </div>
 
 
@@ -1787,57 +2032,10 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-7ba1eb827575fa0a9c6d255ff7c928e8">2.14 - web服务</h1>
-    <div class="lead">Web 为 vine web 应用提供了一个接口</div>
-	<h2 id="概述">概述</h2>
-<p><strong>Web</strong> 提供了一个很小的 HTTP Web 服务器库，利用 <strong>Vine</strong> 创建 vine web 服务。它包装了 <strong>Vine</strong>, 为用户提供服务发现，检测信号以及将 web 应用创建为微服务的功能.</p>
-<h2 id="特性">特性</h2>
-<ul>
-<li>服务发现 - 服务在启动时自动注册在 <strong>Registry</strong> 中。<strong>Web</strong> 包括一个具有预初始化的 http.Client, 它利用服务发现，以便您可以使用 web 服务。</li>
-<li>健康检测 - <strong>Web</strong> 应用将定期使用服务发现进行检测信号，以提供实时更新。如果服务失败，将在预定义的过期时间后将其从 <strong>Registry</strong> 中删除.</li>
-<li>自定义处理程序 - 指定您自己的 http 路由器以处理请求。这允许您完全控制要路由到内部处理程序的方式.</li>
-<li>静态服务 - <strong>Web</strong> 自动检测本地静态 html 目录，如果未指定路由处理程序，则提供文件。对于那些希望将 JS Web 应用程序编写为微服务的用户的快速解决方案.</li>
-</ul>
-<h2 id="依赖">依赖</h2>
-<p>Web 使用 <strong>Vine</strong>, 这意味着它需要 <strong>Registry</strong></p>
-<h2 id="使用">使用</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
-    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
-)
+	<h1 id="pg-1716b93d0e0fcc931d997f5833d2e6f4">2.14 - 锁和选举</h1>
+    
+	<p>// TODO</p>
 
-service.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/foo&#34;</span>, fooHandler)
-
-<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-    log.<span style="color:#50fa7b">Fatal</span>(err)
-}
-
-<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-    log.<span style="color:#50fa7b">Fatal</span>(err)
-}
-</code></pre></div><h2 id="设置-handler">设置 handler</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/gorilla/mux&#34;</span>
-
-r <span style="color:#ff79c6">:=</span> mux.<span style="color:#50fa7b">NewRouter</span>()
-r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/&#34;</span>, indexHandler)
-r.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/objects/{object}&#34;</span>, objectHandler)
-
-service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
-    web.<span style="color:#50fa7b">Handler</span>(r)
-)
-</code></pre></div><h2 id="调用服务">调用服务</h2>
-<p>web 包括一个具有自定义 http.RoundTripper 并使用服务发现 http.Client</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">c <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Client</span>()
-
-rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;http://example.com/foo&#34;</span>)
-</code></pre></div><p>这将查找 example.com 服务发现以及路由到其中一个可用节点。</p>
-<h2 id="静态文件">静态文件</h2>
-<p><strong>Web</strong> 总是意味着注册 Web 应用， 其中大多数代码将用 JS 编写。 默认情况下， 如果 “/“ 上没有注册任何处理程序，并且我们发现本地的 “html” 目录，则将提供静态文件.</p>
-<p>如果要手动设置此路径，请使用 StaticDir 选项。如果指定了相对路径，我们将使用 <code>os.Getwd()</code> 和前缀.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> web.<span style="color:#50fa7b">NewService</span>(
-    web.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example.com&#34;</span>),
-    web.<span style="color:#50fa7b">StaticDir</span>(<span style="color:#f1fa8c">&#34;/tmp/example.com/html&#34;</span>),
-)
-</code></pre></div>
 </div>
 
 
@@ -1864,9 +2062,10 @@ rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-086541153674cbdfd7810a7afd543baa">2.15 - 请求代理</h1>
+	<h1 id="pg-2666d967d601b581be03b34500537b69">2.15 - 中间件</h1>
     
-	
+	<p>// TODO</p>
+
 </div>
 
 
@@ -1881,6 +2080,186 @@ rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get
   
   
 
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-006ff85f4bd6f6d531e9032bbd67930c">2.15.1 - 概述</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-aa9f821e1750b42100e99c6a61ed7ee6">2.15.2 - 链路追踪</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-8fd343360456613fd901ee0407fbe0ad">2.15.3 - 数据校验</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-33429b69c0840ac3a371e5a66cbb1344">2.15.4 - 元数据</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-76f40e072725e8415740ec125e11923a">2.15.5 - 请求熔断</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-54a339decb62ef7bd336953cd5d80b75">2.15.6 - 请求限流</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
   
 
     
@@ -1922,7 +2301,67 @@ rsp, err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Get
 
 <div class="td-content" style="">
     
-	<h1 id="pg-d821b90f925c23ea34f7869438d8aa2a">3.1 - Vine</h1>
+	<h1 id="pg-22e05ce140284b8cc925e8080f773895">3.1 - Protobuf 规范</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-06f0a354ff2c7e002efeaacf7e7a74b0">3.2 - 依赖注入</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-d821b90f925c23ea34f7869438d8aa2a">3.3 - Vine 工具</h1>
     <div class="lead">在 <strong>vine</strong> 框架下我们提供一套命令行管理工具，用来管理项目和实现与 <strong>vine</strong> 服务的交互</div>
 	<h2 id="安装-vine-工具">安装 vine 工具</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/vine
@@ -2217,7 +2656,274 @@ OPTIONS:
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-0f3139f04142acc9dea586846b8c4063">3.2 - Validate</h1>
+	<h1 id="pg-826345e38af594c61cf85a8e0dd09f73">3.4 - protoc-gen-vine</h1>
+    <div class="lead"><em>OpenAPI</em> 通过 <code>protoc-gen-vine</code> 集成 openapi3.0。</div>
+	<h2 id="概述">概述</h2>
+<p><em>Vine</em> 内部集成 openapi3.0，<code>protoc-gen-vine</code> 通过识别 protobuf 文件的注释生成 Openapi3.0 文档。类似 <a href="https://vine-io.github.io/vine/docs/tools/validate/">Validator</a>。</p>
+<h2 id="使用">使用</h2>
+<h3 id="1先编写-helloworldproto-文件">1.先编写 helloworld.proto 文件</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+
+<span style="color:#ff79c6">package</span> testdata;
+<span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/proto;testdata&#34;</span>;
+
+<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/api/api.proto&#34;</span>;
+
+<span style="color:#6272a4">// +gen:openapi
+</span><span style="color:#6272a4">// +gen:term_name=vine
+</span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
+</span><span style="color:#6272a4">// +gen:contact_name=vine
+</span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
+</span><span style="color:#6272a4">// +gen:license_name=Apache2.0
+</span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+</span><span style="color:#6272a4">// +gen:external_doc_desc=123
+</span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
+  <span style="color:#6272a4">// +gen:get=/api/v1/call
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+  <span style="color:#6272a4">// +gen:post=/api/v1/event
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
+  <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+}
+
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldResponse</span> {
+  <span style="color:#8be9fd">int32</span> code <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+  <span style="color:#8be9fd">string</span> reply <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+}
+
+
+</code></pre></div><h3 id="2安装-protoc-gen-vine">2.安装 protoc-gen-vine</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-vine
+</code></pre></div><h3 id="3生成-swagger-文档">3.生成 swagger 文档</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>:. proto/helloworld.proto
+</code></pre></div><p>执行完成后生成以下代码:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#6272a4">// Swagger OpenAPI 3.0 for Helloworld service
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NewHelloworldOpenAPI</span>() <span style="color:#ff79c6">*</span>registry.OpenAPI {
+    <span style="color:#6272a4">// ...
+</span><span style="color:#6272a4"></span>}
+</code></pre></div><h3 id="4验证">4.验证</h3>
+<p>生成的 Openapi3.0 文档会自动注册到 <code>Registry</code> 组件，当启动 <code>vine api</code> 时添加 <code>--enable-openapi</code> 参数可以启动 OpenAPI3.0 功能:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine api <span style="color:#ff79c6">--</span>handler=rpc <span style="color:#ff79c6">--</span>enable<span style="color:#ff79c6">-</span>openapi
+</code></pre></div><p>启动用访问 url <code>http://127.0.0.1:8080/openapi-ui/</code> 效果如下:</p>
+<p><img src="2021-01-25-18-58-50.png" alt="swagger-openapi"></p>
+<p><em>Vine</em> 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 <code>http://127.0.0.1:8080/openapi-ui/?style=redoc</code>，效果如下：</p>
+<p><img src="2021-01-25-19-04-57.png" alt="redoc-openapi"></p>
+<h2 id="语法解析">语法解析</h2>
+<p><code>protoc-gen-vine</code> 通过解析 <code>protobuf</code> 中的注释来生成 OpenAPI3.0 文档。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:openapi
+</span><span style="color:#6272a4">// +gen:term_name=vine
+</span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
+</span><span style="color:#6272a4">// +gen:contact_name=vine
+</span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
+</span><span style="color:#6272a4">// +gen:license_name=Apache2.0
+</span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+</span><span style="color:#6272a4">// +gen:external_doc_desc=123
+</span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
+  <span style="color:#6272a4">// +gen:get=/api/v1/call
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+  <span style="color:#6272a4">// +gen:post=/api/v1/event
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+}
+</code></pre></div><blockquote>
+<p>注: <code>protoc-gen-vine</code> 和 <code>protoc-gen-validator</code> 中存在大量重复注释，这样设计的原因是通过一套的注释规则直接生成更多的代码，较少非业务代码的编写。</p>
+</blockquote>
+<h3 id="语法规则">语法规则</h3>
+<p>有效的注释有以下的规则:</p>
+<ul>
+<li>注释必须以 <code>+gen</code> 作为开头</li>
+<li>注释的内容必须紧贴对应的字段，中间不能有空行</li>
+<li>支持多行注释，也可以将多行合并成一行，并用 <code>;</code> 作为分隔符</li>
+</ul>
+<blockquote>
+<p>注：// 风格的注释会被识别为 openapi3.0 中的 Description 信息。</p>
+</blockquote>
+<h3 id="类型支持">类型支持</h3>
+<p><code>service</code> 类型规则:</p>
+<ul>
+<li>openapi（必填）: 生成 openapi 的标识，具有此标识的 Service 才会生成文档</li>
+<li>term_url: 项目团队的 url</li>
+<li>contact_name: 项目作者名称，和 contact_email 配合使用</li>
+<li>contact_email: 项目作者邮箱，和 contact_name 配合使用</li>
+<li>license_name: 项目遵循的许可类型，和 license_url 配合使用</li>
+<li>license_url: 项目遵循的许可 url，和 license_name配合使用</li>
+<li>external_doc_desc: 扩展文档描述，和 external_doc_url 配合使用</li>
+<li>external_doc_url: 扩展文档 url，和 external_doc_url 配合使用</li>
+<li>version: 文档版本，如 1.0.0</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:ignore
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
+  <span style="color:#6272a4">// +gen:openapi
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_name=vine
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_email=598223084@qq.com
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_name=vine
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_name=Apache2.0
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_desc=123
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_url=http://www.example.com
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd;font-style:italic">service</span> HelloWorld {
+
+  }
+}
+</code></pre></div><p><code>rpc</code> 支持的规则:</p>
+<ul>
+<li>get | post | put | patch | delete（必填）: 生成对应的 http method，后面紧接路由信息，如 // +gen:get=/api/v1/call</li>
+<li>body: 指定 Request message 的名称，可以直接使用 <code>*</code></li>
+<li>summary: 接口的摘要信息</li>
+<li>security: 路由支持的 Authorization。支持 beaer, apiKeys 和 basic</li>
+<li>result: http response code。支持 200，400，401，403，404，405，408，409，500，502，503，504</li>
+</ul>
+<blockquote>
+<p>注: 使用 +gen:security 时，result 会直接添加 401，403 的内容</p>
+</blockquote>
+<p><code>message</code> 作为内嵌字段时支持的规则:</p>
+<ul>
+<li>required: 判断该字段是否为 nil。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
+  <span style="color:#6272a4">// +gen:get=/api/v1/call
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+  <span style="color:#6272a4">// +gen:post=/api/v1/{name}/{id}
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+}
+</code></pre></div><p><code>message</code> 字段通用的规则：</p>
+<ul>
+<li>required: 指定字段为必填</li>
+<li>default: 指定字段的默认值</li>
+<li>example: 给定字段的实例</li>
+<li>in: 字段只能在几个值中选择</li>
+<li>enum: 同 in</li>
+<li>ro: 字段为只读</li>
+<li>wo: 字段为只写，和 password 配合使用</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
+  <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:example=&#34;hello&#34;
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:ro
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:rw
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+  <span style="color:#6272a4">// +gen:enum=[1,2,3]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+}
+</code></pre></div><p><code>string</code> 类型支持的规则</p>
+<ul>
+<li>min_len: 指定字段的最小长度</li>
+<li>max_len: 指定字段的最大长度</li>
+<li>email: 邮箱地址格式</li>
+<li>date: 日期格式<a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>，如 2017-07-21</li>
+<li>date-time: 日期加时间格式<a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>，如 2017-07-21T17:32:28Z</li>
+<li>password: 密码格式</li>
+<li>byte: 字节格式</li>
+<li>binary: 二进制格式，上传文件使用</li>
+<li>ip: ip 地址格式</li>
+<li>ipv4: ipv4 格式</li>
+<li>ipv6: ipv6 格式</li>
+<li>uuid: uuid v4 格式</li>
+<li>uri: uri 格式</li>
+<li>hostname: 主机名</li>
+<li>pattern: 正则表达式</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+    <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:in=[&#34;1&#34;, &#34;2&#34;, &#34;3&#34;]
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_max=4
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:pattern=`\d+(\w+){3,5}`
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:password
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:email
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ip
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv4
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv6
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date-time
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:bytes
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:binary
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:hostname
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uuid
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uri
+</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+</code></pre></div><blockquote>
+<p>注: string pattern 最好单独一行，以免和其他规则冲突</p>
+</blockquote>
+<p>数字类型的支持，包含 int32, int64, fixed32, fix64, float, double</p>
+<ul>
+<li>lt: 指定字段小于指定值</li>
+<li>lte: 指定字段的小于等于指定值</li>
+<li>gt: 指定字段大于指定值</li>
+<li>gte: 指定字段大于等于指定值</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+    <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">float</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+
+    <span style="color:#6272a4">// +gen:default=3.14
+</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">double</span> pi <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
+
+    <span style="color:#6272a4">// +gen:in=[1,2,3]
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[2,3]
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
+</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+
+    <span style="color:#6272a4">// +gen:ge=3
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
+</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+}
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-0f3139f04142acc9dea586846b8c4063">3.5 - protoc-gen-validator</h1>
     <div class="lead"><em>Validate</em> 通过 <code>protoc-gen-validator</code> 生成 <code>Validate()</code> 接口，减少非业务代码的编写。</div>
 	<h2 id="概述">概述</h2>
 <p>服务运行中，经常需要和其他客户端进行数据交互，验证来自客户端的数据的合法性。但是这些代码编写起来枯燥且易错，<strong>vine</strong> 提供 <code>protoc-gen-validator</code> 工具来自动生成结构体 <code>Validate()</code> 方法，减少一部分代码的手动编写。</p>
@@ -2517,247 +3223,10 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-826345e38af594c61cf85a8e0dd09f73">3.3 - OpenAPI</h1>
-    <div class="lead"><em>OpenAPI</em> 通过 <code>protoc-gen-vine</code> 集成 openapi3.0。</div>
-	<h2 id="概述">概述</h2>
-<p><em>Vine</em> 内部集成 openapi3.0，<code>protoc-gen-vine</code> 通过识别 protobuf 文件的注释生成 Openapi3.0 文档。类似 <a href="https://vine-io.github.io/vine/docs/tools/validate/">Validator</a>。</p>
-<h2 id="使用">使用</h2>
-<h3 id="1先编写-helloworldproto-文件">1.先编写 helloworld.proto 文件</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+	<h1 id="pg-1cef3190b3d455150f6a09aa20c5c878">3.6 - protoc-gen-deepcopy</h1>
+    
+	<p>// TODO</p>
 
-<span style="color:#ff79c6">package</span> testdata;
-<span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/proto;testdata&#34;</span>;
-
-<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/api/api.proto&#34;</span>;
-
-<span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4">// +gen:term_name=vine
-</span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:contact_name=vine
-</span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:license_name=Apache2.0
-</span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
-</span><span style="color:#6272a4">// +gen:external_doc_desc=123
-</span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
-  <span style="color:#6272a4">// +gen:get=/api/v1/call
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-  <span style="color:#6272a4">// +gen:post=/api/v1/event
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
-  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldResponse</span> {
-  <span style="color:#8be9fd">int32</span> code <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#8be9fd">string</span> reply <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-
-
-</code></pre></div><h3 id="2安装-protoc-gen-vine">2.安装 protoc-gen-vine</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-vine
-</code></pre></div><h3 id="3生成-swagger-文档">3.生成 swagger 文档</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>:. proto/helloworld.proto
-</code></pre></div><p>执行完成后生成以下代码:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#6272a4">// Swagger OpenAPI 3.0 for Helloworld service
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NewHelloworldOpenAPI</span>() <span style="color:#ff79c6">*</span>registry.OpenAPI {
-    <span style="color:#6272a4">// ...
-</span><span style="color:#6272a4"></span>}
-</code></pre></div><h3 id="4验证">4.验证</h3>
-<p>生成的 Openapi3.0 文档会自动注册到 <code>Registry</code> 组件，当启动 <code>vine api</code> 时添加 <code>--enable-openapi</code> 参数可以启动 OpenAPI3.0 功能:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine api <span style="color:#ff79c6">--</span>handler=rpc <span style="color:#ff79c6">--</span>enable<span style="color:#ff79c6">-</span>openapi
-</code></pre></div><p>启动用访问 url <code>http://127.0.0.1:8080/openapi-ui/</code> 效果如下:</p>
-<p><img src="2021-01-25-18-58-50.png" alt="swagger-openapi"></p>
-<p><em>Vine</em> 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 <code>http://127.0.0.1:8080/openapi-ui/?style=redoc</code>，效果如下：</p>
-<p><img src="2021-01-25-19-04-57.png" alt="redoc-openapi"></p>
-<h2 id="语法解析">语法解析</h2>
-<p><code>protoc-gen-vine</code> 通过解析 <code>protobuf</code> 中的注释来生成 OpenAPI3.0 文档。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4">// +gen:term_name=vine
-</span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:contact_name=vine
-</span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:license_name=Apache2.0
-</span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
-</span><span style="color:#6272a4">// +gen:external_doc_desc=123
-</span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
-  <span style="color:#6272a4">// +gen:get=/api/v1/call
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-  <span style="color:#6272a4">// +gen:post=/api/v1/event
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-}
-</code></pre></div><blockquote>
-<p>注: <code>protoc-gen-vine</code> 和 <code>protoc-gen-validator</code> 中存在大量重复注释，这样设计的原因是通过一套的注释规则直接生成更多的代码，较少非业务代码的编写。</p>
-</blockquote>
-<h3 id="语法规则">语法规则</h3>
-<p>有效的注释有以下的规则:</p>
-<ul>
-<li>注释必须以 <code>+gen</code> 作为开头</li>
-<li>注释的内容必须紧贴对应的字段，中间不能有空行</li>
-<li>支持多行注释，也可以将多行合并成一行，并用 <code>;</code> 作为分隔符</li>
-</ul>
-<blockquote>
-<p>注：// 风格的注释会被识别为 openapi3.0 中的 Description 信息。</p>
-</blockquote>
-<h3 id="类型支持">类型支持</h3>
-<p><code>service</code> 类型规则:</p>
-<ul>
-<li>openapi（必填）: 生成 openapi 的标识，具有此标识的 Service 才会生成文档</li>
-<li>term_url: 项目团队的 url</li>
-<li>contact_name: 项目作者名称，和 contact_email 配合使用</li>
-<li>contact_email: 项目作者邮箱，和 contact_name 配合使用</li>
-<li>license_name: 项目遵循的许可类型，和 license_url 配合使用</li>
-<li>license_url: 项目遵循的许可 url，和 license_name配合使用</li>
-<li>external_doc_desc: 扩展文档描述，和 external_doc_url 配合使用</li>
-<li>external_doc_url: 扩展文档 url，和 external_doc_url 配合使用</li>
-<li>version: 文档版本，如 1.0.0</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:ignore
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
-  <span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_name=vine
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_email=598223084@qq.com
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_name=vine
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_name=Apache2.0
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_desc=123
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_url=http://www.example.com
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd;font-style:italic">service</span> HelloWorld {
-
-  }
-}
-</code></pre></div><p><code>rpc</code> 支持的规则:</p>
-<ul>
-<li>get | post | put | patch | delete（必填）: 生成对应的 http method，后面紧接路由信息，如 // +gen:get=/api/v1/call</li>
-<li>body: 指定 Request message 的名称，可以直接使用 <code>*</code></li>
-<li>summary: 接口的摘要信息</li>
-<li>security: 路由支持的 Authorization。支持 beaer, apiKeys 和 basic</li>
-<li>result: http response code。支持 200，400，401，403，404，405，408，409，500，502，503，504</li>
-</ul>
-<blockquote>
-<p>注: 使用 +gen:security 时，result 会直接添加 401，403 的内容</p>
-</blockquote>
-<p><code>message</code> 作为内嵌字段时支持的规则:</p>
-<ul>
-<li>required: 判断该字段是否为 nil。</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
-  <span style="color:#6272a4">// +gen:get=/api/v1/call
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-  <span style="color:#6272a4">// +gen:post=/api/v1/{name}/{id}
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-}
-</code></pre></div><p><code>message</code> 字段通用的规则：</p>
-<ul>
-<li>required: 指定字段为必填</li>
-<li>default: 指定字段的默认值</li>
-<li>example: 给定字段的实例</li>
-<li>in: 字段只能在几个值中选择</li>
-<li>enum: 同 in</li>
-<li>ro: 字段为只读</li>
-<li>wo: 字段为只写，和 password 配合使用</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
-  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:example=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:ro
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:rw
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#6272a4">// +gen:enum=[1,2,3]
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-</code></pre></div><p><code>string</code> 类型支持的规则</p>
-<ul>
-<li>min_len: 指定字段的最小长度</li>
-<li>max_len: 指定字段的最大长度</li>
-<li>email: 邮箱地址格式</li>
-<li>date: 日期格式<a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>，如 2017-07-21</li>
-<li>date-time: 日期加时间格式<a href="https://tools.ietf.org/html/rfc3339#section-5.6">RFC 3339, section 5.6</a>，如 2017-07-21T17:32:28Z</li>
-<li>password: 密码格式</li>
-<li>byte: 字节格式</li>
-<li>binary: 二进制格式，上传文件使用</li>
-<li>ip: ip 地址格式</li>
-<li>ipv4: ipv4 格式</li>
-<li>ipv6: ipv6 格式</li>
-<li>uuid: uuid v4 格式</li>
-<li>uri: uri 格式</li>
-<li>hostname: 主机名</li>
-<li>pattern: 正则表达式</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:in=[&#34;1&#34;, &#34;2&#34;, &#34;3&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_max=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:pattern=`\d+(\w+){3,5}`
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:password
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:email
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ip
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv6
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date-time
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:bytes
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:binary
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:hostname
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uuid
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uri
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><blockquote>
-<p>注: string pattern 最好单独一行，以免和其他规则冲突</p>
-</blockquote>
-<p>数字类型的支持，包含 int32, int64, fixed32, fix64, float, double</p>
-<ul>
-<li>lt: 指定字段小于指定值</li>
-<li>lte: 指定字段的小于等于指定值</li>
-<li>gt: 指定字段大于指定值</li>
-<li>gte: 指定字段大于等于指定值</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">float</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-
-    <span style="color:#6272a4">// +gen:default=3.14
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">double</span> pi <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
-
-    <span style="color:#6272a4">// +gen:in=[1,2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
-
-    <span style="color:#6272a4">// +gen:ge=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
-}
-</code></pre></div>
 </div>
 
 
@@ -2784,7 +3253,7 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-148255df01058e3f71315560bc42a419">3.4 - Dao</h1>
+	<h1 id="pg-148255df01058e3f71315560bc42a419">3.7 - protoc-gen-dao</h1>
     <div class="lead"><em>Dao</em> 通过 <code>protoc-gen-dao</code> 生成数据库CURD代码。</div>
 	<h2 id="概述">概述</h2>
 <p><code>Dao</code> 是 <strong>Vine</strong> 框架的数据库交互模块，而<code>protoc-gen-dao</code>工具则可以通过识别<code>*.proto</code>来生成对应的数据库交互代码。减少大量重复代码的编写，提高用户效率。</p>
@@ -3081,6 +3550,36 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
     
 	
   
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-96c4ff43558e2f86011b50d22caa006c">4 - 项目部署</h1>
+    
+	<p>// TODO</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
 
 
 
@@ -3117,7 +3616,7 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
         <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
-		<p class="mt-2"><a href="/vine/about/">about</a></p>
+		<p class="mt-2"><a href="/vine/about/">关于</a></p>
 	
       </div>
     </div>

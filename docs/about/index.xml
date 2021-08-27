@@ -1,9 +1,10 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vine – about</title>
+    <title>Vine – 关于</title>
     <link>https://vine-io.github.io/vine/about/</link>
-    <description>Recent content in about on Vine</description>
+    <description>Recent content in 关于 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 29 Dec 2020 14:58:34 +0800</lastBuildDate>
     
 	  <atom:link href="https://vine-io.github.io/vine/about/index.xml" rel="self" type="application/rss+xml" />
     

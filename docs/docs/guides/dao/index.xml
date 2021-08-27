@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vine – Dao</title>
+    <title>Vine – protoc-gen-dao</title>
     <link>https://vine-io.github.io/vine/docs/guides/dao/</link>
-    <description>Recent content in Dao on Vine</description>
+    <description>Recent content in protoc-gen-dao on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 18 Jan 2021 11:11:29 +0800</lastBuildDate>
     

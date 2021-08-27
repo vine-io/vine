@@ -71,9 +71,10 @@ func newOptions(opts ...Option) Options {
 	opt := Options{
 		Broker:    broker.DefaultBroker,
 		Cmd:       cmd.DefaultCmd,
-		Config:    config.DefaultConfig,
 		Client:    client.DefaultClient,
+		Config:    config.DefaultConfig,
 		Server:    server.DefaultServer,
+		Trace:     trace.DefaultTracer,
 		Dialect:   dao.DefaultDialect,
 		Cache:     cache.DefaultCache,
 		Registry:  registry.DefaultRegistry,

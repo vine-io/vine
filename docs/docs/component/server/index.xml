@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vine – 服务端</title>
+    <title>Vine – 内部服务</title>
     <link>https://vine-io.github.io/vine/docs/component/server/</link>
-    <description>Recent content in 服务端 on Vine</description>
+    <description>Recent content in 内部服务 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Tue, 29 Dec 2020 15:00:10 +0800</lastBuildDate>
     

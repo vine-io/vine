@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vine – OpenAPI</title>
+    <title>Vine – protoc-gen-vine</title>
     <link>https://vine-io.github.io/vine/docs/guides/openapi/</link>
-    <description>Recent content in OpenAPI on Vine</description>
+    <description>Recent content in protoc-gen-vine on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 25 Jan 2021 18:42:52 +0800</lastBuildDate>
     
