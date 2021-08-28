@@ -23,7 +23,7 @@
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://vine-io.github.io/vine/docs/" />
-<meta property="og:updated_time" content="2021-08-12T14:56:10+08:00" /><meta property="og:site_name" content="Vine" />
+<meta property="og:updated_time" content="2021-08-27T13:42:05+08:00" /><meta property="og:site_name" content="Vine" />
 <meta itemprop="name" content="欢迎来到 Vine 文档">
 <meta itemprop="description" content="Vine 文档">
 <meta name="twitter:card" content="summary"/>
@@ -384,9 +384,14 @@ $ touch client/main.go
     
 	<p><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/:license-apache-blue.svg" alt="License"></a> <a href="https://pkg.go.dev/github.com/vine-io/vine?tab=doc"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&amp;logoColor=white&amp;style=flat-square" alt="Go.Dev reference"></a> <a href="https://travis-ci.org/vine-io/vine"><img src="https://api.travis-ci.org/vine-io/vine.svg?branch=master" alt="Travis CI"></a> <a href="https://goreportcard.com/report/github.com/vine-io/vine"><img src="https://goreportcard.com/badge/vine-io/vine" alt="Go Report Card"></a></p>
 <p>Vine (<em>/vaɪn/</em>) 一套简单、高效、可插拔的分布式 RPC 框架。</p>
+<blockquote>
+<p>Vine (葡萄树 🍇) : 我们希望它能像的它名字一样，多节果子。</p>
+</blockquote>
 <h2 id="简介">简介</h2>
-<p><strong>Vine</strong> 基于 <a href="https://github.com/asim/go-micro">go-micro</a> 框架，因此继承了它的优点。并在此基础上增加性能和可用性。</p>
-<h2 id="主要功能">主要功能</h2>
+<p><strong>Vine</strong> 基于 <a href="https://github.com/asim/go-micro">go-micro</a> 框架，因此继承了它的优点。并在此基础上进行裁剪和改进，增加性能和可用性。</p>
+<h2 id="架构图">架构图</h2>
+<p><img src="vine%E6%9E%B6%E6%9E%84%E5%9B%BE.png" alt="vine架构图"></p>
+<h2 id="功能">功能</h2>
 <p><strong>Vine</strong> 抽象化分布式系统的内部细节. 以下是主要功能.</p>
 <ul>
 <li>
@@ -396,7 +401,10 @@ $ touch client/main.go
 <p><strong>动态配置 (Dynamic Config)</strong> - 从任意地方加载和热加载动态配置。配置接口提供了一种方法，可以从任何源（如环境变量，文件，etcd）加载应用级别配置。同时支持合并源、甚至定义回退。</p>
 </li>
 <li>
-<p><strong>数据存储 (Data Storage)</strong> - 一个简单的数据存储接口，用于查询，创建，删除数据记录。内置 memory，file，postgresSQL 等</p>
+<p><strong>数据存储 (Dao)</strong> - 一个简单的数据存储接口，用于查询，创建，删除数据记录。内置 memory，file，postgresSQL 等</p>
+</li>
+<li>
+<p><strong>缓存接口 (Cache)</strong> - 支持内部数据缓存，保存临时数据。</p>
 </li>
 <li>
 <p><strong>服务发现 (Service discovery)</strong> - 自动服务注册和名称解析。服务发现是微服务开发的核心功能。当服务A与服务B通讯时，需要知道服务B的IP地址等信息。<strong>Vine</strong> 内置(mdns)作为服务发现组件，它是零配置系统。</p>
@@ -421,96 +429,7 @@ $ touch client/main.go
 </li>
 </ul>
 <h2 id="许可">许可</h2>
-<p>Vine 遵守 Apache 2.0 开源许可.</p>
-<h2 id="起步">起步</h2>
-<h3 id="安装">安装</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go get github.com/vine-io/vine/cmd/vine
-</code></pre></div><h3 id="初始化项目">初始化项目</h3>
-<p>创建项目目录</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
-</code></pre></div><p>初始化目录</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine init --cluster
-Creating resource  in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
-
-.
-├── vine.toml
-├── README.md
-├── .gitignore
-└── go.mod
-</code></pre></div><h3 id="创建服务-echo">创建服务 echo</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine new service <span style="color:#8be9fd;font-style:italic">echo</span>   
-Creating resource <span style="color:#8be9fd;font-style:italic">echo</span> in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
-
-.
-├── cmd
-│   └── <span style="color:#8be9fd;font-style:italic">echo</span>
-│       └── main.go
-├── pkg
-│   ├── runtime
-│   │   └── doc.go
-│   └── <span style="color:#8be9fd;font-style:italic">echo</span>
-│       ├── plugin.go
-│       ├── app.go
-│       ├── server
-│       │   └── echo.go
-│       ├── service
-│       │   ├── echo.go
-│       │   └── wire.go
-│       └── dao
-│           └── echo.go
-├── deploy
-│   ├── docker
-│   │   └── <span style="color:#8be9fd;font-style:italic">echo</span>
-│   │       └── Dockerfile
-│   ├── config
-│   │   └── echo.ini
-│   └── systemd
-│       └── echo.service
-├── proto
-│   └── service
-│       └── <span style="color:#8be9fd;font-style:italic">echo</span>
-│           └── v1
-│               └── echo.proto
-└── vine.toml
-
-
-download protoc zip packages <span style="color:#ff79c6">(</span>protoc-<span style="color:#8be9fd;font-style:italic">$VERSION</span>-<span style="color:#8be9fd;font-style:italic">$PLATFORM</span>.zip<span style="color:#ff79c6">)</span> and install:
-
-visit https://github.com/protocolbuffers/protobuf/releases
-
-download protobuf <span style="color:#ff79c6">for</span> vine:
-
-<span style="color:#8be9fd;font-style:italic">cd</span> example
-
-install dependencies:
-        go get github.com/gogo/protobuf
-        go get github.com/vine-io/vine/cmd/protoc-gen-gogo
-        go get github.com/vine-io/vine/cmd/protoc-gen-vine
-        go get github.com/vine-io/vine/cmd/protoc-gen-validator
-        go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
-        go get github.com/vine-io/vine/cmd/protoc-gen-dao
-
-<span style="color:#8be9fd;font-style:italic">cd</span> example
-        vine build <span style="color:#8be9fd;font-style:italic">echo</span>
-</code></pre></div><h3 id="编译运行-echo">编译运行 echo</h3>
-<p>先要成 proto 文件</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine build proto                                        
-change directory <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src: 
-protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. --validator_out<span style="color:#ff79c6">=</span>:. example/proto/service/echo/v1/echo.proto
-</code></pre></div><p>编译 echo 服务</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go mod vendor
-$ vine build service --output<span style="color:#ff79c6">=</span>_output/echo  <span style="color:#8be9fd;font-style:italic">echo</span>
-</code></pre></div><p>运行服务</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./output/echo
-</code></pre></div><h3 id="添加网关服务">添加网关服务</h3>
-<p>新建服务</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vine new gateway api
-</code></pre></div><p>编译</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go mod vendor
-$ vine build service --output<span style="color:#ff79c6">=</span>_output/api api
-</code></pre></div><p>启动 api</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./_output/api --enable-openapi
-</code></pre></div><p>浏览器访问地址 <a href="127.0.0.1:8080/openapi-ui/">127.0.0.1:8080/openapi-ui/</a></p>
+<p>Vine 遵守 MIT License 开源许可.</p>
 
 </div>
 
