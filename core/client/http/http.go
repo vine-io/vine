@@ -44,7 +44,6 @@ import (
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/errors"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/context/metadata"
 )
 

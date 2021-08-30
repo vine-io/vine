@@ -33,8 +33,8 @@ import (
 
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/codec"
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/context/metadata"
 )
 

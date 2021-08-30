@@ -28,8 +28,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/addr"
 )
 

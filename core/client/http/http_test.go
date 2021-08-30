@@ -13,8 +13,8 @@ import (
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/http/test"
 	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
-	"github.com/vine-io/vine/proto/apis/registry"
 )
 
 func TestHTTPClient(t *testing.T) {

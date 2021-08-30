@@ -40,7 +40,6 @@ import (
 	"github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/cmd"
 	log "github.com/vine-io/vine/lib/logger"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 var (

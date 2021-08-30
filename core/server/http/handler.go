@@ -23,8 +23,8 @@
 package http
 
 import (
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type httpHandler struct {
