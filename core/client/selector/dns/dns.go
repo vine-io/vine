@@ -29,7 +29,7 @@ import (
 	"strconv"
 
 	"github.com/vine-io/vine/core/client/selector"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
 type dnsSelector struct {
@@ -85,15 +85,15 @@ func (d *dnsSelector) Select(service string, opts ...selector.SelectOption) (sel
 		}
 	}
 
-	nodes := make([]*regpb.Node, 0, len(svc))
+	nodes := make([]*registry.Node, 0, len(svc))
 	for _, node := range svc {
-		nodes = append(nodes, &regpb.Node{
+		nodes = append(nodes, &registry.Node{
 			Id:      node.Target,
 			Address: fmt.Sprintf("%s:%d", node.Target, node.Port),
 		})
 	}
 
-	services := []*regpb.Service{
+	services := []*registry.Service{
 		{
 			Name:  service,
 			Nodes: nodes,
@@ -121,7 +121,7 @@ func (d *dnsSelector) Select(service string, opts ...selector.SelectOption) (sel
 	return sopts.Strategy(services), nil
 }
 
-func (d *dnsSelector) Mark(service string, node *regpb.Node, err error) {}
+func (d *dnsSelector) Mark(service string, node *registry.Node, err error) {}
 
 func (d *dnsSelector) Reset(service string) {}
 

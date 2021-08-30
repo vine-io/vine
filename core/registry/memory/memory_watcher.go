@@ -26,7 +26,6 @@ import (
 	"errors"
 
 	"github.com/vine-io/vine/core/registry"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type memoryWatcher struct {
@@ -34,7 +33,7 @@ type memoryWatcher struct {
 	opts registry.WatchOptions
 }
 
-func (m *memoryWatcher) Next() (*regpb.Result, error) {
+func (m *memoryWatcher) Next() (*registry.Result, error) {
 	// not implement so we just block util exit
 	<-m.exit
 	return nil, errors.New("watcher stopped")

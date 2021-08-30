@@ -65,10 +65,10 @@ func TestWebResolver(t *testing.T) {
 			// set resolver type
 			res.Type = service.Type
 
-			v := &regpb.Service{
+			v := &registry.Service{
 				Name:    service.Service,
 				Version: "latest",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{Id: "1", Address: "127.0.0.1:8080"},
 				},
 			}

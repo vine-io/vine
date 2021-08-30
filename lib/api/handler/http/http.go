@@ -31,7 +31,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/lib/api/handler"
-	apipb "github.com/vine-io/vine/proto/apis/api"
+	"github.com/vine-io/vine/lib/api"
 	ctx "github.com/vine-io/vine/util/context"
 )
 
@@ -43,7 +43,7 @@ type httpHandler struct {
 	options handler.Options
 
 	// set with different initialiser
-	s *apipb.Service
+	s *api.Service
 }
 
 func (h *httpHandler) Handle(c *fiber.Ctx) error {
@@ -67,7 +67,7 @@ func (h *httpHandler) Handle(c *fiber.Ctx) error {
 
 // getService returns the service for this request from the selector
 func (h *httpHandler) getService(c *fiber.Ctx) (string, error) {
-	var service *apipb.Service
+	var service *api.Service
 
 	r := ctx.NewRequestCtx(c, ctx.FromRequest(c))
 	if h.s != nil {
@@ -111,7 +111,7 @@ func NewHandler(opts ...handler.Option) handler.Handler {
 }
 
 // WithService creates a handler with a service
-func WithService(s *apipb.Service, opts ...handler.Option) handler.Handler {
+func WithService(s *api.Service, opts ...handler.Option) handler.Handler {
 	options := handler.NewOptions(opts...)
 
 	return &httpHandler{

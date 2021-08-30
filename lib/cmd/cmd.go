@@ -31,7 +31,6 @@ import (
 
 	"github.com/vine-io/cli"
 	"github.com/vine-io/vine/core/broker"
-	brokerGrpc "github.com/vine-io/vine/core/broker/grpc"
 	brokerHttp "github.com/vine-io/vine/core/broker/http"
 	"github.com/vine-io/vine/core/broker/memory"
 	"github.com/vine-io/vine/core/client"
@@ -40,14 +39,12 @@ import (
 	"github.com/vine-io/vine/core/client/selector/dns"
 	"github.com/vine-io/vine/core/client/selector/static"
 	"github.com/vine-io/vine/core/registry"
-	"github.com/vine-io/vine/core/registry/grpc"
 	"github.com/vine-io/vine/core/registry/mdns"
 	regMemory "github.com/vine-io/vine/core/registry/memory"
 	"github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/config"
 	configMemory "github.com/vine-io/vine/lib/config/memory"
-	configSrc "github.com/vine-io/vine/lib/config/source"
 	"github.com/vine-io/vine/lib/dao"
 	log "github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/lib/trace"
@@ -62,7 +59,6 @@ import (
 	nopCache "github.com/vine-io/vine/lib/cache/noop"
 
 	// config
-	configSrv "github.com/vine-io/vine/lib/config/source/service"
 )
 
 func init() {
@@ -224,7 +220,6 @@ var (
 	}
 
 	DefaultBrokers = map[string]func(...broker.Option) broker.Broker{
-		"service": brokerGrpc.NewBroker,
 		"memory":  memory.NewBroker,
 		"http":    brokerHttp.NewBroker,
 	}
@@ -234,7 +229,6 @@ var (
 	}
 
 	DefaultRegistries = map[string]func(...registry.Option) registry.Registry{
-		"service": grpc.NewRegistry,
 		"mdns":    mdns.NewRegistry,
 		"memory":  regMemory.NewRegistry,
 	}
@@ -402,7 +396,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 			return fmt.Errorf("registry %s not found", name)
 		}
 
-		*c.opts.Registry = r(grpc.WithClient(vineClient))
+		*c.opts.Registry = r()
 		serverOpts = append(serverOpts, server.Registry(*c.opts.Registry))
 		clientOpts = append(clientOpts, client.Registry(*c.opts.Registry))
 
@@ -515,13 +509,6 @@ func (c *cmd) Before(ctx *cli.Context) error {
 
 	if val := time.Duration(ctx.Int("register-interval")); val >= 0 {
 		serverOpts = append(serverOpts, server.RegisterInterval(val*time.Second))
-	}
-
-	if ctx.String("config") == "service" {
-		opt := config.WithSource(configSrv.NewSource(configSrc.WithClient(vineClient)))
-		if err := (*c.opts.Config).Init(opt); err != nil {
-			log.Fatalf("Error configuring config: %v", err)
-		}
 	}
 
 	// client opts

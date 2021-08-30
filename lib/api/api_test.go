@@ -25,12 +25,10 @@ package api
 import (
 	"strings"
 	"testing"
-
-	apipb "github.com/vine-io/vine/proto/apis/api"
 )
 
 func TestEncoding(t *testing.T) {
-	testData := []*apipb.Endpoint{
+	testData := []*Endpoint{
 		nil,
 		{
 			Name:        "Foo.Bar",
@@ -137,7 +135,7 @@ func TestEncoding(t *testing.T) {
 }
 
 func TestValidate(t *testing.T) {
-	epPcre := &apipb.Endpoint{
+	epPcre := &Endpoint{
 		Name:        "Foo.Bar",
 		Description: "A test endpoint",
 		Handler:     "meta",
@@ -149,7 +147,7 @@ func TestValidate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	epGpath := &apipb.Endpoint{
+	epGpath := &Endpoint{
 		Name:        "Foo.Bar",
 		Description: "A test endpoint",
 		Handler:     "meta",
@@ -161,7 +159,7 @@ func TestValidate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	epPcreInvalid := &apipb.Endpoint{
+	epPcreInvalid := &Endpoint{
 		Name:        "Foo.Bar",
 		Description: "A test endpoint",
 		Handler:     "meta",

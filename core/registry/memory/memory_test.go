@@ -33,12 +33,12 @@ import (
 )
 
 var (
-	testData = map[string][]*regpb.Service{
+	testData = map[string][]*registry.Service{
 		"foo": {
 			{
 				Name:    "foo",
 				Version: "1.0.0",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "foo-1.0.0-123",
 						Address: "localhost:9999",
@@ -52,7 +52,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.1",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "foo-1.0.1-321",
 						Address: "localhost:6666",
@@ -62,7 +62,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.3",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "foo-1.0.3-345",
 						Address: "localhost:8888",
@@ -74,7 +74,7 @@ var (
 			{
 				Name:    "bar",
 				Version: "default",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "bar-1.0.0-123",
 						Address: "localhost:9999",
@@ -88,7 +88,7 @@ var (
 			{
 				Name:    "bar",
 				Version: "latest",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "bar-1.0.1-321",
 						Address: "localhost:6666",
@@ -102,7 +102,7 @@ var (
 func TestMemoryRegistry(t *testing.T) {
 	m := NewRegistry()
 
-	fn := func(k string, v []*regpb.Service) {
+	fn := func(k string, v []*registry.Service) {
 		services, err := m.GetService(k)
 		if err != nil {
 			t.Errorf("Unexpected error getting service %s: %v", k, err)

@@ -35,13 +35,13 @@ import (
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/codec/bytes"
 	"github.com/vine-io/vine/lib/logger"
-	apipb "github.com/vine-io/vine/proto/apis/api"
+	"github.com/vine-io/vine/lib/api"
 	ctx "github.com/vine-io/vine/util/context"
 	"github.com/valyala/fasthttp"
 )
 
 // serveWebSocket will stream rpc back over websockets assuming json
-func serveWebSocket(r *ctx.RequestCtx, service *apipb.Service, c client.Client) error {
+func serveWebSocket(r *ctx.RequestCtx, service *api.Service, c client.Client) error {
 	var op int
 
 	ct := r.Get("Content-Type")
@@ -212,7 +212,7 @@ func writeLoop(conn *websocket.Conn, stream client.Stream) {
 	}
 }
 
-func isStream(c *fiber.Ctx, svc *apipb.Service) bool {
+func isStream(c *fiber.Ctx, svc *api.Service) bool {
 	// check if it's a web socket
 	if !isWebSocket(c) {
 		return false

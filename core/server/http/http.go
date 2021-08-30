@@ -113,11 +113,11 @@ func (h *httpServer) NewHandler(handler interface{}, opts ...server.HandlerOptio
 		o(&options)
 	}
 
-	var eps []*regpb.Endpoint
+	var eps []*registry.Endpoint
 
 	if !options.Internal {
 		for name, metadata := range options.Metadata {
-			eps = append(eps, &regpb.Endpoint{
+			eps = append(eps, &registry.Endpoint{
 				Name:     name,
 				Metadata: metadata,
 			})

@@ -40,11 +40,11 @@ import (
 	"github.com/vine-io/vine/core/codec"
 	"github.com/vine-io/vine/core/codec/jsonrpc"
 	"github.com/vine-io/vine/core/codec/protorpc"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/lib/api"
 	"github.com/vine-io/vine/lib/api/handler"
+	"github.com/vine-io/vine/lib/errors"
 	"github.com/vine-io/vine/lib/logger"
-	apipb "github.com/vine-io/vine/proto/apis/api"
-	"github.com/vine-io/vine/proto/apis/errors"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	ctx "github.com/vine-io/vine/util/context"
 	"github.com/vine-io/vine/util/context/metadata"
 	"github.com/vine-io/vine/util/qson"
@@ -96,7 +96,7 @@ func (m *RawMessage) UnmarshalJSON(data []byte) error {
 
 type rpcHandler struct {
 	opts handler.Options
-	s    *apipb.Service
+	s    *api.Service
 }
 
 type buffer struct {
@@ -108,8 +108,8 @@ func (b *buffer) Write(_ []byte) (int, error) {
 }
 
 // strategy is a hack for selection
-func strategy(services []*regpb.Service) selector.Strategy {
-	return func(_ []*regpb.Service) selector.Next {
+func strategy(services []*registry.Service) selector.Strategy {
+	return func(_ []*registry.Service) selector.Next {
 		// ignore input to this function, use services above
 		return selector.RoundRobin(services)
 	}
@@ -122,7 +122,7 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 		bsize = h.opts.MaxRecvSize
 	}
 	c.Context().SetBodyStream(c.Context().RequestBodyStream(), int(bsize))
-	var service *apipb.Service
+	var service *api.Service
 
 	ct := c.Get("Content-Type")
 	if ct == "" {
@@ -545,7 +545,7 @@ func NewHandler(opts ...handler.Option) handler.Handler {
 	}
 }
 
-func WithService(s *apipb.Service, opts ...handler.Option) handler.Handler {
+func WithService(s *api.Service, opts ...handler.Option) handler.Handler {
 	options := handler.NewOptions(opts...)
 	return &rpcHandler{
 		opts: options,

@@ -30,10 +30,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/vine-io/vine/core/registry"
-
 	"github.com/vine-io/vine/lib/logger"
-	openapipb "github.com/vine-io/vine/proto/apis/openapi"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 var (
@@ -42,7 +39,7 @@ var (
 )
 
 type node struct {
-	*regpb.Node
+	*registry.Node
 	TTL      time.Duration
 	LastSeen time.Time
 }
@@ -52,8 +49,8 @@ type record struct {
 	Version   string
 	Metadata  map[string]string
 	Nodes     map[string]*node
-	Endpoints []*regpb.Endpoint
-	Apis      []*openapipb.OpenAPI
+	Endpoints []*registry.Endpoint
+	Apis      []*registry.OpenAPI
 }
 
 type Registry struct {
@@ -112,7 +109,7 @@ func (m *Registry) ttlPrune() {
 	}
 }
 
-func (m *Registry) sendEvent(r *regpb.Result) {
+func (m *Registry) sendEvent(r *registry.Result) {
 	m.RLock()
 	watchers := make([]*Watcher, 0, len(m.watchers))
 	for _, w := range m.watchers {
@@ -167,7 +164,7 @@ func (m *Registry) Options() registry.Options {
 	return m.options
 }
 
-func (m *Registry) Register(s *regpb.Service, opts ...registry.RegisterOption) error {
+func (m *Registry) Register(s *registry.Service, opts ...registry.RegisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -185,7 +182,7 @@ func (m *Registry) Register(s *regpb.Service, opts ...registry.RegisterOption) e
 	if _, ok := m.records[s.Name][s.Version]; !ok {
 		m.records[s.Name][s.Version] = r
 		logger.Debugf("Registry added new service: %s, version: %s", s.Name, s.Version)
-		go m.sendEvent(&regpb.Result{Action: "update", Service: s})
+		go m.sendEvent(&registry.Result{Action: "update", Service: s})
 		return nil
 	}
 
@@ -197,7 +194,7 @@ func (m *Registry) Register(s *regpb.Service, opts ...registry.RegisterOption) e
 			for k, v := range n.Metadata {
 				metadata[k] = v
 				m.records[s.Name][s.Version].Nodes[n.Id] = &node{
-					Node: &regpb.Node{
+					Node: &registry.Node{
 						Id:       n.Id,
 						Address:  n.Address,
 						Metadata: metadata,
@@ -211,7 +208,7 @@ func (m *Registry) Register(s *regpb.Service, opts ...registry.RegisterOption) e
 
 	if addedNodes {
 		logger.Debugf("Registry added new node to service: %s, version: %s", s.Name, s.Version)
-		go m.sendEvent(&regpb.Result{Action: "update", Service: s})
+		go m.sendEvent(&registry.Result{Action: "update", Service: s})
 		return nil
 	}
 
@@ -225,7 +222,7 @@ func (m *Registry) Register(s *regpb.Service, opts ...registry.RegisterOption) e
 	return nil
 }
 
-func (m *Registry) Deregister(s *regpb.Service, opts ...registry.DeregisterOption) error {
+func (m *Registry) Deregister(s *registry.Service, opts ...registry.DeregisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -246,13 +243,13 @@ func (m *Registry) Deregister(s *regpb.Service, opts ...registry.DeregisterOptio
 			delete(m.records, s.Name)
 			logger.Debugf("Registry removed service: %s", s.Name)
 		}
-		go m.sendEvent(&regpb.Result{Action: "delete", Service: s})
+		go m.sendEvent(&registry.Result{Action: "delete", Service: s})
 	}
 
 	return nil
 }
 
-func (m *Registry) GetService(name string, opts ...registry.GetOption) ([]*regpb.Service, error) {
+func (m *Registry) GetService(name string, opts ...registry.GetOption) ([]*registry.Service, error) {
 	m.RLock()
 	defer m.RUnlock()
 
@@ -261,7 +258,7 @@ func (m *Registry) GetService(name string, opts ...registry.GetOption) ([]*regpb
 		return nil, registry.ErrNotFound
 	}
 
-	services := make([]*regpb.Service, len(m.records[name]))
+	services := make([]*registry.Service, len(m.records[name]))
 	i := 0
 	for _, record := range records {
 		services[i] = recordToService(record)
@@ -271,11 +268,11 @@ func (m *Registry) GetService(name string, opts ...registry.GetOption) ([]*regpb
 	return services, nil
 }
 
-func (m *Registry) ListServices(opts ...registry.ListOption) ([]*regpb.Service, error) {
+func (m *Registry) ListServices(opts ...registry.ListOption) ([]*registry.Service, error) {
 	m.RLock()
 	defer m.RUnlock()
 
-	var services []*regpb.Service
+	var services []*registry.Service
 	for _, records := range m.records {
 		for _, record := range records {
 			services = append(services, recordToService(record))
@@ -293,7 +290,7 @@ func (m *Registry) Watch(opts ...registry.WatchOption) (registry.Watcher, error)
 
 	w := &Watcher{
 		exit: make(chan bool),
-		res:  make(chan *regpb.Result),
+		res:  make(chan *registry.Result),
 		id:   uuid.New().String(),
 		wo:   wo,
 	}

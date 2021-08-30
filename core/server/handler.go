@@ -25,7 +25,7 @@ package server
 import (
 	"context"
 
-	openapipb "github.com/vine-io/vine/proto/apis/openapi"
+	"github.com/vine-io/vine/core/registry"
 )
 
 type HandlerOption func(*HandlerOptions)
@@ -33,7 +33,7 @@ type HandlerOption func(*HandlerOptions)
 type HandlerOptions struct {
 	Internal bool
 	Metadata map[string]map[string]string
-	OpenAPI  *openapipb.OpenAPI
+	OpenAPI  *registry.OpenAPI
 }
 
 type SubscriberOption func(*SubscriberOptions)
@@ -57,7 +57,7 @@ func EndpointMetadata(name string, md map[string]string) HandlerOption {
 
 // OpenAPIHandler is a Handler option that allows swagger openapi to be added to
 // individual endpoints.
-func OpenAPIHandler(openAPI *openapipb.OpenAPI) HandlerOption {
+func OpenAPIHandler(openAPI *registry.OpenAPI) HandlerOption {
 	return func(o *HandlerOptions) {
 		o.OpenAPI = openAPI
 	}

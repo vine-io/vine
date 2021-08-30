@@ -27,7 +27,7 @@ import (
 )
 
 type sortedServices struct {
-	services []*regpb.Service
+	services []*registry.Service
 }
 
 func (s sortedServices) Len() int {

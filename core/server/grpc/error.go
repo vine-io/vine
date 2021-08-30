@@ -25,9 +25,8 @@ package grpc
 import (
 	"net/http"
 
+	"github.com/vine-io/vine/lib/errors"
 	"google.golang.org/grpc/codes"
-
-	"github.com/vine-io/vine/proto/apis/errors"
 )
 
 func vineError(err *errors.Error) codes.Code {

@@ -25,10 +25,10 @@ package memory
 import (
 	"time"
 
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
-func serviceToRecord(s *regpb.Service, ttl time.Duration) *record {
+func serviceToRecord(s *registry.Service, ttl time.Duration) *record {
 	metadata := make(map[string]string, len(s.Metadata))
 	for k, v := range s.Metadata {
 		metadata[k] = v
@@ -43,7 +43,7 @@ func serviceToRecord(s *regpb.Service, ttl time.Duration) *record {
 		}
 	}
 
-	endpoints := make([]*regpb.Endpoint, len(s.Endpoints))
+	endpoints := make([]*registry.Endpoint, len(s.Endpoints))
 	for i, e := range s.Endpoints {
 		endpoints[i] = e
 	}
@@ -58,19 +58,19 @@ func serviceToRecord(s *regpb.Service, ttl time.Duration) *record {
 	}
 }
 
-func recordToService(r *record) *regpb.Service {
+func recordToService(r *record) *registry.Service {
 	metadata := make(map[string]string, len(r.Metadata))
 	for k, v := range r.Metadata {
 		metadata[k] = v
 	}
 
-	endpoints := make([]*regpb.Endpoint, len(r.Endpoints))
+	endpoints := make([]*registry.Endpoint, len(r.Endpoints))
 	for i, e := range r.Endpoints {
-		request := new(regpb.Value)
+		request := new(registry.Value)
 		if e.Request != nil {
 			*request = *e.Request
 		}
-		response := new(regpb.Value)
+		response := new(registry.Value)
 		if e.Response != nil {
 			*response = *e.Response
 		}
@@ -80,7 +80,7 @@ func recordToService(r *record) *regpb.Service {
 			metadata[k] = v
 		}
 
-		endpoints[i] = &regpb.Endpoint{
+		endpoints[i] = &registry.Endpoint{
 			Name:     e.Name,
 			Request:  request,
 			Response: response,
@@ -88,7 +88,7 @@ func recordToService(r *record) *regpb.Service {
 		}
 	}
 
-	nodes := make([]*regpb.Node, len(r.Nodes))
+	nodes := make([]*registry.Node, len(r.Nodes))
 	i := 0
 	for _, n := range r.Nodes {
 		metadata := make(map[string]string, len(n.Metadata))
@@ -96,7 +96,7 @@ func recordToService(r *record) *regpb.Service {
 			metadata[k] = v
 		}
 
-		nodes[i] = &regpb.Node{
+		nodes[i] = &registry.Node{
 			Id:       n.Id,
 			Address:  n.Address,
 			Metadata: metadata,
@@ -104,7 +104,7 @@ func recordToService(r *record) *regpb.Service {
 		i++
 	}
 
-	return &regpb.Service{
+	return &registry.Service{
 		Name:      r.Name,
 		Version:   r.Version,
 		Metadata:  metadata,

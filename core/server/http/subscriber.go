@@ -56,7 +56,7 @@ type httpSubscriber struct {
 	typ        reflect.Type
 	subscriber interface{}
 	handlers   []*handler
-	endpoints  []*regpb.Endpoint
+	endpoints  []*registry.Endpoint
 	opts       server.SubscriberOptions
 }
 
@@ -85,7 +85,7 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 		o(&options)
 	}
 
-	var endpoints []*regpb.Endpoint
+	var endpoints []*registry.Endpoint
 	var handlers []*handler
 
 	if typ := reflect.TypeOf(sub); typ.Kind() == reflect.Func {
@@ -103,7 +103,7 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 
 		handlers = append(handlers, h)
 
-		endpoints = append(endpoints, &regpb.Endpoint{
+		endpoints = append(endpoints, &registry.Endpoint{
 			Name:    "Func",
 			Request: extractSubValue(typ),
 			Metadata: map[string]string{
@@ -131,7 +131,7 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 
 			handlers = append(handlers, h)
 
-			endpoints = append(endpoints, &regpb.Endpoint{
+			endpoints = append(endpoints, &registry.Endpoint{
 				Name:    name + "." + method.Name,
 				Request: extractSubValue(method.Type),
 				Metadata: map[string]string{
@@ -311,7 +311,7 @@ func (s *httpSubscriber) Subscriber() interface{} {
 	return s.subscriber
 }
 
-func (s *httpSubscriber) Endpoints() []*regpb.Endpoint {
+func (s *httpSubscriber) Endpoints() []*registry.Endpoint {
 	return s.endpoints
 }
 

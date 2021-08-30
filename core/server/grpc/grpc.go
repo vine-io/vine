@@ -41,6 +41,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/vine-io/vine/lib/errors"
 	"golang.org/x/net/netutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -54,9 +55,6 @@ import (
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
 	log "github.com/vine-io/vine/lib/logger"
-	"github.com/vine-io/vine/proto/apis/errors"
-	openapipb "github.com/vine-io/vine/proto/apis/openapi"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/addr"
 	"github.com/vine-io/vine/util/backoff"
 	meta "github.com/vine-io/vine/util/context/metadata"
@@ -89,7 +87,7 @@ type grpcServer struct {
 	registered bool
 
 	// registry service instance
-	rsvc *regpb.Service
+	rsvc *registry.Service
 }
 
 func init() {
@@ -634,7 +632,7 @@ func (g *grpcServer) Register() error {
 	config := g.opts
 	g.RUnlock()
 
-	regFunc := func(service *regpb.Service) error {
+	regFunc := func(service *registry.Service) error {
 		var regErr error
 
 		for i := 0; i < 3; i++ {
@@ -700,7 +698,7 @@ func (g *grpcServer) Register() error {
 	md := meta.Copy(config.Metadata)
 
 	// register service
-	node := &regpb.Node{
+	node := &registry.Node{
 		Id:       config.Name + "-" + config.Id,
 		Address:  mnet.HostPort(saddr, port),
 		Metadata: md,
@@ -734,8 +732,8 @@ func (g *grpcServer) Register() error {
 		return subscriberList[i].topic > subscriberList[j].topic
 	})
 
-	endpoints := make([]*regpb.Endpoint, 0, len(handlerList)+len(subscriberList))
-	apis := make([]*openapipb.OpenAPI, 0, len(handlerList))
+	endpoints := make([]*registry.Endpoint, 0, len(handlerList)+len(subscriberList))
+	apis := make([]*registry.OpenAPI, 0, len(handlerList))
 	for _, h := range handlerList {
 		endpoints = append(endpoints, g.handlers[h].Endpoints()...)
 		apis = append(apis, g.handlers[h].Options().OpenAPI)
@@ -745,10 +743,10 @@ func (g *grpcServer) Register() error {
 	}
 	g.RUnlock()
 
-	svc := &regpb.Service{
+	svc := &registry.Service{
 		Name:      config.Name,
 		Version:   config.Version,
-		Nodes:     []*regpb.Node{node},
+		Nodes:     []*registry.Node{node},
 		Endpoints: endpoints,
 		Apis:      apis,
 	}
@@ -837,15 +835,15 @@ func (g *grpcServer) Deregister() error {
 		return err
 	}
 
-	node := &regpb.Node{
+	node := &registry.Node{
 		Id:      config.Name + "-" + config.Id,
 		Address: mnet.HostPort(addr, port),
 	}
 
-	svc := &regpb.Service{
+	svc := &registry.Service{
 		Name:    config.Name,
 		Version: config.Version,
-		Nodes:   []*regpb.Node{node},
+		Nodes:   []*registry.Node{node},
 	}
 
 	log.Infof("Deregistering node: %s", node.Id)

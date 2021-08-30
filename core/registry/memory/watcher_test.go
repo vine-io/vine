@@ -32,12 +32,12 @@ import (
 func TestWatcher(t *testing.T) {
 	w := &Watcher{
 		id:   "test",
-		res:  make(chan *regpb.Result),
+		res:  make(chan *registry.Result),
 		exit: make(chan bool),
 	}
 
 	go func() {
-		w.res <- &regpb.Result{}
+		w.res <- &registry.Result{}
 	}()
 
 	_, err := w.Next()

@@ -27,7 +27,7 @@ import (
 	"sync"
 	"time"
 
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
 func init() {
@@ -35,14 +35,14 @@ func init() {
 }
 
 // Random is a random strategy algorithm for node selection
-func Random(services []*regpb.Service) Next {
-	nodes := make([]*regpb.Node, 0, len(services))
+func Random(services []*registry.Service) Next {
+	nodes := make([]*registry.Node, 0, len(services))
 
 	for _, service := range services {
 		nodes = append(nodes, service.Nodes...)
 	}
 
-	return func() (*regpb.Node, error) {
+	return func() (*registry.Node, error) {
 		if len(nodes) == 0 {
 			return nil, ErrNoneAvailable
 		}
@@ -53,8 +53,8 @@ func Random(services []*regpb.Service) Next {
 }
 
 // RoundRobin is a roundrobin strategy algorithm for node selection
-func RoundRobin(services []*regpb.Service) Next {
-	nodes := make([]*regpb.Node, 0, len(services))
+func RoundRobin(services []*registry.Service) Next {
+	nodes := make([]*registry.Node, 0, len(services))
 
 	for _, service := range services {
 		nodes = append(nodes, service.Nodes...)
@@ -63,7 +63,7 @@ func RoundRobin(services []*regpb.Service) Next {
 	var i = rand.Int()
 	var mtx sync.Mutex
 
-	return func() (*regpb.Node, error) {
+	return func() (*registry.Node, error) {
 		if len(nodes) == 0 {
 			return nil, ErrNoneAvailable
 		}

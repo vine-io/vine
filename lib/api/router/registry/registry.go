@@ -31,13 +31,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/cache"
 	"github.com/vine-io/vine/lib/api"
 	"github.com/vine-io/vine/lib/api/router"
 	"github.com/vine-io/vine/lib/api/router/util"
 	"github.com/vine-io/vine/lib/logger"
-	apipb "github.com/vine-io/vine/proto/apis/api"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	ctx "github.com/vine-io/vine/util/context"
 	"github.com/vine-io/vine/util/context/metadata"
 )
@@ -58,7 +57,7 @@ type registryRouter struct {
 	rc cache.Cache
 
 	sync.RWMutex
-	eps map[string]*apipb.Service
+	eps map[string]*api.Service
 	// compiled regexp for host and path
 	ceps map[string]*endpoint
 }
@@ -108,7 +107,7 @@ func (r *registryRouter) refresh() {
 }
 
 // process watch event
-func (r *registryRouter) process(res *regpb.Result) {
+func (r *registryRouter) process(res *registry.Result) {
 	// skip these things
 	if res == nil || res.Service == nil {
 		return
@@ -126,9 +125,9 @@ func (r *registryRouter) process(res *regpb.Result) {
 }
 
 // store local endpoint cache
-func (r *registryRouter) store(services []*regpb.Service) {
+func (r *registryRouter) store(services []*registry.Service) {
 	// endpoints
-	eps := map[string]*apipb.Service{}
+	eps := map[string]*api.Service{}
 
 	// services
 	names := map[string]bool{}
@@ -154,7 +153,7 @@ func (r *registryRouter) store(services []*regpb.Service) {
 			// try get endpoint
 			ep, ok := eps[key]
 			if !ok {
-				ep = &apipb.Service{Name: service.Name}
+				ep = &api.Service{Name: service.Name}
 			}
 
 			// overwrite the endpoint
@@ -290,15 +289,15 @@ func (r *registryRouter) Close() error {
 	return nil
 }
 
-func (r *registryRouter) Register(ep *apipb.Endpoint) error {
+func (r *registryRouter) Register(ep *api.Endpoint) error {
 	return nil
 }
 
-func (r *registryRouter) Deregister(ep *apipb.Endpoint) error {
+func (r *registryRouter) Deregister(ep *api.Endpoint) error {
 	return nil
 }
 
-func (r *registryRouter) Endpoint(c *ctx.RequestCtx) (*apipb.Service, error) {
+func (r *registryRouter) Endpoint(c *ctx.RequestCtx) (*api.Service, error) {
 	if r.isClosed() {
 		return nil, errors.New("router closed")
 	}
@@ -404,7 +403,7 @@ func (r *registryRouter) Endpoint(c *ctx.RequestCtx) (*apipb.Service, error) {
 	return nil, errors.New("not found")
 }
 
-func (r *registryRouter) Route(c *ctx.RequestCtx) (*apipb.Service, error) {
+func (r *registryRouter) Route(c *ctx.RequestCtx) (*api.Service, error) {
 	if r.isClosed() {
 		return nil, errors.New("router closed")
 	}
@@ -446,9 +445,9 @@ func (r *registryRouter) Route(c *ctx.RequestCtx) (*apipb.Service, error) {
 		}
 
 		// construct api service
-		return &apipb.Service{
+		return &api.Service{
 			Name: name,
-			Endpoint: &apipb.Endpoint{
+			Endpoint: &api.Endpoint{
 				Name:    rp.Method,
 				Handler: handler,
 			},
@@ -457,9 +456,9 @@ func (r *registryRouter) Route(c *ctx.RequestCtx) (*apipb.Service, error) {
 	// http handler
 	case "http", "proxy", "web":
 		// construct api service
-		return &apipb.Service{
+		return &api.Service{
 			Name: name,
-			Endpoint: &apipb.Endpoint{
+			Endpoint: &api.Endpoint{
 				Name:    c.Request().URI().String(),
 				Handler: r.opts.Handler,
 				Host:    []string{string(c.Request().Host())},
@@ -479,7 +478,7 @@ func newRouter(opts ...router.Option) *registryRouter {
 		exit: make(chan bool),
 		opts: options,
 		rc:   cache.New(options.Registry),
-		eps:  make(map[string]*apipb.Service),
+		eps:  make(map[string]*api.Service),
 		ceps: make(map[string]*endpoint),
 	}
 	go r.watch()

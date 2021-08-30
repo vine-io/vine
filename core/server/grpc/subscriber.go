@@ -30,10 +30,10 @@ import (
 	"strings"
 
 	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
-	"github.com/vine-io/vine/proto/apis/errors"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/context/metadata"
 )
 
@@ -53,7 +53,7 @@ type subscriber struct {
 	typ        reflect.Type
 	subscriber interface{}
 	handlers   []*handler
-	endpoints  []*regpb.Endpoint
+	endpoints  []*registry.Endpoint
 	opts       server.SubscriberOptions
 }
 
@@ -64,7 +64,7 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 		o(&options)
 	}
 
-	var endpoints []*regpb.Endpoint
+	var endpoints []*registry.Endpoint
 	var handlers []*handler
 
 	if typ := reflect.TypeOf(sub); typ.Kind() == reflect.Func {
@@ -80,7 +80,7 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 
 		handlers = append(handlers, h)
 
-		endpoints = append(endpoints, &regpb.Endpoint{
+		endpoints = append(endpoints, &registry.Endpoint{
 			Name:    "Func",
 			Request: extractSubValue(typ),
 			Metadata: map[string]string{
@@ -106,7 +106,7 @@ func newSubscriber(topic string, sub interface{}, opts ...server.SubscriberOptio
 
 			handlers = append(handlers, h)
 
-			endpoints = append(endpoints, &regpb.Endpoint{
+			endpoints = append(endpoints, &registry.Endpoint{
 				Name:    name + "." + method.Name,
 				Request: extractSubValue(method.Type),
 				Metadata: map[string]string{
@@ -299,7 +299,7 @@ func (s *subscriber) Subscriber() interface{} {
 	return s.subscriber
 }
 
-func (s *subscriber) Endpoints() []*regpb.Endpoint {
+func (s *subscriber) Endpoints() []*registry.Endpoint {
 	return s.endpoints
 }
 

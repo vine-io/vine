@@ -37,11 +37,11 @@ func TestMDNS(t *testing.T) {
 		t.Skip()
 	}
 
-	testData := []*regpb.Service{
+	testData := []*registry.Service{
 		{
 			Name:    "test1",
 			Version: "1.0.1",
-			Nodes: []*regpb.Node{
+			Nodes: []*registry.Node{
 				{
 					Id:      "test1-1",
 					Address: "10.0.0.1:10001",
@@ -54,7 +54,7 @@ func TestMDNS(t *testing.T) {
 		{
 			Name:    "test2",
 			Version: "1.0.2",
-			Nodes: []*regpb.Node{
+			Nodes: []*registry.Node{
 				{
 					Id:      "test2-1",
 					Address: "10.0.0.2:10002",
@@ -67,7 +67,7 @@ func TestMDNS(t *testing.T) {
 		{
 			Name:    "test3",
 			Version: "1.0.3",
-			Nodes: []*regpb.Node{
+			Nodes: []*registry.Node{
 				{
 					Id:      "test3-1",
 					Address: "10.0.0.3:10003",
@@ -169,14 +169,14 @@ func TestEncoding(t *testing.T) {
 			Metadata: map[string]string{
 				"foo": "bar",
 			},
-			Endpoints: []*regpb.Endpoint{
+			Endpoints: []*registry.Endpoint{
 				{
 					Name: "endpoint1",
-					Request: &regpb.Value{
+					Request: &registry.Value{
 						Name: "request",
 						Type: "request",
 					},
-					Response: &regpb.Value{
+					Response: &registry.Value{
 						Name: "response",
 						Type: "response",
 					},
@@ -227,11 +227,11 @@ func TestWatcher(t *testing.T) {
 		t.Skip()
 	}
 
-	testData := []*regpb.Service{
+	testData := []*registry.Service{
 		{
 			Name:    "test1",
 			Version: "1.0.1",
-			Nodes: []*regpb.Node{
+			Nodes: []*registry.Node{
 				{
 					Id:      "test1-1",
 					Address: "10.0.0.1:10001",
@@ -244,7 +244,7 @@ func TestWatcher(t *testing.T) {
 		{
 			Name:    "test2",
 			Version: "1.0.2",
-			Nodes: []*regpb.Node{
+			Nodes: []*registry.Node{
 				{
 					Id:      "test2-1",
 					Address: "10.0.0.2:10002",
@@ -257,7 +257,7 @@ func TestWatcher(t *testing.T) {
 		{
 			Name:    "test3",
 			Version: "1.0.3",
-			Nodes: []*regpb.Node{
+			Nodes: []*registry.Node{
 				{
 					Id:      "test3-1",
 					Address: "10.0.0.3:10003",
@@ -269,7 +269,7 @@ func TestWatcher(t *testing.T) {
 		},
 	}
 
-	testFn := func(service, s *regpb.Service) {
+	testFn := func(service, s *registry.Service) {
 		if s == nil {
 			t.Fatalf("Expected one result for %s got nil", service.Name)
 

@@ -24,7 +24,7 @@
 package router
 
 import (
-	apipb "github.com/vine-io/vine/proto/apis/api"
+	"github.com/vine-io/vine/lib/api"
 	ctx "github.com/vine-io/vine/util/context"
 )
 
@@ -35,11 +35,11 @@ type Router interface {
 	// Close stop the router
 	Close() error
 	// Endpoint returns an api.Service endpoint or an error if it does not exist
-	Endpoint(c *ctx.RequestCtx) (*apipb.Service, error)
+	Endpoint(c *ctx.RequestCtx) (*api.Service, error)
 	// Register endpoint in router
-	Register(ep *apipb.Endpoint) error
+	Register(ep *api.Endpoint) error
 	// Deregister endpoint from router
-	Deregister(ep *apipb.Endpoint) error
+	Deregister(ep *api.Endpoint) error
 	// Route returns an api.Service route
-	Route(c *ctx.RequestCtx) (*apipb.Service, error)
+	Route(c *ctx.RequestCtx) (*api.Service, error)
 }

@@ -24,8 +24,6 @@ package registry
 
 import (
 	"errors"
-
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 var (
@@ -43,31 +41,31 @@ var (
 type Registry interface {
 	Init(...Option) error
 	Options() Options
-	Register(*regpb.Service, ...RegisterOption) error
-	Deregister(*regpb.Service, ...DeregisterOption) error
-	GetService(string, ...GetOption) ([]*regpb.Service, error)
-	ListServices(...ListOption) ([]*regpb.Service, error)
+	Register(*Service, ...RegisterOption) error
+	Deregister(*Service, ...DeregisterOption) error
+	GetService(string, ...GetOption) ([]*Service, error)
+	ListServices(...ListOption) ([]*Service, error)
 	Watch(...WatchOption) (Watcher, error)
 	String() string
 }
 
 // Register a service node. Additionally supply options such as TTL.
-func Register(s *regpb.Service, opts ...RegisterOption) error {
+func Register(s *Service, opts ...RegisterOption) error {
 	return DefaultRegistry.Register(s, opts...)
 }
 
 // Deregister a service node
-func Deregister(s *regpb.Service) error {
+func Deregister(s *Service) error {
 	return DefaultRegistry.Deregister(s)
 }
 
 // GetService retrieve a service. A slice is returned since we separate Name/Version.
-func GetService(name string) ([]*regpb.Service, error) {
+func GetService(name string) ([]*Service, error) {
 	return DefaultRegistry.GetService(name)
 }
 
 // ListServices list the services. Only returns service names
-func ListServices() ([]*regpb.Service, error) {
+func ListServices() ([]*Service, error) {
 	return DefaultRegistry.ListServices()
 }
 

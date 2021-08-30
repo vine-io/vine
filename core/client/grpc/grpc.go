@@ -32,6 +32,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/lib/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/encoding"
@@ -41,8 +43,6 @@ import (
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/codec/bytes"
-	"github.com/vine-io/vine/proto/apis/errors"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/context/metadata"
 	mnet "github.com/vine-io/vine/util/net"
 )
@@ -98,7 +98,7 @@ func (g *grpcClient) next(request client.Request, opts client.CallOptions) (sele
 
 	// return remote address
 	if len(address) > 0 {
-		fn := func() (*regpb.Node, error) { return &regpb.Node{Address: address[0]}, nil }
+		fn := func() (*registry.Node, error) { return &registry.Node{Address: address[0]}, nil }
 		return fn, nil
 	}
 
@@ -114,7 +114,7 @@ func (g *grpcClient) next(request client.Request, opts client.CallOptions) (sele
 	return next, nil
 }
 
-func (g *grpcClient) call(ctx context.Context, node *regpb.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
+func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
 	var header map[string]string
 
 	address := node.Address
@@ -192,7 +192,7 @@ func (g *grpcClient) call(ctx context.Context, node *regpb.Node, req client.Requ
 	return grr
 }
 
-func (g *grpcClient) stream(ctx context.Context, node *regpb.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
+func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
 	var header map[string]string
 
 	address := node.Address

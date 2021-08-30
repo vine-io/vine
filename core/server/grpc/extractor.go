@@ -27,10 +27,10 @@ import (
 	"reflect"
 	"strings"
 
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
-func extractValue(v reflect.Type, d int) *regpb.Value {
+func extractValue(v reflect.Type, d int) *registry.Value {
 	if d == 3 {
 		return nil
 	}
@@ -42,7 +42,7 @@ func extractValue(v reflect.Type, d int) *regpb.Value {
 		v = v.Elem()
 	}
 
-	arg := &regpb.Value{
+	arg := &registry.Value{
 		Name: v.Name(),
 		Type: v.Name(),
 	}
@@ -85,7 +85,7 @@ func extractValue(v reflect.Type, d int) *regpb.Value {
 	return arg
 }
 
-func extractEndpoint(method reflect.Method) *regpb.Endpoint {
+func extractEndpoint(method reflect.Method) *registry.Endpoint {
 	if method.PkgPath != "" {
 		return nil
 	}
@@ -114,7 +114,7 @@ func extractEndpoint(method reflect.Method) *regpb.Endpoint {
 	request := extractValue(reqType, 0)
 	response := extractValue(rspType, 0)
 
-	ep := &regpb.Endpoint{
+	ep := &registry.Endpoint{
 		Name:     method.Name,
 		Request:  request,
 		Response: response,
@@ -130,7 +130,7 @@ func extractEndpoint(method reflect.Method) *regpb.Endpoint {
 	return ep
 }
 
-func extractSubValue(typ reflect.Type) *regpb.Value {
+func extractSubValue(typ reflect.Type) *registry.Value {
 	var reqType reflect.Type
 	switch typ.NumIn() {
 	case 1:

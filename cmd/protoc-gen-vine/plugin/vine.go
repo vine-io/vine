@@ -87,8 +87,8 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	}
 
 	g.contextPkg = g.NewImport("context", "context")
-	g.apiPbPkg = g.NewImport("github.com/vine-io/vine/proto/apis/api", "apipb")
-	g.openApiPkg = g.NewImport("github.com/vine-io/vine/proto/apis/openapi", "openapi")
+	g.apiPbPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
+	g.openApiPkg = g.NewImport("github.com/vine-io/vine/core/registry", "registry")
 	g.apiPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
 	g.clientPkg = g.NewImport("github.com/vine-io/vine/core/client", "client")
 	g.serverPkg = g.NewImport("github.com/vine-io/vine/core/server", "server")

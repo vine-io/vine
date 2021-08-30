@@ -34,13 +34,13 @@ import (
 	"github.com/vine-io/vine/lib/api/router"
 	"github.com/vine-io/vine/lib/api/router/util"
 	"github.com/vine-io/vine/lib/logger"
-	apipb "github.com/vine-io/vine/proto/apis/api"
+	"github.com/vine-io/vine/lib/api"
 	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/context/metadata"
 )
 
 type endpoint struct {
-	apiep    *apipb.Endpoint
+	apiep    *api.Endpoint
 	hostregs []*regexp.Regexp
 	pathregs []util.Pattern
 	pcreregs []*regexp.Regexp
@@ -110,7 +110,7 @@ func (r *staticRouter) watch() {
 }
 */
 
-func (r *staticRouter) Register(ep *apipb.Endpoint) error {
+func (r *staticRouter) Register(ep *api.Endpoint) error {
 	if err := api.Validate(ep); err != nil {
 		return err
 	}
@@ -168,7 +168,7 @@ func (r *staticRouter) Register(ep *apipb.Endpoint) error {
 	return nil
 }
 
-func (r *staticRouter) Deregister(ep *apipb.Endpoint) error {
+func (r *staticRouter) Deregister(ep *api.Endpoint) error {
 	if err := api.Validate(ep); err != nil {
 		return err
 	}
@@ -192,7 +192,7 @@ func (r *staticRouter) Close() error {
 	return nil
 }
 
-func (r *staticRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
+func (r *staticRouter) Endpoint(req *http.Request) (*api.Service, error) {
 	ep, err := r.endpoint(req)
 	if err != nil {
 		return nil, err
@@ -208,7 +208,7 @@ func (r *staticRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 	if ep.apiep.Stream {
 		for _, svc := range services {
 			if len(svc.Endpoints) == 0 {
-				e := &regpb.Endpoint{}
+				e := &registry.Endpoint{}
 				e.Name = strings.Join(epf[1:], ".")
 				e.Metadata = make(map[string]string)
 				e.Metadata["stream"] = "true"
@@ -222,9 +222,9 @@ func (r *staticRouter) Endpoint(req *http.Request) (*apipb.Service, error) {
 		}
 	}
 
-	svc := &apipb.Service{
+	svc := &api.Service{
 		Name: epf[0],
-		Endpoint: &apipb.Endpoint{
+		Endpoint: &api.Endpoint{
 			Name:    strings.Join(epf[1:], "."),
 			Handler: "rpc",
 			Host:    ep.apiep.Host,
@@ -341,7 +341,7 @@ func (r *staticRouter) endpoint(req *http.Request) (*endpoint, error) {
 	return nil, fmt.Errorf("endpoint not found for %v", req.URL)
 }
 
-func (r *staticRouter) Route(req *http.Request) (*apipb.Service, error) {
+func (r *staticRouter) Route(req *http.Request) (*api.Service, error) {
 	if r.isClosed() {
 		return nil, errors.New("router closed")
 	}

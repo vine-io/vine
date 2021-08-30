@@ -92,7 +92,7 @@ type reg struct {
 
 	sync.RWMutex
 	lastPull time.Time
-	services []*regpb.Service
+	services []*registry.Service
 }
 
 // Handle serves the web dashboard and proxies where appropriate
@@ -210,7 +210,7 @@ func (s *service) proxy() *proxy {
 	}
 }
 
-func format(v *regpb.Value) string {
+func format(v *registry.Value) string {
 	if v == nil || len(v.Values) == 0 {
 		return "{}"
 	}
@@ -221,7 +221,7 @@ func format(v *regpb.Value) string {
 	return fmt.Sprintf("{\n%s}", strings.Join(f, ""))
 }
 
-func formatEndpoint(v *regpb.Value, r int) string {
+func formatEndpoint(v *registry.Value, r int) string {
 	// default format is tabbed plus the value plus new line
 	fparts := []string{"", "%s %s", "\n"}
 	for i := 0; i < r+1; i++ {
@@ -375,7 +375,7 @@ func (s *service) callHandler(c *fiber.Ctx) error {
 	//
 	//sort.Sort(sortedServices{services})
 	//
-	//serviceMap := make(map[string][]*regpb.Endpoint)
+	//serviceMap := make(map[string][]*registry.Endpoint)
 	//for _, service := range services {
 	//	if len(service.Endpoints) > 0 {
 	//		serviceMap[service.Name] = service.Endpoints

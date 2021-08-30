@@ -25,7 +25,7 @@ package static
 
 import (
 	"github.com/vine-io/vine/core/client/selector"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
 // staticSelector is a static selector
@@ -45,15 +45,15 @@ func (s *staticSelector) Options() selector.Options {
 }
 
 func (s *staticSelector) Select(service string, opts ...selector.SelectOption) (selector.Next, error) {
-	return func() (*regpb.Node, error) {
-		return &regpb.Node{
+	return func() (*registry.Node, error) {
+		return &registry.Node{
 			Id:      service,
 			Address: service,
 		}, nil
 	}, nil
 }
 
-func (s *staticSelector) Mark(service string, node *regpb.Node, err error) {
+func (s *staticSelector) Mark(service string, node *registry.Node, err error) {
 	return
 }
 

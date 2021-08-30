@@ -51,9 +51,9 @@ func TestRoundTripper(t *testing.T) {
 
 	go http.Serve(l, nil)
 
-	m.Register(&regpb.Service{
+	m.Register(&registry.Service{
 		Name: "example.com",
-		Nodes: []*regpb.Node{
+		Nodes: []*registry.Node{
 			{
 				Id:      "1",
 				Address: l.Addr().String(),

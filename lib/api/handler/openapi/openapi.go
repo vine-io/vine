@@ -34,8 +34,6 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/vine-io/vine/core/registry"
 	log "github.com/vine-io/vine/lib/logger"
-	openapipb "github.com/vine-io/vine/proto/apis/openapi"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	maddr "github.com/vine-io/vine/util/addr"
 
 	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
@@ -78,11 +76,11 @@ func openAPIJOSNHandler(ctx *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(500, err.Error())
 	}
-	tags := make(map[string]*openapipb.OpenAPITag, 0)
-	paths := make(map[string]*openapipb.OpenAPIPath, 0)
-	schemas := make(map[string]*openapipb.Model, 0)
-	security := &openapipb.SecuritySchemes{}
-	servers := make([]*openapipb.OpenAPIServer, 0)
+	tags := make(map[string]*registry.OpenAPITag, 0)
+	paths := make(map[string]*registry.OpenAPIPath, 0)
+	schemas := make(map[string]*registry.Model, 0)
+	security := &registry.SecuritySchemes{}
+	servers := make([]*registry.OpenAPIServer, 0)
 	for _, item := range services {
 		list, err := registry.GetService(item.Name)
 		if err != nil {
@@ -102,7 +100,7 @@ func openAPIJOSNHandler(ctx *fiber.Ctx) error {
 					if !strings.HasPrefix(v, "http://") || !strings.HasPrefix(v, "https://") {
 						v = "http://" + v
 					}
-					servers = append(servers, &openapipb.OpenAPIServer{
+					servers = append(servers, &registry.OpenAPIServer{
 						Url:         v,
 						Description: item.Name,
 					})
@@ -139,17 +137,17 @@ func openAPIJOSNHandler(ctx *fiber.Ctx) error {
 			}
 		}
 	}
-	openapi := &openapipb.OpenAPI{
+	openapi := &registry.OpenAPI{
 		Openapi: "3.0.1",
-		Info: &openapipb.OpenAPIInfo{
+		Info: &registry.OpenAPIInfo{
 			Title:       "Vine Document",
 			Description: "OpenAPI3.0",
 			Version:     "latest",
 		},
-		Tags:    []*openapipb.OpenAPITag{},
+		Tags:    []*registry.OpenAPITag{},
 		Paths:   paths,
 		Servers: servers,
-		Components: &openapipb.OpenAPIComponents{
+		Components: &registry.OpenAPIComponents{
 			SecuritySchemes: security,
 			Schemas:         schemas,
 		},
@@ -166,7 +164,7 @@ func openAPIServiceHandler(ctx *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(500, err.Error())
 	}
-	out := make([]*regpb.Service, 0)
+	out := make([]*registry.Service, 0)
 	for _, item := range services {
 		list, _ := registry.GetService(item.Name)
 		out = append(out, list...)

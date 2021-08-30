@@ -32,11 +32,11 @@ import (
 
 func TestStoreRegex(t *testing.T) {
 	router := newRouter()
-	router.store([]*regpb.Service{
+	router.store([]*registry.Service{
 		{
 			Name:    "Foobar",
 			Version: "latest",
-			Endpoints: []*regpb.Endpoint{
+			Endpoints: []*registry.Endpoint{
 				{
 					Name: "foo",
 					Metadata: map[string]string{

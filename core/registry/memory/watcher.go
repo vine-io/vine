@@ -26,17 +26,16 @@ import (
 	"errors"
 
 	"github.com/vine-io/vine/core/registry"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type Watcher struct {
 	id   string
 	wo   registry.WatchOptions
-	res  chan *regpb.Result
+	res  chan *registry.Result
 	exit chan bool
 }
 
-func (m *Watcher) Next() (*regpb.Result, error) {
+func (m *Watcher) Next() (*registry.Result, error) {
 	for {
 		select {
 		case r := <-m.res:

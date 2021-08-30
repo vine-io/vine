@@ -28,7 +28,6 @@ import (
 	"strings"
 
 	"github.com/vine-io/vine/core/server"
-	apipb "github.com/vine-io/vine/proto/apis/api"
 )
 
 type Api interface {
@@ -37,9 +36,9 @@ type Api interface {
 	// Options Get the options
 	Options() Options
 	// Register a http handler
-	Register(*apipb.Endpoint) error
+	Register(*Endpoint) error
 	// Deregister unregister a route
-	Deregister(*apipb.Endpoint) error
+	Deregister(*Endpoint) error
 	// String implementation of api
 	String() string
 }
@@ -65,7 +64,7 @@ func slice(s string) []string {
 }
 
 // Encode encodes an endpoint to endpoint metadata
-func Encode(e *apipb.Endpoint) map[string]string {
+func Encode(e *Endpoint) map[string]string {
 	if e == nil {
 		return nil
 	}
@@ -92,12 +91,12 @@ func Encode(e *apipb.Endpoint) map[string]string {
 }
 
 // Decode decodes endpoint metadata into an endpoint
-func Decode(e map[string]string) *apipb.Endpoint {
+func Decode(e map[string]string) *Endpoint {
 	if e == nil {
 		return nil
 	}
 
-	return &apipb.Endpoint{
+	return &Endpoint{
 		Name:        e["endpoint"],
 		Description: e["description"],
 		Method:      slice(e["method"]),
@@ -108,7 +107,7 @@ func Decode(e map[string]string) *apipb.Endpoint {
 }
 
 // Validate validates an endpoint to guarantee it won't blow up when being served
-func Validate(e *apipb.Endpoint) error {
+func Validate(e *Endpoint) error {
 	if e == nil {
 		return errors.New("endpoint is nil")
 	}
@@ -172,6 +171,6 @@ func NewGateway() Gateway {
 //			Path: []string{"/greeter"},
 //		},
 //	))
-func WithEndpoint(e *apipb.Endpoint) server.HandlerOption {
+func WithEndpoint(e *Endpoint) server.HandlerOption {
 	return server.EndpointMetadata(e.Name, Encode(e))
 }

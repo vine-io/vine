@@ -43,7 +43,7 @@ import (
 	raw "github.com/vine-io/vine/core/codec/bytes"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/lib/cmd"
-	"github.com/vine-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/lib/errors"
 	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/context/metadata"
 )
@@ -72,8 +72,8 @@ func (h *httpClient) next(request client.Request, opts client.CallOptions) (sele
 
 	// return remote address
 	if len(opts.Address) > 0 {
-		return func() (*regpb.Node, error) {
-			return &regpb.Node{
+		return func() (*registry.Node, error) {
+			return &registry.Node{
 				Address: opts.Address[0],
 				Metadata: map[string]string{
 					"protocol": "http",
@@ -98,7 +98,7 @@ func (h *httpClient) next(request client.Request, opts client.CallOptions) (sele
 	return next, nil
 }
 
-func (h *httpClient) call(ctx context.Context, node *regpb.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
+func (h *httpClient) call(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
 	// set the address
 	address := node.Address
 	header := make(http.Header)
@@ -171,7 +171,7 @@ func (h *httpClient) call(ctx context.Context, node *regpb.Node, req client.Requ
 	return nil
 }
 
-func (h *httpClient) stream(ctx context.Context, node *regpb.Node, req client.Request, opts client.CallOptions) (client.Stream, error) {
+func (h *httpClient) stream(ctx context.Context, node *registry.Node, req client.Request, opts client.CallOptions) (client.Stream, error) {
 	// set the address
 	address := node.Address
 	header := make(http.Header)

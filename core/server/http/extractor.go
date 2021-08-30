@@ -33,7 +33,7 @@ import (
 	"github.com/vine-io/vine/util/addr"
 )
 
-func serviceDef(opts server.Options) *regpb.Service {
+func serviceDef(opts server.Options) *registry.Service {
 	var advt, host string
 	var port int
 
@@ -56,7 +56,7 @@ func serviceDef(opts server.Options) *regpb.Service {
 		addr = host
 	}
 
-	node := &regpb.Node{
+	node := &registry.Node{
 		Id:       opts.Name + "-" + opts.Id,
 		Address:  fmt.Sprintf("%s:%d", addr, port),
 		Metadata: opts.Metadata,
@@ -67,14 +67,14 @@ func serviceDef(opts server.Options) *regpb.Service {
 	node.Metadata["registry"] = opts.Registry.String()
 	node.Metadata["protocol"] = "http"
 
-	return &regpb.Service{
+	return &registry.Service{
 		Name:    opts.Name,
 		Version: opts.Version,
-		Nodes:   []*regpb.Node{node},
+		Nodes:   []*registry.Node{node},
 	}
 }
 
-func extractValue(v reflect.Type, d int) *regpb.Value {
+func extractValue(v reflect.Type, d int) *registry.Value {
 	if d == 3 {
 		return nil
 	}
@@ -86,7 +86,7 @@ func extractValue(v reflect.Type, d int) *regpb.Value {
 		v = v.Elem()
 	}
 
-	arg := &regpb.Value{
+	arg := &registry.Value{
 		Name: v.Name(),
 		Type: v.Name(),
 	}
@@ -128,7 +128,7 @@ func extractValue(v reflect.Type, d int) *regpb.Value {
 	return arg
 }
 
-func extractEndpoint(method reflect.Method) *regpb.Endpoint {
+func extractEndpoint(method reflect.Method) *registry.Endpoint {
 	if method.PkgPath != "" {
 		return nil
 	}
@@ -157,7 +157,7 @@ func extractEndpoint(method reflect.Method) *regpb.Endpoint {
 	request := extractValue(reqType, 0)
 	response := extractValue(rspType, 0)
 
-	return &regpb.Endpoint{
+	return &registry.Endpoint{
 		Name:     method.Name,
 		Request:  request,
 		Response: response,
@@ -167,7 +167,7 @@ func extractEndpoint(method reflect.Method) *regpb.Endpoint {
 	}
 }
 
-func extractSubValue(typ reflect.Type) *regpb.Value {
+func extractSubValue(typ reflect.Type) *registry.Value {
 	var reqType reflect.Type
 	switch typ.NumIn() {
 	case 1:

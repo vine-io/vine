@@ -25,14 +25,14 @@ package grpc
 import (
 	"reflect"
 
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type rpcHandler struct {
 	name      string
 	handler   interface{}
-	endpoints []*regpb.Endpoint
+	endpoints []*registry.Endpoint
 	opts      server.HandlerOptions
 }
 
@@ -49,7 +49,7 @@ func newRpcHandler(handler interface{}, opts ...server.HandlerOption) server.Han
 	hdlr := reflect.ValueOf(handler)
 	name := reflect.Indirect(hdlr).Type().Name()
 
-	var endpoints []*regpb.Endpoint
+	var endpoints []*registry.Endpoint
 
 	for m := 0; m < typ.NumMethod(); m++ {
 		if e := extractEndpoint(typ.Method(m)); e != nil {
@@ -79,7 +79,7 @@ func (r *rpcHandler) Handler() interface{} {
 	return r.handler
 }
 
-func (r *rpcHandler) Endpoints() []*regpb.Endpoint {
+func (r *rpcHandler) Endpoints() []*registry.Endpoint {
 	return r.endpoints
 }
 

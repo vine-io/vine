@@ -41,7 +41,6 @@ import (
 	svc "github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/lib/logger"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	maddr "github.com/vine-io/vine/util/addr"
 	"github.com/vine-io/vine/util/backoff"
 	mhttp "github.com/vine-io/vine/util/http"
@@ -54,7 +53,7 @@ type service struct {
 	opts Options
 
 	app *fiber.App
-	svc *regpb.Service
+	svc *registry.Service
 
 	sync.RWMutex
 	running bool
@@ -73,7 +72,7 @@ func newService(opts ...Option) Service {
 	return s
 }
 
-func (s *service) genSrv() *regpb.Service {
+func (s *service) genSrv() *registry.Service {
 	var host string
 	var port string
 	var err error
@@ -105,10 +104,10 @@ func (s *service) genSrv() *regpb.Service {
 		addr = "[" + addr + "]"
 	}
 
-	return &regpb.Service{
+	return &registry.Service{
 		Name:    s.opts.Name,
 		Version: s.opts.Version,
-		Nodes: []*regpb.Node{{
+		Nodes: []*registry.Node{{
 			Id:       s.opts.Id,
 			Address:  fmt.Sprintf("%s:%s", addr, port),
 			Metadata: s.opts.Metadata,
@@ -325,7 +324,7 @@ func (s *service) Handle(method, pattern string, handler fiber.Handler) {
 	// if its unseen then add an endpoint
 	if !seen {
 		s.Lock()
-		s.svc.Endpoints = append(s.svc.Endpoints, &regpb.Endpoint{
+		s.svc.Endpoints = append(s.svc.Endpoints, &registry.Endpoint{
 			Name:     pattern,
 			Metadata: map[string]string{"method": method},
 		})

@@ -1199,11 +1199,11 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
 	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (regpb.Watcher, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>registry.Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>registry.Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>registry.Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>registry.Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (registry.Watcher, <span style="color:#8be9fd">error</span>)
 	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
 </code></pre></div><h2 id="完整实例">完整实例</h2>
@@ -1226,14 +1226,14 @@ if (!doNotTrack) {
 	<span style="color:#6272a4">// initialize registry
 </span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
 
-	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>regpb.Service{
+	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
 		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
 		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
 		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
-		Endpoints: []<span style="color:#ff79c6">*</span>regpb.Endpoint{{
-			Request: <span style="color:#ff79c6">&amp;</span>regpb.Value{},
+		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{{
+			Request: <span style="color:#ff79c6">&amp;</span>registry.Value{},
 		}},
-		Nodes: []<span style="color:#ff79c6">*</span>regpb.Node{<span style="color:#ff79c6">&amp;</span>regpb.Node{
+		Nodes: []<span style="color:#ff79c6">*</span>registry.Node{<span style="color:#ff79c6">&amp;</span>registry.Node{
 			Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
 			Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
 		}},

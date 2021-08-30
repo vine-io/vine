@@ -44,8 +44,7 @@ import (
 	"github.com/vine-io/vine/core/codec/json"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/cache"
-	"github.com/vine-io/vine/proto/apis/errors"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/lib/errors"
 	maddr "github.com/vine-io/vine/util/addr"
 	mnet "github.com/vine-io/vine/util/net"
 	mls "github.com/vine-io/vine/util/tls"
@@ -78,7 +77,7 @@ type httpSubscriber struct {
 	id    string
 	topic string
 	fn    broker.Handler
-	svc   *regpb.Service
+	svc   *registry.Service
 	hb    *httpBroker
 }
 
@@ -565,7 +564,7 @@ func (h *httpBroker) Publish(topic string, msg *broker.Message, opts ...broker.P
 	}
 	h.RUnlock()
 
-	pub := func(node *regpb.Node, t string, b []byte) error {
+	pub := func(node *registry.Node, t string, b []byte) error {
 		scheme := "http"
 
 		// check if secure is added in metadata
@@ -588,9 +587,9 @@ func (h *httpBroker) Publish(topic string, msg *broker.Message, opts ...broker.P
 		return nil
 	}
 
-	svc := func(s []*regpb.Service, b []byte) {
+	svc := func(s []*registry.Service, b []byte) {
 		for _, service := range s {
-			var nodes []*regpb.Node
+			var nodes []*registry.Node
 
 			for _, node := range service.Nodes {
 				// only use nodes tagged with broker http
@@ -686,7 +685,7 @@ func (h *httpBroker) Subscribe(topic string, handler broker.Handler, opts ...bro
 	}
 
 	// register service
-	node := &regpb.Node{
+	node := &registry.Node{
 		Id:      topic + "-" + h.id,
 		Address: mnet.HostPort(addr, port),
 		Metadata: map[string]string{
@@ -702,10 +701,10 @@ func (h *httpBroker) Subscribe(topic string, handler broker.Handler, opts ...bro
 		version = broadcastVersion
 	}
 
-	service := &regpb.Service{
+	service := &registry.Service{
 		Name:    serviceName,
 		Version: version,
-		Nodes:   []*regpb.Node{node},
+		Nodes:   []*registry.Node{node},
 	}
 
 	// generate subscriber

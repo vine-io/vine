@@ -30,8 +30,8 @@ import (
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/lib/api/handler"
-	apipb "github.com/vine-io/vine/proto/apis/api"
-	"github.com/vine-io/vine/proto/apis/errors"
+	"github.com/vine-io/vine/lib/errors"
+	"github.com/vine-io/vine/lib/api"
 	ctx "github.com/vine-io/vine/util/context"
 )
 
@@ -41,7 +41,7 @@ const (
 
 type apiHandler struct {
 	opts handler.Options
-	s    *apipb.Service
+	s    *api.Service
 }
 
 // Handle API handler is the default handler which takes api.Request and returns api.Response
@@ -60,7 +60,7 @@ func (a *apiHandler) Handle(c *fiber.Ctx) error {
 		return fiber.NewError(500, er.Error())
 	}
 
-	var service *apipb.Service
+	var service *api.Service
 
 	// create the context from headers
 	cx := ctx.FromRequest(c)
@@ -87,7 +87,7 @@ func (a *apiHandler) Handle(c *fiber.Ctx) error {
 	// create request and response
 	cc := a.opts.Client
 	req := cc.NewRequest(service.Name, service.Endpoint.Name, request)
-	rsp := &apipb.Response{}
+	rsp := &api.Response{}
 
 	// create strategy
 	so := selector.WithStrategy(strategy(service.Services))
@@ -129,7 +129,7 @@ func NewHandler(opts ...handler.Option) handler.Handler {
 	}
 }
 
-func WithService(s *apipb.Service, opts ...handler.Option) handler.Handler {
+func WithService(s *api.Service, opts ...handler.Option) handler.Handler {
 	options := handler.NewOptions(opts...)
 	return &apiHandler{
 		opts: options,

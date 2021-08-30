@@ -29,11 +29,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/vine-io/vine/core/registry"
 
 	"github.com/vine-io/vine/core/codec"
 	log "github.com/vine-io/vine/lib/logger"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
-	signalutil "github.com/vine-io/vine/util/signal"
+	usignal "github.com/vine-io/vine/util/signal"
 )
 
 // Server is a simple vine server abstraction
@@ -142,7 +142,7 @@ type Stream interface {
 type Handler interface {
 	Name() string
 	Handler() interface{}
-	Endpoints() []*regpb.Endpoint
+	Endpoints() []*registry.Endpoint
 	Options() HandlerOptions
 }
 
@@ -152,7 +152,7 @@ type Handler interface {
 type Subscriber interface {
 	Topic() string
 	Subscriber() interface{}
-	Endpoints() []*regpb.Endpoint
+	Endpoints() []*registry.Endpoint
 	Options() SubscriberOptions
 }
 
@@ -219,7 +219,7 @@ func Run() error {
 	}
 
 	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, signalutil.Shutdown()...)
+	signal.Notify(ch, usignal.Shutdown()...)
 
 	log.Infof("Received signal %s", <-ch)
 

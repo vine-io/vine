@@ -90,21 +90,6 @@ install:
 	go get github.com/vine-io/vine/cmd/protoc-gen-dao
 	go get github.com/vine-io/vine/cmd/protoc-gen-cli
 
-protoc:
-	cd $(GOPATH)/src && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/api/api.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/openapi/openapi.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/registry/registry.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. ${ROOT}/proto/apis/errors/errors.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/broker/broker.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/config/config.proto && \
-	protoc -I=. -I=$(GOPATH)/src --gogo_out=:. --vine_out=:. ${ROOT}/proto/services/registry/registry.proto
-
-
-	sed -i "" "s/ref,omitempty/\$$ref,omitempty/g" proto/apis/openapi/openapi.pb.go
-	sed -i "" "s/applicationJson,omitempty/application\/json,omitempty/g" proto/apis/openapi/openapi.pb.go
-	sed -i "" "s/applicationXml,omitempty/application\/xml,omitempty/g" proto/apis/openapi/openapi.pb.go
-
 openapi:
 	statik -m -f -src third_party/OpenAPI/ -dest service/api/handler/openapi
 

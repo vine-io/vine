@@ -22,14 +22,10 @@
 
 package registry
 
-import (
-	regpb "github.com/vine-io/vine/proto/apis/registry"
-)
-
 // Watcher is an interface that returns updates
 // about services within the registry.
 type Watcher interface {
 	// Next is a blocking call
-	Next() (*regpb.Result, error)
+	Next() (*Result, error)
 	Stop()
 }

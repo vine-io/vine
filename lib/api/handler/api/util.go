@@ -28,10 +28,10 @@ import (
 	"net"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/vine-io/vine/core/client/selector"
-	apipb "github.com/vine-io/vine/proto/apis/api"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/oxtoacart/bpool"
+	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/lib/api"
 )
 
 var (
@@ -39,13 +39,13 @@ var (
 	bufferPool = bpool.NewSizedBufferPool(1024, 8)
 )
 
-func requestToProto(c *fiber.Ctx) (*apipb.Request, error) {
-	req := &apipb.Request{
+func requestToProto(c *fiber.Ctx) (*api.Request, error) {
+	req := &api.Request{
 		Path:   string(c.Request().URI().Path()),
 		Method: c.Method(),
-		Header: make(map[string]*apipb.Pair),
-		Get:    make(map[string]*apipb.Pair),
-		Post:   make(map[string]*apipb.Pair),
+		Header: make(map[string]*api.Pair),
+		Get:    make(map[string]*api.Pair),
+		Post:   make(map[string]*api.Pair),
 		Url:    c.Request().URI().String(),
 	}
 
@@ -77,14 +77,14 @@ func requestToProto(c *fiber.Ctx) (*apipb.Request, error) {
 		}
 
 		// Set the header
-		req.Header["X-Forwarded-For"] = &apipb.Pair{
+		req.Header["X-Forwarded-For"] = &api.Pair{
 			Key:    "X-Forwarded-For",
 			Values: []string{ip},
 		}
 	}
 
 	// Host is stripped from net/http Headers so let's add it
-	req.Header["Host"] = &apipb.Pair{
+	req.Header["Host"] = &api.Pair{
 		Key:    "Host",
 		Values: []string{string(c.Request().Host())},
 	}
@@ -94,7 +94,7 @@ func requestToProto(c *fiber.Ctx) (*apipb.Request, error) {
 		key, value := string(k), string(v)
 		header, ok := req.Get[key]
 		if !ok {
-			header = &apipb.Pair{
+			header = &api.Pair{
 				Key: key,
 			}
 			req.Get[key] = header
@@ -107,7 +107,7 @@ func requestToProto(c *fiber.Ctx) (*apipb.Request, error) {
 		key, value := string(k), string(v)
 		header, ok := req.Post[key]
 		if !ok {
-			header = &apipb.Pair{
+			header = &api.Pair{
 				Key: key,
 			}
 			req.Get[key] = header
@@ -119,7 +119,7 @@ func requestToProto(c *fiber.Ctx) (*apipb.Request, error) {
 		key, value := string(k), string(v)
 		header, ok := req.Header[key]
 		if !ok {
-			header = &apipb.Pair{
+			header = &api.Pair{
 				Key: key,
 			}
 			req.Get[key] = header
@@ -131,8 +131,8 @@ func requestToProto(c *fiber.Ctx) (*apipb.Request, error) {
 }
 
 // strategy is a hack for selection
-func strategy(services []*regpb.Service) selector.Strategy {
-	return func(_ []*regpb.Service) selector.Next {
+func strategy(services []*registry.Service) selector.Strategy {
+	return func(_ []*registry.Service) selector.Next {
 		// ignore input to this function, use services above
 		return selector.Random(services)
 	}

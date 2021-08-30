@@ -28,7 +28,6 @@ import (
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/cache"
 	"github.com/vine-io/vine/core/registry/mdns"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type registrySelector struct {
@@ -94,7 +93,7 @@ func (c *registrySelector) Select(service string, opts ...SelectOption) (Next, e
 	return sopts.Strategy(services), nil
 }
 
-func (c *registrySelector) Mark(service string, node *regpb.Node, err error) {}
+func (c *registrySelector) Mark(service string, node *registry.Node, err error) {}
 
 func (c *registrySelector) Reset(service string) {}
 

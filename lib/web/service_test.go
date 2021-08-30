@@ -87,7 +87,7 @@ func TestService(t *testing.T) {
 		close(errCh)
 	}()
 
-	var s []*regpb.Service
+	var s []*registry.Service
 
 	eventually(func() bool {
 		var err error
@@ -279,7 +279,7 @@ func TestTLS(t *testing.T) {
 		close(errCh)
 	}()
 
-	var s []*regpb.Service
+	var s []*registry.Service
 
 	eventually(func() bool {
 		var err error

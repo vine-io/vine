@@ -26,13 +26,12 @@ import (
 	"context"
 
 	"github.com/vine-io/vine/core/registry"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 type serviceKey struct{}
 
 func getServiceRecords(ctx context.Context) map[string]map[string]*record {
-	memServices, ok := ctx.Value(serviceKey{}).(map[string][]*regpb.Service)
+	memServices, ok := ctx.Value(serviceKey{}).(map[string][]*registry.Service)
 	if !ok {
 		return nil
 	}
@@ -53,7 +52,7 @@ func getServiceRecords(ctx context.Context) map[string]map[string]*record {
 }
 
 // Services is an option that preloads service data
-func Services(s map[string][]*regpb.Service) registry.Option {
+func Services(s map[string][]*registry.Service) registry.Option {
 	return func(o *registry.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()

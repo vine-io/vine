@@ -25,11 +25,11 @@ package client
 import (
 	"context"
 
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
 // CallFunc represents the individual call func
-type CallFunc func(ctx context.Context, node *regpb.Node, req Request, rsp interface{}, opts CallOptions) error
+type CallFunc func(ctx context.Context, node *registry.Node, req Request, rsp interface{}, opts CallOptions) error
 
 // CallWrapper is a low level wrapper for the CallFunc
 type CallWrapper func(CallFunc) CallFunc

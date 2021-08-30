@@ -37,12 +37,12 @@ import (
 
 var (
 	// mock data
-	testData = map[string][]*regpb.Service{
+	testData = map[string][]*registry.Service{
 		"foo": {
 			{
 				Name:    "foo",
 				Version: "1.0.0",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "foo-1.0.0-123",
 						Address: "localhost:9999",
@@ -56,7 +56,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.1",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "foo-1.0.1-321",
 						Address: "localhost:6666",
@@ -66,7 +66,7 @@ var (
 			{
 				Name:    "foo",
 				Version: "1.0.3",
-				Nodes: []*regpb.Node{
+				Nodes: []*registry.Node{
 					{
 						Id:      "foo-1.0.3-345",
 						Address: "localhost:8888",

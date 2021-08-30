@@ -29,7 +29,7 @@ import (
 
 type httpHandler struct {
 	opts server.HandlerOptions
-	eps  []*regpb.Endpoint
+	eps  []*registry.Endpoint
 	hd   interface{}
 }
 
@@ -41,7 +41,7 @@ func (h *httpHandler) Handler() interface{} {
 	return h.hd
 }
 
-func (h *httpHandler) Endpoints() []*regpb.Endpoint {
+func (h *httpHandler) Endpoints() []*registry.Endpoint {
 	return h.eps
 }
 
