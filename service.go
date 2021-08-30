@@ -167,7 +167,6 @@ func (s *service) Stop() error {
 }
 
 func (s *service) Run() error {
-	// start the profiler
 	logger.Infof("Starting [service] %s", s.Name())
 	logger.Infof("service [version] %s", s.Options().Server.Options().Version)
 
