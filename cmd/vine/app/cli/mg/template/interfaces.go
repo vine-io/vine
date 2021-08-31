@@ -8,7 +8,7 @@ import (
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
-	verrs "github.com/vine-io/vine/proto/apis/errors"
+	verrs "github.com/vine-io/vine/lib/errors"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
@@ -119,7 +119,7 @@ import (
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
-	verrs "github.com/vine-io/vine/proto/apis/errors"
+	verrs "github.com/vine-io/vine/lib/errors"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
@@ -230,7 +230,7 @@ import (
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
-	verrs "github.com/vine-io/vine/proto/apis/errors"
+	verrs "github.com/vine-io/vine/lib/errors"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/app"
@@ -341,7 +341,7 @@ import (
 
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
-	verrs "github.com/vine-io/vine/proto/apis/errors"
+	verrs "github.com/vine-io/vine/lib/errors"
 
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/{{.Name}}/app"

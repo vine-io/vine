@@ -36,7 +36,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 func TestService(t *testing.T) {

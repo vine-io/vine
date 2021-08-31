@@ -28,8 +28,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 func TestRoundTripper(t *testing.T) {
