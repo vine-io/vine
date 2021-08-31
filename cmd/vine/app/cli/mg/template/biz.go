@@ -10,7 +10,7 @@ import (
 )
 
 type Caller interface {
-	Call(ctx context.Context, name string) (string, error)
+	CallS(ctx context.Context, name string) (string, error)
 }
 
 func init() {
@@ -21,7 +21,7 @@ type caller struct {
 	// inject Repo
 }
 
-func (c *caller) Call(ctx context.Context, name string) (string, error) {
+func (c *caller) CallS(ctx context.Context, name string) (string, error) {
 	return "reply: " + name, nil
 }
 `

@@ -24,21 +24,21 @@
         
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// The registry provides an interface for service discovery
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// The registry provides an interface for service discovery
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// and an abstraction over varying implementations
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// {consul, etcd, zookeeper, ...}
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (registry.Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (regpb.Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;完整实例&#34;&gt;完整实例&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
@@ -57,14 +57,14 @@
 	&lt;span style=&#34;color:#6272a4&#34;&gt;// initialize registry
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
 
-	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Service{
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;regpb.Service{
 		Name:     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;,
 		Version:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;1.0.0&amp;#34;&lt;/span&gt;,
 		Metadata: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{},
-		Endpoints: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Endpoint{{
-			Request: &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Value{},
+		Endpoints: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Endpoint{{
+			Request: &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;regpb.Value{},
 		}},
-		Nodes: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node{&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Node{
+		Nodes: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Node{&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;regpb.Node{
 			Id:      uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(),
 			Address: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1:1111&amp;#34;&lt;/span&gt;,
 		}},
@@ -212,7 +212,7 @@
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
 &lt;p&gt;微服务是一种事件驱动的体系结构模式，因此 &lt;strong&gt;Vine&lt;/strong&gt; 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Broker is an interface used for asynchronous messaging.
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Broker is an interface used for asynchronous messaging.
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Broker &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
@@ -226,21 +226,21 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;默认情况下，vine 实现点对点 http 代理，但可以通过 &lt;a href=&#34;https://github.com/vine-io/plugins&#34;&gt;plugins&lt;/a&gt; 替换实现。&lt;/p&gt;
 &lt;h2 id=&#34;发布消息&#34;&gt;发布消息&lt;/h2&gt;
 &lt;p&gt;使用 topic 名称和服务客户端创建一个新的发布者&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEvent&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEvent&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;发布 proto 消息&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;proto.Event{Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;event&amp;#34;&lt;/span&gt;})
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;proto.Event{Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;event&amp;#34;&lt;/span&gt;})
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;订阅&#34;&gt;订阅&lt;/h2&gt;
 &lt;p&gt;创建消息处理程序。它的签名应该是 &lt;code&gt;func(context.Context, v interface{}) error&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;ProcessEvent&lt;/span&gt;(ctx context.Context, event &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;proto.Event) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;ProcessEvent&lt;/span&gt;(ctx context.Context, event &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;proto.Event) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
     fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Got event %+v\n&amp;#34;&lt;/span&gt;, event)
     &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 topic 注册消息处理程序&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, ProcessEvent)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, ProcessEvent)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;完整实例可以看 &lt;a href=&#34;https://github.com/vine-io/vine-example/tree/main/pubsub&#34;&gt;example/pubsub&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;单独使用-broker&#34;&gt;单独使用 Broker&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;Broker&lt;/code&gt; 也可以单独使用：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
@@ -321,7 +321,7 @@
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
 &lt;p&gt;我们定义以下错误类型&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Error &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Error &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
 	Id       &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;     &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;id,omitempty&amp;#34;`&lt;/span&gt;
 	Code     &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt;      &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;code,omitempty&amp;#34;`&lt;/span&gt;
 	Detail   &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;     &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;detail,omitempty&amp;#34;`&lt;/span&gt;
@@ -334,13 +334,13 @@
 &lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
 &lt;p&gt;让我们假设程序中发生错误，然后，你应该确定返回哪种错误，并执行以下操作。
 假设提供的数据无效：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;badRequest&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;com.example.srv.service&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;invalid field&amp;#34;&lt;/span&gt;)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;badRequest&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;com.example.srv.service&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;invalid field&amp;#34;&lt;/span&gt;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果发生内部错误&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
     &lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;InternalServerError&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;com.example.srv.service&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;failed to read db: %v&amp;#34;&lt;/span&gt;, err.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;())
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果你从客户端收到一些错误，可以按照以下方式处理:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewGreeterService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv.greeter&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewGreeterService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv.greeter&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
 rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;Clinet&lt;/span&gt;(ctx, req)
 &lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
     &lt;span style=&#34;color:#6272a4&#34;&gt;// parse out the error 
@@ -352,7 +352,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    }
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;错误列表&#34;&gt;错误列表&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;BadGateway&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;errors.Error
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;BadGateway&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;errors.Error
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;BadRequest&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;errors.Error
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Conflict&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;errors.Error
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Forbidden&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;errors.Error
@@ -366,13 +366,13 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Unauthorized&lt;/span&gt;(id, format &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, a &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;errors.Error
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;自定义错误&#34;&gt;自定义错误&lt;/h2&gt;
 &lt;p&gt;除了内置的错误类型之外，&lt;strong&gt;Vine&lt;/strong&gt; 支持自定义错误类型&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// 自定义错误，并记录错误位置
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// 自定义错误，并记录错误位置
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;customErr &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv.example&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;custom error&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;510&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;true&lt;/span&gt;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;其他&#34;&gt;其他&lt;/h2&gt;
 &lt;p&gt;判断错误类型是否相同&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;b &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;Equal&lt;/span&gt;(err1, err2)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;b &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;Equal&lt;/span&gt;(err1, err2)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;链式调用&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;e &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv.example&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;name must be set&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;404&lt;/span&gt;).
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;e &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; errors.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv.example&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;name must be set&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;404&lt;/span&gt;).
         &lt;span style=&#34;color:#50fa7b&#34;&gt;WithChild&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;111&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%v&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;child error&amp;#34;&lt;/span&gt;). &lt;span style=&#34;color:#6272a4&#34;&gt;// 添加额外错误
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#50fa7b&#34;&gt;WithPos&lt;/span&gt;(). &lt;span style=&#34;color:#6272a4&#34;&gt;// 记录错误位置 
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;WithStack&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;10001&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;stack context&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;// 追加上下文信息 
@@ -419,7 +419,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;/ul&gt;
 &lt;h3 id=&#34;changeset&#34;&gt;ChangeSet&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Source&lt;/strong&gt; 将 &lt;strong&gt;Config&lt;/strong&gt; 作为一个 &lt;strong&gt;ChangeSet&lt;/strong&gt; 返回，作为多个源的单一内部抽象。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// ChangeSet represents a set of changes from a source
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// ChangeSet represents a set of changes from a source
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; ChangeSet &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
 	Data      []&lt;span style=&#34;color:#8be9fd&#34;&gt;byte&lt;/span&gt;
 	CheckSum  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
@@ -439,7 +439,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;/ul&gt;
 &lt;h3 id=&#34;reader&#34;&gt;reader&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;Reader&lt;/code&gt; 将多个 &lt;strong&gt;ChangeSet&lt;/strong&gt; 表示为单个合并和查询的集合&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Reader is an interface for merging changesets
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Reader is an interface for merging changesets
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Reader &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
     &lt;span style=&#34;color:#6272a4&#34;&gt;// Merge multiple changeset into a single format
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#50fa7b&#34;&gt;Merge&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...*&lt;/span&gt;source.ChangeSet) (&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;source.ChangeSet, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
@@ -449,7 +449,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Reader&lt;/code&gt; 使用 &lt;code&gt;Encoder&lt;/code&gt; 将 &lt;strong&gt;ChangeSet&lt;/strong&gt; 解码为 &lt;code&gt;map[string]Values&lt;/code&gt;，然后将它们合并到单个 &lt;strong&gt;ChangeSet&lt;/strong&gt; 中。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Values is returned by the reader
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Values is returned by the reader
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Values &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Bytes&lt;/span&gt;() []&lt;span style=&#34;color:#8be9fd&#34;&gt;byte&lt;/span&gt;
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(path &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) Value
@@ -459,7 +459,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Scan&lt;/span&gt;(v &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Value&lt;/code&gt; 接口允许强制转换，类型断言，返回默认值&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Value represents a value of any type
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Value represents a value of any type
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Value &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Bool&lt;/span&gt;(def &lt;span style=&#34;color:#8be9fd&#34;&gt;bool&lt;/span&gt;) &lt;span style=&#34;color:#8be9fd&#34;&gt;bool&lt;/span&gt;
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Int&lt;/span&gt;(def &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt;) &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt;
@@ -474,7 +474,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;config&#34;&gt;Config&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Config&lt;/strong&gt; 管理所有配置，抽象 source，encoder，reader。
 它从多个源读取，同步，监听，并将它们合并为单个可查询的源。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Config is an interface abstraction for dynamic configuration
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Config is an interface abstraction for dynamic configuration
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Config &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 	&lt;span style=&#34;color:#6272a4&#34;&gt;// provide the reader.Values interface
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	reader.Values
@@ -495,7 +495,7 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;h3 id=&#34;实例配置&#34;&gt;实例配置&lt;/h3&gt;
 &lt;p&gt;只要我们有一个编码器来支持它，配置文件就可以是任务格式的。
 json 配置实例：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;{
     &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;#34;hosts&amp;#34;&lt;/span&gt;: {
         &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;#34;database&amp;#34;&lt;/span&gt;: {
             &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;#34;address&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;10.0.0.1&amp;#34;&lt;/span&gt;,
@@ -509,17 +509,17 @@ json 配置实例：&lt;/p&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;创建-config&#34;&gt;创建 Config&lt;/h3&gt;
 &lt;p&gt;创建一个新 &lt;strong&gt;Config&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/services/config&amp;#34;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/services/config&amp;#34;&lt;/span&gt;
 
 conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewConfig&lt;/span&gt;()
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;加载文件&#34;&gt;加载文件&lt;/h3&gt;
 &lt;p&gt;从文件加载配置，根据文件扩展名来确定配置格式。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/services/config&amp;#34;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/services/config&amp;#34;&lt;/span&gt;
 
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 加载 json 配置文件
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;config.&lt;span style=&#34;color:#50fa7b&#34;&gt;LoadFile&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/tmp/config.json&amp;#34;&lt;/span&gt;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果扩展不存在，可指定 &lt;code&gt;encoder&lt;/code&gt;。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/config&amp;#34;&lt;/span&gt;
@@ -540,11 +540,11 @@ conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span s
 	)
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;读取配置&#34;&gt;读取配置&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Map&lt;/span&gt;()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Map&lt;/span&gt;()
 
 fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(conf[&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hosts&amp;#34;&lt;/span&gt;])
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;扫描配置到结构体&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Host &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Host &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
 	Address &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;address&amp;#34;`&lt;/span&gt;
 	Port &lt;span style=&#34;color:#8be9fd&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;port&amp;#34;`&lt;/span&gt;
 }
@@ -567,7 +567,7 @@ fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(conf[&lt;span
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;读取值&#34;&gt;读取值&lt;/h3&gt;
 &lt;p&gt;从配置扫描值到结构体&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Host &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Host &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
     Address &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;  &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;address&amp;#34;`&lt;/span&gt;
     Port    &lt;span style=&#34;color:#8be9fd&#34;&gt;int&lt;/span&gt;     &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;port&amp;#34;`&lt;/span&gt;
 }
@@ -579,14 +579,14 @@ config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(&lt;span style
 &lt;span style=&#34;color:#6272a4&#34;&gt;// 10.0.0.1 3306
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(host.Address, host.Port)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;读取单个值作为 Go 类型&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Get address. Set default to localhost as fallback
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Get address. Set default to localhost as fallback
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;address &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hosts&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;database&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;address&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;localhost&amp;#34;&lt;/span&gt;)
 
 &lt;span style=&#34;color:#6272a4&#34;&gt;// Get port. Set default to 3000 as fallback
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;port &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hosts&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;database&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;port&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;Int&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;3000&lt;/span&gt;)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;监听配置&#34;&gt;监听配置&lt;/h3&gt;
 &lt;p&gt;监听配置文件。当文件更改时，更新到新值:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;w, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hosts&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;database&amp;#34;&lt;/span&gt;)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;w, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hosts&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;database&amp;#34;&lt;/span&gt;)
 &lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
     &lt;span style=&#34;color:#6272a4&#34;&gt;// do something
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;}
@@ -602,7 +602,7 @@ config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(&lt;span style
 v.&lt;span style=&#34;color:#50fa7b&#34;&gt;Scan&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;host)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;多源&#34;&gt;多源&lt;/h3&gt;
 &lt;p&gt;可以加载和合并多个源。合并优先级顺序相反:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Load&lt;/span&gt;(
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;config.&lt;span style=&#34;color:#50fa7b&#34;&gt;Load&lt;/span&gt;(
     &lt;span style=&#34;color:#6272a4&#34;&gt;// base config from env
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    env.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSource&lt;/span&gt;()
     &lt;span style=&#34;color:#6272a4&#34;&gt;// override env with flags
@@ -613,7 +613,7 @@ v.&lt;span style=&#34;color:#50fa7b&#34;&gt;Scan&lt;/span&gt;(&lt;span style=&#3
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;设置源编码器&#34;&gt;设置源编码器&lt;/h3&gt;
 &lt;p&gt;源要求编码器对数据进行编码 / 解码并指定更改集格式.&lt;/p&gt;
 &lt;p&gt;默认的编码器是 json. 要更改编码器可调整对应的类型选项.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;e &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; yaml.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEncoder&lt;/span&gt;()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;e &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; yaml.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEncoder&lt;/span&gt;()
 
 s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; consul.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSource&lt;/span&gt;(
     source.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithEncoder&lt;/span&gt;(e),
@@ -622,7 +622,7 @@ s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; consul.&lt;span styl
 &lt;p&gt;读取器使用编码器从不同格式的源解码数据.&lt;/p&gt;
 &lt;p&gt;默认的读取器支持 json, yaml, xml, toml 和 hcl. 它将合并的配置表示为 json.&lt;/p&gt;
 &lt;p&gt;可以通过指定的选项来添加一个新的编码器.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;e &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; yaml.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEncoder&lt;/span&gt;()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;e &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; yaml.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEncoder&lt;/span&gt;()
 
 r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewReader&lt;/span&gt;(
     reader.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithEncoder&lt;/span&gt;(e),

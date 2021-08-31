@@ -58,7 +58,7 @@ func (s *{{.Name}}) Init() error {
 }
 
 func (s *{{.Name}}) Call(ctx context.Context, name string) (string, error) {
-	return s.Caller.Call(ctx, name)
+	return s.Caller.CallS(ctx, name)
 }
 
 func (s *{{.Name}}) Stream() {

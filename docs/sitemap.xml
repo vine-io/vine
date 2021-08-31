@@ -1,215 +1,131 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>https://vine-io.github.io/vine/docs/guides/protobuf/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/overview/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/overview/</loc>
-    <lastmod>2021-08-27T13:42:05+08:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-08-28T09:40:17+08:00</lastmod>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/registry/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/di/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/trace/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/new/</loc>
     <lastmod>2021-08-27T13:42:05+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/</loc>
     <lastmod>2021-08-27T13:42:05+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/validator/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/project/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/vine/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/</loc>
     <lastmod>2021-08-26T16:15:11+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/metadata/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/build/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/openapi/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/</loc>
     <lastmod>2021-08-26T16:15:11+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/options/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/operator/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/breaker/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/plugins/</loc>
     <lastmod>2021-08-27T13:42:05+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/validate/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/deepcopy/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/ratelimiter/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/dao/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/about/</loc>
     <lastmod>2021-08-27T13:42:05+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/api/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/broker/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/server/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/client/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/errors/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/config/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/cache/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/codec/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/proxy/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/cmd/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/log/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/dao/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/sync/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/docs/</loc>
     <lastmod>2021-08-27T13:42:05+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/</loc>
     <lastmod>2021-08-12T14:56:10+08:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://vine-io.github.io/vine/search/</loc>
     <lastmod>2020-12-29T14:33:10+08:00</lastmod>
   </url>
-  
 </urlset>

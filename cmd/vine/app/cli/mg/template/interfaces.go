@@ -13,6 +13,7 @@ import (
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
 	"{{.Dir}}/pkg/app"
+
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
