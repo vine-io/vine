@@ -531,8 +531,147 @@ vine run helloworld
     
 	<h1 id="pg-67790003301156bb2bbfd3d432c5d2f6">1.3 - 项目结构</h1>
     
-	<p>// TODO</p>
+	<p><strong>Vine</strong> 提供命令行工具创建项目，其中包括了开发过程中需要的工具链和部署内容。符合 DDD 设计规范。</p>
+<h2 id="单服务">单服务</h2>
+<p>单服务目录结构使用以下命令创建:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir <span style="color:#8be9fd;font-style:italic">$PATH</span>/src/foo
+vine init
+vine new service foo
+</code></pre></div><p>生成目录结构:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">├── Makefile
+├── README.md
+├── api  // ------ 维护 grpc 接口，和 domain 层中领域模型
+│   └── service
+│       └── foo
+│           └── v1
+│               ├── foo.pb.go
+│               ├── foo.pb.validator.go
+│               ├── foo.pb.vine.go
+│               └── foo.proto
+├── cmd         // ------ 项目入口
+│   └── main.go
+├── deploy    // ------- 部署相关工具
+│   ├── Dockerfile
+│   ├── foo.ini
+│   └── foo.service
+├── go.mod
+├── go.sum
+├── pkg  // 服务内部代码
+│   ├── app  // ------- DDD 的 application 层，
+│   │   └── foo.go
+│   ├── app.go  // -------- 构造和组合各层代码，提供给 cmd/main.go
+│   ├── biz  // ---------- DDD 的 domain 层，维护业务代码
+│   │   └── foo.go
+│   ├── infra  // --------- DDD 的 infrastructure 层，底层通用代码
+│   │   ├── cache  // -------- 缓存相关
+│   │   │   └── cache.go
+│   │   └── repo  // ------- 数据库 repository，数据交互
+│   │       └── repo.go
+│   ├── interfaces   // ---------- DDD 的 interfaces 层，提供对外的 gRPC 接口 
+│   │   └── foo.go
+│   └── runtime
+│       ├── doc.go  // 维护服务版本信息
+│       └── inject  // ------ 维护依赖注入代码
+│           └── inject.go
+└── vine.toml   // -------- vine 项目的描述文件
+</code></pre></div><h2 id="多服务">多服务</h2>
+<p>当一个项目中有多个微服务时，我们推荐代码在一个目录中维护，使用以下命令创建</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/cluster
+<span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/cluster
 
+vine init --cluster
+vine new service helloworld
+</code></pre></div><p>生成以下目录结构:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">├── Makefile
+├── README.md
+├── api
+│   └── service
+│       └── helloworld
+│           └── v1
+│               └── helloworld.proto
+├── cmd
+│   └── helloworld
+│       └── main.go
+├── deploy
+│   ├── config
+│   │   └── helloworld.ini
+│   ├── docker
+│   │   └── helloworld
+│   │       └── Dockerfile
+│   └── systemd
+│       └── helloworld.service
+├── go.mod
+├── pkg   
+│   ├── helloworld // -------- 多服务是，pkg 每个目录代码一个服务
+│   │   ├── app
+│   │   │   └── helloworld.go
+│   │   ├── app.go
+│   │   ├── biz
+│   │   │   └── helloworld.go
+│   │   ├── infra
+│   │   │   ├── cache
+│   │   │   │   └── cache.go
+│   │   │   └── repo
+│   │   │       └── repo.go
+│   │   └── interfaces
+│   │       └── helloworld.go
+│   └── runtime  // ------ 多个服务间的通用代码
+│       ├── doc.go
+│       └── inject
+│           └── inject.go
+└── vine.toml
+</code></pre></div><h2 id="vinetoml">vine.toml</h2>
+<p><code>vine.toml</code> 是 <strong>Vine</strong> 项目的描述文件，当一个目录底下存在该文件时，会被识别为 <strong>Vine</strong> 项目。</p>
+<p><code>vine.toml</code> 存在两种格式，single 和 cluster。</p>
+<h3 id="single">single</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>package<span style="color:#ff79c6">]</span>               <span style="color:#6272a4"># [package] 描述项目的公共信息 </span>
+<span style="color:#8be9fd;font-style:italic">kind</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;single&#34;</span>         <span style="color:#6272a4"># 项目类型 single 和 cluster</span>
+<span style="color:#8be9fd;font-style:italic">namespace</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;go.vine&#34;</span>   <span style="color:#6272a4"># 统一的命名空间</span>
+
+<span style="color:#ff79c6">[</span>pkg<span style="color:#ff79c6">]</span>      <span style="color:#6272a4"># single 项目详细信息</span>
+<span style="color:#8be9fd;font-style:italic">name</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;foo&#34;</span>  <span style="color:#6272a4"># 项目名称</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;go.vine.service.foo&#34;</span> <span style="color:#6272a4"># 服务名称</span>
+<span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;service&#34;</span>    <span style="color:#6272a4"># 服务类型 service, gateway</span>
+<span style="color:#8be9fd;font-style:italic">version</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;latest&#34;</span>  <span style="color:#6272a4"># 服务版本</span>
+<span style="color:#8be9fd;font-style:italic">main</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;cmd/main.go&#34;</span> <span style="color:#6272a4"># 服务入口文件</span>
+<span style="color:#8be9fd;font-style:italic">dir</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/foo&#34;</span>  <span style="color:#6272a4"># 服务核心代码目录</span>
+<span style="color:#8be9fd;font-style:italic">output</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span>  <span style="color:#6272a4"># 编译成二进制文件的存放目录</span>
+<span style="color:#8be9fd;font-style:italic">flags</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">[</span>
+	<span style="color:#f1fa8c">&#34;-a&#34;</span>, <span style="color:#f1fa8c">&#34;-installsuffix&#34;</span>, <span style="color:#f1fa8c">&#34;cgo&#34;</span>, <span style="color:#f1fa8c">&#34;-ldflags \&#34;-s -w\&#34;&#34;</span>,  <span style="color:#6272a4"># 编译参数, 支持shell命令作为值 &#34;name=$(echo hello)&#34;</span>
+<span style="color:#ff79c6">]</span>
+
+<span style="color:#ff79c6">[[</span>proto<span style="color:#ff79c6">]]</span>    <span style="color:#6272a4"># *.proto 文件信息</span>
+<span style="color:#8be9fd;font-style:italic">name</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;foo&#34;</span> <span style="color:#6272a4"># proto 文件名称</span>
+<span style="color:#8be9fd;font-style:italic">pb</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/foo/api/service/foo/v1/foo.proto&#34;</span> <span style="color:#6272a4"># proto 文件路径</span>
+<span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;service&#34;</span> <span style="color:#6272a4"># proto 类型 service 和 api； service 表示 gRPC 服务，api 表示领域模型</span>
+<span style="color:#8be9fd;font-style:italic">group</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;foo&#34;</span> <span style="color:#6272a4"># proto 分组</span>
+<span style="color:#8be9fd;font-style:italic">version</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;v1&#34;</span> <span style="color:#6272a4"># proto 版本</span>
+<span style="color:#8be9fd;font-style:italic">plugins</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">[</span><span style="color:#f1fa8c">&#34;gogo&#34;</span>, <span style="color:#f1fa8c">&#34;vine&#34;</span>, <span style="color:#f1fa8c">&#34;validator&#34;</span><span style="color:#ff79c6">]</span> <span style="color:#6272a4"># 执行 protoc 命令时携带的插件，可选 gogo、vine、validator、deepcopy、dao</span>
+</code></pre></div><h3 id="cluster">cluster</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>package<span style="color:#ff79c6">]</span>
+<span style="color:#8be9fd;font-style:italic">kind</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;cluster&#34;</span>
+<span style="color:#8be9fd;font-style:italic">namespace</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;go.vine&#34;</span>
+
+<span style="color:#ff79c6">[[</span>mod<span style="color:#ff79c6">]]</span>  <span style="color:#6272a4"># 每个 mod 表示一个服务</span>
+<span style="color:#8be9fd;font-style:italic">name</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;helloworld&#34;</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;go.vine.service.helloworld&#34;</span>
+<span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;service&#34;</span>
+<span style="color:#8be9fd;font-style:italic">version</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;latest&#34;</span>
+<span style="color:#8be9fd;font-style:italic">main</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;cmd/helloworld/main.go&#34;</span>
+<span style="color:#8be9fd;font-style:italic">dir</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/foo/helloworld&#34;</span>
+<span style="color:#8be9fd;font-style:italic">output</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span>
+<span style="color:#8be9fd;font-style:italic">flags</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">[</span>
+	<span style="color:#f1fa8c">&#34;-a&#34;</span>, <span style="color:#f1fa8c">&#34;-installsuffix&#34;</span>, <span style="color:#f1fa8c">&#34;cgo&#34;</span>, <span style="color:#f1fa8c">&#34;-ldflags \&#34;-s -w\&#34;&#34;</span>, 
+<span style="color:#ff79c6">]</span>
+
+<span style="color:#ff79c6">[[</span>proto<span style="color:#ff79c6">]]</span>
+<span style="color:#8be9fd;font-style:italic">name</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;helloworld&#34;</span>
+<span style="color:#8be9fd;font-style:italic">pb</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/foo/api/service/helloworld/v1/helloworld.proto&#34;</span>
+<span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;service&#34;</span>
+<span style="color:#8be9fd;font-style:italic">group</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;helloworld&#34;</span>
+<span style="color:#8be9fd;font-style:italic">version</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;v1&#34;</span>
+<span style="color:#8be9fd;font-style:italic">plugins</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">[</span><span style="color:#f1fa8c">&#34;gogo&#34;</span>, <span style="color:#f1fa8c">&#34;vine&#34;</span>, <span style="color:#f1fa8c">&#34;validator&#34;</span><span style="color:#ff79c6">]</span>
+</code></pre></div>
 </div>
 
 
@@ -559,7 +698,7 @@ vine run helloworld
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-79e475706ae8025baf8c0f923eec34bd">1.4 - 项目构建</h1>
+	<h1 id="pg-79e475706ae8025baf8c0f923eec34bd">1.4 - 构建工具</h1>
     
 	<p>// TODO</p>
 
