@@ -1,0 +1,18 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vine – 定时任务</title>
+    <link>https://vine-io.github.io/vine/docs/component/job/</link>
+    <description>Recent content in 定时任务 on Vine</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 01 Sep 2021 10:20:54 +0800</lastBuildDate>
+    
+	  <atom:link href="https://vine-io.github.io/vine/docs/component/job/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+  </channel>
+</rss>

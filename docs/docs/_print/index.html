@@ -1136,11 +1136,11 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
 	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (regpb.Watcher, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>)
 	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
 </code></pre></div><h2 id="完整实例">完整实例</h2>
@@ -1153,7 +1153,6 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
 
 	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
 	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/registry&#34;</span>
-	regpb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/registry&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
@@ -1163,17 +1162,19 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
 	<span style="color:#6272a4">// initialize registry
 </span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
 
-	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>regpb.Service{
+	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
 		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
 		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
 		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
-		Endpoints: []<span style="color:#ff79c6">*</span>regpb.Endpoint{{
-			Request: <span style="color:#ff79c6">&amp;</span>regpb.Value{},
+		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{{
+			Request: <span style="color:#ff79c6">&amp;</span>registry.Value{},
 		}},
-		Nodes: []<span style="color:#ff79c6">*</span>regpb.Node{<span style="color:#ff79c6">&amp;</span>regpb.Node{
-			Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
-			Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
-		}},
+		Nodes: []<span style="color:#ff79c6">*</span>registry.Node{
+			<span style="color:#ff79c6">&amp;</span>registry.Node{
+				Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
+				Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
+			},
+		},
 	}
 
 	<span style="color:#6272a4">// registry service
@@ -2064,7 +2065,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-2666d967d601b581be03b34500537b69">2.15 - 中间件</h1>
+	<h1 id="pg-af33cab72523ccb0847ef55ee3168c8b">2.15 - 装载器</h1>
     
 	<p>// TODO</p>
 
@@ -2090,7 +2091,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="">
     
-	<h1 id="pg-006ff85f4bd6f6d531e9032bbd67930c">2.15.1 - 概述</h1>
+	<h1 id="pg-6d71662a7a073686a5f0e2c3e135bd39">2.15.1 - 概述</h1>
     
 	<p>// TODO</p>
 
@@ -2120,7 +2121,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-aa9f821e1750b42100e99c6a61ed7ee6">2.15.2 - 链路追踪</h1>
+	<h1 id="pg-39eacc854f3fd422544f82d390b1f48c">2.15.2 - 链路追踪</h1>
     
 	<p>// TODO</p>
 
@@ -2150,7 +2151,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-8fd343360456613fd901ee0407fbe0ad">2.15.3 - 数据校验</h1>
+	<h1 id="pg-93c9ae063448402518730eb36201d2b1">2.15.3 - 数据校验</h1>
     
 	<p>// TODO</p>
 
@@ -2180,7 +2181,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-33429b69c0840ac3a371e5a66cbb1344">2.15.4 - 元数据</h1>
+	<h1 id="pg-62cd849eef8495611b5b8892f70d5afa">2.15.4 - 元数据</h1>
     
 	<p>// TODO</p>
 
@@ -2210,7 +2211,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-76f40e072725e8415740ec125e11923a">2.15.5 - 请求熔断</h1>
+	<h1 id="pg-c483018e88ad8da9a20f3c7dfcffa915">2.15.5 - 请求熔断</h1>
     
 	<p>// TODO</p>
 
@@ -2240,7 +2241,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-54a339decb62ef7bd336953cd5d80b75">2.15.6 - 请求限流</h1>
+	<h1 id="pg-e1183309a928ffcc3eb6cc0dcd66651d">2.15.6 - 请求限流</h1>
     
 	<p>// TODO</p>
 
@@ -2262,6 +2263,35 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
     
 	
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-c049cbc8dfe9badc6517d70a4af559fb">2.16 - 定时任务</h1>
+    
+	
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
   
 
     

@@ -700,10 +700,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/middleware/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">中间件</a>
+    <a  href="/vine/docs/component/wrapper/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">装载器</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentmiddleware">
+    <li class="collapse " id="vinedocscomponentwrapper">
       
       
       
@@ -718,10 +718,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/middleware/overview/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">概述</a>
+    <a  href="/vine/docs/component/wrapper/overview/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">概述</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentmiddlewareoverview">
+    <li class="collapse " id="vinedocscomponentwrapperoverview">
       
       
       
@@ -743,10 +743,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/middleware/trace/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">链路追踪</a>
+    <a  href="/vine/docs/component/wrapper/trace/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">链路追踪</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentmiddlewaretrace">
+    <li class="collapse " id="vinedocscomponentwrappertrace">
       
       
       
@@ -768,10 +768,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/middleware/validator/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">数据校验</a>
+    <a  href="/vine/docs/component/wrapper/validator/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">数据校验</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentmiddlewarevalidator">
+    <li class="collapse " id="vinedocscomponentwrappervalidator">
       
       
       
@@ -793,10 +793,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/middleware/metadata/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">元数据</a>
+    <a  href="/vine/docs/component/wrapper/metadata/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">元数据</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentmiddlewaremetadata">
+    <li class="collapse " id="vinedocscomponentwrappermetadata">
       
       
       
@@ -818,10 +818,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/middleware/breaker/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">请求熔断</a>
+    <a  href="/vine/docs/component/wrapper/breaker/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">请求熔断</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentmiddlewarebreaker">
+    <li class="collapse " id="vinedocscomponentwrapperbreaker">
       
       
       
@@ -843,10 +843,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/middleware/ratelimiter/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">请求限流</a>
+    <a  href="/vine/docs/component/wrapper/ratelimiter/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">请求限流</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentmiddlewareratelimiter">
+    <li class="collapse " id="vinedocscomponentwrapperratelimiter">
       
       
       
@@ -855,6 +855,31 @@ if (!doNotTrack) {
 </ul>
 
         
+      
+      
+    </li>
+  </ul>
+</ul>
+
+        
+      
+      
+      
+        
+          
+
+
+
+
+
+
+<ul class="td-sidebar-nav__section pr-md-3">
+  <li class="td-sidebar-nav__section-title">
+    <a  href="/vine/docs/component/job/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">定时任务</a>
+  </li>
+  <ul>
+    <li class="collapse " id="vinedocscomponentjob">
+      
       
       
     </li>
@@ -1198,11 +1223,11 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
 	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>regpb.Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (regpb.Watcher, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>)
 	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
 </code></pre></div><h2 id="完整实例">完整实例</h2>
@@ -1215,7 +1240,6 @@ if (!doNotTrack) {
 
 	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
 	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/registry&#34;</span>
-	regpb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/registry&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
@@ -1225,17 +1249,19 @@ if (!doNotTrack) {
 	<span style="color:#6272a4">// initialize registry
 </span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
 
-	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>regpb.Service{
+	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
 		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
 		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
 		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
-		Endpoints: []<span style="color:#ff79c6">*</span>regpb.Endpoint{{
-			Request: <span style="color:#ff79c6">&amp;</span>regpb.Value{},
+		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{{
+			Request: <span style="color:#ff79c6">&amp;</span>registry.Value{},
 		}},
-		Nodes: []<span style="color:#ff79c6">*</span>regpb.Node{<span style="color:#ff79c6">&amp;</span>regpb.Node{
-			Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
-			Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
-		}},
+		Nodes: []<span style="color:#ff79c6">*</span>registry.Node{
+			<span style="color:#ff79c6">&amp;</span>registry.Node{
+				Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
+				Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
+			},
+		},
 	}
 
 	<span style="color:#6272a4">// registry service
@@ -1280,6 +1306,8 @@ if (!doNotTrack) {
     
     
     <hr class="panel-line">
+        
+            
         
             
         

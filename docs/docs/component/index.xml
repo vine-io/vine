@@ -30,11 +30,11 @@
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (regpb.Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;完整实例&#34;&gt;完整实例&lt;/h2&gt;
@@ -47,7 +47,6 @@
 
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/google/uuid&amp;#34;&lt;/span&gt;
 	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/registry&amp;#34;&lt;/span&gt;
-	regpb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/proto/registry&amp;#34;&lt;/span&gt;
 )
 
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
@@ -57,17 +56,19 @@
 	&lt;span style=&#34;color:#6272a4&#34;&gt;// initialize registry
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
 
-	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;regpb.Service{
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Service{
 		Name:     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;,
 		Version:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;1.0.0&amp;#34;&lt;/span&gt;,
 		Metadata: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{},
-		Endpoints: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Endpoint{{
-			Request: &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;regpb.Value{},
+		Endpoints: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Endpoint{{
+			Request: &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Value{},
 		}},
-		Nodes: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;regpb.Node{&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;regpb.Node{
-			Id:      uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(),
-			Address: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1:1111&amp;#34;&lt;/span&gt;,
-		}},
+		Nodes: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node{
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Node{
+				Id:      uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(),
+				Address: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1:1111&amp;#34;&lt;/span&gt;,
+			},
+		},
 	}
 
 	&lt;span style=&#34;color:#6272a4&#34;&gt;// registry service
@@ -728,16 +729,29 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
     </item>
     
     <item>
-      <title>Docs: 中间件</title>
-      <link>https://vine-io.github.io/vine/docs/component/middleware/</link>
+      <title>Docs: 装载器</title>
+      <link>https://vine-io.github.io/vine/docs/component/wrapper/</link>
       <pubDate>Fri, 27 Aug 2021 09:27:46 +0800</pubDate>
       
-      <guid>https://vine-io.github.io/vine/docs/component/middleware/</guid>
+      <guid>https://vine-io.github.io/vine/docs/component/wrapper/</guid>
       <description>
         
         
         &lt;p&gt;// TODO&lt;/p&gt;
 
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 定时任务</title>
+      <link>https://vine-io.github.io/vine/docs/component/job/</link>
+      <pubDate>Wed, 01 Sep 2021 10:20:54 +0800</pubDate>
+      
+      <guid>https://vine-io.github.io/vine/docs/component/job/</guid>
+      <description>
+        
+        
+        
       </description>
     </item>
     
