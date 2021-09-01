@@ -149,19 +149,17 @@ This the multi-page printable view of this section.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
-    <span style="color:#6272a4">// consul registry
-</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/consul&#34;</span>
-    <span style="color:#6272a4">// rabbitmq transport
-</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/transport/rabbitmq&#34;</span>
-    <span style="color:#6272a4">// kafka broker
-</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/kafka&#34;</span>
+    <span style="color:#6272a4">// etcd registry
+</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/etcd&#34;</span>
+    <span style="color:#6272a4">// nats broker
+</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/nats&#34;</span>
 )
 </code></pre></div><p>通过包含插件文件来构建应用程序：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go build -o service main.go plugins.go
 </code></pre></div><p>使用插件</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">service --registry<span style="color:#ff79c6">=</span>consul --transport<span style="color:#ff79c6">=</span>nats --broker<span style="color:#ff79c6">=</span>kafka
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">service --registry<span style="color:#ff79c6">=</span>etcd --broker<span style="color:#ff79c6">=</span>nats
 </code></pre></div><p>或者使用环境变量</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">VINE_REGISTRY</span><span style="color:#ff79c6">=</span>consule <span style="color:#8be9fd;font-style:italic">VINE_TRANSPORT</span><span style="color:#ff79c6">=</span>rabbitmq <span style="color:#8be9fd;font-style:italic">VINE_BROKER</span><span style="color:#ff79c6">=</span>kafka service
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">VINE_REGISTRY</span><span style="color:#ff79c6">=</span>etcd <span style="color:#8be9fd;font-style:italic">VINE_BROKER</span><span style="color:#ff79c6">=</span>nats service
 </code></pre></div><h2 id="插件选项">插件选项</h2>
 <p>或者你可以将插件设置在选项中</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
@@ -169,24 +167,20 @@ This the multi-page printable view of this section.
 <span style="color:#ff79c6">import</span> (
     <span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
 
-    <span style="color:#6272a4">// consul registry
-</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/consul&#34;</span>
-    <span style="color:#6272a4">// rabbitmq transport
-</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/transport/rabbitmq&#34;</span>
-    <span style="color:#6272a4">// kafka broker
-</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/kafka&#34;</span>
+    <span style="color:#6272a4">// etcd registry
+</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/etcd&#34;</span>
+    <span style="color:#6272a4">// nats broker
+</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/nats&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-    registry <span style="color:#ff79c6">:=</span> consul.<span style="color:#50fa7b">NewRegistry</span>()
-    broker <span style="color:#ff79c6">:=</span> kafka.<span style="color:#50fa7b">NewBroker</span>()
-    transport <span style="color:#ff79c6">:=</span> rabbitmq.<span style="color:#50fa7b">NewTransport</span>()
+    registry <span style="color:#ff79c6">:=</span> etcd.<span style="color:#50fa7b">NewRegistry</span>()
+    broker <span style="color:#ff79c6">:=</span> nats.<span style="color:#50fa7b">NewBroker</span>()
 
     service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
         vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;greeter&#34;</span>),
         vine.<span style="color:#50fa7b">Registry</span>(registry),
         vine.<span style="color:#50fa7b">Broker</span>(broker),
-        vine.<span style="color:#50fa7b">Transport</span>(transport),
     )
 
     service.<span style="color:#50fa7b">Init</span>()
@@ -195,7 +189,7 @@ This the multi-page printable view of this section.
 }
 </code></pre></div><h2 id="编写插件">编写插件</h2>
 <p>插件是一个建立在 Go 接口上的概念。每个包都维护一个高级接口抽象。只需实现接口并将其作为服务选项传递给它即可.</p>
-<p>服务发现接口称为 <a href="https://pkg.go.dev/github.com/vine-io/vine/service/registry#Registry">Registry</a>. 实现此接口的任何内容都可以用作 <strong>Registry</strong>。这同样适用于其他包.</p>
+<p>服务发现接口称为 <a href="https://pkg.go.dev/github.com/vine-io/vine/core/registry#Registry">Registry</a>. 实现此接口的任何内容都可以用作 <strong>Registry</strong>。这同样适用于其他包.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
 	<span style="color:#50fa7b">Options</span>() Options
@@ -207,6 +201,59 @@ This the multi-page printable view of this section.
 	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
 </code></pre></div><p>查阅 <a href="https://github.com/vine-io/plugins">plugins</a> 可以更好地了解实现细节。</p>
+<h2 id="插件列表">插件列表</h2>
+<p>Registry 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/registry/etcd">etcd</a></li>
+</ul>
+<p>Broker 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/broker/nats">nats</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/broker/redis">redis</a></li>
+</ul>
+<p>Dao 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/dao/mysql">mysql</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/dao/postgres">postgresql</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/dao/sqlite">sqlite</a></li>
+</ul>
+<p>Cache 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/cache/redis">redis</a></li>
+</ul>
+<p>Sync 插件：</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/sync/etcd">etcd</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/sync/memory">memory</a></li>
+</ul>
+<p>Logger 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/logger/zap">zap</a></li>
+</ul>
+<p>Config Source 插件：</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/config/source/configmap">configmap</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/config/source/etcd">etcd</a></li>
+</ul>
+<p>Wrapper 类
+熔断器:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/breaker/gobreaker">gobreaker</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/breaker/hystrix">hystrix</a></li>
+</ul>
+<p>限流:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/ratelimiter/ratelimiter">ratelimiter</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/ratelimiter/uber">uber</a></li>
+</ul>
+<p>链路追踪:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/trace/opentracing">opentracing</a></li>
+</ul>
+<p>数据校验:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/validator">validator</a></li>
+</ul>
 
 </div>
 </div>

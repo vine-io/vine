@@ -172,7 +172,7 @@ func (c *memory) Scan(v interface{}) error {
 	return c.vals.Scan(v)
 }
 
-// Sync sync loads all the sources, calls the parser and updates the config
+// Sync loads all the sources, calls the parser and updates the config
 func (c *memory) Sync() error {
 	if err := c.opts.Loader.Sync(); err != nil {
 		return err
@@ -190,7 +190,7 @@ func (c *memory) Sync() error {
 	vals, err := c.opts.Reader.Values(snap.ChangeSet)
 	c.vals = vals
 
-	return nil
+	return err
 }
 
 func (c *memory) Close() error {

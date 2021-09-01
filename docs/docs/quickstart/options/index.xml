@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vine – 参数支持</title>
+    <title>Vine – 可选参数</title>
     <link>https://vine-io.github.io/vine/docs/quickstart/options/</link>
-    <description>Recent content in 参数支持 on Vine</description>
+    <description>Recent content in 可选参数 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Tue, 29 Dec 2020 14:55:49 +0800</lastBuildDate>
     

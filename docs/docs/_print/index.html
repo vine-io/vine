@@ -700,8 +700,118 @@ vine new service helloworld
     
 	<h1 id="pg-79e475706ae8025baf8c0f923eec34bd">1.4 - 构建工具</h1>
     
-	<p>// TODO</p>
+	<p>我们提供一套工具帮助开发者快速构建微服务。</p>
+<h2 id="安装">安装</h2>
+<p>使用 go get 安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -u github.com/vine-io/vine/cmd/vine@latest
+</code></pre></div><p>编译包安装 (推荐)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget https://github.com/vine-io/vine/releases/download/v0.23.0/vine-darwin-amd64-v0.23.0.tar.gz
+tar -xvf vine-darwin-amd64-v0.23.0.tar.gz
+cp -r darwin-amd64/* <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/bin/
+</code></pre></div><p>工具使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine --version
+&gt; v0.23.0-8b25f36c-1630374346
+</code></pre></div><h2 id="新建项目">新建项目</h2>
+<p>创建目录作为项目根目录</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/foo
+</code></pre></div><p>初始化目录</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/foo
+vine init
+</code></pre></div><p><code>vine init [--cluster]</code> 会初始化 <strong>Vine</strong> 项目，生成以下文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.
+├── vine.toml  <span style="color:#6272a4"># vine 项目的描述文件，包括项目名称，服务接口和proto等信息。</span>
+├── README.md
+├── .gitignore
+└── go.mod
+</code></pre></div><h2 id="新建服务">新建服务</h2>
+<p>在初始化的目录新建微服务：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine new service foo
+</code></pre></div><blockquote>
+<p>vine 项目类型为 single 时，<code>vine new service</code> 指定服务名称是无效的，它的名称等于目录名。</p>
+</blockquote>
+<p>执行结果，生成以下文档:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.
+├── cmd
+│   └── main.go
+├── pkg
+│   ├── runtime
+│   │   ├── doc.go
+│   │   └── inject
+│   │       └── inject.go
+│   ├── app.go
+│   ├── interfaces
+│   │   └── foo.go
+│   ├── app
+│   │   └── foo.go
+│   ├── biz
+│   │   └── foo.go
+│   └── infra
+│       ├── repo
+│       │   └── repo.go
+│       └── cache
+│           └── cache.go
+├── deploy
+│   ├── Dockerfile
+│   ├── foo.ini
+│   └── foo.service
+├── api
+│   └── service
+│       └── foo
+│           └── v1
+│               └── foo.proto
+├── Makefile
+└── vine.toml
 
+
+download protoc zip packages <span style="color:#ff79c6">(</span>protoc-<span style="color:#8be9fd;font-style:italic">$VERSION</span>-<span style="color:#8be9fd;font-style:italic">$PLATFORM</span>.zip<span style="color:#ff79c6">)</span> and install:
+
+visit https://github.com/protocolbuffers/protobuf/releases
+
+download protobuf <span style="color:#ff79c6">for</span> vine:
+
+<span style="color:#8be9fd;font-style:italic">cd</span> github.com/lack-io/foo
+
+install dependencies:
+        go get github.com/gogo/protobuf
+        go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+        go get github.com/vine-io/vine/cmd/protoc-gen-vine
+        go get github.com/vine-io/vine/cmd/protoc-gen-validator
+        go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+        go get github.com/vine-io/vine/cmd/protoc-gen-dao
+
+<span style="color:#8be9fd;font-style:italic">cd</span> github.com/lack-io/foo
+        vine build foo
+</code></pre></div><h2 id="安装依赖">安装依赖</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
+go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+go get github.com/vine-io/vine/cmd/protoc-gen-vine
+go get github.com/vine-io/vine/cmd/protoc-gen-validator
+go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+go get github.com/vine-io/vine/cmd/protoc-gen-dao
+</code></pre></div><h2 id="更加-proto-文件生成-go-代码">更加 proto 文件生成 go 代码</h2>
+<p>使用命令格式为: <code>vine build proto [command options] [proto_name]</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># 生成 vine.toml 中所有 proto 文件对应的代码。</span>
+vine new proto
+</code></pre></div><p>支持如下参数:</p>
+<ul>
+<li>&ndash;type string                      指定 proto 文件的类型，支持 api 和 service，默认 api</li>
+<li>&ndash;proto-version string, -v string  指定 proto 文件版本，默认 v1</li>
+<li>&ndash;group string                     指定 proto 文件分组，默认 core</li>
+<li>&ndash;dir string                       执行 protoc 命令是所在的目录，chroot</li>
+<li>&ndash;path strings, -I strings         protoc -I 路径</li>
+<li>&ndash;plugins strings, -P strings      生成 proto 时装载的插件</li>
+</ul>
+<h2 id="运行服务">运行服务</h2>
+<p>命令格式: <code>vine new [command options] [name]</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine run foo
+</code></pre></div><p>支持如下参数:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">- --auto-restart                    监听文件变化时重启服务
+- --watch strings                   追加监听的路径
+- --watch-interval int64, -I int64  监听事件触发间隔，默认3s
+</code></pre></div><h2 id="启动-api-网关">启动 api 网关</h2>
+<p>命令格式: <code>vine api [command options]</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
+</code></pre></div>
 </div>
 
 
@@ -728,7 +838,7 @@ vine new service helloworld
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-1adf2527acb4bd9f3ca351337ddc8408">1.5 - 参数支持</h1>
+	<h1 id="pg-1adf2527acb4bd9f3ca351337ddc8408">1.5 - 可选参数</h1>
     
 	<h2 id="概述">概述</h2>
 <p>创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
@@ -761,15 +871,16 @@ vine new service helloworld
     vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
     vine.<span style="color:#50fa7b">Broker</span>(broker),
 )
-</code></pre></div><h2 id="服务选项">服务选项</h2>
-<p>在 <strong>Vine</strong> 中，我们有许多选项可以设置，包括用于身份验证，配置和存储等内容的基础包。你可以使用 <code>service.Options()</code> 来访问这些。</p>
-<p>auth、config、registry、store 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 <code>service.Init()</code> 后生效。</p>
+</code></pre></div><h2 id="服务-options">服务 options</h2>
+<p>在 <strong>Vine</strong> 中，我们有可以设置多种选项，包括用于身份验证，配置和存储等内容的基础包。你可以使用 <code>service.Options()</code> 来访问这些。</p>
+<p>auth、config、registry、cache 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 <code>service.Init()</code> 后生效。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4">## as an env vars</span>
-<span style="color:#8be9fd;font-style:italic">VINE_STORE</span><span style="color:#ff79c6">=</span>file go run main.go
+<span style="color:#8be9fd;font-style:italic">VINE_CACHE</span><span style="color:#ff79c6">=</span>file go run main.go
 
 <span style="color:#6272a4">## or as a flag</span>
-go run main.go --store<span style="color:#ff79c6">=</span>file
-</code></pre></div><p>然后在内部，可以通过选项访问存储：</p>
+go run main.go --cache<span style="color:#ff79c6">=</span>file
+</code></pre></div><h2 id="使用-options">使用 options</h2>
+<p>在内部，可以通过选项访问存储：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
     vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
 )
@@ -780,7 +891,44 @@ store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">
 </code></pre></div><blockquote>
 <p><strong>Vine</strong> 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 <code>context.Context</code> 中。</p>
 </blockquote>
-
+<h2 id="自定义-options">自定义 options</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">custom <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">func</span>(s <span style="color:#8be9fd">string</span>) vine.Option {
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>vine.Options) {
+		o.Context = context.<span style="color:#50fa7b">WithValue</span>(o.Context, s, s)
+	}
+}
+	
+vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">custom</span>(<span style="color:#f1fa8c">&#34;value&#34;</span>))
+</code></pre></div><h2 id="所有-options">所有 options</h2>
+<p>vine 服务初始化是，支持以下 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">Name</span>(),            <span style="color:#6272a4">// 微服务名称
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Id</span>(),              <span style="color:#6272a4">// 微服务 uuid
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Version</span>(),         <span style="color:#6272a4">// 微服务版本
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Address</span>(),         <span style="color:#6272a4">// 微服务绑定地址
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Metadata</span>(),        <span style="color:#6272a4">// 微服务 metadata
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Server</span>(),          <span style="color:#6272a4">// 设置内部 Server 模块
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Client</span>(),          <span style="color:#6272a4">// 设置内部 Client 模块
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Selector</span>(),        <span style="color:#6272a4">// 设置 client selector 
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">HandleSignal</span>(),    <span style="color:#6272a4">// 是否处理系统信号
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Context</span>(),         <span style="color:#6272a4">// 设置 Context 
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Broker</span>(),          <span style="color:#6272a4">// 设置内部 broker 模块
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Registry</span>(),        <span style="color:#6272a4">// 设置内部 Registry 模块
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">RegisterTTL</span>(),     <span style="color:#6272a4">// 服务注册有效时间
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">RegisterInterval</span>(), <span style="color:#6272a4">// 服务注册间隔，必须小于 ttl
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Tracer</span>(),          <span style="color:#6272a4">// 设置 Trace 模块
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Dialect</span>(),         <span style="color:#6272a4">// 设置 Dialect 模块
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Cmd</span>(),             <span style="color:#6272a4">// 设置 Cmd 模块
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Action</span>(),          <span style="color:#6272a4">// 设置 Cmd Action 回调函数
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Flags</span>(),           <span style="color:#6272a4">// 添加 Cmd Flags 
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapHandler</span>(),     <span style="color:#6272a4">// 添加 Server 请求拦截器
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapClient</span>(),      <span style="color:#6272a4">// 添加 Client 请求拦截器
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapCall</span>(),        <span style="color:#6272a4">// 添加 Client Call 请求拦截器
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapSubscriber</span>(),  <span style="color:#6272a4">// 添加 Broker 拦截器
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">BeforeStart</span>(),     <span style="color:#6272a4">// 追加服务 Start 方法前的回调
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">BeforeStop</span>(),      <span style="color:#6272a4">// 追加服务 Stop 方法前的回调
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">AfterStart</span>(),      <span style="color:#6272a4">// 追加服务 Start 方法后的回调
+</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">AfterStop</span>(),       <span style="color:#6272a4">// 追加服务 Stop 方法后的回调
+</span></code></pre></div>
 </div>
 
 
@@ -818,19 +966,17 @@ store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
-    <span style="color:#6272a4">// consul registry
-</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/consul&#34;</span>
-    <span style="color:#6272a4">// rabbitmq transport
-</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/transport/rabbitmq&#34;</span>
-    <span style="color:#6272a4">// kafka broker
-</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/kafka&#34;</span>
+    <span style="color:#6272a4">// etcd registry
+</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/etcd&#34;</span>
+    <span style="color:#6272a4">// nats broker
+</span><span style="color:#6272a4"></span>    _ <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/nats&#34;</span>
 )
 </code></pre></div><p>通过包含插件文件来构建应用程序：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go build -o service main.go plugins.go
 </code></pre></div><p>使用插件</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">service --registry<span style="color:#ff79c6">=</span>consul --transport<span style="color:#ff79c6">=</span>nats --broker<span style="color:#ff79c6">=</span>kafka
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">service --registry<span style="color:#ff79c6">=</span>etcd --broker<span style="color:#ff79c6">=</span>nats
 </code></pre></div><p>或者使用环境变量</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">VINE_REGISTRY</span><span style="color:#ff79c6">=</span>consule <span style="color:#8be9fd;font-style:italic">VINE_TRANSPORT</span><span style="color:#ff79c6">=</span>rabbitmq <span style="color:#8be9fd;font-style:italic">VINE_BROKER</span><span style="color:#ff79c6">=</span>kafka service
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">VINE_REGISTRY</span><span style="color:#ff79c6">=</span>etcd <span style="color:#8be9fd;font-style:italic">VINE_BROKER</span><span style="color:#ff79c6">=</span>nats service
 </code></pre></div><h2 id="插件选项">插件选项</h2>
 <p>或者你可以将插件设置在选项中</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
@@ -838,24 +984,20 @@ store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">
 <span style="color:#ff79c6">import</span> (
     <span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
 
-    <span style="color:#6272a4">// consul registry
-</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/consul&#34;</span>
-    <span style="color:#6272a4">// rabbitmq transport
-</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/transport/rabbitmq&#34;</span>
-    <span style="color:#6272a4">// kafka broker
-</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/kafka&#34;</span>
+    <span style="color:#6272a4">// etcd registry
+</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/etcd&#34;</span>
+    <span style="color:#6272a4">// nats broker
+</span><span style="color:#6272a4"></span>    <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/broker/nats&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-    registry <span style="color:#ff79c6">:=</span> consul.<span style="color:#50fa7b">NewRegistry</span>()
-    broker <span style="color:#ff79c6">:=</span> kafka.<span style="color:#50fa7b">NewBroker</span>()
-    transport <span style="color:#ff79c6">:=</span> rabbitmq.<span style="color:#50fa7b">NewTransport</span>()
+    registry <span style="color:#ff79c6">:=</span> etcd.<span style="color:#50fa7b">NewRegistry</span>()
+    broker <span style="color:#ff79c6">:=</span> nats.<span style="color:#50fa7b">NewBroker</span>()
 
     service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
         vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;greeter&#34;</span>),
         vine.<span style="color:#50fa7b">Registry</span>(registry),
         vine.<span style="color:#50fa7b">Broker</span>(broker),
-        vine.<span style="color:#50fa7b">Transport</span>(transport),
     )
 
     service.<span style="color:#50fa7b">Init</span>()
@@ -864,7 +1006,7 @@ store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">
 }
 </code></pre></div><h2 id="编写插件">编写插件</h2>
 <p>插件是一个建立在 Go 接口上的概念。每个包都维护一个高级接口抽象。只需实现接口并将其作为服务选项传递给它即可.</p>
-<p>服务发现接口称为 <a href="https://pkg.go.dev/github.com/vine-io/vine/service/registry#Registry">Registry</a>. 实现此接口的任何内容都可以用作 <strong>Registry</strong>。这同样适用于其他包.</p>
+<p>服务发现接口称为 <a href="https://pkg.go.dev/github.com/vine-io/vine/core/registry#Registry">Registry</a>. 实现此接口的任何内容都可以用作 <strong>Registry</strong>。这同样适用于其他包.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
 	<span style="color:#50fa7b">Options</span>() Options
@@ -876,6 +1018,59 @@ store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">
 	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
 </code></pre></div><p>查阅 <a href="https://github.com/vine-io/plugins">plugins</a> 可以更好地了解实现细节。</p>
+<h2 id="插件列表">插件列表</h2>
+<p>Registry 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/registry/etcd">etcd</a></li>
+</ul>
+<p>Broker 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/broker/nats">nats</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/broker/redis">redis</a></li>
+</ul>
+<p>Dao 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/dao/mysql">mysql</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/dao/postgres">postgresql</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/dao/sqlite">sqlite</a></li>
+</ul>
+<p>Cache 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/cache/redis">redis</a></li>
+</ul>
+<p>Sync 插件：</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/sync/etcd">etcd</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/sync/memory">memory</a></li>
+</ul>
+<p>Logger 插件:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/logger/zap">zap</a></li>
+</ul>
+<p>Config Source 插件：</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/config/source/configmap">configmap</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/config/source/etcd">etcd</a></li>
+</ul>
+<p>Wrapper 类
+熔断器:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/breaker/gobreaker">gobreaker</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/breaker/hystrix">hystrix</a></li>
+</ul>
+<p>限流:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/ratelimiter/ratelimiter">ratelimiter</a></li>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/ratelimiter/uber">uber</a></li>
+</ul>
+<p>链路追踪:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/trace/opentracing">opentracing</a></li>
+</ul>
+<p>数据校验:</p>
+<ul>
+<li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/validator">validator</a></li>
+</ul>
 
 </div>
 

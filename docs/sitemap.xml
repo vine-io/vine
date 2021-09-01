@@ -42,7 +42,7 @@
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/build/</loc>
-    <lastmod>2021-08-27T09:41:41+08:00</lastmod>
+    <lastmod>2021-09-01T09:22:31+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/openapi/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
@@ -50,26 +50,26 @@
     <loc>https://vine-io.github.io/vine/docs/guides/</loc>
     <lastmod>2021-08-26T16:15:11+08:00</lastmod>
   </url><url>
-    <loc>https://vine-io.github.io/vine/docs/quickstart/options/</loc>
-    <lastmod>2021-08-27T09:41:41+08:00</lastmod>
-  </url><url>
     <loc>https://vine-io.github.io/vine/docs/operator/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/breaker/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
   </url><url>
-    <loc>https://vine-io.github.io/vine/docs/quickstart/plugins/</loc>
-    <lastmod>2021-08-27T13:42:05+08:00</lastmod>
-  </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/validate/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
+  </url><url>
+    <loc>https://vine-io.github.io/vine/docs/quickstart/options/</loc>
+    <lastmod>2021-09-01T09:58:46+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/deepcopy/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/middleware/ratelimiter/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
+  </url><url>
+    <loc>https://vine-io.github.io/vine/docs/quickstart/plugins/</loc>
+    <lastmod>2021-09-01T09:58:46+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/dao/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>

@@ -140,8 +140,118 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p>// TODO</p>
+      <p>我们提供一套工具帮助开发者快速构建微服务。</p>
+<h2 id="安装">安装</h2>
+<p>使用 go get 安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -u github.com/vine-io/vine/cmd/vine@latest
+</code></pre></div><p>编译包安装 (推荐)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget https://github.com/vine-io/vine/releases/download/v0.23.0/vine-darwin-amd64-v0.23.0.tar.gz
+tar -xvf vine-darwin-amd64-v0.23.0.tar.gz
+cp -r darwin-amd64/* <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/bin/
+</code></pre></div><p>工具使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine --version
+&gt; v0.23.0-8b25f36c-1630374346
+</code></pre></div><h2 id="新建项目">新建项目</h2>
+<p>创建目录作为项目根目录</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/foo
+</code></pre></div><p>初始化目录</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/foo
+vine init
+</code></pre></div><p><code>vine init [--cluster]</code> 会初始化 <strong>Vine</strong> 项目，生成以下文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.
+├── vine.toml  <span style="color:#6272a4"># vine 项目的描述文件，包括项目名称，服务接口和proto等信息。</span>
+├── README.md
+├── .gitignore
+└── go.mod
+</code></pre></div><h2 id="新建服务">新建服务</h2>
+<p>在初始化的目录新建微服务：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine new service foo
+</code></pre></div><blockquote>
+<p>vine 项目类型为 single 时，<code>vine new service</code> 指定服务名称是无效的，它的名称等于目录名。</p>
+</blockquote>
+<p>执行结果，生成以下文档:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.
+├── cmd
+│   └── main.go
+├── pkg
+│   ├── runtime
+│   │   ├── doc.go
+│   │   └── inject
+│   │       └── inject.go
+│   ├── app.go
+│   ├── interfaces
+│   │   └── foo.go
+│   ├── app
+│   │   └── foo.go
+│   ├── biz
+│   │   └── foo.go
+│   └── infra
+│       ├── repo
+│       │   └── repo.go
+│       └── cache
+│           └── cache.go
+├── deploy
+│   ├── Dockerfile
+│   ├── foo.ini
+│   └── foo.service
+├── api
+│   └── service
+│       └── foo
+│           └── v1
+│               └── foo.proto
+├── Makefile
+└── vine.toml
 
+
+download protoc zip packages <span style="color:#ff79c6">(</span>protoc-<span style="color:#8be9fd;font-style:italic">$VERSION</span>-<span style="color:#8be9fd;font-style:italic">$PLATFORM</span>.zip<span style="color:#ff79c6">)</span> and install:
+
+visit https://github.com/protocolbuffers/protobuf/releases
+
+download protobuf <span style="color:#ff79c6">for</span> vine:
+
+<span style="color:#8be9fd;font-style:italic">cd</span> github.com/lack-io/foo
+
+install dependencies:
+        go get github.com/gogo/protobuf
+        go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+        go get github.com/vine-io/vine/cmd/protoc-gen-vine
+        go get github.com/vine-io/vine/cmd/protoc-gen-validator
+        go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+        go get github.com/vine-io/vine/cmd/protoc-gen-dao
+
+<span style="color:#8be9fd;font-style:italic">cd</span> github.com/lack-io/foo
+        vine build foo
+</code></pre></div><h2 id="安装依赖">安装依赖</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
+go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+go get github.com/vine-io/vine/cmd/protoc-gen-vine
+go get github.com/vine-io/vine/cmd/protoc-gen-validator
+go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+go get github.com/vine-io/vine/cmd/protoc-gen-dao
+</code></pre></div><h2 id="更加-proto-文件生成-go-代码">更加 proto 文件生成 go 代码</h2>
+<p>使用命令格式为: <code>vine build proto [command options] [proto_name]</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># 生成 vine.toml 中所有 proto 文件对应的代码。</span>
+vine new proto
+</code></pre></div><p>支持如下参数:</p>
+<ul>
+<li>&ndash;type string                      指定 proto 文件的类型，支持 api 和 service，默认 api</li>
+<li>&ndash;proto-version string, -v string  指定 proto 文件版本，默认 v1</li>
+<li>&ndash;group string                     指定 proto 文件分组，默认 core</li>
+<li>&ndash;dir string                       执行 protoc 命令是所在的目录，chroot</li>
+<li>&ndash;path strings, -I strings         protoc -I 路径</li>
+<li>&ndash;plugins strings, -P strings      生成 proto 时装载的插件</li>
+</ul>
+<h2 id="运行服务">运行服务</h2>
+<p>命令格式: <code>vine new [command options] [name]</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine run foo
+</code></pre></div><p>支持如下参数:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">- --auto-restart                    监听文件变化时重启服务
+- --watch strings                   追加监听的路径
+- --watch-interval int64, -I int64  监听事件触发间隔，默认3s
+</code></pre></div><h2 id="启动-api-网关">启动 api 网关</h2>
+<p>命令格式: <code>vine api [command options]</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
+</code></pre></div>
 </div>
 </div>
 
