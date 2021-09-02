@@ -264,7 +264,7 @@ vine api --handler&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rpc --
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;Subscribe&lt;/span&gt;(topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, h Handler, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;SubscribeOption) (Subscriber, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;默认情况下，vine 实现点对点 http 代理，但可以通过 &lt;a href=&#34;https://github.com/vine-io/plugins&#34;&gt;plugins&lt;/a&gt; 替换实现。&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;默认情况下，vine 实现点对点 http 代理，但可以通过 &lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/broker&#34;&gt;plugins&lt;/a&gt; 替换实现。&lt;/p&gt;
 &lt;h2 id=&#34;发布消息&#34;&gt;发布消息&lt;/h2&gt;
 &lt;p&gt;使用 topic 名称和服务客户端创建一个新的发布者&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewEvent&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
@@ -278,7 +278,7 @@ vine api --handler&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rpc --
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 topic 注册消息处理程序&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;events&amp;#34;&lt;/span&gt;, ProcessEvent)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;完整实例可以看 &lt;a href=&#34;https://github.com/vine-io/vine-example/tree/main/pubsub&#34;&gt;example/pubsub&lt;/a&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;完整实例可以看 &lt;a href=&#34;https://github.com/vine-io/examples/tree/main/pubsub&#34;&gt;example/pubsub&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;单独使用-broker&#34;&gt;单独使用 Broker&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;Broker&lt;/code&gt; 也可以单独使用：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main

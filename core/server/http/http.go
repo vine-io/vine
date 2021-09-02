@@ -169,7 +169,7 @@ func (h *httpServer) Register() error {
 	h.Lock()
 	var subscriberList []*httpSubscriber
 	for e := range h.subscribers {
-		// Only advertise non internal subscribers
+		// Only advertise non-internal subscribers
 		if !e.Options().Internal {
 			subscriberList = append(subscriberList, e)
 		}
@@ -323,9 +323,9 @@ func (h *httpServer) Start() error {
 
 
 		// deregister
-		h.Deregister()
+		_ = h.Deregister()
 
-		opts.Broker.Disconnect()
+		_ = opts.Broker.Disconnect()
 
 		// Solve the problem of early exit
 		ch <- ln.Close()

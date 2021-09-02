@@ -439,7 +439,7 @@ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
 	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
 	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 }
-</code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/vine-io/plugins">plugins</a> 替换实现。</p>
+</code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/vine-io/plugins/tree/main/broker">plugins</a> 替换实现。</p>
 <h2 id="发布消息">发布消息</h2>
 <p>使用 topic 名称和服务客户端创建一个新的发布者</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
@@ -453,7 +453,7 @@ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
 }
 </code></pre></div><p>使用 topic 注册消息处理程序</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
-</code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/vine-example/tree/main/pubsub">example/pubsub</a></p>
+</code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/examples/tree/main/pubsub">example/pubsub</a></p>
 <h2 id="单独使用-broker">单独使用 Broker</h2>
 <p><code>Broker</code> 也可以单独使用：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main

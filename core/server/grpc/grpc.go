@@ -322,16 +322,16 @@ func (g *grpcServer) handler(svc interface{}, stream grpc.ServerStream) error {
 		}
 
 		// create a wrapped function
-		handler := func(ctx context.Context, req server.Request, rsp interface{}) error {
+		h := func(ctx context.Context, req server.Request, rsp interface{}) error {
 			return g.opts.Router.ServeRequest(ctx, req, rsp.(server.Response))
 		}
 
 		// execute the wrapper for it
 		for i := len(g.opts.HdlrWrappers); i > 0; i-- {
-			handler = g.opts.HdlrWrappers[i-1](handler)
+			h = g.opts.HdlrWrappers[i-1](h)
 		}
 
-		r := grpcRouter{h: handler}
+		r := grpcRouter{h: h}
 
 		// serve the actual request using the request router
 		if err := r.ServeRequest(ctx, request, response); err != nil {
@@ -346,25 +346,25 @@ func (g *grpcServer) handler(svc interface{}, stream grpc.ServerStream) error {
 
 	// process the standard request flow
 	g.rpc.mu.Lock()
-	service := g.rpc.serviceMap[serviceName]
+	s := g.rpc.serviceMap[serviceName]
 	g.rpc.mu.Unlock()
 
-	if service == nil {
+	if s == nil {
 		return status.New(codes.Unimplemented, fmt.Sprintf("unknown service %s", serviceName)).Err()
 	}
 
-	mtype := service.method[methodName]
+	mtype := s.method[methodName]
 	if mtype == nil {
 		return status.New(codes.Unimplemented, fmt.Sprintf("unknown service %s.%s", serviceName, methodName)).Err()
 	}
 
 	// process unary
 	if !mtype.stream {
-		return g.processRequest(stream, service, mtype, ct, ctx)
+		return g.processRequest(stream, s, mtype, ct, ctx)
 	}
 
 	// process stream
-	return g.processStream(stream, service, mtype, ct, ctx)
+	return g.processStream(stream, s, mtype, ct, ctx)
 }
 
 func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, mtype *methodType, ct string, ctx context.Context) error {
@@ -811,7 +811,7 @@ func (g *grpcServer) Deregister() error {
 	config := g.opts
 	g.RUnlock()
 
-	// check the advertise address first
+	// check the advertisement address first
 	// if it exists then use it, otherwise
 	// use the address
 	if len(config.Advertise) > 0 {
