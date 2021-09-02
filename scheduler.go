@@ -25,29 +25,29 @@ package vine
 
 import "github.com/vine-io/gscheduler"
 
-var defaultScheduler gscheduler.Scheduler
+var DefaultScheduler gscheduler.Scheduler
 
 func init() {
-	defaultScheduler = gscheduler.NewScheduler()
-	defaultScheduler.Start()
+	DefaultScheduler = gscheduler.NewScheduler()
+	DefaultScheduler.Start()
 }
 
 func GetJob(id string) (*gscheduler.Job, error) {
-	return defaultScheduler.GetJob(id)
+	return DefaultScheduler.GetJob(id)
 }
 
 func GetJobs() ([]*gscheduler.Job, error) {
-	return defaultScheduler.GetJobs()
+	return DefaultScheduler.GetJobs()
 }
 
 func AddJob(job *gscheduler.Job) error {
-	return defaultScheduler.AddJob(job)
+	return DefaultScheduler.AddJob(job)
 }
 
 func UpdateJob(job *gscheduler.Job) error {
-	return defaultScheduler.UpdateJob(job)
+	return DefaultScheduler.UpdateJob(job)
 }
 
 func RemoveJob(job *gscheduler.Job) error {
-	return defaultScheduler.RemoveJob(job)
+	return DefaultScheduler.RemoveJob(job)
 }

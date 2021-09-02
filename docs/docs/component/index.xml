@@ -24,87 +24,191 @@
         
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// The registry provides an interface for service discovery
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// and an abstraction over varying implementations
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// {consul, etcd, zookeeper, ...}
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
-	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;完整实例&#34;&gt;完整实例&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;服务注册发现&lt;/code&gt;模块是微服务的核心。服务端需要它来提供注册服务，登录服务自身信息。客户端需要它来根据名称查找服务地址。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 提供一个通用的 &lt;code&gt;Registry&lt;/code&gt; 接口，描述 &lt;code&gt;服务注册发现&lt;/code&gt; 模块的行为。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// ------------------------------- 模块初始化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options &lt;span style=&#34;color:#6272a4&#34;&gt;// ----------------------------------- 模块的配置信息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// --------- 注册服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// ----- 注销服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;//- 根据名称查找服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;// ----- 查询所有服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;// -------------- 监听服务变化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// ------------------------------------- 查询实现 Registry 接口的具体类型
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;在此我们提供一个完整的代码来介绍 &lt;code&gt;Registry&lt;/code&gt; 的具体使用方式:&lt;/p&gt;
+&lt;h3 id=&#34;初始化&#34;&gt;初始化&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
 &lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
-
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/google/uuid&amp;#34;&lt;/span&gt;
-	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/service/registry&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry/mdns&amp;#34;&lt;/span&gt;
 )
 
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-	&lt;span style=&#34;color:#6272a4&#34;&gt;// create new registry
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
-
-	&lt;span style=&#34;color:#6272a4&#34;&gt;// initialize registry
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
-
-	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Service{
-		Name:     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;,
-		Version:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;1.0.0&amp;#34;&lt;/span&gt;,
-		Metadata: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{},
-		Endpoints: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Endpoint{{
-			Request: &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Value{},
-		}},
-		Nodes: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node{
-			&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Node{
-				Id:      uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(),
-				Address: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1:1111&amp;#34;&lt;/span&gt;,
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 创建新的 Registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; mdns.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 初始化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;注册和注销服务&#34;&gt;注册和注销服务&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 创建新的服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	svc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;registry.Service{
+		Name:     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.test&amp;#34;&lt;/span&gt;,   &lt;span style=&#34;color:#6272a4&#34;&gt;// 服务名称，唯一值
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		Version:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;v1.0.0&amp;#34;&lt;/span&gt;,         &lt;span style=&#34;color:#6272a4&#34;&gt;// 服务版本
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		Metadata: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Content-Type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;},  &lt;span style=&#34;color:#6272a4&#34;&gt;// 元数据
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		Endpoints: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Endpoint{        &lt;span style=&#34;color:#6272a4&#34;&gt;// 服务接口
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			{
+				Name:     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+				Request:  &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;,
+				Response: &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;,
+				Metadata: &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;,
 			},
 		},
+		Nodes: []&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node{     &lt;span style=&#34;color:#6272a4&#34;&gt;// 该服务下的节点信息, 节点的 ID 必须是不同的，当一个 `Registry` 中多次注册相同服务时，服务的该字段就会合并
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			{
+				Id:       uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(),
+				Address:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1:11500&amp;#34;&lt;/span&gt;,
+				&lt;span style=&#34;color:#6272a4&#34;&gt;//Port:     11500,
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;				Metadata: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;},
+			},
+		},
+		TTL:  &lt;span style=&#34;color:#bd93f9&#34;&gt;30&lt;/span&gt;,  &lt;span style=&#34;color:#6272a4&#34;&gt;// 服务过期时间，单位秒
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		Apis: &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color:#6272a4&#34;&gt;// swagger 信息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	}
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 注册服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(svc); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 	}
 
-	&lt;span style=&#34;color:#6272a4&#34;&gt;// registry service
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(s)
-
-	&lt;span style=&#34;color:#6272a4&#34;&gt;// watch registry
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	w, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;))
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 注销服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(svc); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;查询服务&#34;&gt;查询服务&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 查询所有服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	list, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;()
 	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt;
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 	}
-	&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; w.&lt;span style=&#34;color:#50fa7b&#34;&gt;Stop&lt;/span&gt;()
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; _, item &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;range&lt;/span&gt; list {
+		fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(item.Name)
+	}
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 查询单个服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	list, err = r.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.test&amp;#34;&lt;/span&gt;)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; _, item &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;range&lt;/span&gt; list {
+		fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(item.Name, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;len&lt;/span&gt;(item.Nodes))
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;ListService() 方法获取的结果，数据是不完整的，只含有包括服务名称在内的少量信息。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;监听服务&#34;&gt;监听服务&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 启动一个监听器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	watcher, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.test&amp;#34;&lt;/span&gt;))
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 停止监听器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; watcher.&lt;span style=&#34;color:#50fa7b&#34;&gt;Stop&lt;/span&gt;()
 	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
 		&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; {
-			&lt;span style=&#34;color:#6272a4&#34;&gt;// blocking
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			r, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; w.&lt;span style=&#34;color:#50fa7b&#34;&gt;Next&lt;/span&gt;()
-			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+			e, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; watcher.&lt;span style=&#34;color:#50fa7b&#34;&gt;Next&lt;/span&gt;() &lt;span style=&#34;color:#6272a4&#34;&gt;// 这里会阻塞，直到返回事假
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 				&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt;
 			}
-
-			log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;watch [%v] %v&amp;#34;&lt;/span&gt;, r.Action, r.Service)
+			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%d: %s, %s\n&amp;#34;&lt;/span&gt;,  e.Timestamp, e.Action, e.Service.Name)
 		}
 	}()
-
-	time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second)
-	&lt;span style=&#34;color:#6272a4&#34;&gt;// get service
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	service, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.srv&amp;#34;&lt;/span&gt;)
-	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
-	}
-	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%+v\n&amp;#34;&lt;/span&gt;, service)
-
-	&lt;span style=&#34;color:#6272a4&#34;&gt;// destroy registry
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(s)
-
-	time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second)
 }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;替换服务的-registry&#34;&gt;替换服务的 &lt;code&gt;Registry&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 服务默认 &lt;code&gt;Registry&lt;/code&gt; 为 &lt;code&gt;mdns&lt;/code&gt;。尝试去替换成 &lt;code&gt;memory&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry/memory&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	mr &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
+	vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(mr))
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;options&#34;&gt;options&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Registry&lt;/code&gt; 接口的几个方法都支持 Options。&lt;/p&gt;
+&lt;p&gt;创建 &lt;code&gt;NewRegistry(opts...)&lt;/code&gt; 和 初始化 &lt;code&gt;Init(opts...)&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;(
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Registry 的 ip 地址
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;Addrs&lt;/span&gt;(addrs &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;),
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 连接超时时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;Timeout&lt;/span&gt;(t time.Duration),
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 安全通讯
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;Secure&lt;/span&gt;(b &lt;span style=&#34;color:#8be9fd&#34;&gt;bool&lt;/span&gt;),
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 安全通讯所需证书信息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;TLSConfig&lt;/span&gt;(t &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;tls.Config),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;注册服务 &lt;code&gt;Register(svc, opts...)&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(svc,
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 服务过期时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterTTL&lt;/span&gt;(ttl &lt;span style=&#34;color:#8be9fd&#34;&gt;int64&lt;/span&gt;), 
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 上下文信息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterContext&lt;/span&gt;(ctx context.Context),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;注销服务 &lt;code&gt;Deregister(svc, opts...)&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(svc,
+	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;DeregisterContext&lt;/span&gt;(ctx context.Context),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;查询所有服务 &lt;code&gt;ListServices(opts...)&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(svc,
+	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServicesContext&lt;/span&gt;(ctx context.Context),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;根据名称获取服务 &lt;code&gt;GetService(name, opts...)&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(svc,
+	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetServiceContext&lt;/span&gt;(ctx context.Context),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;监听服务 &lt;code&gt;Watch(opts...)&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(svc,
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 监听单个服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchService&lt;/span&gt;(name &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;),
+	registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchServiceContext&lt;/span&gt;(ctx context.Context),
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;插件&#34;&gt;插件&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 目前自带的 &lt;code&gt;Registry&lt;/code&gt; 实现有:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;memory&lt;/li&gt;
+&lt;li&gt;mdns&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;第三方的实现请参考 &lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/registry&#34;&gt;registry&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;etcd&#34;&gt;etcd&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/cmd&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/registry/etcd&amp;#34;&lt;/span&gt;
+)
+	
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	er &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; etcd.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
+	vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(er))
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;服务启动&#34;&gt;服务启动&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 服务以插件的方式，注册多种实现，用户可以再服务启动时选择喜欢的类型。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;./helloworld --registy&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;etcd --registry-address&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;127.0.0.1:2379
+&lt;span style=&#34;color:#6272a4&#34;&gt;# 或者使用环境变量&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_REGISTRY&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;ETCD &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_REGISTRY_ADDRESS&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;127.0.0.1:2379 ./helloworld
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
@@ -121,84 +225,20 @@
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;API&lt;/strong&gt; 是一个可插拔的 API 接口，由 &lt;strong&gt;Registry&lt;/strong&gt; 驱动，可帮助构建强大的公共 API 网关.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;API&lt;/strong&gt; 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 &lt;strong&gt;API&lt;/strong&gt; 使用在 &lt;strong&gt;Registry&lt;/strong&gt; 元数据中定义的路由来生成路由规则并服务 http 请求.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;2020-12-30-11-14-15.png&#34; alt=&#34;vine api&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;vine api&lt;/code&gt; 基于 &lt;strong&gt;API&lt;/strong&gt;。&lt;/p&gt;
-&lt;h2 id=&#34;handler&#34;&gt;handler&lt;/h2&gt;
-&lt;p&gt;处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。&lt;/li&gt;
-&lt;li&gt;broker - 实现 vine 代理接口的 http 处理程序。&lt;/li&gt;
-&lt;li&gt;event - 处理任何 HTTP 请求并发布到消息总线。&lt;/li&gt;
-&lt;li&gt;http - 处理任何 HTTP 请求，并作为反向代理转发。&lt;/li&gt;
-&lt;li&gt;registry - 实现 vine &lt;strong&gt;Registry&lt;/strong&gt; 接口的 http 处理程序。&lt;/li&gt;
-&lt;li&gt;rpc - 处理 json 和原始 POST 请求。转发为 RPC。&lt;/li&gt;
-&lt;li&gt;web - 包含 websocket 支持的 HTTP 处理程序。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;api-handler&#34;&gt;API handler&lt;/h2&gt;
-&lt;p&gt;API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Content-Type：任何&lt;/li&gt;
-&lt;li&gt;Body： 任何&lt;/li&gt;
-&lt;li&gt;Forward Format: api.Request/api.Response&lt;/li&gt;
-&lt;li&gt;Path: /[service]/[method]&lt;/li&gt;
-&lt;li&gt;Resolver: 路径用于解析服务和方法的路径&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;proxy-handler&#34;&gt;proxy handler&lt;/h2&gt;
-&lt;p&gt;代理处理程序是一个 http 处理程序，它服务于 vine 代理接口&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Content-Type: 任何&lt;/li&gt;
-&lt;li&gt;Body: 任何&lt;/li&gt;
-&lt;li&gt;Forward Format: HTTP&lt;/li&gt;
-&lt;li&gt;PATH: /&lt;/li&gt;
-&lt;li&gt;Resolver: 指定为查询参数的主题&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;发布请求并将发布&lt;/p&gt;
-&lt;h2 id=&#34;event-handler&#34;&gt;event handler&lt;/h2&gt;
-&lt;p&gt;事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Content-Type: Any&lt;/li&gt;
-&lt;li&gt;Body: Any&lt;/li&gt;
-&lt;li&gt;Forward Format: 请求格式为 go-api/proto.Event&lt;/li&gt;
-&lt;li&gt;Path：/[topic]/[event]&lt;/li&gt;
-&lt;li&gt;Resolver: 用于解析主题和事件名称路径&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;http-handler&#34;&gt;http handler&lt;/h2&gt;
-&lt;p&gt;http 处理程序是具有内置服务发现的 http 反向代理.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Content-Type: 任何&lt;/li&gt;
-&lt;li&gt;Body: 任何&lt;/li&gt;
-&lt;li&gt;Forward Format: HTTP 反向代理&lt;/li&gt;
-&lt;li&gt;Path: /[service]&lt;/li&gt;
-&lt;li&gt;Resolver: 用于解析服务名称路径&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;registry-handler&#34;&gt;registry handler&lt;/h2&gt;
-&lt;p&gt;registry handler 是一个 http 处理程序，它为 vine &lt;strong&gt;Registry&lt;/strong&gt; 接口提供服务&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Content-Type: 任何&lt;/li&gt;
-&lt;li&gt;Body: JSON&lt;/li&gt;
-&lt;li&gt;Forward Format: HTTP&lt;/li&gt;
-&lt;li&gt;Path: /&lt;/li&gt;
-&lt;li&gt;Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;rpc-handler&#34;&gt;rpc handler&lt;/h2&gt;
-&lt;p&gt;rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Content-Type: application/json 或 application/protobuf&lt;/li&gt;
-&lt;li&gt;Body: JSON 或 Protobuf&lt;/li&gt;
-&lt;li&gt;Forward Format: 基于内容的 json-rpc 或 proto-rpc&lt;/li&gt;
-&lt;li&gt;Path: /[service]/[method]&lt;/li&gt;
-&lt;li&gt;Resolver: 用于解析服务和方法路径&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;web-handler&#34;&gt;web handler&lt;/h2&gt;
-&lt;p&gt;web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Content-Type: 任何&lt;/li&gt;
-&lt;li&gt;Body: 任何&lt;/li&gt;
-&lt;li&gt;Forward Format: HTTP 反向代理，包括 websocket&lt;/li&gt;
-&lt;li&gt;Path: /[service]&lt;/li&gt;
-&lt;li&gt;Resolver: 用于解析服务名称路径&lt;/li&gt;
-&lt;/ul&gt;
-
+&lt;h2 id=&#34;启动-api-服务&#34;&gt;启动 api 服务&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;# 提供 http 服务和 swagger &lt;/span&gt;
+vine api --handler&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rpc --enable-openapi
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;创建网关&#34;&gt;创建网关&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;vine new gateway api
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go run cmd/api/main.go --api-address&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;127.0.0.1:8080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;一个服务同时提供 gRPC 和 http 接口可以参考 &lt;a href=&#34;https://github.com/vine-io/examples/tree/main/api&#34;&gt;api&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;测试&#34;&gt;测试&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl -X POST &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;http://127.0.0.1:8080/helloworld/v1/helloworld/Call&amp;#34;&lt;/span&gt; -H  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;accept: application/json&amp;#34;&lt;/span&gt; -H  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Content-Type: application/json&amp;#34;&lt;/span&gt; -d &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;{\&amp;#34;name\&amp;#34;:\&amp;#34;hello\&amp;#34;}&amp;#34;&lt;/span&gt;
+&amp;gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;{&lt;/span&gt;&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;msg&amp;#34;&lt;/span&gt;:&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;reply: hello&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
@@ -751,7 +791,107 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        
+        &lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 服务内部携带定时任务调度器，用户可以注册 &lt;code&gt;Job&lt;/code&gt;，服务启动时，调度器同时启动。&lt;/p&gt;
+&lt;h2 id=&#34;新建&#34;&gt;新建&lt;/h2&gt;
+&lt;p&gt;我们来尝试创建一个任务:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gscheduler&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).          &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务名称，唯一值
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Duration&lt;/span&gt;(time.Second).    &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务触发间隔时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {               &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务业务主体
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
+		}).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()                     &lt;span style=&#34;color:#6272a4&#34;&gt;// 返回 *Job
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 添加定时任务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;AddJob&lt;/span&gt;(job); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;()
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;构建过程&#34;&gt;构建过程&lt;/h2&gt;
+&lt;p&gt;我们提供一组方法来简化定时任务的创建过程。&lt;/p&gt;
+&lt;p&gt;创建定时任务:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Duration&lt;/span&gt;(time.Second).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
+		}).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建 crontab 定时任务:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gscheduler&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gscheduler/cron&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// crontab 表达式格式: 秒 分 时 日 月 周
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    c, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cron.&lt;span style=&#34;color:#50fa7b&#34;&gt;Parse&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;*/3 * * * * *&amp;#34;&lt;/span&gt;)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;invalid crontab expr: %v&amp;#34;&lt;/span&gt;, err)
+	}
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// c = cron.Every(time.Second)
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;
+	job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Spec&lt;/span&gt;(c).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
+		}).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建一次性任务:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Delay&lt;/span&gt;(time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Now&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;Add&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;)).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
+		}).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;额外的功能:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Duration&lt;/span&gt;(time.Second).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Silent&lt;/span&gt;().  &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务静默
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Times&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;).  &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定任务执行次数
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
+		}).
+		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;其他&#34;&gt;其他&lt;/h2&gt;
+&lt;p&gt;内部定时任务调度器的其他功能:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 根据 id 获取任务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    j, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetJob&lt;/span&gt;(job.&lt;span style=&#34;color:#50fa7b&#34;&gt;ID&lt;/span&gt;())
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 更新任务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;UpdateJob&lt;/span&gt;(j)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 删除任务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RemoveJob&lt;/span&gt;(j)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     

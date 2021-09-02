@@ -614,8 +614,8 @@ vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(&lt;span 
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/config/source/configmap&#34;&gt;configmap&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/config/source/etcd&#34;&gt;etcd&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Wrapper 类
-熔断器:&lt;/p&gt;
+&lt;p&gt;Wrapper 类&lt;/p&gt;
+&lt;p&gt;熔断器:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/wrapper/breaker/gobreaker&#34;&gt;gobreaker&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/wrapper/breaker/hystrix&#34;&gt;hystrix&lt;/a&gt;&lt;/li&gt;

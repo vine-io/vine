@@ -160,7 +160,7 @@ var (
 		&cli.StringFlag{
 			Name:    "broker",
 			EnvVars: []string{"VINE_BROKER"},
-			Usage:   "Broker for pub/sub. http, nats, rabbitmq",
+			Usage:   "Broker for pub/sub. http, nats",
 		},
 		&cli.StringFlag{
 			Name:    "broker-address",
@@ -170,7 +170,7 @@ var (
 		&cli.StringFlag{
 			Name:    "registry",
 			EnvVars: []string{"VINE_REGISTRY"},
-			Usage:   "Registry for discovery. etcd, mdns",
+			Usage:   "Registry for discovery. memory, mdns",
 		},
 		&cli.StringFlag{
 			Name:    "registry-address",

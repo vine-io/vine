@@ -1052,8 +1052,8 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
 <li><a href="https://github.com/vine-io/plugins/tree/main/config/source/configmap">configmap</a></li>
 <li><a href="https://github.com/vine-io/plugins/tree/main/config/source/etcd">etcd</a></li>
 </ul>
-<p>Wrapper 类
-熔断器:</p>
+<p>Wrapper 类</p>
+<p>熔断器:</p>
 <ul>
 <li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/breaker/gobreaker">gobreaker</a></li>
 <li><a href="https://github.com/vine-io/plugins/tree/main/wrapper/breaker/hystrix">hystrix</a></li>
@@ -1130,87 +1130,191 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
 	<h1 id="pg-4bf4097c812f2b345e3a8236e52dae1a">2.1 - 服务注册发现</h1>
     
 	<h2 id="概述">概述</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// The registry provides an interface for service discovery
-</span><span style="color:#6272a4">// and an abstraction over varying implementations
-</span><span style="color:#6272a4">// {consul, etcd, zookeeper, ...}
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><h2 id="完整实例">完整实例</h2>
+<p><code>服务注册发现</code>模块是微服务的核心。服务端需要它来提供注册服务，登录服务自身信息。客户端需要它来根据名称查找服务地址。</p>
+<p><strong>Vine</strong> 提供一个通用的 <code>Registry</code> 接口，描述 <code>服务注册发现</code> 模块的行为。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span> <span style="color:#6272a4">// ------------------------------- 模块初始化
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options <span style="color:#6272a4">// ----------------------------------- 模块的配置信息
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span> <span style="color:#6272a4">// --------- 注册服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span> <span style="color:#6272a4">// ----- 注销服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>) <span style="color:#6272a4">//- 根据名称查找服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>) <span style="color:#6272a4">// ----- 查询所有服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>) <span style="color:#6272a4">// -------------- 监听服务变化
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span> <span style="color:#6272a4">// ------------------------------------- 查询实现 Registry 接口的具体类型
+</span><span style="color:#6272a4"></span>}
+</code></pre></div><h2 id="使用">使用</h2>
+<p>在此我们提供一个完整的代码来介绍 <code>Registry</code> 的具体使用方式:</p>
+<h3 id="初始化">初始化</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
 <span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-	<span style="color:#f1fa8c">&#34;log&#34;</span>
-	<span style="color:#f1fa8c">&#34;time&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/google/uuid&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/registry&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry/mdns&#34;</span>
 )
 
 <span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	<span style="color:#6272a4">// create new registry
-</span><span style="color:#6272a4"></span>	r <span style="color:#ff79c6">:=</span> registry.<span style="color:#50fa7b">NewRegistry</span>()
-
-	<span style="color:#6272a4">// initialize registry
-</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Init</span>()
-
-	s <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
-		Name:     <span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>,
-		Version:  <span style="color:#f1fa8c">&#34;1.0.0&#34;</span>,
-		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{},
-		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{{
-			Request: <span style="color:#ff79c6">&amp;</span>registry.Value{},
-		}},
-		Nodes: []<span style="color:#ff79c6">*</span>registry.Node{
-			<span style="color:#ff79c6">&amp;</span>registry.Node{
-				Id:      uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
-				Address: <span style="color:#f1fa8c">&#34;127.0.0.1:1111&#34;</span>,
+	<span style="color:#6272a4">// 创建新的 Registry
+</span><span style="color:#6272a4"></span>	r <span style="color:#ff79c6">:=</span> mdns.<span style="color:#50fa7b">NewRegistry</span>()
+	<span style="color:#6272a4">// 初始化
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+}
+</code></pre></div><h3 id="注册和注销服务">注册和注销服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 创建新的服务
+</span><span style="color:#6272a4"></span>	svc <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>registry.Service{
+		Name:     <span style="color:#f1fa8c">&#34;go.vine.test&#34;</span>,   <span style="color:#6272a4">// 服务名称，唯一值
+</span><span style="color:#6272a4"></span>		Version:  <span style="color:#f1fa8c">&#34;v1.0.0&#34;</span>,         <span style="color:#6272a4">// 服务版本
+</span><span style="color:#6272a4"></span>		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;Content-Type&#34;</span>: <span style="color:#f1fa8c">&#34;application/json&#34;</span>},  <span style="color:#6272a4">// 元数据
+</span><span style="color:#6272a4"></span>		Endpoints: []<span style="color:#ff79c6">*</span>registry.Endpoint{        <span style="color:#6272a4">// 服务接口
+</span><span style="color:#6272a4"></span>			{
+				Name:     <span style="color:#f1fa8c">&#34;&#34;</span>,
+				Request:  <span style="color:#ff79c6">nil</span>,
+				Response: <span style="color:#ff79c6">nil</span>,
+				Metadata: <span style="color:#ff79c6">nil</span>,
 			},
 		},
+		Nodes: []<span style="color:#ff79c6">*</span>registry.Node{     <span style="color:#6272a4">// 该服务下的节点信息, 节点的 ID 必须是不同的，当一个 `Registry` 中多次注册相同服务时，服务的该字段就会合并
+</span><span style="color:#6272a4"></span>			{
+				Id:       uuid.<span style="color:#50fa7b">New</span>().<span style="color:#50fa7b">String</span>(),
+				Address:  <span style="color:#f1fa8c">&#34;127.0.0.1:11500&#34;</span>,
+				<span style="color:#6272a4">//Port:     11500,
+</span><span style="color:#6272a4"></span>				Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;os&#34;</span>: <span style="color:#f1fa8c">&#34;linux&#34;</span>},
+			},
+		},
+		TTL:  <span style="color:#bd93f9">30</span>,  <span style="color:#6272a4">// 服务过期时间，单位秒
+</span><span style="color:#6272a4"></span>		Apis: <span style="color:#ff79c6">nil</span>, <span style="color:#6272a4">// swagger 信息
+</span><span style="color:#6272a4"></span>	}
+
+	<span style="color:#6272a4">// 注册服务
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Register</span>(svc); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
 	}
 
-	<span style="color:#6272a4">// registry service
-</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Register</span>(s)
-
-	<span style="color:#6272a4">// watch registry
-</span><span style="color:#6272a4"></span>	w, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>))
+	<span style="color:#6272a4">// 注销服务
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Deregister</span>(svc); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+}
+</code></pre></div><h3 id="查询服务">查询服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 查询所有服务
+</span><span style="color:#6272a4"></span>	list, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">ListServices</span>()
 	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		<span style="color:#ff79c6">return</span>
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
 	}
-	<span style="color:#ff79c6">defer</span> w.<span style="color:#50fa7b">Stop</span>()
+	<span style="color:#ff79c6">for</span> _, item <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> list {
+		fmt.<span style="color:#50fa7b">Println</span>(item.Name)
+	}
+
+	<span style="color:#6272a4">// 查询单个服务
+</span><span style="color:#6272a4"></span>	list, err = r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.test&#34;</span>)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+	<span style="color:#ff79c6">for</span> _, item <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> list {
+		fmt.<span style="color:#50fa7b">Println</span>(item.Name, <span style="color:#8be9fd;font-style:italic">len</span>(item.Nodes))
+	}
+}
+</code></pre></div><blockquote>
+<p>ListService() 方法获取的结果，数据是不完整的，只含有包括服务名称在内的少量信息。</p>
+</blockquote>
+<h3 id="监听服务">监听服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 启动一个监听器
+</span><span style="color:#6272a4"></span>	watcher, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">Watch</span>(registry.<span style="color:#50fa7b">WatchService</span>(<span style="color:#f1fa8c">&#34;go.vine.test&#34;</span>))
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+	<span style="color:#6272a4">// 停止监听器
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">defer</span> watcher.<span style="color:#50fa7b">Stop</span>()
 	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
 		<span style="color:#ff79c6">for</span> {
-			<span style="color:#6272a4">// blocking
-</span><span style="color:#6272a4"></span>			r, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
-			<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+			e, err <span style="color:#ff79c6">:=</span> watcher.<span style="color:#50fa7b">Next</span>() <span style="color:#6272a4">// 这里会阻塞，直到返回事假
+</span><span style="color:#6272a4"></span>			<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 				<span style="color:#ff79c6">return</span>
 			}
-
-			log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;watch [%v] %v&#34;</span>, r.Action, r.Service)
+			fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%d: %s, %s\n&#34;</span>,  e.Timestamp, e.Action, e.Service.Name)
 		}
 	}()
-
-	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
-	<span style="color:#6272a4">// get service
-</span><span style="color:#6272a4"></span>	service, err <span style="color:#ff79c6">:=</span> r.<span style="color:#50fa7b">GetService</span>(<span style="color:#f1fa8c">&#34;go.vine.srv&#34;</span>)
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatal</span>(err)
-	}
-	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%+v\n&#34;</span>, service)
-
-	<span style="color:#6272a4">// destroy registry
-</span><span style="color:#6272a4"></span>	r.<span style="color:#50fa7b">Deregister</span>(s)
-
-	time.<span style="color:#50fa7b">Sleep</span>(time.Second)
 }
+</code></pre></div><h3 id="替换服务的-registry">替换服务的 <code>Registry</code></h3>
+<p><strong>Vine</strong> 服务默认 <code>Registry</code> 为 <code>mdns</code>。尝试去替换成 <code>memory</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry/memory&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	mr <span style="color:#ff79c6">:=</span> memory.<span style="color:#50fa7b">NewRegistry</span>()
+	vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Registry</span>(mr))
+}
+</code></pre></div><h2 id="options">options</h2>
+<p><code>Registry</code> 接口的几个方法都支持 Options。</p>
+<p>创建 <code>NewRegistry(opts...)</code> 和 初始化 <code>Init(opts...)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">memory.<span style="color:#50fa7b">NewRegistry</span>(
+	<span style="color:#6272a4">// Registry 的 ip 地址
+</span><span style="color:#6272a4"></span>	registry.<span style="color:#50fa7b">Addrs</span>(addrs <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>),
+	<span style="color:#6272a4">// 连接超时时间
+</span><span style="color:#6272a4"></span>	registry.<span style="color:#50fa7b">Timeout</span>(t time.Duration),
+	<span style="color:#6272a4">// 安全通讯
+</span><span style="color:#6272a4"></span>	registry.<span style="color:#50fa7b">Secure</span>(b <span style="color:#8be9fd">bool</span>),
+	<span style="color:#6272a4">// 安全通讯所需证书信息
+</span><span style="color:#6272a4"></span>	registry.<span style="color:#50fa7b">TLSConfig</span>(t <span style="color:#ff79c6">*</span>tls.Config),
+)
+</code></pre></div><p>注册服务 <code>Register(svc, opts...)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">memory.<span style="color:#50fa7b">Register</span>(svc,
+	<span style="color:#6272a4">// 服务过期时间
+</span><span style="color:#6272a4"></span>	registry.<span style="color:#50fa7b">RegisterTTL</span>(ttl <span style="color:#8be9fd">int64</span>), 
+	<span style="color:#6272a4">// 上下文信息
+</span><span style="color:#6272a4"></span>	registry.<span style="color:#50fa7b">RegisterContext</span>(ctx context.Context),
+)
+</code></pre></div><p>注销服务 <code>Deregister(svc, opts...)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">memory.<span style="color:#50fa7b">Deregister</span>(svc,
+	registry.<span style="color:#50fa7b">DeregisterContext</span>(ctx context.Context),
+)
+</code></pre></div><p>查询所有服务 <code>ListServices(opts...)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">memory.<span style="color:#50fa7b">ListServices</span>(svc,
+	registry.<span style="color:#50fa7b">ListServicesContext</span>(ctx context.Context),
+)
+</code></pre></div><p>根据名称获取服务 <code>GetService(name, opts...)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">memory.<span style="color:#50fa7b">GetService</span>(svc,
+	registry.<span style="color:#50fa7b">GetServiceContext</span>(ctx context.Context),
+)
+</code></pre></div><p>监听服务 <code>Watch(opts...)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">memory.<span style="color:#50fa7b">Watch</span>(svc,
+    <span style="color:#6272a4">// 监听单个服务
+</span><span style="color:#6272a4"></span>	registry.<span style="color:#50fa7b">WatchService</span>(name <span style="color:#8be9fd">string</span>),
+	registry.<span style="color:#50fa7b">WatchServiceContext</span>(ctx context.Context),
+)
+</code></pre></div><h2 id="插件">插件</h2>
+<p><strong>Vine</strong> 目前自带的 <code>Registry</code> 实现有:</p>
+<ul>
+<li>memory</li>
+<li>mdns</li>
+</ul>
+<p>第三方的实现请参考 <a href="https://github.com/vine-io/plugins/tree/main/registry">registry</a></p>
+<h3 id="etcd">etcd</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/cmd&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/registry/etcd&#34;</span>
+)
+	
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	er <span style="color:#ff79c6">:=</span> etcd.<span style="color:#50fa7b">NewRegistry</span>()
+	vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Registry</span>(er))
+}
+</code></pre></div><h2 id="服务启动">服务启动</h2>
+<p><strong>Vine</strong> 服务以插件的方式，注册多种实现，用户可以再服务启动时选择喜欢的类型。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./helloworld --registy<span style="color:#ff79c6">=</span>etcd --registry-address<span style="color:#ff79c6">=</span>127.0.0.1:2379
+<span style="color:#6272a4"># 或者使用环境变量</span>
+<span style="color:#8be9fd;font-style:italic">VINE_REGISTRY</span><span style="color:#ff79c6">=</span>ETCD <span style="color:#8be9fd;font-style:italic">VINE_REGISTRY_ADDRESS</span><span style="color:#ff79c6">=</span>127.0.0.1:2379 ./helloworld
 </code></pre></div>
 </div>
 
@@ -1239,88 +1343,24 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
 <div class="td-content" style="page-break-before: always">
     
 	<h1 id="pg-f375a1b0338deecef74fa867c6bb7ed5">2.2 - 服务网关</h1>
-    <div class="lead">用于定义 api 路由和处理程序的包</div>
+    
 	<h2 id="概述">概述</h2>
 <p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
 <p><strong>API</strong> 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 <strong>API</strong> 使用在 <strong>Registry</strong> 元数据中定义的路由来生成路由规则并服务 http 请求.</p>
-<p><img src="2020-12-30-11-14-15.png" alt="vine api"></p>
-<p><code>vine api</code> 基于 <strong>API</strong>。</p>
-<h2 id="handler">handler</h2>
-<p>处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。</p>
-<ul>
-<li>api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。</li>
-<li>broker - 实现 vine 代理接口的 http 处理程序。</li>
-<li>event - 处理任何 HTTP 请求并发布到消息总线。</li>
-<li>http - 处理任何 HTTP 请求，并作为反向代理转发。</li>
-<li>registry - 实现 vine <strong>Registry</strong> 接口的 http 处理程序。</li>
-<li>rpc - 处理 json 和原始 POST 请求。转发为 RPC。</li>
-<li>web - 包含 websocket 支持的 HTTP 处理程序。</li>
-</ul>
-<h2 id="api-handler">API handler</h2>
-<p>API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.</p>
-<ul>
-<li>Content-Type：任何</li>
-<li>Body： 任何</li>
-<li>Forward Format: api.Request/api.Response</li>
-<li>Path: /[service]/[method]</li>
-<li>Resolver: 路径用于解析服务和方法的路径</li>
-</ul>
-<h2 id="proxy-handler">proxy handler</h2>
-<p>代理处理程序是一个 http 处理程序，它服务于 vine 代理接口</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP</li>
-<li>PATH: /</li>
-<li>Resolver: 指定为查询参数的主题</li>
-</ul>
-<p>发布请求并将发布</p>
-<h2 id="event-handler">event handler</h2>
-<p>事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.</p>
-<ul>
-<li>Content-Type: Any</li>
-<li>Body: Any</li>
-<li>Forward Format: 请求格式为 go-api/proto.Event</li>
-<li>Path：/[topic]/[event]</li>
-<li>Resolver: 用于解析主题和事件名称路径</li>
-</ul>
-<h2 id="http-handler">http handler</h2>
-<p>http 处理程序是具有内置服务发现的 http 反向代理.</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP 反向代理</li>
-<li>Path: /[service]</li>
-<li>Resolver: 用于解析服务名称路径</li>
-</ul>
-<h2 id="registry-handler">registry handler</h2>
-<p>registry handler 是一个 http 处理程序，它为 vine <strong>Registry</strong> 接口提供服务</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: JSON</li>
-<li>Forward Format: HTTP</li>
-<li>Path: /</li>
-<li>Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法</li>
-</ul>
-<h2 id="rpc-handler">rpc handler</h2>
-<p>rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.</p>
-<ul>
-<li>Content-Type: application/json 或 application/protobuf</li>
-<li>Body: JSON 或 Protobuf</li>
-<li>Forward Format: 基于内容的 json-rpc 或 proto-rpc</li>
-<li>Path: /[service]/[method]</li>
-<li>Resolver: 用于解析服务和方法路径</li>
-</ul>
-<h2 id="web-handler">web handler</h2>
-<p>web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP 反向代理，包括 websocket</li>
-<li>Path: /[service]</li>
-<li>Resolver: 用于解析服务名称路径</li>
-</ul>
-
+<h2 id="启动-api-服务">启动 api 服务</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># 提供 http 服务和 swagger </span>
+vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
+</code></pre></div><h2 id="创建网关">创建网关</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine new gateway api
+</code></pre></div><p>启动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go run cmd/api/main.go --api-address<span style="color:#ff79c6">=</span>127.0.0.1:8080
+</code></pre></div><blockquote>
+<p>一个服务同时提供 gRPC 和 http 接口可以参考 <a href="https://github.com/vine-io/examples/tree/main/api">api</a></p>
+</blockquote>
+<h2 id="测试">测试</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -X POST <span style="color:#f1fa8c">&#34;http://127.0.0.1:8080/helloworld/v1/helloworld/Call&#34;</span> -H  <span style="color:#f1fa8c">&#34;accept: application/json&#34;</span> -H  <span style="color:#f1fa8c">&#34;Content-Type: application/json&#34;</span> -d <span style="color:#f1fa8c">&#34;{\&#34;name\&#34;:\&#34;hello\&#34;}&#34;</span>
+&gt; <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;reply: hello&#34;</span><span style="color:#ff79c6">}</span>
+</code></pre></div>
 </div>
 
 
@@ -2277,7 +2317,107 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
     
 	<h1 id="pg-c049cbc8dfe9badc6517d70a4af559fb">2.16 - 定时任务</h1>
     
-	
+	<p><strong>Vine</strong> 服务内部携带定时任务调度器，用户可以注册 <code>Job</code>，服务启动时，调度器同时启动。</p>
+<h2 id="新建">新建</h2>
+<p>我们来尝试创建一个任务:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/gscheduler&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	job <span style="color:#ff79c6">:=</span> gscheduler.<span style="color:#50fa7b">JobBuilder</span>().
+		<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;testjob&#34;</span>).          <span style="color:#6272a4">// 任务名称，唯一值
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">Duration</span>(time.Second).    <span style="color:#6272a4">// 任务触发间隔时间
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">Fn</span>(<span style="color:#8be9fd;font-style:italic">func</span>() {               <span style="color:#6272a4">// 任务业务主体
+</span><span style="color:#6272a4"></span>			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;done!&#34;</span>)
+		}).
+		<span style="color:#50fa7b">Out</span>()                     <span style="color:#6272a4">// 返回 *Job
+</span><span style="color:#6272a4"></span>
+    <span style="color:#6272a4">// 添加定时任务
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">AddJob</span>(job); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>()
+	s.<span style="color:#50fa7b">Init</span>()
+	s.<span style="color:#50fa7b">Run</span>()
+}
+</code></pre></div><h2 id="构建过程">构建过程</h2>
+<p>我们提供一组方法来简化定时任务的创建过程。</p>
+<p>创建定时任务:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    job <span style="color:#ff79c6">:=</span> gscheduler.<span style="color:#50fa7b">JobBuilder</span>().
+		<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;testjob&#34;</span>).
+		<span style="color:#50fa7b">Duration</span>(time.Second).
+		<span style="color:#50fa7b">Fn</span>(<span style="color:#8be9fd;font-style:italic">func</span>() {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;done!&#34;</span>)
+		}).
+		<span style="color:#50fa7b">Out</span>()
+}
+</code></pre></div><p>创建 crontab 定时任务:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> (
+    <span style="color:#ff79c6">...</span>
+    <span style="color:#f1fa8c">&#34;github.com/vine-io/gscheduler&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/gscheduler/cron&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    <span style="color:#6272a4">// crontab 表达式格式: 秒 分 时 日 月 周
+</span><span style="color:#6272a4"></span>    c, err <span style="color:#ff79c6">:=</span> cron.<span style="color:#50fa7b">Parse</span>(<span style="color:#f1fa8c">&#34;*/3 * * * * *&#34;</span>)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;invalid crontab expr: %v&#34;</span>, err)
+	}
+
+    <span style="color:#6272a4">// c = cron.Every(time.Second)
+</span><span style="color:#6272a4"></span>
+	job <span style="color:#ff79c6">:=</span> gscheduler.<span style="color:#50fa7b">JobBuilder</span>().
+		<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;testjob&#34;</span>).
+		<span style="color:#50fa7b">Spec</span>(c).
+		<span style="color:#50fa7b">Fn</span>(<span style="color:#8be9fd;font-style:italic">func</span>() {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;done!&#34;</span>)
+		}).
+		<span style="color:#50fa7b">Out</span>()
+}
+</code></pre></div><p>创建一次性任务:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    job <span style="color:#ff79c6">:=</span> gscheduler.<span style="color:#50fa7b">JobBuilder</span>().
+		<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;testjob&#34;</span>).
+		<span style="color:#50fa7b">Delay</span>(time.<span style="color:#50fa7b">Now</span>().<span style="color:#50fa7b">Add</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)).
+		<span style="color:#50fa7b">Fn</span>(<span style="color:#8be9fd;font-style:italic">func</span>() {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;done!&#34;</span>)
+		}).
+		<span style="color:#50fa7b">Out</span>()
+}
+</code></pre></div><p>额外的功能:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    job <span style="color:#ff79c6">:=</span> gscheduler.<span style="color:#50fa7b">JobBuilder</span>().
+		<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;testjob&#34;</span>).
+		<span style="color:#50fa7b">Duration</span>(time.Second).
+		<span style="color:#50fa7b">Silent</span>().  <span style="color:#6272a4">// 任务静默
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">Times</span>(<span style="color:#bd93f9">3</span>).  <span style="color:#6272a4">// 指定任务执行次数
+</span><span style="color:#6272a4"></span>		<span style="color:#50fa7b">Fn</span>(<span style="color:#8be9fd;font-style:italic">func</span>() {
+			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;done!&#34;</span>)
+		}).
+		<span style="color:#50fa7b">Out</span>()
+}
+</code></pre></div><h2 id="其他">其他</h2>
+<p>内部定时任务调度器的其他功能:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    <span style="color:#6272a4">// 根据 id 获取任务
+</span><span style="color:#6272a4"></span>    j, _ <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">GetJob</span>(job.<span style="color:#50fa7b">ID</span>())
+    <span style="color:#6272a4">// 更新任务
+</span><span style="color:#6272a4"></span>	vine.<span style="color:#50fa7b">UpdateJob</span>(j)
+    <span style="color:#6272a4">// 删除任务
+</span><span style="color:#6272a4"></span>	vine.<span style="color:#50fa7b">RemoveJob</span>(j)
+}
+</code></pre></div>
 </div>
 
 

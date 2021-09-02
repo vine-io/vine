@@ -20,17 +20,14 @@
 <link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
 
 <title>服务网关 | Vine</title><meta property="og:title" content="服务网关" />
-<meta property="og:description" content="用于定义 api 路由和处理程序的包
-" />
+<meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://vine-io.github.io/vine/docs/component/api/" /><meta property="og:site_name" content="Vine" />
 
 <meta itemprop="name" content="服务网关">
-<meta itemprop="description" content="用于定义 api 路由和处理程序的包
-"><meta name="twitter:card" content="summary"/>
+<meta itemprop="description" content="Vine 文档"><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="服务网关"/>
-<meta name="twitter:description" content="用于定义 api 路由和处理程序的包
-"/>
+<meta name="twitter:description" content="Vine 文档"/>
 
 
 <script type="application/javascript">
@@ -1176,14 +1173,9 @@ if (!doNotTrack) {
 <nav id="TableOfContents">
   <ul>
     <li><a href="#概述">概述</a></li>
-    <li><a href="#handler">handler</a></li>
-    <li><a href="#api-handler">API handler</a></li>
-    <li><a href="#proxy-handler">proxy handler</a></li>
-    <li><a href="#event-handler">event handler</a></li>
-    <li><a href="#http-handler">http handler</a></li>
-    <li><a href="#registry-handler">registry handler</a></li>
-    <li><a href="#rpc-handler">rpc handler</a></li>
-    <li><a href="#web-handler">web handler</a></li>
+    <li><a href="#启动-api-服务">启动 api 服务</a></li>
+    <li><a href="#创建网关">创建网关</a></li>
+    <li><a href="#测试">测试</a></li>
   </ul>
 </nav>
 
@@ -1231,89 +1223,25 @@ if (!doNotTrack) {
             
 <div class="td-content">
 	<h1>服务网关</h1>
-        <div class="lead">用于定义 api 路由和处理程序的包</div>
+        
 	
 	<h2 id="概述">概述</h2>
 <p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
 <p><strong>API</strong> 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 <strong>API</strong> 使用在 <strong>Registry</strong> 元数据中定义的路由来生成路由规则并服务 http 请求.</p>
-<p><img src="2020-12-30-11-14-15.png" alt="vine api"></p>
-<p><code>vine api</code> 基于 <strong>API</strong>。</p>
-<h2 id="handler">handler</h2>
-<p>处理程序是用于处理请求的 http 程序。它比使用 http.Handler 模式更方便。</p>
-<ul>
-<li>api - 处理任何 HTTP 请求。通过 RPC 完全控制 http 请求 / 响应。</li>
-<li>broker - 实现 vine 代理接口的 http 处理程序。</li>
-<li>event - 处理任何 HTTP 请求并发布到消息总线。</li>
-<li>http - 处理任何 HTTP 请求，并作为反向代理转发。</li>
-<li>registry - 实现 vine <strong>Registry</strong> 接口的 http 处理程序。</li>
-<li>rpc - 处理 json 和原始 POST 请求。转发为 RPC。</li>
-<li>web - 包含 websocket 支持的 HTTP 处理程序。</li>
-</ul>
-<h2 id="api-handler">API handler</h2>
-<p>API 处理程序是默认处理程序。它提供任何 HTTP 请求，并作为具有特定格式的 RPC 请求转发.</p>
-<ul>
-<li>Content-Type：任何</li>
-<li>Body： 任何</li>
-<li>Forward Format: api.Request/api.Response</li>
-<li>Path: /[service]/[method]</li>
-<li>Resolver: 路径用于解析服务和方法的路径</li>
-</ul>
-<h2 id="proxy-handler">proxy handler</h2>
-<p>代理处理程序是一个 http 处理程序，它服务于 vine 代理接口</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP</li>
-<li>PATH: /</li>
-<li>Resolver: 指定为查询参数的主题</li>
-</ul>
-<p>发布请求并将发布</p>
-<h2 id="event-handler">event handler</h2>
-<p>事件处理程序使用在消息总线上提供 HTTP 并将请求作为消息转发的 vine/service/client.Publish 发布方法.</p>
-<ul>
-<li>Content-Type: Any</li>
-<li>Body: Any</li>
-<li>Forward Format: 请求格式为 go-api/proto.Event</li>
-<li>Path：/[topic]/[event]</li>
-<li>Resolver: 用于解析主题和事件名称路径</li>
-</ul>
-<h2 id="http-handler">http handler</h2>
-<p>http 处理程序是具有内置服务发现的 http 反向代理.</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP 反向代理</li>
-<li>Path: /[service]</li>
-<li>Resolver: 用于解析服务名称路径</li>
-</ul>
-<h2 id="registry-handler">registry handler</h2>
-<p>registry handler 是一个 http 处理程序，它为 vine <strong>Registry</strong> 接口提供服务</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: JSON</li>
-<li>Forward Format: HTTP</li>
-<li>Path: /</li>
-<li>Resolver: 用于获取服务，注册或注销的 GET, POST, DELETE 方法</li>
-</ul>
-<h2 id="rpc-handler">rpc handler</h2>
-<p>rpc handler 为 json 或 protobuf HTTP POST 请求提供服务，并作为 RPC 请求转发.</p>
-<ul>
-<li>Content-Type: application/json 或 application/protobuf</li>
-<li>Body: JSON 或 Protobuf</li>
-<li>Forward Format: 基于内容的 json-rpc 或 proto-rpc</li>
-<li>Path: /[service]/[method]</li>
-<li>Resolver: 用于解析服务和方法路径</li>
-</ul>
-<h2 id="web-handler">web handler</h2>
-<p>web handler 是一个 http 反向代理，内置服务发现和 webstock 支持.</p>
-<ul>
-<li>Content-Type: 任何</li>
-<li>Body: 任何</li>
-<li>Forward Format: HTTP 反向代理，包括 websocket</li>
-<li>Path: /[service]</li>
-<li>Resolver: 用于解析服务名称路径</li>
-</ul>
-
+<h2 id="启动-api-服务">启动 api 服务</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># 提供 http 服务和 swagger </span>
+vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
+</code></pre></div><h2 id="创建网关">创建网关</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine new gateway api
+</code></pre></div><p>启动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go run cmd/api/main.go --api-address<span style="color:#ff79c6">=</span>127.0.0.1:8080
+</code></pre></div><blockquote>
+<p>一个服务同时提供 gRPC 和 http 接口可以参考 <a href="https://github.com/vine-io/examples/tree/main/api">api</a></p>
+</blockquote>
+<h2 id="测试">测试</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -X POST <span style="color:#f1fa8c">&#34;http://127.0.0.1:8080/helloworld/v1/helloworld/Call&#34;</span> -H  <span style="color:#f1fa8c">&#34;accept: application/json&#34;</span> -H  <span style="color:#f1fa8c">&#34;Content-Type: application/json&#34;</span> -d <span style="color:#f1fa8c">&#34;{\&#34;name\&#34;:\&#34;hello\&#34;}&#34;</span>
+&gt; <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;reply: hello&#34;</span><span style="color:#ff79c6">}</span>
+</code></pre></div>
         <div class="section-index">
     
     
@@ -1407,7 +1335,7 @@ if (!doNotTrack) {
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 August 27, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/be4076c1c535f4231b8482b741890fdcf34431f4">完整文档结构 (be4076c)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 2, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/5c97a9f5e2632af6f94e2e2fcc77c28653de6eb8">服务注册和发现 (5c97a9f)</a>
 </div>
 </div>
 

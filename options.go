@@ -78,7 +78,7 @@ func newOptions(opts ...Option) Options {
 		Dialect:   dao.DefaultDialect,
 		Cache:     cache.DefaultCache,
 		Registry:  registry.DefaultRegistry,
-		Scheduler: defaultScheduler,
+		Scheduler: DefaultScheduler,
 		Context:   context.Background(),
 		Signal:    true,
 	}
