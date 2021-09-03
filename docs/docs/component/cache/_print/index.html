@@ -140,7 +140,38 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      
+      <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Cache is a data cache interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Cache <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#6272a4">// Init initialises the cache. It must perform any required setup on the backing storage implementation and check that it is ready for use, returning any errors.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Options allows you to view the current options.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#6272a4">// Get takes a single key name and optional GetOptions. It returns matching []*Record or an error.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Get</span>(key <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Record, <span style="color:#8be9fd">error</span>)
+	<span style="color:#6272a4">// Put writes a record to the cache, and returns an error if the record was not written.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Put</span>(r <span style="color:#ff79c6">*</span>Record, opts <span style="color:#ff79c6">...</span>PutOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Del removes the record with the corresponding key from the cache.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Del</span>(key <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>DelOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// List returns any keys that match, or an empty list with no error if none matched.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">List</span>(opts <span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd">error</span>)
+	<span style="color:#6272a4">// Close the cache
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// String returns the name of the implementation.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+
+<span style="color:#6272a4">// Record is an item cached or retrieved from a Cache
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Record <span style="color:#8be9fd;font-style:italic">struct</span> {
+	<span style="color:#6272a4">// The key to cache the record
+</span><span style="color:#6272a4"></span>	Key <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;key&#34;`</span>
+	<span style="color:#6272a4">// The value within the record
+</span><span style="color:#6272a4"></span>	Value []<span style="color:#8be9fd">byte</span> <span style="color:#f1fa8c">`json:&#34;value&#34;`</span>
+	<span style="color:#6272a4">// Any associated metadata for indexing
+</span><span style="color:#6272a4"></span>	Metadata <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{} <span style="color:#f1fa8c">`json:&#34;metadata&#34;`</span>
+	<span style="color:#6272a4">// Time to expire a record: TODO: change to timestamp
+</span><span style="color:#6272a4"></span>	Expiry time.Duration <span style="color:#f1fa8c">`json:&#34;expiry,omitempty&#34;`</span>
+}
+</code></pre></div>
 </div>
 </div>
 

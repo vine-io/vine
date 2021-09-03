@@ -243,6 +243,118 @@ vine api --handler&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rpc --
     </item>
     
     <item>
+      <title>Docs: 序列化</title>
+      <link>https://vine-io.github.io/vine/docs/component/codec/</link>
+      <pubDate>Fri, 27 Aug 2021 09:17:09 +0800</pubDate>
+      
+      <guid>https://vine-io.github.io/vine/docs/component/codec/</guid>
+      <description>
+        
+        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;我们抽象出 &lt;code&gt;Codec&lt;/code&gt; 和 &lt;code&gt;Marshaler&lt;/code&gt; 接口来统一管理数据的序列化和反序列功能。&lt;code&gt;Codec&lt;/code&gt; 被 &lt;code&gt;Server&lt;/code&gt; 和 &lt;code&gt;Client&lt;/code&gt; 使用作为数据解析工具。&lt;code&gt;Marshaler&lt;/code&gt; 为用户提供数据转化工具。&lt;/p&gt;
+&lt;p&gt;目前 &lt;code&gt;Marshaler&lt;/code&gt; 接口支持以下格式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;yaml&lt;/li&gt;
+&lt;li&gt;json&lt;/li&gt;
+&lt;li&gt;bytes&lt;/li&gt;
+&lt;li&gt;proto&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Codec &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	Reader
+	Writer
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Close&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Reader &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;ReadHeader&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Message, MessageType) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;ReadBody&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Writer &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Write&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Message, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Marshaler &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Marshal&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) ([]&lt;span style=&#34;color:#8be9fd&#34;&gt;byte&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Unmarshal&lt;/span&gt;([]&lt;span style=&#34;color:#8be9fd&#34;&gt;byte&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;具体实现&#34;&gt;具体实现&lt;/h2&gt;
+&lt;p&gt;只要用户提供了 &lt;code&gt;Marshal&lt;/code&gt;, &lt;code&gt;Unmarshal&lt;/code&gt; 和 &lt;code&gt;String&lt;/code&gt; 方法即可实现 &lt;code&gt;Marshaler&lt;/code&gt; 接口，以下提供一个完整的 &lt;code&gt;json&lt;/code&gt; 版本代码:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;var&lt;/span&gt; jsonbMarshaler = &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;mjsonpb.Marshaler{}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// create buffer pool with 16 instances each preallocated with 256 bytes
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;var&lt;/span&gt; bufferPool = bpool.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSizedBufferPool&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;16&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;256&lt;/span&gt;)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Marshaler &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt;{}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (j Marshaler) &lt;span style=&#34;color:#50fa7b&#34;&gt;Marshal&lt;/span&gt;(v &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) ([]&lt;span style=&#34;color:#8be9fd&#34;&gt;byte&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; pb, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; v.(proto.Message); ok {
+		buf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; bufferPool.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;()
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; bufferPool.&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(buf)
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; jsonbMarshaler.&lt;span style=&#34;color:#50fa7b&#34;&gt;Marshal&lt;/span&gt;(buf, pb); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;, err
+		}
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; buf.&lt;span style=&#34;color:#50fa7b&#34;&gt;Bytes&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; json.&lt;span style=&#34;color:#50fa7b&#34;&gt;Marshal&lt;/span&gt;(v)
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (j Marshaler) &lt;span style=&#34;color:#50fa7b&#34;&gt;Unmarshal&lt;/span&gt;(d []&lt;span style=&#34;color:#8be9fd&#34;&gt;byte&lt;/span&gt;, v &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; pb, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; v.(proto.Message); ok {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; mjsonpb.&lt;span style=&#34;color:#50fa7b&#34;&gt;Unmarshal&lt;/span&gt;(bytes.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewReader&lt;/span&gt;(d), pb)
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; json.&lt;span style=&#34;color:#50fa7b&#34;&gt;Unmarshal&lt;/span&gt;(d, v)
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (j Marshaler) &lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;json&amp;#34;&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;h3 id=&#34;注册&#34;&gt;注册&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	encoding.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterMarshaler&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;json&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;Marshaler{})
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;获取&#34;&gt;获取&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	m, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; encoding.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetMarshaler&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;json&amp;#34;&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;序列化和反序列化&#34;&gt;序列化和反序列化&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/codec/encoding&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Person &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+	Name &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;name&amp;#34;`&lt;/span&gt;
+	Age  &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt;  &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;age&amp;#34;`&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	m, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; encoding.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetMarshaler&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;json&amp;#34;&lt;/span&gt;)
+	p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;Person{
+		Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Vine&amp;#34;&lt;/span&gt;,
+		Age:  &lt;span style=&#34;color:#bd93f9&#34;&gt;20&lt;/span&gt;,
+	}
+
+	data, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; m.&lt;span style=&#34;color:#50fa7b&#34;&gt;Marshal&lt;/span&gt;(p)
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;string&lt;/span&gt;(data))
+
+	p1 &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;new&lt;/span&gt;(Person)
+	m.&lt;span style=&#34;color:#50fa7b&#34;&gt;Unmarshal&lt;/span&gt;(data, &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;p1)
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(p1.Name)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+      </description>
+    </item>
+    
+    <item>
       <title>Docs: 订阅发布</title>
       <link>https://vine-io.github.io/vine/docs/component/broker/</link>
       <pubDate>Tue, 29 Dec 2020 14:59:08 +0800</pubDate>
@@ -334,7 +446,268 @@ vine api --handler&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rpc --
       <description>
         
         
-        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Server&lt;/code&gt; 是微服务服务和核心模块，它对外提供接口，根据不同的实现，提供相应类型的接口。目前内部支持:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;grpc&lt;/li&gt;
+&lt;li&gt;http&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;code&gt;Server&lt;/code&gt; 依赖图&lt;/p&gt;
+
+&lt;figure&gt;
+    &lt;img src=&#34; /vine/docs/component/server/2021-09-03-11-20-03.png &#34; width=&#34;30%&#34; height=&#34;30%&#34;/&gt; 
+&lt;/figure&gt;
+
+&lt;p&gt;以下是 &lt;code&gt;Server&lt;/code&gt; 模块的内部方法。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Server is a simple vine server abstraction
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Server &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 初始化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 返回 Options
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 注册 Handler
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Handle&lt;/span&gt;(Handler) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 创建一个新的 Handler
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHandler&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;HandlerOption) Handler
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 创建一个新的 Subscriber
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;SubscriberOption) Subscriber
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 注册 Subscriber
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Subscribe&lt;/span&gt;(Subscriber) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 启动服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Start&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 停止服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Stop&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Server 接口类型
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用方法&#34;&gt;使用方法&lt;/h2&gt;
+&lt;h3 id=&#34;启动一个-grpc-服务&#34;&gt;启动一个 grpc 服务&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;os/signal&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/broker/memory&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry/mdns&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server/grpc&amp;#34;&lt;/span&gt;
+	usignal &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/util/signal&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 新建 gRPC 服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(
+		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;helloworld&amp;#34;&lt;/span&gt;),
+		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Address&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;:9000&amp;#34;&lt;/span&gt;),
+		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()),
+		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(mdns.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()),
+	)
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 初始化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;grpc init: %v&amp;#34;&lt;/span&gt;, err)
+	}
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// 启动服务, (非阻塞)
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Start&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;grpc start: %v&amp;#34;&lt;/span&gt;, err)
+	}
+	&lt;span style=&#34;color:#6272a4&#34;&gt;//
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	ch &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;chan&lt;/span&gt; os.Signal, &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;)
+	signal.&lt;span style=&#34;color:#50fa7b&#34;&gt;Notify&lt;/span&gt;(ch, usignal.&lt;span style=&#34;color:#50fa7b&#34;&gt;Shutdown&lt;/span&gt;()&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;)
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;select&lt;/span&gt; {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// wait on kill signal
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;lt;-&lt;/span&gt;ch:
+	}
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 停止服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Stop&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;grpc stop: %v&amp;#34;&lt;/span&gt;, err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;注册-handler&#34;&gt;注册 Handler&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; HelloImpl &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;var&lt;/span&gt; _ proto.Message = (&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Request)(&lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;)
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Request &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+	Name &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (r &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Request) &lt;span style=&#34;color:#50fa7b&#34;&gt;Reset&lt;/span&gt;() {
+	r = &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;Request{}
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (r Request) &lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (r Request) &lt;span style=&#34;color:#50fa7b&#34;&gt;ProtoMessage&lt;/span&gt;() {
+
+}
+
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Response &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+	Name &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (h &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;HelloImpl) &lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(ctx context.Context, r &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Request, rsp &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Response) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	rsp.Name = r.Name
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+}
+&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;grpc init: %v&amp;#34;&lt;/span&gt;, err)
+	}
+
+	h &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;HelloImpl{}
+	opts &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; []server.HandlerOption{
+		api.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithEndpoint&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;api.Endpoint{
+			Name:        &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;HelloWorld.Get&amp;#34;&lt;/span&gt;,
+			Description: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;HelloWorld.Get&amp;#34;&lt;/span&gt;,
+			Path:        []&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/api/v1/get&amp;#34;&lt;/span&gt;},
+			Method:      []&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;},
+			Body:        &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;*&amp;#34;&lt;/span&gt;,
+			Handler:     &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;rpc&amp;#34;&lt;/span&gt;,
+		}),
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Handle&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHandler&lt;/span&gt;(h, opts&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;)); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;register handler: %v&amp;#34;&lt;/span&gt;, err)
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;注册-subscriber&#34;&gt;注册 Subscriber&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Alternatively a function can be used
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;subEv&lt;/span&gt;(ctx context.Context, event &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Request) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	md, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;FromContext&lt;/span&gt;(ctx)
+	log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;[pubsub.2] Received event %+v with metadata %+v\n&amp;#34;&lt;/span&gt;, event, md)
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// do something with event
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;grpc init: %v&amp;#34;&lt;/span&gt;, err)
+	}
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Subscribe&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;get.topic&amp;#34;&lt;/span&gt;, subEv, server.&lt;span style=&#34;color:#50fa7b&#34;&gt;SubscriberQueue&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;))); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;register subscribe: %v&amp;#34;&lt;/span&gt;, err)
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;options&#34;&gt;options&lt;/h2&gt;
+&lt;p&gt;使用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;))
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Server&lt;/code&gt; 创建和初始化 options&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;  &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务名称
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置公共 IP 地址
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Advertise&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务绑定地址，如果 Advertise 不为空，优先选择 Advertise
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Address&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务 id
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Id&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务 版本
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Version&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务 context.Context, 保存额外的值
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Context&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务序列化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Codec&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务依赖的 Broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务依赖的 Registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(mdns.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 添加 Subscriber 处理器的装载器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapSubscriber&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 添加 Handler 装载器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapHandler&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务注册时的 ttl
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterTTL&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务注册间隔时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterInterval&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置内部 sync.WaitGroup
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Wait&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务元数据
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Metadata&lt;/span&gt;(),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务启动时注册到 Registry 的检测函数
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterCheck&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx context.Context) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+		}),
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务 Router
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithRouter&lt;/span&gt;(),
+	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建 Handler 的 options&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHandler&lt;/span&gt;(h,
+		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;InternalHandler&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 内部 handler
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		api.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithEndpoint&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 添加 api 信息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;OpenAPIHandler&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 添加 swagger 信息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建 Subscriber 的 options&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSubscriber&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;topic&amp;#34;&lt;/span&gt;, subEv,
+		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;InternalSubscriber&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 内部 internal
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;SubscriberQueue&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 subscriber 队列
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		server.&lt;span style=&#34;color:#50fa7b&#34;&gt;SubscriberContext&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// subscriber 内部 context.Context
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;grpc-结合-http&#34;&gt;gRPC 结合 http&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Server&lt;/code&gt; 的 gRPC 实现可以同时提供 gRPC 和 http 服务:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	gh &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.Grpc2Http{
+		CertFile: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;server.pem&amp;#34;&lt;/span&gt;,
+		KeyFile:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;server.key&amp;#34;&lt;/span&gt;,
+		CaFile:   &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;ca.pem&amp;#34;&lt;/span&gt;,
+	}
+	grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;GrpcToHttp&lt;/span&gt;(gh))
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;grpc 内置 prometheus metrics 和 golang http prof 接口&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;http-实现&#34;&gt;http 实现&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	reg &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
+	bro &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; membroker.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// create server
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	srv &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(reg), server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(bro))
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// create server mux
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	mux &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; http.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServeMux&lt;/span&gt;()
+	mux.&lt;span style=&#34;color:#50fa7b&#34;&gt;HandleFunc&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(w http.ResponseWriter, r &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;http.Request) {
+		w.&lt;span style=&#34;color:#50fa7b&#34;&gt;Write&lt;/span&gt;([]&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;byte&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;`hello world`&lt;/span&gt;))
+	})
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// create handler
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	hd &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; srv.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHandler&lt;/span&gt;(mux)
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// register handler
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; srv.&lt;span style=&#34;color:#50fa7b&#34;&gt;Handle&lt;/span&gt;(hd); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		t.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+	}
+
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// start server
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; srv.&lt;span style=&#34;color:#50fa7b&#34;&gt;Start&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		t.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+	}
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;select&lt;/span&gt;{}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
@@ -681,34 +1054,38 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: 序列化</title>
-      <link>https://vine-io.github.io/vine/docs/component/codec/</link>
-      <pubDate>Fri, 27 Aug 2021 09:17:09 +0800</pubDate>
-      
-      <guid>https://vine-io.github.io/vine/docs/component/codec/</guid>
-      <description>
-        
-        
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Cache is a data cache interface
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Cache &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Init initialises the cache. It must perform any required setup on the backing storage implementation and check that it is ready for use, returning any errors.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Options allows you to view the current options.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Get takes a single key name and optional GetOptions. It returns matching []*Record or an error.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(key &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Record, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Put writes a record to the cache, and returns an error if the record was not written.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(r &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Record, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;PutOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Del removes the record with the corresponding key from the cache.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Del&lt;/span&gt;(key &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DelOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// List returns any keys that match, or an empty list with no error if none matched.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;List&lt;/span&gt;(opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Close the cache
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Close&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// String returns the name of the implementation.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
 
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: 请求代理</title>
-      <link>https://vine-io.github.io/vine/docs/component/proxy/</link>
-      <pubDate>Tue, 29 Dec 2020 15:03:13 +0800</pubDate>
-      
-      <guid>https://vine-io.github.io/vine/docs/component/proxy/</guid>
-      <description>
-        
-        
-        
+&lt;span style=&#34;color:#6272a4&#34;&gt;// Record is an item cached or retrieved from a Cache
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Record &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// The key to cache the record
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	Key &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;key&amp;#34;`&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// The value within the record
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	Value []&lt;span style=&#34;color:#8be9fd&#34;&gt;byte&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;value&amp;#34;`&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Any associated metadata for indexing
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	Metadata &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{} &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;metadata&amp;#34;`&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Time to expire a record: TODO: change to timestamp
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	Expiry time.Duration &lt;span style=&#34;color:#f1fa8c&#34;&gt;`json:&amp;#34;expiry,omitempty&amp;#34;`&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     

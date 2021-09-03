@@ -29,9 +29,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/vine-io/vine/core/registry"
-
 	"github.com/vine-io/vine/core/codec"
+	"github.com/vine-io/vine/core/registry"
 	log "github.com/vine-io/vine/lib/logger"
 	usignal "github.com/vine-io/vine/util/signal"
 )

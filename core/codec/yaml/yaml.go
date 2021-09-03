@@ -1,3 +1,5 @@
+// Copyright 2020 The vine Authors
+//
 // MIT License
 //
 // Copyright (c) 2020 Lack
@@ -20,41 +22,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package bytes
+package yaml
 
 import (
+	"io"
+
+	"github.com/gogo/protobuf/proto"
 	"github.com/vine-io/vine/core/codec"
+	myamlpb "github.com/vine-io/vine/util/yamlpb"
+	"gopkg.in/yaml.v3"
 )
 
-type Marshaler struct{}
-
-type Message struct {
-	Header map[string]string
-	Body   []byte
+type Codec struct {
+	Conn    io.ReadWriteCloser
+	Encoder *yaml.Encoder
+	Decoder *yaml.Decoder
 }
 
-func (n Marshaler) Marshal(v interface{}) ([]byte, error) {
-	switch ve := v.(type) {
-	case *[]byte:
-		return *ve, nil
-	case []byte:
-		return ve, nil
-	case *Message:
-		return ve.Body, nil
+func (c *Codec) ReadHeader(m *codec.Message, t codec.MessageType) error {
+	return nil
+}
+
+func (c *Codec) ReadBody(b interface{}) error {
+	if b == nil {
+		return nil
 	}
-	return nil, codec.ErrInvalidMessage
-}
-
-func (n Marshaler) Unmarshal(d []byte, v interface{}) error {
-	switch ve := v.(type) {
-	case *[]byte:
-		*ve = d
-	case *Message:
-		ve.Body = d
+	if pb, ok := b.(proto.Message); ok {
+		return myamlpb.UnmarshalNext(c.Decoder, pb)
 	}
-	return codec.ErrInvalidMessage
+	return c.Decoder.Decode(b)
 }
 
-func (n Marshaler) String() string {
-	return "bytes"
+func (c *Codec) Write(m *codec.Message, b interface{}) error {
+	if b == nil {
+		return nil
+	}
+	return c.Encoder.Encode(b)
+}
+
+func (c *Codec) Close() error {
+	return c.Conn.Close()
+}
+
+func (c *Codec) String() string {
+	return "yaml"
+}
+
+func NewCodec(c io.ReadWriteCloser) codec.Codec {
+	return &Codec{
+		Conn:    c,
+		Decoder: yaml.NewDecoder(c),
+		Encoder: yaml.NewEncoder(c),
+	}
 }

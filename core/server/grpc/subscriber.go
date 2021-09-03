@@ -266,14 +266,14 @@ func (g *grpcServer) createSubHandler(sb *subscriber, opts server.Options) broke
 				if g.wg != nil {
 					defer g.wg.Done()
 				}
-				err := fn(ctx, &rpcMessage{
+				e := fn(ctx, &rpcMessage{
 					topic:       sb.topic,
 					contentType: ct,
 					payload:     req.Interface(),
 					header:      msg.Header,
 					body:        msg.Body,
 				})
-				results <- err
+				results <- e
 			}()
 		}
 

@@ -1,3 +1,5 @@
+// Copyright 2020 The vine Authors
+//
 // MIT License
 //
 // Copyright (c) 2020 Lack
@@ -20,41 +22,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package bytes
+package yaml
 
 import (
-	"github.com/vine-io/vine/core/codec"
+	"bytes"
+
+	"github.com/gogo/protobuf/proto"
+	"github.com/oxtoacart/bpool"
+	"gopkg.in/yaml.v3"
 )
+
+// create buffer pool with 16 instances each preallocated with 256 bytes
+var bufferPool = bpool.NewSizedBufferPool(16, 256)
 
 type Marshaler struct{}
 
-type Message struct {
-	Header map[string]string
-	Body   []byte
-}
-
-func (n Marshaler) Marshal(v interface{}) ([]byte, error) {
-	switch ve := v.(type) {
-	case *[]byte:
-		return *ve, nil
-	case []byte:
-		return ve, nil
-	case *Message:
-		return ve.Body, nil
+func (y Marshaler) Marshal(v interface{}) ([]byte, error) {
+	if pb, ok := v.(proto.Message); ok {
+		buf := bufferPool.Get()
+		defer bufferPool.Put(buf)
+		if err := yaml.NewEncoder(buf).Encode(pb); err != nil {
+			return nil, err
+		}
+		return buf.Bytes(), nil
 	}
-	return nil, codec.ErrInvalidMessage
+	return yaml.Marshal(v)
 }
 
-func (n Marshaler) Unmarshal(d []byte, v interface{}) error {
-	switch ve := v.(type) {
-	case *[]byte:
-		*ve = d
-	case *Message:
-		ve.Body = d
+func (y Marshaler) Unmarshal(d []byte, v interface{}) error {
+	if pb, ok := v.(proto.Message); ok {
+		return yaml.NewDecoder(bytes.NewReader(d)).Decode(pb)
 	}
-	return codec.ErrInvalidMessage
+	return yaml.Unmarshal(d, v)
 }
 
-func (n Marshaler) String() string {
-	return "bytes"
+func (y Marshaler) String() string {
+	return "yaml"
 }

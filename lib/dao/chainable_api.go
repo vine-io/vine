@@ -257,7 +257,7 @@ func (db *DB) Scopes(funcs ...func(*DB) *DB) (tx *DB) {
 	return tx
 }
 
-// Preload preload associations with given conditions
+// Preload preloads associations with given conditions
 //    db.Preload("Orders", "state NOT IN (?)", "cancelled").Find(&users)
 func (db *DB) Preload(query string, args ...interface{}) (tx *DB) {
 	tx = db.getInstance()

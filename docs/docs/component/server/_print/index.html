@@ -140,7 +140,268 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      
+      <h2 id="概述">概述</h2>
+<p><code>Server</code> 是微服务服务和核心模块，它对外提供接口，根据不同的实现，提供相应类型的接口。目前内部支持:</p>
+<ul>
+<li>grpc</li>
+<li>http</li>
+</ul>
+<p><code>Server</code> 依赖图</p>
+
+<figure>
+    <img src=" /vine/docs/component/server/2021-09-03-11-20-03.png " width="30%" height="30%"/> 
+</figure>
+
+<p>以下是 <code>Server</code> 模块的内部方法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Server is a simple vine server abstraction
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Server <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#6272a4">// 初始化
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 返回 Options
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#6272a4">// 注册 Handler
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Handle</span>(Handler) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 创建一个新的 Handler
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">NewHandler</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}, <span style="color:#ff79c6">...</span>HandlerOption) Handler
+	<span style="color:#6272a4">// 创建一个新的 Subscriber
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">NewSubscriber</span>(<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd;font-style:italic">interface</span>{}, <span style="color:#ff79c6">...</span>SubscriberOption) Subscriber
+	<span style="color:#6272a4">// 注册 Subscriber
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Subscribe</span>(Subscriber) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 启动服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Start</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 停止服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Stop</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Server 接口类型
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><h2 id="使用方法">使用方法</h2>
+<h3 id="启动一个-grpc-服务">启动一个 grpc 服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;os&#34;</span>
+	<span style="color:#f1fa8c">&#34;os/signal&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/broker/memory&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry/mdns&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server/grpc&#34;</span>
+	usignal <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/util/signal&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 新建 gRPC 服务
+</span><span style="color:#6272a4"></span>	s <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewServer</span>(
+		server.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;helloworld&#34;</span>),
+		server.<span style="color:#50fa7b">Address</span>(<span style="color:#f1fa8c">&#34;:9000&#34;</span>),
+		server.<span style="color:#50fa7b">Broker</span>(memory.<span style="color:#50fa7b">NewBroker</span>()),
+		server.<span style="color:#50fa7b">Registry</span>(mdns.<span style="color:#50fa7b">NewRegistry</span>()),
+	)
+	<span style="color:#6272a4">// 初始化
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc init: %v&#34;</span>, err)
+	}
+	<span style="color:#6272a4">// 启动服务, (非阻塞)
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Start</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc start: %v&#34;</span>, err)
+	}
+	<span style="color:#6272a4">//
+</span><span style="color:#6272a4"></span>	ch <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> os.Signal, <span style="color:#bd93f9">1</span>)
+	signal.<span style="color:#50fa7b">Notify</span>(ch, usignal.<span style="color:#50fa7b">Shutdown</span>()<span style="color:#ff79c6">...</span>)
+
+	<span style="color:#ff79c6">select</span> {
+	<span style="color:#6272a4">// wait on kill signal
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">case</span> <span style="color:#ff79c6">&lt;-</span>ch:
+	}
+
+    <span style="color:#6272a4">// 停止服务
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Stop</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc stop: %v&#34;</span>, err)
+	}
+}
+</code></pre></div><h3 id="注册-handler">注册 Handler</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">...</span>
+
+<span style="color:#8be9fd;font-style:italic">type</span> HelloImpl <span style="color:#8be9fd;font-style:italic">struct</span> {
+
+}
+
+<span style="color:#8be9fd;font-style:italic">var</span> _ proto.Message = (<span style="color:#ff79c6">*</span>Request)(<span style="color:#ff79c6">nil</span>)
+<span style="color:#8be9fd;font-style:italic">type</span> Request <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Name <span style="color:#8be9fd">string</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (r <span style="color:#ff79c6">*</span>Request) <span style="color:#50fa7b">Reset</span>() {
+	r = <span style="color:#ff79c6">&amp;</span>Request{}
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (r Request) <span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span> {
+	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;&#34;</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (r Request) <span style="color:#50fa7b">ProtoMessage</span>() {
+
+}
+
+
+<span style="color:#8be9fd;font-style:italic">type</span> Response <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Name <span style="color:#8be9fd">string</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (h <span style="color:#ff79c6">*</span>HelloImpl) <span style="color:#50fa7b">Get</span>(ctx context.Context, r <span style="color:#ff79c6">*</span>Request, rsp <span style="color:#ff79c6">*</span>Response) <span style="color:#8be9fd">error</span> {
+	rsp.Name = r.Name
+	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+<span style="color:#ff79c6">...</span>
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#ff79c6">...</span>
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc init: %v&#34;</span>, err)
+	}
+
+	h <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>HelloImpl{}
+	opts <span style="color:#ff79c6">:=</span> []server.HandlerOption{
+		api.<span style="color:#50fa7b">WithEndpoint</span>(<span style="color:#ff79c6">&amp;</span>api.Endpoint{
+			Name:        <span style="color:#f1fa8c">&#34;HelloWorld.Get&#34;</span>,
+			Description: <span style="color:#f1fa8c">&#34;HelloWorld.Get&#34;</span>,
+			Path:        []<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;/api/v1/get&#34;</span>},
+			Method:      []<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;GET&#34;</span>},
+			Body:        <span style="color:#f1fa8c">&#34;*&#34;</span>,
+			Handler:     <span style="color:#f1fa8c">&#34;rpc&#34;</span>,
+		}),
+	}
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Handle</span>(s.<span style="color:#50fa7b">NewHandler</span>(h, opts<span style="color:#ff79c6">...</span>)); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register handler: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">...</span>
+}
+</code></pre></div><h3 id="注册-subscriber">注册 Subscriber</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Alternatively a function can be used
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">subEv</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>Request) <span style="color:#8be9fd">error</span> {
+	md, _ <span style="color:#ff79c6">:=</span> metadata.<span style="color:#50fa7b">FromContext</span>(ctx)
+	log.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[pubsub.2] Received event %+v with metadata %+v\n&#34;</span>, event, md)
+	<span style="color:#6272a4">// do something with event
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#ff79c6">...</span>
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc init: %v&#34;</span>, err)
+	}
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Subscribe</span>(s.<span style="color:#50fa7b">NewSubscriber</span>(<span style="color:#f1fa8c">&#34;get.topic&#34;</span>, subEv, server.<span style="color:#50fa7b">SubscriberQueue</span>(<span style="color:#f1fa8c">&#34;sub&#34;</span>))); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register subscribe: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">...</span>
+}
+</code></pre></div><h2 id="options">options</h2>
+<p>使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	s <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewServer</span>(server.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;name&#34;</span>))
+}
+</code></pre></div><p><code>Server</code> 创建和初始化 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span>  <span style="color:#50fa7b">main</span>() {
+	grpc.<span style="color:#50fa7b">NewServer</span>(
+		<span style="color:#6272a4">// 设置服务名称
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Name</span>(),
+		<span style="color:#6272a4">// 设置公共 IP 地址
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Advertise</span>(),
+		<span style="color:#6272a4">// 设置服务绑定地址，如果 Advertise 不为空，优先选择 Advertise
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Address</span>(),
+		<span style="color:#6272a4">// 设置服务 id
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Id</span>(),
+		<span style="color:#6272a4">// 设置服务 版本
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Version</span>(),
+		<span style="color:#6272a4">// 设置服务 context.Context, 保存额外的值
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Context</span>(),
+		<span style="color:#6272a4">// 设置服务序列化
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Codec</span>(),
+		<span style="color:#6272a4">// 设置服务依赖的 Broker
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Broker</span>(memory.<span style="color:#50fa7b">NewBroker</span>()),
+		<span style="color:#6272a4">// 设置服务依赖的 Registry
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Registry</span>(mdns.<span style="color:#50fa7b">NewRegistry</span>()),
+		<span style="color:#6272a4">// 添加 Subscriber 处理器的装载器
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">WrapSubscriber</span>(),
+		<span style="color:#6272a4">// 添加 Handler 装载器
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">WrapHandler</span>(),
+		<span style="color:#6272a4">// 设置服务注册时的 ttl
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">RegisterTTL</span>(),
+		<span style="color:#6272a4">// 设置服务注册间隔时间
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">RegisterInterval</span>(),
+		<span style="color:#6272a4">// 设置内部 sync.WaitGroup
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Wait</span>(),
+		<span style="color:#6272a4">// 设置服务元数据
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Metadata</span>(),
+		<span style="color:#6272a4">// 设置服务启动时注册到 Registry 的检测函数
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">RegisterCheck</span>(<span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context) <span style="color:#8be9fd">error</span> {
+			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+		}),
+		<span style="color:#6272a4">// 设置服务 Router
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">WithRouter</span>(),
+	)
+}
+</code></pre></div><p>创建 Handler 的 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	s.<span style="color:#50fa7b">NewHandler</span>(h,
+		server.<span style="color:#50fa7b">InternalHandler</span>(), <span style="color:#6272a4">// 内部 handler
+</span><span style="color:#6272a4"></span>		api.<span style="color:#50fa7b">WithEndpoint</span>(),   <span style="color:#6272a4">// 添加 api 信息
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">OpenAPIHandler</span>(), <span style="color:#6272a4">// 添加 swagger 信息
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p>创建 Subscriber 的 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	s.<span style="color:#50fa7b">NewSubscriber</span>(<span style="color:#f1fa8c">&#34;topic&#34;</span>, subEv,
+		server.<span style="color:#50fa7b">InternalSubscriber</span>(), <span style="color:#6272a4">// 内部 internal
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">SubscriberQueue</span>(),   <span style="color:#6272a4">// 设置 subscriber 队列
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">SubscriberContext</span>(), <span style="color:#6272a4">// subscriber 内部 context.Context
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><h2 id="grpc-结合-http">gRPC 结合 http</h2>
+<p><code>Server</code> 的 gRPC 实现可以同时提供 gRPC 和 http 服务:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	gh <span style="color:#ff79c6">:=</span> grpc.Grpc2Http{
+		CertFile: <span style="color:#f1fa8c">&#34;server.pem&#34;</span>,
+		KeyFile:  <span style="color:#f1fa8c">&#34;server.key&#34;</span>,
+		CaFile:   <span style="color:#f1fa8c">&#34;ca.pem&#34;</span>,
+	}
+	grpc.<span style="color:#50fa7b">NewServer</span>(grpc.<span style="color:#50fa7b">GrpcToHttp</span>(gh))
+}
+</code></pre></div><blockquote>
+<p>grpc 内置 prometheus metrics 和 golang http prof 接口</p>
+</blockquote>
+<h2 id="http-实现">http 实现</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	reg <span style="color:#ff79c6">:=</span> memory.<span style="color:#50fa7b">NewRegistry</span>()
+	bro <span style="color:#ff79c6">:=</span> membroker.<span style="color:#50fa7b">NewBroker</span>()
+
+	<span style="color:#6272a4">// create server
+</span><span style="color:#6272a4"></span>	srv <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">NewServer</span>(server.<span style="color:#50fa7b">Registry</span>(reg), server.<span style="color:#50fa7b">Broker</span>(bro))
+
+	<span style="color:#6272a4">// create server mux
+</span><span style="color:#6272a4"></span>	mux <span style="color:#ff79c6">:=</span> http.<span style="color:#50fa7b">NewServeMux</span>()
+	mux.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/&#34;</span>, <span style="color:#8be9fd;font-style:italic">func</span>(w http.ResponseWriter, r <span style="color:#ff79c6">*</span>http.Request) {
+		w.<span style="color:#50fa7b">Write</span>([]<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">`hello world`</span>))
+	})
+
+	<span style="color:#6272a4">// create handler
+</span><span style="color:#6272a4"></span>	hd <span style="color:#ff79c6">:=</span> srv.<span style="color:#50fa7b">NewHandler</span>(mux)
+
+	<span style="color:#6272a4">// register handler
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> srv.<span style="color:#50fa7b">Handle</span>(hd); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		t.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+
+	<span style="color:#6272a4">// start server
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> srv.<span style="color:#50fa7b">Start</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		t.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+
+	<span style="color:#ff79c6">select</span>{}
+}
+</code></pre></div>
 </div>
 </div>
 

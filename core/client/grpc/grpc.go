@@ -32,8 +32,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/vine-io/vine/core/registry"
-	"github.com/vine-io/vine/lib/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/encoding"
@@ -43,6 +41,8 @@ import (
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/codec/bytes"
+	"github.com/vine-io/vine/core/registry"
+	"github.com/vine-io/vine/lib/errors"
 	"github.com/vine-io/vine/util/context/metadata"
 	mnet "github.com/vine-io/vine/util/net"
 )
@@ -59,7 +59,7 @@ func init() {
 	encoding.RegisterCodec(wrapCodec{bytesCodec{}})
 }
 
-// secure returns the dial option for whether its a secure or insecure connection
+// secure returns the dial option for whether it's a secure or insecure connection
 func (g *grpcClient) secure(addr string) grpc.DialOption {
 	// first we check if there's tls config
 	if g.opts.Context != nil {
@@ -82,7 +82,7 @@ func (g *grpcClient) secure(addr string) grpc.DialOption {
 
 	// if no port is specified or port is 443 default to tls
 	_, port, err := net.SplitHostPort(addr)
-	// assuming with no port its going to be secured
+	// assuming with no port it's going to be secured
 	if port == "443" {
 		return defaultCreds
 	} else if err != nil && strings.Contains(err.Error(), "missing port in address") {

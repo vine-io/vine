@@ -1387,7 +1387,135 @@ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-59586a1fa5b90047cde9c17a0fe343a1">2.3 - 订阅发布</h1>
+	<h1 id="pg-fa10acc15b4e6765d798505e47c766c2">2.3 - 序列化</h1>
+    
+	<h2 id="概述">概述</h2>
+<p>我们抽象出 <code>Codec</code> 和 <code>Marshaler</code> 接口来统一管理数据的序列化和反序列功能。<code>Codec</code> 被 <code>Server</code> 和 <code>Client</code> 使用作为数据解析工具。<code>Marshaler</code> 为用户提供数据转化工具。</p>
+<p>目前 <code>Marshaler</code> 接口支持以下格式：</p>
+<ul>
+<li>yaml</li>
+<li>json</li>
+<li>bytes</li>
+<li>proto</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Codec <span style="color:#8be9fd;font-style:italic">interface</span> {
+	Reader
+	Writer
+	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">type</span> Reader <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">ReadHeader</span>(<span style="color:#ff79c6">*</span>Message, MessageType) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">ReadBody</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">type</span> Writer <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Write</span>(<span style="color:#ff79c6">*</span>Message, <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">type</span> Marshaler <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Marshal</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}) ([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd">error</span>)
+	<span style="color:#50fa7b">Unmarshal</span>([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><h2 id="具体实现">具体实现</h2>
+<p>只要用户提供了 <code>Marshal</code>, <code>Unmarshal</code> 和 <code>String</code> 方法即可实现 <code>Marshaler</code> 接口，以下提供一个完整的 <code>json</code> 版本代码:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
+<span style="color:#8be9fd;font-style:italic">var</span> jsonbMarshaler = <span style="color:#ff79c6">&amp;</span>mjsonpb.Marshaler{}
+
+<span style="color:#6272a4">// create buffer pool with 16 instances each preallocated with 256 bytes
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">var</span> bufferPool = bpool.<span style="color:#50fa7b">NewSizedBufferPool</span>(<span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">256</span>)
+
+<span style="color:#8be9fd;font-style:italic">type</span> Marshaler <span style="color:#8be9fd;font-style:italic">struct</span>{}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">Marshal</span>(v <span style="color:#8be9fd;font-style:italic">interface</span>{}) ([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd">error</span>) {
+	<span style="color:#ff79c6">if</span> pb, ok <span style="color:#ff79c6">:=</span> v.(proto.Message); ok {
+		buf <span style="color:#ff79c6">:=</span> bufferPool.<span style="color:#50fa7b">Get</span>()
+		<span style="color:#ff79c6">defer</span> bufferPool.<span style="color:#50fa7b">Put</span>(buf)
+		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> jsonbMarshaler.<span style="color:#50fa7b">Marshal</span>(buf, pb); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>, err
+		}
+		<span style="color:#ff79c6">return</span> buf.<span style="color:#50fa7b">Bytes</span>(), <span style="color:#ff79c6">nil</span>
+	}
+	<span style="color:#ff79c6">return</span> json.<span style="color:#50fa7b">Marshal</span>(v)
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">Unmarshal</span>(d []<span style="color:#8be9fd">byte</span>, v <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+	<span style="color:#ff79c6">if</span> pb, ok <span style="color:#ff79c6">:=</span> v.(proto.Message); ok {
+		<span style="color:#ff79c6">return</span> mjsonpb.<span style="color:#50fa7b">Unmarshal</span>(bytes.<span style="color:#50fa7b">NewReader</span>(d), pb)
+	}
+	<span style="color:#ff79c6">return</span> json.<span style="color:#50fa7b">Unmarshal</span>(d, v)
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span> {
+	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;json&#34;</span>
+}
+</code></pre></div><h2 id="使用">使用</h2>
+<h3 id="注册">注册</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	encoding.<span style="color:#50fa7b">RegisterMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>, <span style="color:#ff79c6">&amp;</span>Marshaler{})
+}
+</code></pre></div><h3 id="获取">获取</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	m, ok <span style="color:#ff79c6">:=</span> encoding.<span style="color:#50fa7b">GetMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>)
+}
+</code></pre></div><h3 id="序列化和反序列化">序列化和反序列化</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/codec/encoding&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">type</span> Person <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Name <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;name&#34;`</span>
+	Age  <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`json:&#34;age&#34;`</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	m, _ <span style="color:#ff79c6">:=</span> encoding.<span style="color:#50fa7b">GetMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>)
+	p <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>Person{
+		Name: <span style="color:#f1fa8c">&#34;Vine&#34;</span>,
+		Age:  <span style="color:#bd93f9">20</span>,
+	}
+
+	data, _ <span style="color:#ff79c6">:=</span> m.<span style="color:#50fa7b">Marshal</span>(p)
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#8be9fd;font-style:italic">string</span>(data))
+
+	p1 <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">new</span>(Person)
+	m.<span style="color:#50fa7b">Unmarshal</span>(data, <span style="color:#ff79c6">&amp;</span>p1)
+	fmt.<span style="color:#50fa7b">Println</span>(p1.Name)
+}
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-59586a1fa5b90047cde9c17a0fe343a1">2.4 - 订阅发布</h1>
     
 	<h2 id="概述">概述</h2>
 <p>微服务是一种事件驱动的体系结构模式，因此 <strong>Vine</strong> 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。</p>
@@ -1486,7 +1614,297 @@ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-d2d36bead0be0a3b9422b2b89dcb6a4f">2.4 - 内部服务</h1>
+	<h1 id="pg-d2d36bead0be0a3b9422b2b89dcb6a4f">2.5 - 内部服务</h1>
+    
+	<h2 id="概述">概述</h2>
+<p><code>Server</code> 是微服务服务和核心模块，它对外提供接口，根据不同的实现，提供相应类型的接口。目前内部支持:</p>
+<ul>
+<li>grpc</li>
+<li>http</li>
+</ul>
+<p><code>Server</code> 依赖图</p>
+
+<figure>
+    <img src=" /vine/docs/component/server/2021-09-03-11-20-03.png " width="30%" height="30%"/> 
+</figure>
+
+<p>以下是 <code>Server</code> 模块的内部方法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Server is a simple vine server abstraction
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Server <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#6272a4">// 初始化
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 返回 Options
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#6272a4">// 注册 Handler
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Handle</span>(Handler) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 创建一个新的 Handler
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">NewHandler</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}, <span style="color:#ff79c6">...</span>HandlerOption) Handler
+	<span style="color:#6272a4">// 创建一个新的 Subscriber
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">NewSubscriber</span>(<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd;font-style:italic">interface</span>{}, <span style="color:#ff79c6">...</span>SubscriberOption) Subscriber
+	<span style="color:#6272a4">// 注册 Subscriber
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Subscribe</span>(Subscriber) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 启动服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Start</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// 停止服务
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Stop</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Server 接口类型
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><h2 id="使用方法">使用方法</h2>
+<h3 id="启动一个-grpc-服务">启动一个 grpc 服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;os&#34;</span>
+	<span style="color:#f1fa8c">&#34;os/signal&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/broker/memory&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry/mdns&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server/grpc&#34;</span>
+	usignal <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/util/signal&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 新建 gRPC 服务
+</span><span style="color:#6272a4"></span>	s <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewServer</span>(
+		server.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;helloworld&#34;</span>),
+		server.<span style="color:#50fa7b">Address</span>(<span style="color:#f1fa8c">&#34;:9000&#34;</span>),
+		server.<span style="color:#50fa7b">Broker</span>(memory.<span style="color:#50fa7b">NewBroker</span>()),
+		server.<span style="color:#50fa7b">Registry</span>(mdns.<span style="color:#50fa7b">NewRegistry</span>()),
+	)
+	<span style="color:#6272a4">// 初始化
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc init: %v&#34;</span>, err)
+	}
+	<span style="color:#6272a4">// 启动服务, (非阻塞)
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Start</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc start: %v&#34;</span>, err)
+	}
+	<span style="color:#6272a4">//
+</span><span style="color:#6272a4"></span>	ch <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> os.Signal, <span style="color:#bd93f9">1</span>)
+	signal.<span style="color:#50fa7b">Notify</span>(ch, usignal.<span style="color:#50fa7b">Shutdown</span>()<span style="color:#ff79c6">...</span>)
+
+	<span style="color:#ff79c6">select</span> {
+	<span style="color:#6272a4">// wait on kill signal
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">case</span> <span style="color:#ff79c6">&lt;-</span>ch:
+	}
+
+    <span style="color:#6272a4">// 停止服务
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Stop</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc stop: %v&#34;</span>, err)
+	}
+}
+</code></pre></div><h3 id="注册-handler">注册 Handler</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">...</span>
+
+<span style="color:#8be9fd;font-style:italic">type</span> HelloImpl <span style="color:#8be9fd;font-style:italic">struct</span> {
+
+}
+
+<span style="color:#8be9fd;font-style:italic">var</span> _ proto.Message = (<span style="color:#ff79c6">*</span>Request)(<span style="color:#ff79c6">nil</span>)
+<span style="color:#8be9fd;font-style:italic">type</span> Request <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Name <span style="color:#8be9fd">string</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (r <span style="color:#ff79c6">*</span>Request) <span style="color:#50fa7b">Reset</span>() {
+	r = <span style="color:#ff79c6">&amp;</span>Request{}
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (r Request) <span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span> {
+	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;&#34;</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (r Request) <span style="color:#50fa7b">ProtoMessage</span>() {
+
+}
+
+
+<span style="color:#8be9fd;font-style:italic">type</span> Response <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Name <span style="color:#8be9fd">string</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (h <span style="color:#ff79c6">*</span>HelloImpl) <span style="color:#50fa7b">Get</span>(ctx context.Context, r <span style="color:#ff79c6">*</span>Request, rsp <span style="color:#ff79c6">*</span>Response) <span style="color:#8be9fd">error</span> {
+	rsp.Name = r.Name
+	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+<span style="color:#ff79c6">...</span>
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#ff79c6">...</span>
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc init: %v&#34;</span>, err)
+	}
+
+	h <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>HelloImpl{}
+	opts <span style="color:#ff79c6">:=</span> []server.HandlerOption{
+		api.<span style="color:#50fa7b">WithEndpoint</span>(<span style="color:#ff79c6">&amp;</span>api.Endpoint{
+			Name:        <span style="color:#f1fa8c">&#34;HelloWorld.Get&#34;</span>,
+			Description: <span style="color:#f1fa8c">&#34;HelloWorld.Get&#34;</span>,
+			Path:        []<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;/api/v1/get&#34;</span>},
+			Method:      []<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;GET&#34;</span>},
+			Body:        <span style="color:#f1fa8c">&#34;*&#34;</span>,
+			Handler:     <span style="color:#f1fa8c">&#34;rpc&#34;</span>,
+		}),
+	}
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Handle</span>(s.<span style="color:#50fa7b">NewHandler</span>(h, opts<span style="color:#ff79c6">...</span>)); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register handler: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">...</span>
+}
+</code></pre></div><h3 id="注册-subscriber">注册 Subscriber</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Alternatively a function can be used
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">subEv</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>Request) <span style="color:#8be9fd">error</span> {
+	md, _ <span style="color:#ff79c6">:=</span> metadata.<span style="color:#50fa7b">FromContext</span>(ctx)
+	log.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[pubsub.2] Received event %+v with metadata %+v\n&#34;</span>, event, md)
+	<span style="color:#6272a4">// do something with event
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#ff79c6">...</span>
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;grpc init: %v&#34;</span>, err)
+	}
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Subscribe</span>(s.<span style="color:#50fa7b">NewSubscriber</span>(<span style="color:#f1fa8c">&#34;get.topic&#34;</span>, subEv, server.<span style="color:#50fa7b">SubscriberQueue</span>(<span style="color:#f1fa8c">&#34;sub&#34;</span>))); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register subscribe: %v&#34;</span>, err)
+	}
+	<span style="color:#ff79c6">...</span>
+}
+</code></pre></div><h2 id="options">options</h2>
+<p>使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	s <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewServer</span>(server.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;name&#34;</span>))
+}
+</code></pre></div><p><code>Server</code> 创建和初始化 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span>  <span style="color:#50fa7b">main</span>() {
+	grpc.<span style="color:#50fa7b">NewServer</span>(
+		<span style="color:#6272a4">// 设置服务名称
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Name</span>(),
+		<span style="color:#6272a4">// 设置公共 IP 地址
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Advertise</span>(),
+		<span style="color:#6272a4">// 设置服务绑定地址，如果 Advertise 不为空，优先选择 Advertise
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Address</span>(),
+		<span style="color:#6272a4">// 设置服务 id
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Id</span>(),
+		<span style="color:#6272a4">// 设置服务 版本
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Version</span>(),
+		<span style="color:#6272a4">// 设置服务 context.Context, 保存额外的值
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Context</span>(),
+		<span style="color:#6272a4">// 设置服务序列化
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Codec</span>(),
+		<span style="color:#6272a4">// 设置服务依赖的 Broker
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Broker</span>(memory.<span style="color:#50fa7b">NewBroker</span>()),
+		<span style="color:#6272a4">// 设置服务依赖的 Registry
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Registry</span>(mdns.<span style="color:#50fa7b">NewRegistry</span>()),
+		<span style="color:#6272a4">// 添加 Subscriber 处理器的装载器
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">WrapSubscriber</span>(),
+		<span style="color:#6272a4">// 添加 Handler 装载器
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">WrapHandler</span>(),
+		<span style="color:#6272a4">// 设置服务注册时的 ttl
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">RegisterTTL</span>(),
+		<span style="color:#6272a4">// 设置服务注册间隔时间
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">RegisterInterval</span>(),
+		<span style="color:#6272a4">// 设置内部 sync.WaitGroup
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Wait</span>(),
+		<span style="color:#6272a4">// 设置服务元数据
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">Metadata</span>(),
+		<span style="color:#6272a4">// 设置服务启动时注册到 Registry 的检测函数
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">RegisterCheck</span>(<span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context) <span style="color:#8be9fd">error</span> {
+			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+		}),
+		<span style="color:#6272a4">// 设置服务 Router
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">WithRouter</span>(),
+	)
+}
+</code></pre></div><p>创建 Handler 的 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	s.<span style="color:#50fa7b">NewHandler</span>(h,
+		server.<span style="color:#50fa7b">InternalHandler</span>(), <span style="color:#6272a4">// 内部 handler
+</span><span style="color:#6272a4"></span>		api.<span style="color:#50fa7b">WithEndpoint</span>(),   <span style="color:#6272a4">// 添加 api 信息
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">OpenAPIHandler</span>(), <span style="color:#6272a4">// 添加 swagger 信息
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p>创建 Subscriber 的 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	s.<span style="color:#50fa7b">NewSubscriber</span>(<span style="color:#f1fa8c">&#34;topic&#34;</span>, subEv,
+		server.<span style="color:#50fa7b">InternalSubscriber</span>(), <span style="color:#6272a4">// 内部 internal
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">SubscriberQueue</span>(),   <span style="color:#6272a4">// 设置 subscriber 队列
+</span><span style="color:#6272a4"></span>		server.<span style="color:#50fa7b">SubscriberContext</span>(), <span style="color:#6272a4">// subscriber 内部 context.Context
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><h2 id="grpc-结合-http">gRPC 结合 http</h2>
+<p><code>Server</code> 的 gRPC 实现可以同时提供 gRPC 和 http 服务:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	gh <span style="color:#ff79c6">:=</span> grpc.Grpc2Http{
+		CertFile: <span style="color:#f1fa8c">&#34;server.pem&#34;</span>,
+		KeyFile:  <span style="color:#f1fa8c">&#34;server.key&#34;</span>,
+		CaFile:   <span style="color:#f1fa8c">&#34;ca.pem&#34;</span>,
+	}
+	grpc.<span style="color:#50fa7b">NewServer</span>(grpc.<span style="color:#50fa7b">GrpcToHttp</span>(gh))
+}
+</code></pre></div><blockquote>
+<p>grpc 内置 prometheus metrics 和 golang http prof 接口</p>
+</blockquote>
+<h2 id="http-实现">http 实现</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	reg <span style="color:#ff79c6">:=</span> memory.<span style="color:#50fa7b">NewRegistry</span>()
+	bro <span style="color:#ff79c6">:=</span> membroker.<span style="color:#50fa7b">NewBroker</span>()
+
+	<span style="color:#6272a4">// create server
+</span><span style="color:#6272a4"></span>	srv <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">NewServer</span>(server.<span style="color:#50fa7b">Registry</span>(reg), server.<span style="color:#50fa7b">Broker</span>(bro))
+
+	<span style="color:#6272a4">// create server mux
+</span><span style="color:#6272a4"></span>	mux <span style="color:#ff79c6">:=</span> http.<span style="color:#50fa7b">NewServeMux</span>()
+	mux.<span style="color:#50fa7b">HandleFunc</span>(<span style="color:#f1fa8c">&#34;/&#34;</span>, <span style="color:#8be9fd;font-style:italic">func</span>(w http.ResponseWriter, r <span style="color:#ff79c6">*</span>http.Request) {
+		w.<span style="color:#50fa7b">Write</span>([]<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">`hello world`</span>))
+	})
+
+	<span style="color:#6272a4">// create handler
+</span><span style="color:#6272a4"></span>	hd <span style="color:#ff79c6">:=</span> srv.<span style="color:#50fa7b">NewHandler</span>(mux)
+
+	<span style="color:#6272a4">// register handler
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> srv.<span style="color:#50fa7b">Handle</span>(hd); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		t.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+
+	<span style="color:#6272a4">// start server
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> srv.<span style="color:#50fa7b">Start</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		t.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+
+	<span style="color:#ff79c6">select</span>{}
+}
+</code></pre></div>
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-890777915678ed57c745424af4cba2b8">2.6 - 内部请求</h1>
     
 	
 </div>
@@ -1515,36 +1933,7 @@ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-890777915678ed57c745424af4cba2b8">2.5 - 内部请求</h1>
-    
-	
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-797b02a4bf0dfe71b512bbf7a2dce8be">2.6 - 错误处理</h1>
+	<h1 id="pg-797b02a4bf0dfe71b512bbf7a2dce8be">2.7 - 错误处理</h1>
     
 	<h2 id="概述">概述</h2>
 <p>我们定义以下错误类型</p>
@@ -1630,7 +2019,7 @@ rsp, err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">Cl
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-a166f9ca5ae0b67e66da460ca61f73a2">2.7 - 配置中心</h1>
+	<h1 id="pg-a166f9ca5ae0b67e66da460ca61f73a2">2.8 - 配置中心</h1>
     
 	<h2 id="概述">概述</h2>
 <p>应用程序中的大多数配置都是静态配置或者从多个源加载的复杂逻辑。<strong>Config</strong> 是其变得简单，可插拔和可合并。</p>
@@ -1897,9 +2286,40 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-39fecad7477de2ef09d3e2a496ab8478">2.8 - 数据缓存</h1>
+	<h1 id="pg-39fecad7477de2ef09d3e2a496ab8478">2.9 - 数据缓存</h1>
     
-	
+	<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Cache is a data cache interface
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Cache <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#6272a4">// Init initialises the cache. It must perform any required setup on the backing storage implementation and check that it is ready for use, returning any errors.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Options allows you to view the current options.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#6272a4">// Get takes a single key name and optional GetOptions. It returns matching []*Record or an error.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Get</span>(key <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Record, <span style="color:#8be9fd">error</span>)
+	<span style="color:#6272a4">// Put writes a record to the cache, and returns an error if the record was not written.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Put</span>(r <span style="color:#ff79c6">*</span>Record, opts <span style="color:#ff79c6">...</span>PutOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Del removes the record with the corresponding key from the cache.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Del</span>(key <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>DelOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// List returns any keys that match, or an empty list with no error if none matched.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">List</span>(opts <span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#8be9fd">string</span>, <span style="color:#8be9fd">error</span>)
+	<span style="color:#6272a4">// Close the cache
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// String returns the name of the implementation.
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+
+<span style="color:#6272a4">// Record is an item cached or retrieved from a Cache
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Record <span style="color:#8be9fd;font-style:italic">struct</span> {
+	<span style="color:#6272a4">// The key to cache the record
+</span><span style="color:#6272a4"></span>	Key <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;key&#34;`</span>
+	<span style="color:#6272a4">// The value within the record
+</span><span style="color:#6272a4"></span>	Value []<span style="color:#8be9fd">byte</span> <span style="color:#f1fa8c">`json:&#34;value&#34;`</span>
+	<span style="color:#6272a4">// Any associated metadata for indexing
+</span><span style="color:#6272a4"></span>	Metadata <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{} <span style="color:#f1fa8c">`json:&#34;metadata&#34;`</span>
+	<span style="color:#6272a4">// Time to expire a record: TODO: change to timestamp
+</span><span style="color:#6272a4"></span>	Expiry time.Duration <span style="color:#f1fa8c">`json:&#34;expiry,omitempty&#34;`</span>
+}
+</code></pre></div>
 </div>
 
 
@@ -1926,7 +2346,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-fa10acc15b4e6765d798505e47c766c2">2.9 - 序列化</h1>
+	<h1 id="pg-153e4a0bca2441db25452191e5399846">2.10 - 命令行参数</h1>
     
 	<p>// TODO</p>
 
@@ -1956,36 +2376,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-086541153674cbdfd7810a7afd543baa">2.10 - 请求代理</h1>
-    
-	
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-153e4a0bca2441db25452191e5399846">2.11 - 命令行参数</h1>
+	<h1 id="pg-a711fd4172b59f618933a2b52fdc23a0">2.11 - 日志接口</h1>
     
 	<p>// TODO</p>
 
@@ -2015,7 +2406,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-a711fd4172b59f618933a2b52fdc23a0">2.12 - 日志接口</h1>
+	<h1 id="pg-06993b840e35b8603c1d1fa4e5390ca5">2.12 - 数据库接口</h1>
     
 	<p>// TODO</p>
 
@@ -2045,7 +2436,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-06993b840e35b8603c1d1fa4e5390ca5">2.13 - 数据库接口</h1>
+	<h1 id="pg-1716b93d0e0fcc931d997f5833d2e6f4">2.13 - 锁和选举</h1>
     
 	<p>// TODO</p>
 
@@ -2075,37 +2466,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-1716b93d0e0fcc931d997f5833d2e6f4">2.14 - 锁和选举</h1>
-    
-	<p>// TODO</p>
-
-</div>
-
-
-
-    
-      
-  
-  
-  
-  
-
-  
-  
-
-  
-
-    
-	
-  
-    
-    
-	
-    
-
-<div class="td-content" style="page-break-before: always">
-    
-	<h1 id="pg-af33cab72523ccb0847ef55ee3168c8b">2.15 - 装载器</h1>
+	<h1 id="pg-af33cab72523ccb0847ef55ee3168c8b">2.14 - 装载器</h1>
     
 	<p>// TODO</p>
 
@@ -2131,7 +2492,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="">
     
-	<h1 id="pg-6d71662a7a073686a5f0e2c3e135bd39">2.15.1 - 概述</h1>
+	<h1 id="pg-6d71662a7a073686a5f0e2c3e135bd39">2.14.1 - 概述</h1>
     
 	<p>// TODO</p>
 
@@ -2161,7 +2522,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-39eacc854f3fd422544f82d390b1f48c">2.15.2 - 链路追踪</h1>
+	<h1 id="pg-39eacc854f3fd422544f82d390b1f48c">2.14.2 - 链路追踪</h1>
     
 	<p>// TODO</p>
 
@@ -2191,7 +2552,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-93c9ae063448402518730eb36201d2b1">2.15.3 - 数据校验</h1>
+	<h1 id="pg-93c9ae063448402518730eb36201d2b1">2.14.3 - 数据校验</h1>
     
 	<p>// TODO</p>
 
@@ -2221,7 +2582,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-62cd849eef8495611b5b8892f70d5afa">2.15.4 - 元数据</h1>
+	<h1 id="pg-62cd849eef8495611b5b8892f70d5afa">2.14.4 - 元数据</h1>
     
 	<p>// TODO</p>
 
@@ -2251,7 +2612,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-c483018e88ad8da9a20f3c7dfcffa915">2.15.5 - 请求熔断</h1>
+	<h1 id="pg-c483018e88ad8da9a20f3c7dfcffa915">2.14.5 - 请求熔断</h1>
     
 	<p>// TODO</p>
 
@@ -2281,7 +2642,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-e1183309a928ffcc3eb6cc0dcd66651d">2.15.6 - 请求限流</h1>
+	<h1 id="pg-e1183309a928ffcc3eb6cc0dcd66651d">2.14.6 - 请求限流</h1>
     
 	<p>// TODO</p>
 
@@ -2315,7 +2676,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 <div class="td-content" style="page-break-before: always">
     
-	<h1 id="pg-c049cbc8dfe9badc6517d70a4af559fb">2.16 - 定时任务</h1>
+	<h1 id="pg-c049cbc8dfe9badc6517d70a4af559fb">2.15 - 定时任务</h1>
     
 	<p><strong>Vine</strong> 服务内部携带定时任务调度器，用户可以注册 <code>Job</code>，服务启动时，调度器同时启动。</p>
 <h2 id="新建">新建</h2>

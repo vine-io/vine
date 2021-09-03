@@ -556,20 +556,20 @@ func (g *grpcServer) processStream(stream grpc.ServerStream, service *service, m
 	return status.New(statusCode, statusDesc).Err()
 }
 
-func (g *grpcServer) newGRPCCodec(contentType string) (encoding.Codec, error) {
+func (g *grpcServer) newGRPCCodec(ct string) (encoding.Codec, error) {
 	codecs := make(map[string]encoding.Codec)
 	if g.opts.Context != nil {
 		if v, ok := g.opts.Context.Value(codecsKey{}).(map[string]encoding.Codec); ok && v != nil {
 			codecs = v
 		}
 	}
-	if c, ok := codecs[contentType]; ok {
+	if c, ok := codecs[ct]; ok {
 		return c, nil
 	}
-	if c, ok := defaultGRPCCodecs[contentType]; ok {
+	if c, ok := defaultGRPCCodecs[ct]; ok {
 		return c, nil
 	}
-	return nil, fmt.Errorf("unsupported Content-Type: %s", contentType)
+	return nil, fmt.Errorf("unsupported Content-Type: %s", ct)
 }
 
 func (g *grpcServer) Options() server.Options {
@@ -666,7 +666,7 @@ func (g *grpcServer) Register() error {
 	var advt, host, port string
 	var cacheService bool
 
-	// check the advertise address first
+	// check the advertisement address first
 	// if it exists then use it, otherwise
 	// use the address
 	if len(config.Advertise) > 0 {
@@ -723,7 +723,7 @@ func (g *grpcServer) Register() error {
 
 	var subscriberList []*subscriber
 	for e := range g.subscribers {
-		// Only advertise non internal subscribers
+		// Only advertise non-internal subscribers
 		if !e.Options().Internal {
 			subscriberList = append(subscriberList, e)
 		}
@@ -773,7 +773,7 @@ func (g *grpcServer) Register() error {
 	defer g.Unlock()
 
 	for sb := range g.subscribers {
-		handler := g.createSubHandler(sb, g.opts)
+		h := g.createSubHandler(sb, g.opts)
 		var opts []broker.SubscribeOption
 		if queue := sb.Options().Queue; len(queue) > 0 {
 			opts = append(opts, broker.Queue(queue))
@@ -788,7 +788,7 @@ func (g *grpcServer) Register() error {
 		}
 
 		log.Infof("Subscribing to topic: %s", sb.Topic())
-		sub, err := config.Broker.Subscribe(sb.Topic(), handler, opts...)
+		sub, err := config.Broker.Subscribe(sb.Topic(), h, opts...)
 		if err != nil {
 			return err
 		}
@@ -847,7 +847,7 @@ func (g *grpcServer) Deregister() error {
 	}
 
 	log.Infof("Deregistering node: %s", node.Id)
-	if err := config.Registry.Deregister(svc); err != nil {
+	if err = config.Registry.Deregister(svc); err != nil {
 		return err
 	}
 
@@ -950,7 +950,7 @@ func (g *grpcServer) Start() error {
 			mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 			mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
-			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
 					g.svc.ServeHTTP(w, r)
 					return
@@ -961,7 +961,7 @@ func (g *grpcServer) Start() error {
 			})
 
 			s := http.Server{
-				Handler: handler,
+				Handler: h,
 			}
 
 			if err := s.ServeTLS(ts, gh.CertFile, gh.KeyFile); err != nil {

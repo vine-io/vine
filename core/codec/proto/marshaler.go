@@ -26,8 +26,8 @@ import (
 	"bytes"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/vine-io/vine/core/codec"
 	"github.com/oxtoacart/bpool"
+	"github.com/vine-io/vine/core/codec"
 )
 
 // create buffer pool with 16 instances each preallocated with 256 bytes

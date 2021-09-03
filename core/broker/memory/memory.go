@@ -31,6 +31,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/vine-io/vine/core/broker"
+	"github.com/vine-io/vine/core/codec/json"
 	"github.com/vine-io/vine/lib/logger"
 	maddr "github.com/vine-io/vine/util/addr"
 	mnet "github.com/vine-io/vine/util/net"
@@ -248,6 +249,10 @@ func NewBroker(opts ...broker.Option) broker.Broker {
 	rand.Seed(time.Now().UnixNano())
 	for _, o := range opts {
 		o(&options)
+	}
+
+	if options.Codec == nil {
+		options.Codec = json.Marshaler{}
 	}
 
 	return &memoryBroker{
