@@ -39,7 +39,6 @@ Becomes
 Because a cli.Context is needed to retrieve the flags and their values, it is recommended to build your source from within a cli.Action.
 
 ```go
-
 func main() {
     // New Service
     service := vine.NewService(

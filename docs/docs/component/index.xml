@@ -985,14 +985,90 @@ rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span s
 &lt;h3 id=&#34;source&#34;&gt;Source&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;Source&lt;/code&gt; 作为配置的读取来源。可以同时使用多个源。
 支持以下源:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;cli : 从 CLI 标志读取&lt;/li&gt;
-&lt;li&gt;env : 从环境变量中读取&lt;/li&gt;
-&lt;li&gt;file : 从文件中读取&lt;/li&gt;
-&lt;li&gt;flag : 从标志中读取&lt;/li&gt;
-&lt;li&gt;memory : 从内存中读取&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;changeset&#34;&gt;ChangeSet&lt;/h3&gt;
+&lt;p&gt;cli : 从 CLI 标志读取&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// New Service
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    service &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+        vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;example&amp;#34;&lt;/span&gt;),
+        vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Flags&lt;/span&gt;(
+            cli.StringFlag{
+                Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;database-address&amp;#34;&lt;/span&gt;,
+                Value: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1&amp;#34;&lt;/span&gt;,
+                Usage: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;the db address&amp;#34;&lt;/span&gt;,
+            },
+        ),
+    )
+
+    &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;var&lt;/span&gt; clisrc source.Source
+
+    service.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(
+        vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Action&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(c &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;cli.Context) {
+            clisrc = cli.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSource&lt;/span&gt;(
+                cli.&lt;span style=&#34;color:#50fa7b&#34;&gt;Context&lt;/span&gt;(c),
+	    )
+            &lt;span style=&#34;color:#6272a4&#34;&gt;// Alternatively, just setup your config right here
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;        }),
+    )
+    
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// ... Load and use that source ...
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewConfig&lt;/span&gt;()
+    conf.&lt;span style=&#34;color:#50fa7b&#34;&gt;Load&lt;/span&gt;(clisrc)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;env : 从环境变量中读取&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;src &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; env.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSource&lt;/span&gt;(
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// optionally specify prefix
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	env.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithPrefix&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;VINE&amp;#34;&lt;/span&gt;),
+)
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// Create new config
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewConfig&lt;/span&gt;()
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// Load env source
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;conf.&lt;span style=&#34;color:#50fa7b&#34;&gt;Load&lt;/span&gt;(src)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;file : 从文件中读取&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	data &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; []&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;byte&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;`{&amp;#34;foo&amp;#34;: &amp;#34;bar&amp;#34;}`&lt;/span&gt;)
+	path &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; filepath.&lt;span style=&#34;color:#50fa7b&#34;&gt;Join&lt;/span&gt;(os.&lt;span style=&#34;color:#50fa7b&#34;&gt;TempDir&lt;/span&gt;(), fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sprintf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;file.%d&amp;#34;&lt;/span&gt;, time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Now&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;UnixNano&lt;/span&gt;()))
+	fh, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; os.&lt;span style=&#34;color:#50fa7b&#34;&gt;Create&lt;/span&gt;(path)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		t.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;(err)
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		fh.&lt;span style=&#34;color:#50fa7b&#34;&gt;Close&lt;/span&gt;()
+		os.&lt;span style=&#34;color:#50fa7b&#34;&gt;Remove&lt;/span&gt;(path)
+	}()
+
+	_, err = fh.&lt;span style=&#34;color:#50fa7b&#34;&gt;Write&lt;/span&gt;(data)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		t.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;(err)
+	}
+
+	f &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NewSource&lt;/span&gt;(&lt;span style=&#34;color:#50fa7b&#34;&gt;WithPath&lt;/span&gt;(path))
+	c, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; f.&lt;span style=&#34;color:#50fa7b&#34;&gt;Read&lt;/span&gt;()
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		t.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;flag : 从标志中读取&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;flagSource &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; flag.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSource&lt;/span&gt;(
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// optionally enable reading of unset flags and their default
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// values into config, defaults to false
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;IncludeUnset&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;true&lt;/span&gt;)
+)
+&lt;span style=&#34;color:#6272a4&#34;&gt;// Create new config
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewConfig&lt;/span&gt;()
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// Load flag source
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;conf.&lt;span style=&#34;color:#50fa7b&#34;&gt;Load&lt;/span&gt;(flagSource)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;memory : 从内存中读取&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;memorySource &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSource&lt;/span&gt;(
+	memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithJSON&lt;/span&gt;(data),
+)
+&lt;span style=&#34;color:#6272a4&#34;&gt;// Create new config
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;conf &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; config.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewConfig&lt;/span&gt;()
+&lt;span style=&#34;color:#6272a4&#34;&gt;// Load memory source
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;conf.&lt;span style=&#34;color:#50fa7b&#34;&gt;Load&lt;/span&gt;(memorySource)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;changeset&#34;&gt;ChangeSet&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Source&lt;/strong&gt; 将 &lt;strong&gt;Config&lt;/strong&gt; 作为一个 &lt;strong&gt;ChangeSet&lt;/strong&gt; 返回，作为多个源的单一内部抽象。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// ChangeSet represents a set of changes from a source
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; ChangeSet &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
