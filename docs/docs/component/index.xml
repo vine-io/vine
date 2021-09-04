@@ -447,7 +447,7 @@ vine api --handler&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rpc --
         
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;Server&lt;/code&gt; 是微服务服务和核心模块，它对外提供接口，根据不同的实现，提供相应类型的接口。目前内部支持:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Server&lt;/code&gt; 是微服务的核心模块，它对外提供接口，根据不同的实现，提供相应类型的接口。目前内部支持:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;grpc&lt;/li&gt;
 &lt;li&gt;http&lt;/li&gt;
@@ -720,7 +720,168 @@ vine api --handler&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;rpc --
       <description>
         
         
-        
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Client&lt;/code&gt; 是微服务的核心模块，提供一个请求其他服务的工具，根据不同的实现，提供相应类型的接口。目前内部支持:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;grpc&lt;/li&gt;
+&lt;li&gt;http&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Client &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;NewMessage&lt;/span&gt;(topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, msg &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;MessageOption) Message
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRequest&lt;/span&gt;(service, endpoint &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, req &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, reqOpts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RequestOption) Request
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Call&lt;/span&gt;(ctx context.Context, req Request, rsp &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;CallOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Stream&lt;/span&gt;(ctx context.Context, req Request, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;CallOption) (Stream, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(ctx context.Context, msg Message, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;PublishOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用方法&#34;&gt;使用方法&lt;/h2&gt;
+&lt;h3 id=&#34;启动请求&#34;&gt;启动请求&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/broker/memory&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/client&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/client/grpc&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry/mdns&amp;#34;&lt;/span&gt;
+	pb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/testdata/proto&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 新建一个新的 gRPC Client
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewClient&lt;/span&gt;(
+		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(mdns.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()),
+		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()),
+	)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 初始化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	in &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;pb.Request{
+		Id:   &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+		Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;World&amp;#34;&lt;/span&gt;,
+		Data: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;,
+	}
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 创建一个新的请求
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	req &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRequest&lt;/span&gt;(
+		&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.helloworld&amp;#34;&lt;/span&gt;,
+		&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;HelloWorld.Get&amp;#34;&lt;/span&gt;,
+		in,
+	)
+	rsp &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;pb.Response{}
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 调用请求
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Call&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), req, rsp); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(rsp.Reply)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;发布消息&#34;&gt;发布消息&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+    in &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;pb.Request{
+		Id:   &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+		Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;World&amp;#34;&lt;/span&gt;,
+		Data: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;,
+	}
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 发布信息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewMessage&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.topic&amp;#34;&lt;/span&gt;, in)); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;新建流&#34;&gt;新建流&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+    stream, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Stream&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), req)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; stream.&lt;span style=&#34;color:#50fa7b&#34;&gt;Close&lt;/span&gt;()
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 发送消息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		stream.&lt;span style=&#34;color:#50fa7b&#34;&gt;Send&lt;/span&gt;(in)
+	}()
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 接收消息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		rsp &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;pb.Request{}
+		&lt;span style=&#34;color:#6272a4&#34;&gt;// 阻塞直到接收到消息
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; stream.&lt;span style=&#34;color:#50fa7b&#34;&gt;Recv&lt;/span&gt;(rsp); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+
+		}
+	}()
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;options&#34;&gt;options&lt;/h2&gt;
+&lt;p&gt;初始化 options:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewClient&lt;/span&gt;(
+		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Codec&lt;/span&gt;(),     &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 codec
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Selector&lt;/span&gt;(),  &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 selector
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(mdns.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 registry
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 broker
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithRouter&lt;/span&gt;(),  &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 router
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapCall&lt;/span&gt;(),    &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置请求装载器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Wrap&lt;/span&gt;(),        &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置装载器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;DialTimeout&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置连接超时时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;ContentType&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 Content-Type
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Backoff&lt;/span&gt;(),     &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置重试机制
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;PoolSize&lt;/span&gt;(),    &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置连接池容量
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;PoolTTL&lt;/span&gt;(),     &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置连接池 ttl
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;StreamTimeout&lt;/span&gt;(),  &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 stream 超时时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Retries&lt;/span&gt;(),     &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置错误重试次数
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;Retry&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置重试函数
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;NewRequest&lt;/code&gt; 的 options:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    req &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRequest&lt;/span&gt;(
+		&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.helloworld&amp;#34;&lt;/span&gt;,
+		&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;HelloWorld.Get&amp;#34;&lt;/span&gt;,
+		in,
+		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithContentType&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#6272a4&#34;&gt;//  设置请求体的 Content-Type
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;StreamingRequest&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 流式请求
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;NewMessage&lt;/code&gt; 的 options:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewMessage&lt;/span&gt;(
+		&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;topic&amp;#34;&lt;/span&gt;,
+		in,
+		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithMessageContentType&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;application/json&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置消息的 Content-Type
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Call&lt;/code&gt; 的 options:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Call&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), req, rsp,
+		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithAddress&lt;/span&gt;(),      &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置服务端地址，跳过通过 Registry 查询服务端的步骤
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithRequestTimeout&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 请求超时时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithStreamTimeout&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// stream 超时时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithDialTimeout&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 连接时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithBackoff&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 重试机制
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithCache&lt;/span&gt;(),     &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置缓存时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithCallWrapper&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置请求装载器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithRetries&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置重试次数
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithRetry&lt;/span&gt;(),  &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置重试函数
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithSelectOption&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置筛选器
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Publish&lt;/code&gt; 的 Option:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewMessage&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.topic&amp;#34;&lt;/span&gt;, in),
+		client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WithExchange&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#6272a4&#34;&gt;// 设置 exchange
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;http-client&#34;&gt;http client&lt;/h2&gt;
+&lt;p&gt;http 实现的 client 可以参考 &lt;a href=&#34;https://github.com/vine-io/vine/blob/master/core/client/http/http_test.go&#34;&gt;http&lt;/a&gt;&lt;/p&gt;
+
       </description>
     </item>
     

@@ -83,7 +83,7 @@ type Response interface {
 	Read() ([]byte, error)
 }
 
-// Stream is the inteface for a bidirectional synchronous stream
+// Stream is the interface for a bidirectional synchronous stream
 type Stream interface {
 	// Context for the stream
 	Context() context.Context
@@ -100,21 +100,6 @@ type Stream interface {
 	// Close closes the stream
 	Close() error
 }
-
-// Option used by the Client
-type Option func(*Options)
-
-// CallOption used by Call or Stream
-type CallOption func(*CallOptions)
-
-// PublishOption used by Publish
-type PublishOption func(*PublishOptions)
-
-// MessageOption used by NewMessage
-type MessageOption func(*MessageOptions)
-
-// RequestOption used by NewRequest
-type RequestOption func(*RequestOptions)
 
 var (
 	// DefaultClient is a default client to use out of the box

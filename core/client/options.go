@@ -138,6 +138,21 @@ func NewOptions(options ...Option) Options {
 	return opts
 }
 
+// Option used by the Client
+type Option func(*Options)
+
+// CallOption used by Call or Stream
+type CallOption func(*CallOptions)
+
+// PublishOption used by Publish
+type PublishOption func(*PublishOptions)
+
+// MessageOption used by NewMessage
+type MessageOption func(*MessageOptions)
+
+// RequestOption used by NewRequest
+type RequestOption func(*RequestOptions)
+
 // Broker to be used for pub/sub
 func Broker(b broker.Broker) Option {
 	return func(o *Options) {
