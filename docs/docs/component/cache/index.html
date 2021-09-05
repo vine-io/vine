@@ -1145,6 +1145,21 @@ if (!doNotTrack) {
 
 
 
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#使用">使用</a>
+      <ul>
+        <li><a href="#初始化">初始化</a></li>
+        <li><a href="#插入-keyvalue">插入 key/value</a></li>
+        <li><a href="#获取-keyvalue">获取 key/value</a></li>
+        <li><a href="#删除-key">删除 key</a></li>
+      </ul>
+    </li>
+    <li><a href="#options">options</a></li>
+  </ul>
+</nav>
+
 
 
           </div>
@@ -1191,7 +1206,9 @@ if (!doNotTrack) {
 	<h1>数据缓存</h1>
         
 	
-	<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Cache is a data cache interface
+	<h2 id="概述">概述</h2>
+<p><strong>Vine</strong> 提供 <code>Cache</code> 作为分布式缓存接口。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Cache is a data cache interface
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Cache <span style="color:#8be9fd;font-style:italic">interface</span> {
 	<span style="color:#6272a4">// Init initialises the cache. It must perform any required setup on the backing storage implementation and check that it is ready for use, returning any errors.
 </span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
@@ -1221,6 +1238,106 @@ if (!doNotTrack) {
 </span><span style="color:#6272a4"></span>	Metadata <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{} <span style="color:#f1fa8c">`json:&#34;metadata&#34;`</span>
 	<span style="color:#6272a4">// Time to expire a record: TODO: change to timestamp
 </span><span style="color:#6272a4"></span>	Expiry time.Duration <span style="color:#f1fa8c">`json:&#34;expiry,omitempty&#34;`</span>
+}
+</code></pre></div><h2 id="使用">使用</h2>
+<h3 id="初始化">初始化</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/cache&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/cache/memory&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	cc <span style="color:#ff79c6">:=</span> memory.<span style="color:#50fa7b">NewCache</span>()
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+	<span style="color:#ff79c6">defer</span> cc.<span style="color:#50fa7b">Close</span>()
+}
+</code></pre></div><h3 id="插入-keyvalue">插入 key/value</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// cache.Record
+</span><span style="color:#6272a4"></span>	r <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>cache.Record{
+		Key:      <span style="color:#f1fa8c">&#34;a&#34;</span>, <span style="color:#6272a4">// key 唯一值
+</span><span style="color:#6272a4"></span>		Value:    []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello&#34;</span>), <span style="color:#6272a4">// value
+</span><span style="color:#6272a4"></span>		Metadata: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{}, <span style="color:#6272a4">// 
+</span><span style="color:#6272a4"></span>		Expiry:   time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>, <span style="color:#6272a4">// 过期时间
+</span><span style="color:#6272a4"></span>	}
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">Put</span>(r); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+}
+</code></pre></div><h3 id="获取-keyvalue">获取 key/value</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#6272a4">// 获取所有 keys
+</span><span style="color:#6272a4"></span>	keys, err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">List</span>()
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Println</span>(keys)
+
+	<span style="color:#6272a4">// 通过 key 获取 value
+</span><span style="color:#6272a4"></span>	rr, err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;a&#34;</span>)
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#8be9fd;font-style:italic">string</span>(rr[<span style="color:#bd93f9">0</span>].Value))
+}
+</code></pre></div><h3 id="删除-key">删除 key</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">Del</span>(<span style="color:#f1fa8c">&#34;a&#34;</span>); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+}
+</code></pre></div><h2 id="options">options</h2>
+<p>初始化 options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	cc <span style="color:#ff79c6">:=</span> memory.<span style="color:#50fa7b">NewCache</span>(
+		cache.<span style="color:#50fa7b">Nodes</span>(),    <span style="color:#6272a4">// 指定缓存服务器的节点信息
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">Table</span>(),    <span style="color:#6272a4">// 指定 table
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">Database</span>(), <span style="color:#6272a4">// 指定 database
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">WithClient</span>(), <span style="color:#6272a4">// 指定 Client 接口实现
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">WithContext</span>(), <span style="color:#6272a4">// 指定 context.Context
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p><code>Put</code> options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	cc.<span style="color:#50fa7b">Put</span>(r,
+		cache.<span style="color:#50fa7b">PutExpiry</span>(), <span style="color:#6272a4">// 指定 key 过期时间
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">PutTo</span>(),     <span style="color:#6272a4">// 指定 database 和 table
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">PutTTL</span>(),    <span style="color:#6272a4">// 指定 key ttl
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p><code>List</code> options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	keys, err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">List</span>(
+		cache.<span style="color:#50fa7b">ListFrom</span>(),  <span style="color:#6272a4">// 指定 database 和 table
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">ListLimit</span>(), <span style="color:#6272a4">// 限制 key 数量
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">ListOffset</span>(), <span style="color:#6272a4">// 查询偏移量
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">ListPrefix</span>(), <span style="color:#6272a4">// 指定 key 前缀
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">ListSuffix</span>(), <span style="color:#6272a4">// 指定 key 后缀
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p><code>Get</code> options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	cc.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;a&#34;</span>,
+		cache.<span style="color:#50fa7b">GetFrom</span>(), <span style="color:#6272a4">// 指定 database 和 table
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">GetLimit</span>(), <span style="color:#6272a4">// 限制 key 数量
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">GetOffset</span>(), <span style="color:#6272a4">// 查询偏移量
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">GetPrefix</span>(), <span style="color:#6272a4">// 指定 key 前缀
+</span><span style="color:#6272a4"></span>		cache.<span style="color:#50fa7b">GetSuffix</span>(), <span style="color:#6272a4">// 指定 key 后缀
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p><code>Del</code> options</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	cc.<span style="color:#50fa7b">Del</span>(<span style="color:#f1fa8c">&#34;a&#34;</span>,
+		cache.<span style="color:#50fa7b">DelFrom</span>(), <span style="color:#6272a4">// 指定 database 和 table
+</span><span style="color:#6272a4"></span>	)
 }
 </code></pre></div>
         <div class="section-index">
@@ -1314,7 +1431,7 @@ if (!doNotTrack) {
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 2, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/c29bb6d32f8fe0bdc65410c0fa81fb7ec684c225">modify (c29bb6d)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 5, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/3b88b9b13de50cd9112122bd7b47844631cb970e">cache (3b88b9b)</a>
 </div>
 </div>
 

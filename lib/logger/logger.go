@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package log provides a log interface
+// Package logger provides a log interface
 package logger
 
 var (
-	// Default logger
+	// DefaultLogger default logger
 	DefaultLogger Logger = NewHelper(NewLogger())
 )
 

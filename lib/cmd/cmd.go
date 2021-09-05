@@ -23,6 +23,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"math/rand"
@@ -288,8 +289,13 @@ func newCmd(opts ...Option) Cmd {
 		o(&options)
 	}
 
+
 	if len(options.Description) == 0 {
 		options.Description = "a vine service"
+	}
+
+	if options.Context == nil {
+		options.Context = context.Background()
 	}
 
 	cmd := new(cmd)
@@ -302,6 +308,12 @@ func newCmd(opts ...Option) Cmd {
 	cmd.opts.app.Flags = DefaultFlags
 	cmd.opts.app.Action = func(c *cli.Context) error {
 		return nil
+	}
+
+	if cmd.opts.app.Before == nil {
+		cmd.opts.app.Before = func(c *cli.Context) error {
+			return nil
+		}
 	}
 
 	if len(options.Version) == 0 {
@@ -538,14 +550,14 @@ func (c *cmd) Before(ctx *cli.Context) error {
 
 	// We have some command line opts for the server.
 	// Lets set it up
-	if len(serverOpts) > 0 {
+	if len(serverOpts) > 0 && *c.opts.Server != nil {
 		if err := (*c.opts.Server).Init(serverOpts...); err != nil {
 			log.Fatalf("Error configuring server: %v", err)
 		}
 	}
 
 	// Use an init option?
-	if len(clientOpts) > 0 {
+	if len(clientOpts) > 0 && *c.opts.Client != nil {
 		if err := (*c.opts.Client).Init(clientOpts...); err != nil {
 			log.Fatalf("Error configuring client: %v", err)
 		}

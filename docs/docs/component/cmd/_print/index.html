@@ -140,7 +140,249 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p>// TODO</p>
+      <h2 id="概述">概述</h2>
+<p><strong>Vine</strong> 结合 <a href="https://github.com/vine-io/cli">cli</a> 提供 <code>Cmd</code> 模块，作为服务的命令工具：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Cmd <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#6272a4">// App The cli app within this cmd
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">App</span>() <span style="color:#ff79c6">*</span>cli.App
+	<span style="color:#6272a4">// Init Adds options, parses flags and initialise
+</span><span style="color:#6272a4"></span>	<span style="color:#6272a4">// exits on error
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(opts <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Options set within this command
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+}
+</code></pre></div><h2 id="使用">使用</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/cmd&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	c <span style="color:#ff79c6">:=</span> cmd.<span style="color:#50fa7b">NewCmd</span>()
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	c.<span style="color:#50fa7b">App</span>().<span style="color:#50fa7b">RunAndExitOnError</span>()
+}
+</code></pre></div><h2 id="options">options</h2>
+<p>罗列 <code>Cmd</code> 的 options:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    c <span style="color:#ff79c6">:=</span> cmd.<span style="color:#50fa7b">NewCmd</span>(
+		cmd.<span style="color:#50fa7b">Name</span>(),   <span style="color:#6272a4">// 设置 cli 启动名称
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Server</span>(), <span style="color:#6272a4">// 设置默认 Server 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Client</span>(), <span style="color:#6272a4">// 设置默认 Client 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Selector</span>(), <span style="color:#6272a4">// 设置 Client Selector 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Registry</span>(), <span style="color:#6272a4">// 设置默认 Registry 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Broker</span>(),  <span style="color:#6272a4">// 设置默认 Broker 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Tracer</span>(),  <span style="color:#6272a4">// 设置默认 Tracer 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Dialect</span>(), <span style="color:#6272a4">// 设置默认 Dialect 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Config</span>(),  <span style="color:#6272a4">// 设置默认 Config 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Cache</span>(),   <span style="color:#6272a4">// 设置 Cache 模块
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">CliApp</span>(),  <span style="color:#6272a4">// 设置 *cli.App
+</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Description</span>(), <span style="color:#6272a4">// 设置 cli 描述信息
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><h2 id="服务-cmd">服务 cmd</h2>
+<p><strong>Vine</strong> 服务启动时初始化 <code>Cmd</code> 模块，每个服务支持以下的命令行参数:</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+<th>默认值</th>
+<th>环境换脸</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&ndash;client string</td>
+<td>Client for vine;</td>
+<td>rpc</td>
+<td>[$VINE_CLIENT]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;client-request-timeout string</td>
+<td>Sets the client request timeout. e.g 500ms, 5s, 1m.</td>
+<td>Default: 5s</td>
+<td>[$VINE_CLIENT_REQUEST_TIMEOUT]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;client-retries int</td>
+<td>Sets the client retries.</td>
+<td>Default: 1 (default: 1)</td>
+<td>[$VINE_CLIENT_RETIES]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;client-pool-size int</td>
+<td>Sets the client connection pool size.</td>
+<td>Default: 1 (default: 0)</td>
+<td>[$VINE_CLIENT_POOL_SIZE]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;client-pool-ttl string</td>
+<td>Sets the client connection pool ttl. e.g 500ms, 5s, 1m.</td>
+<td>Default: 1m</td>
+<td>[$VINE_CLIENT_POOL_TTL]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;register-ttl int</td>
+<td>Register TTL in seconds</td>
+<td>(default: 60)</td>
+<td>[$VINE_REGISTER_TTL]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;register-interval int</td>
+<td>Register interval in seconds</td>
+<td>(default: 30)</td>
+<td>[$VINE_REGISTER_INTERVAL]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;server string</td>
+<td>Server for vine;</td>
+<td>rpc</td>
+<td>[$VINE_SERVER]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;server-name string</td>
+<td>Name of the server. go.vine.svc.example</td>
+<td></td>
+<td>[$VINE_SERVER_NAME]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;server-version string</td>
+<td>Version of the server. 1.1.0</td>
+<td></td>
+<td>[$VINE_SERVER_VERSION]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;server-id string</td>
+<td>Id of the server. Auto-generated if not specified</td>
+<td></td>
+<td>[$VINE_SERVER_ID]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;server-address string</td>
+<td>Bind address for the server. 127.0.0.1:8080</td>
+<td></td>
+<td>[$VINE_SERVER_ADDRESS]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;server-advertise string</td>
+<td>Use instead of the server-address when registering with discovery. 127.0.0.1:8080</td>
+<td></td>
+<td>[$VINE_SERVER_ADVERTISE]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;server-metadata strings</td>
+<td>A list of key-value pairs defining metadata. version=1.0.0</td>
+<td></td>
+<td>[$VINE_SERVER_METADATA]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;broker string</td>
+<td>Broker for pub/sub. http, nats</td>
+<td></td>
+<td>[$VINE_BROKER]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;broker-address string</td>
+<td>Comma-separated list of broker addresses</td>
+<td></td>
+<td>[$VINE_BROKER_ADDRESS]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;registry string</td>
+<td>Registry for discovery. memory, mdns</td>
+<td></td>
+<td>[$VINE_REGISTRY]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;registry-address string</td>
+<td>Comma-separated list of registry addresses</td>
+<td></td>
+<td>[$VINE_REGISTRY_ADDRESS]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;selector string</td>
+<td>Selector used to pick nodes for querying</td>
+<td></td>
+<td>[$VINE_SELECTOR]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;dao-dialect string</td>
+<td>Database option for the underlying dao</td>
+<td></td>
+<td>[$VINE_DAO_DIALECT]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;dao-dsn string</td>
+<td>DSN database driver name for underlying dao</td>
+<td></td>
+<td>[$VINE_DSN]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;config string</td>
+<td>The source of the config to be used to get configuration</td>
+<td></td>
+<td>[$VINE_CONFIG]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;cache string</td>
+<td>Cache used for key-value storage</td>
+<td></td>
+<td>[$VINE_CACHE]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;cache-address string</td>
+<td>Comma-separated list of cache addresses</td>
+<td></td>
+<td>[$VINE_CACHE_ADDRESS]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;tracer string</td>
+<td>Tracer for distributed tracing, e.g. memory, jaeger</td>
+<td></td>
+<td>[$VINE_TRACER]</td>
+<td></td>
+</tr>
+<tr>
+<td>&ndash;tracer-address string</td>
+<td>Comma-separated list of tracer addresses</td>
+<td></td>
+<td>[$VINE_TRACER_ADDRESS]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 
 </div>
 </div>
