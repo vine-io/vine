@@ -50,6 +50,7 @@ func Prefix(p string) Option {
 type LeaderOptions struct {
 	TTL       int64
 	Namespace string
+	Id        string
 }
 
 type LeaderOption func(o *LeaderOptions)
@@ -65,6 +66,13 @@ func LeaderTTL(t int64) LeaderOption {
 func LeaderNS(ns string) LeaderOption {
 	return func(o *LeaderOptions) {
 		o.Namespace = ns
+	}
+}
+
+// LeaderId sets the leader id
+func LeaderId(id string) LeaderOption {
+	return func(o *LeaderOptions) {
+		o.Id = id
 	}
 }
 

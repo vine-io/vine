@@ -27,16 +27,18 @@ import (
 	gosync "sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/vine-io/vine/lib/sync"
-	"go.uber.org/atomic"
 )
 
 type memorySync struct {
 	options sync.Options
 
-	curPrimary *atomic.String
-	mtx        gosync.RWMutex
-	locks      map[string]*memoryLock
+	leaderStore map[string]*memoryLeader
+	leaderMtx   gosync.RWMutex
+
+	mtx   gosync.RWMutex
+	locks map[string]*memoryLock
 }
 
 type memoryLock struct {
@@ -45,13 +47,6 @@ type memoryLock struct {
 	ttl      time.Duration
 	release  chan bool
 	isLeader bool
-}
-
-type memoryLeader struct {
-	opts   sync.LeaderOptions
-	id     string
-	resign func(id string) error
-	status chan bool
 }
 
 func (m *memorySync) Init(opts ...sync.Option) error {
@@ -65,41 +60,54 @@ func (m *memorySync) Options() sync.Options {
 	return m.options
 }
 
-func (m *memoryLeader) Resign() error {
-	return m.resign(m.id)
-}
-
-func (m *memoryLeader) Status() chan bool {
-	return m.status
-}
-
-func (m *memorySync) Leader(id string, opts ...sync.LeaderOption) (sync.Leader, error) {
+func (m *memorySync) Leader(name string, opts ...sync.LeaderOption) (sync.Leader, error) {
 	var once gosync.Once
 	var options sync.LeaderOptions
 	for _, o := range opts {
 		o(&options)
 	}
 
-	// acquire a lock for the id
-	if err := m.lock(id, true); err != nil {
-		return nil, err
+	if options.Id == "" {
+		options.Id = uuid.New().String()
 	}
 
-	m.curPrimary.Store(id)
-
-	// return the leader
-	return &memoryLeader{
+	leader := &memoryLeader{
 		opts: options,
-		id:   id,
+		name: name,
+		ns:   options.Namespace,
+		id:   options.Id,
+		role: sync.Follow,
 		resign: func(id string) error {
 			once.Do(func() {
 				m.Unlock(id)
 			})
+
+			m.leaderMtx.Lock()
+			delete(m.leaderStore, options.Id)
+			m.leaderMtx.Unlock()
+
 			return nil
 		},
 		// TODO: signal when Unlock is called
 		status: make(chan bool, 1),
-	}, nil
+	}
+
+	m.leaderMtx.Lock()
+	m.leaderStore[leader.id] = leader
+	m.leaderMtx.Unlock()
+
+	// acquire a lock for the id
+	if err := m.lock(name, true); err != nil {
+		return nil, err
+	}
+
+	m.leaderMtx.Lock()
+	leader.role = sync.Primary
+	m.leaderStore[leader.id] = leader
+	m.leaderMtx.Unlock()
+
+	// return the leader
+	return leader, nil
 }
 
 func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member, error) {
@@ -108,19 +116,18 @@ func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member
 		opt(&options)
 	}
 
-	m.mtx.RLock()
-	defer m.mtx.RUnlock()
+	m.leaderMtx.RLock()
+	defer m.leaderMtx.RUnlock()
 
 	members := make([]*sync.Member, 0)
-	cur := m.curPrimary.Load()
-	for _, l := range m.locks {
-		if l.isLeader {
-			role := sync.Follow
-			if cur == l.id {
-				role = sync.Primary
-			}
-			members = append(members, &sync.Member{Id: l.id, Role: role})
+	for _, l := range m.leaderStore {
+		member := &sync.Member{
+			Leader:    l.name,
+			Id:        l.id,
+			Namespace: l.ns,
+			Role:      l.role,
 		}
+		members = append(members, member)
 	}
 
 	return members, nil
@@ -246,6 +253,28 @@ func (m *memorySync) String() string {
 	return "memory"
 }
 
+type memoryLeader struct {
+	opts   sync.LeaderOptions
+	name   string
+	ns     string
+	id     string
+	role   sync.Role
+	resign func(id string) error
+	status chan bool
+}
+
+func (m *memoryLeader) Id() string {
+	return m.id
+}
+
+func (m *memoryLeader) Resign() error {
+	return m.resign(m.name)
+}
+
+func (m *memoryLeader) Status() chan bool {
+	return m.status
+}
+
 func NewSync(opts ...sync.Option) sync.Sync {
 	var options sync.Options
 	for _, o := range opts {
@@ -253,8 +282,8 @@ func NewSync(opts ...sync.Option) sync.Sync {
 	}
 
 	return &memorySync{
-		options:    options,
-		curPrimary: atomic.NewString(""),
-		locks:      make(map[string]*memoryLock),
+		options:     options,
+		leaderStore: map[string]*memoryLeader{},
+		locks:       make(map[string]*memoryLock),
 	}
 }

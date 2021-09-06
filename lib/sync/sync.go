@@ -45,7 +45,7 @@ type Sync interface {
 	// Options Return the options
 	Options() Options
 	// Leader Elect a leader
-	Leader(id string, opts ...LeaderOption) (Leader, error)
+	Leader(name string, opts ...LeaderOption) (Leader, error)
 	// ListMembers get all election member
 	ListMembers(opts ...ListMembersOption) ([]*Member, error)
 	// Lock acquires a lock
@@ -57,6 +57,7 @@ type Sync interface {
 }
 
 type Member struct {
+	Leader    string `json:"leader"`
 	Id        string `json:"id"`
 	Namespace string `json:"namespace"`
 	Role      Role   `json:"role"`
@@ -64,6 +65,8 @@ type Member struct {
 
 // Leader provides leadership election
 type Leader interface {
+	// Id leader node
+	Id() string
 	// Resign resigns leadership
 	Resign() error
 	// Status returns when leadership is lost
