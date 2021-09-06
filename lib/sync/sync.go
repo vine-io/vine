@@ -57,8 +57,9 @@ type Sync interface {
 }
 
 type Member struct {
-	Id   string `json:"id"`
-	Role Role   `json:"role"`
+	Id        string `json:"id"`
+	Namespace string `json:"namespace"`
+	Role      Role   `json:"role"`
 }
 
 // Leader provides leadership election

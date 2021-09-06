@@ -3040,7 +3040,94 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
     
 	<h1 id="pg-06993b840e35b8603c1d1fa4e5390ca5">2.12 - 数据库接口</h1>
     
-	<p>// TODO</p>
+	<h2 id="概述">概述</h2>
+<p>我们整合 <a href="https://gorm.io/">gorm</a>，并抽象出 <code>Dao</code> 作为数据库交互工具：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Dialect DAO database dialect
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Dialect <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#50fa7b">NewTx</span>() <span style="color:#ff79c6">*</span>DB
+	<span style="color:#50fa7b">Migrator</span>() Migrator
+	<span style="color:#50fa7b">DataTypeOf</span>(<span style="color:#ff79c6">*</span>schema.Field) <span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">DefaultValueOf</span>(<span style="color:#ff79c6">*</span>schema.Field) clause.Expression
+	<span style="color:#50fa7b">BindVarTo</span>(writer clause.Writer, stmt <span style="color:#ff79c6">*</span>Statement, v <span style="color:#8be9fd;font-style:italic">interface</span>{})
+	<span style="color:#50fa7b">QuoteTo</span>(clause.Writer, <span style="color:#8be9fd">string</span>)
+	<span style="color:#50fa7b">Explain</span>(sql <span style="color:#8be9fd">string</span>, vars <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">JSONBuild</span>(column <span style="color:#8be9fd">string</span>) JSONQuery
+	<span style="color:#50fa7b">JSONDataType</span>() <span style="color:#8be9fd">string</span>
+	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><h2 id="使用">使用</h2>
+<p><code>Dao</code> 的接口语法和 <a href="https://gorm.io/">gorm</a> 兼容</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;log&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/dao/mysql&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/dao&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/dao/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">type</span> User <span style="color:#8be9fd;font-style:italic">struct</span> {
+	Id   <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`dao:&#34;column:id;autoIncrement;primaryKey&#34;`</span>
+	Name <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`dao:&#34;column:name&#34;`</span>
+	Age  <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`dao:&#34;column:age&#34;`</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	dns <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">`root:123456@tcp(192.168.3.111:3306)/vine?charset=utf8&amp;parseTime=True&amp;loc=Local`</span>
+	dialect <span style="color:#ff79c6">:=</span> mysql.<span style="color:#50fa7b">NewDialect</span>(dao.<span style="color:#50fa7b">DSN</span>(dns), dao.<span style="color:#50fa7b">Logger</span>(logger.<span style="color:#50fa7b">New</span>(logger.Options{
+		SlowThreshold: <span style="color:#bd93f9">200</span> <span style="color:#ff79c6">*</span> time.Millisecond,
+		LogLevel:      logger.Info,
+	})))
+    <span style="color:#6272a4">// 初始化
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> dialect.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+    <span style="color:#6272a4">// 创建一个新的会话
+</span><span style="color:#6272a4"></span>	db <span style="color:#ff79c6">:=</span> dialect.<span style="color:#50fa7b">NewTx</span>()
+
+    <span style="color:#6272a4">// 更新表结构
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">AutoMigrate</span>(<span style="color:#ff79c6">&amp;</span>User{}); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	u <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>User{Name: <span style="color:#f1fa8c">&#34;Mimi&#34;</span>, Age: <span style="color:#bd93f9">11</span>}
+    <span style="color:#6272a4">// 插入一条记录
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Create</span>(u).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	u1 <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>User{}
+    <span style="color:#6272a4">// 查询
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Find</span>(<span style="color:#ff79c6">&amp;</span>u1, <span style="color:#f1fa8c">&#34;name = ?&#34;</span>, <span style="color:#f1fa8c">&#34;Mimi&#34;</span>).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	fmt.<span style="color:#50fa7b">Println</span>(u1)
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Where</span>(<span style="color:#f1fa8c">&#34;name = ?&#34;</span>, <span style="color:#f1fa8c">&#34;Mimi&#34;</span>).<span style="color:#50fa7b">First</span>(<span style="color:#ff79c6">&amp;</span>u1).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	fmt.<span style="color:#50fa7b">Println</span>(u1)
+
+	u1.Name = <span style="color:#f1fa8c">&#34;Mimi_update&#34;</span>
+    <span style="color:#6272a4">// 更新一条记录
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Updates</span>(u1).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+    <span style="color:#6272a4">// 删除一条记录
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Delete</span>(<span style="color:#ff79c6">&amp;</span>User{}, <span style="color:#f1fa8c">&#34;id = ?&#34;</span>, <span style="color:#bd93f9">1</span>).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+}
+</code></pre></div><p>更多 CURD 的使用方式可以参考<a href="https://gorm.io/docs/create.html">这里</a>。</p>
 
 </div>
 

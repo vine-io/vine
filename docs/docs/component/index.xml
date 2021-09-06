@@ -1758,7 +1758,94 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;我们整合 &lt;a href=&#34;https://gorm.io/&#34;&gt;gorm&lt;/a&gt;，并抽象出 &lt;code&gt;Dao&lt;/code&gt; 作为数据库交互工具：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Dialect DAO database dialect
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Dialect &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;NewTx&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;DB
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Migrator&lt;/span&gt;() Migrator
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;DataTypeOf&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;schema.Field) &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;DefaultValueOf&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;schema.Field) clause.Expression
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;BindVarTo&lt;/span&gt;(writer clause.Writer, stmt &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Statement, v &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{})
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;QuoteTo&lt;/span&gt;(clause.Writer, &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;)
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Explain&lt;/span&gt;(sql &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, vars &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONBuild&lt;/span&gt;(column &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) JSONQuery
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;JSONDataType&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;Dao&lt;/code&gt; 的接口语法和 &lt;a href=&#34;https://gorm.io/&#34;&gt;gorm&lt;/a&gt; 兼容&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/dao/mysql&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/dao&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/dao/logger&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; User &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+	Id   &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt;  &lt;span style=&#34;color:#f1fa8c&#34;&gt;`dao:&amp;#34;column:id;autoIncrement;primaryKey&amp;#34;`&lt;/span&gt;
+	Name &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`dao:&amp;#34;column:name&amp;#34;`&lt;/span&gt;
+	Age  &lt;span style=&#34;color:#8be9fd&#34;&gt;int32&lt;/span&gt;  &lt;span style=&#34;color:#f1fa8c&#34;&gt;`dao:&amp;#34;column:age&amp;#34;`&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	dns &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;`root:123456@tcp(192.168.3.111:3306)/vine?charset=utf8&amp;amp;parseTime=True&amp;amp;loc=Local`&lt;/span&gt;
+	dialect &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; mysql.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewDialect&lt;/span&gt;(dao.&lt;span style=&#34;color:#50fa7b&#34;&gt;DSN&lt;/span&gt;(dns), dao.&lt;span style=&#34;color:#50fa7b&#34;&gt;Logger&lt;/span&gt;(logger.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;(logger.Options{
+		SlowThreshold: &lt;span style=&#34;color:#bd93f9&#34;&gt;200&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; time.Millisecond,
+		LogLevel:      logger.Info,
+	})))
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 初始化
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; dialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 创建一个新的会话
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	db &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; dialect.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewTx&lt;/span&gt;()
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 更新表结构
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; db.&lt;span style=&#34;color:#50fa7b&#34;&gt;AutoMigrate&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;User{}); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	u &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;User{Name: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Mimi&amp;#34;&lt;/span&gt;, Age: &lt;span style=&#34;color:#bd93f9&#34;&gt;11&lt;/span&gt;}
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 插入一条记录
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; db.&lt;span style=&#34;color:#50fa7b&#34;&gt;Create&lt;/span&gt;(u).Error; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	u1 &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;User{}
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; db.&lt;span style=&#34;color:#50fa7b&#34;&gt;Find&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;u1, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;name = ?&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Mimi&amp;#34;&lt;/span&gt;).Error; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(u1)
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; db.&lt;span style=&#34;color:#50fa7b&#34;&gt;Where&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;name = ?&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Mimi&amp;#34;&lt;/span&gt;).&lt;span style=&#34;color:#50fa7b&#34;&gt;First&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;u1).Error; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(u1)
+
+	u1.Name = &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Mimi_update&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 更新一条记录
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; db.&lt;span style=&#34;color:#50fa7b&#34;&gt;Updates&lt;/span&gt;(u1).Error; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 删除一条记录
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; db.&lt;span style=&#34;color:#50fa7b&#34;&gt;Delete&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;User{}, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;id = ?&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;).Error; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;更多 CURD 的使用方式可以参考&lt;a href=&#34;https://gorm.io/docs/create.html&#34;&gt;这里&lt;/a&gt;。&lt;/p&gt;
 
       </description>
     </item>
