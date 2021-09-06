@@ -1859,7 +1859,106 @@ r &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; json.&lt;span style=
       <description>
         
         
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Sync is an interface for distributed synchronization
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Sync &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Init Initialise options
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Options Return the options
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Leader Elect a leader
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;LeaderOption) (Leader, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// ListMembers get all election member
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListMembers&lt;/span&gt;(opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListMembersOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Member, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Lock acquires a lock
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;LockOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// Unlock releases a lock
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Unlock&lt;/span&gt;(id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+	&lt;span style=&#34;color:#6272a4&#34;&gt;// String Sync implementation
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;h3 id=&#34;分布式锁&#34;&gt;分布式锁&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; etcd.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSync&lt;/span&gt;()
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 创建锁
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	ch &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;chan&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt;{}, &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+			log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+		}
+		fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Locked&amp;#34;&lt;/span&gt;)
+		ch &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt;{}{}
+	}()
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 释放锁
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err = s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Unlock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1 released&amp;#34;&lt;/span&gt;)
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;lt;-&lt;/span&gt;ch
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;分布式选举&#34;&gt;分布式选举&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; etcd.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSync&lt;/span&gt;()
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+	id &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewString&lt;/span&gt;()
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 新 leader
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	role1, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;leader&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderNS&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;), sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderId&lt;/span&gt;(id), sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderTTL&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询所有选举成员
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    ms, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListMembers&lt;/span&gt;(sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;MemberNS&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;))
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; _, m &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;range&lt;/span&gt; ms {
+		fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(m)
+	}
+
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 成员辞职
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; role1.&lt;span style=&#34;color:#50fa7b&#34;&gt;Resign&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;options&#34;&gt;options&lt;/h2&gt;
+&lt;p&gt;初始化&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewSync&lt;/span&gt;(
+		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;Prefix&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/vine/sync&amp;#34;&lt;/span&gt;),    &lt;span style=&#34;color:#6272a4&#34;&gt;// key 前缀
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;Nodes&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;127.0.0.1:2379&amp;#34;&lt;/span&gt;), &lt;span style=&#34;color:#6272a4&#34;&gt;// 服务端地址
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上锁和释放锁&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;,
+		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 锁的 ttl
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockWait&lt;/span&gt;(),  &lt;span style=&#34;color:#6272a4&#34;&gt;// 超时时间
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;选举&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;leader&amp;#34;&lt;/span&gt;,
+		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderNS&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// namespace
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderTTL&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderId&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 成员 id
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;实例&#34;&gt;实例&lt;/h2&gt;
+&lt;p&gt;更多的实例代码可参考 &lt;a href=&#34;https://github.com/vine-io/examples/tree/main/sync&#34;&gt;examples&lt;/a&gt;&lt;/p&gt;
 
       </description>
     </item>

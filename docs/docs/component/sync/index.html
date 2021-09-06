@@ -1145,6 +1145,20 @@ if (!doNotTrack) {
 
 
 
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#使用">使用</a>
+      <ul>
+        <li><a href="#分布式锁">分布式锁</a></li>
+        <li><a href="#分布式选举">分布式选举</a></li>
+      </ul>
+    </li>
+    <li><a href="#options">options</a></li>
+    <li><a href="#实例">实例</a></li>
+  </ul>
+</nav>
+
 
 
           </div>
@@ -1191,7 +1205,106 @@ if (!doNotTrack) {
 	<h1>锁和选举</h1>
         
 	
-	<p>// TODO</p>
+	<h2 id="概述">概述</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Sync is an interface for distributed synchronization
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Sync <span style="color:#8be9fd;font-style:italic">interface</span> {
+	<span style="color:#6272a4">// Init Initialise options
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Options Return the options
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+	<span style="color:#6272a4">// Leader Elect a leader
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Leader</span>(id <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>LeaderOption) (Leader, <span style="color:#8be9fd">error</span>)
+	<span style="color:#6272a4">// ListMembers get all election member
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">ListMembers</span>(opts <span style="color:#ff79c6">...</span>ListMembersOption) ([]<span style="color:#ff79c6">*</span>Member, <span style="color:#8be9fd">error</span>)
+	<span style="color:#6272a4">// Lock acquires a lock
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Lock</span>(id <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>LockOption) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// Unlock releases a lock
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Unlock</span>(id <span style="color:#8be9fd">string</span>) <span style="color:#8be9fd">error</span>
+	<span style="color:#6272a4">// String Sync implementation
+</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+}
+</code></pre></div><h2 id="使用">使用</h2>
+<h3 id="分布式锁">分布式锁</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    s <span style="color:#ff79c6">:=</span> etcd.<span style="color:#50fa7b">NewSync</span>()
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+    <span style="color:#6272a4">// 创建锁
+</span><span style="color:#6272a4"></span>	err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Lock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>, sync.<span style="color:#50fa7b">LockTTL</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>))
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	ch <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd;font-style:italic">struct</span>{}, <span style="color:#bd93f9">1</span>)
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Lock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>, sync.<span style="color:#50fa7b">LockTTL</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>))
+		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+			log.<span style="color:#50fa7b">Fatalln</span>(err)
+		}
+		fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;Locked&#34;</span>)
+		ch <span style="color:#ff79c6">&lt;-</span> <span style="color:#8be9fd;font-style:italic">struct</span>{}{}
+	}()
+
+    <span style="color:#6272a4">// 释放锁
+</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err = s.<span style="color:#50fa7b">Unlock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;lock1 released&#34;</span>)
+
+	<span style="color:#ff79c6">&lt;-</span>ch
+}
+</code></pre></div><h3 id="分布式选举">分布式选举</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    s <span style="color:#ff79c6">:=</span> etcd.<span style="color:#50fa7b">NewSync</span>()
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+	id <span style="color:#ff79c6">:=</span> uuid.<span style="color:#50fa7b">NewString</span>()
+    <span style="color:#6272a4">// 新 leader
+</span><span style="color:#6272a4"></span>	role1, err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Leader</span>(<span style="color:#f1fa8c">&#34;leader&#34;</span>, sync.<span style="color:#50fa7b">LeaderNS</span>(<span style="color:#f1fa8c">&#34;default&#34;</span>), sync.<span style="color:#50fa7b">LeaderId</span>(id), sync.<span style="color:#50fa7b">LeaderTTL</span>(<span style="color:#bd93f9">3</span>))
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+
+    <span style="color:#6272a4">// 查询所有选举成员
+</span><span style="color:#6272a4"></span>    ms, _ <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">ListMembers</span>(sync.<span style="color:#50fa7b">MemberNS</span>(<span style="color:#f1fa8c">&#34;default&#34;</span>))
+	<span style="color:#ff79c6">for</span> _, m <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> ms {
+		fmt.<span style="color:#50fa7b">Println</span>(m)
+	}
+
+    <span style="color:#6272a4">// 成员辞职
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> role1.<span style="color:#50fa7b">Resign</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatalln</span>(err)
+	}
+}
+</code></pre></div><h2 id="options">options</h2>
+<p>初始化</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	memory.<span style="color:#50fa7b">NewSync</span>(
+		sync.<span style="color:#50fa7b">Prefix</span>(<span style="color:#f1fa8c">&#34;/vine/sync&#34;</span>),    <span style="color:#6272a4">// key 前缀
+</span><span style="color:#6272a4"></span>		sync.<span style="color:#50fa7b">Nodes</span>(<span style="color:#f1fa8c">&#34;127.0.0.1:2379&#34;</span>), <span style="color:#6272a4">// 服务端地址
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p>上锁和释放锁</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    s.<span style="color:#50fa7b">Lock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>,
+		sync.<span style="color:#50fa7b">LockTTL</span>(),   <span style="color:#6272a4">// 锁的 ttl
+</span><span style="color:#6272a4"></span>		sync.<span style="color:#50fa7b">LockWait</span>(),  <span style="color:#6272a4">// 超时时间
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><p>选举</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    s.<span style="color:#50fa7b">Leader</span>(<span style="color:#f1fa8c">&#34;leader&#34;</span>,
+		sync.<span style="color:#50fa7b">LeaderNS</span>(), <span style="color:#6272a4">// namespace
+</span><span style="color:#6272a4"></span>		sync.<span style="color:#50fa7b">LeaderTTL</span>(), <span style="color:#6272a4">// 
+</span><span style="color:#6272a4"></span>		sync.<span style="color:#50fa7b">LeaderId</span>(), <span style="color:#6272a4">// 成员 id
+</span><span style="color:#6272a4"></span>	)
+}
+</code></pre></div><h2 id="实例">实例</h2>
+<p>更多的实例代码可参考 <a href="https://github.com/vine-io/examples/tree/main/sync">examples</a></p>
 
         <div class="section-index">
     
