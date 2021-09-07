@@ -136,8 +136,100 @@ logger wrapper: after call
       <description>
         
         
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;h2 id=&#34;什么是链路追踪&#34;&gt;什么是链路追踪&lt;/h2&gt;
+&lt;p&gt;链路追踪，全称分布式链路追踪。在微服务架构下，系统由大量服务组成，每个服务可能是由不同的团队开发、可能使用不同的编程语言来实现、有可能布在了几千台服务器，横跨多个不同的数据中心…例如一次请求往往会涉及到多个服务，在系统发生故障的时候，快速定位和解决问题，就需要追踪服务请求序列。因此，分析性能问题的工具以及理解系统的行为变得很重要。链路追踪正是用于解决这个问题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 中通过 wrapper 实现链路追踪。&lt;/p&gt;
+&lt;h2 id=&#34;实例&#34;&gt;实例&lt;/h2&gt;
+&lt;p&gt;我们提供一个简单的代码实例，来说明链路追踪的工作方式:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+
+	pb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/examples/wrapper/pb&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/client&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/client/grpc&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server&amp;#34;&lt;/span&gt;
+	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/logger&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/trace&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/trace/memory&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/util/wrapper&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; hello &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt; {
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (h hello) &lt;span style=&#34;color:#50fa7b&#34;&gt;Echo&lt;/span&gt;(ctx context.Context, request &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Request, response &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Response) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	ctx, span &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; trace.DefaultTracer.&lt;span style=&#34;color:#50fa7b&#34;&gt;Start&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;echo&amp;#34;&lt;/span&gt;)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; trace.DefaultTracer.&lt;span style=&#34;color:#50fa7b&#34;&gt;Finish&lt;/span&gt;(span)
+	
+	response.Result = request.Name
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+		vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapHandler&lt;/span&gt;(&lt;span style=&#34;color:#50fa7b&#34;&gt;HandlerWrapper&lt;/span&gt;()),
+	)
+
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+	pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterHelloHandler&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Server&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;hello{})
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second)
+        &lt;span style=&#34;color:#6272a4&#34;&gt;// grpc 加载 trace wrapper
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		cli &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewClient&lt;/span&gt;(client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapCall&lt;/span&gt;(&lt;span style=&#34;color:#50fa7b&#34;&gt;CallWrapper&lt;/span&gt;()))
+		cli = wrapper.&lt;span style=&#34;color:#50fa7b&#34;&gt;TraceCall&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(), memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewTracer&lt;/span&gt;(), cli)
+		cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHelloService&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(), cli)
+		cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Echo&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;pb.Request{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Client&amp;#34;&lt;/span&gt;})
+	}()
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+	}
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;CallWrapper&lt;/span&gt;() client.CallWrapper {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(fn client.CallFunc) client.CallFunc {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx context.Context, node &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node, req client.Request, rsp &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, opts client.CallOptions) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			traceID, parentID, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; trace.&lt;span style=&#34;color:#50fa7b&#34;&gt;FromContext&lt;/span&gt;(ctx)
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; ok {
+				fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;call: tarceID=%s parentID=%s\n&amp;#34;&lt;/span&gt;, traceID, parentID)
+			}
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;fn&lt;/span&gt;(ctx, node, req, rsp, opts)
+		}
+	}
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;HandlerWrapper&lt;/span&gt;() server.HandlerWrapper {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(fn server.HandlerFunc) server.HandlerFunc {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx context.Context, req server.Request, rsp &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			traceID, parentID, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; trace.&lt;span style=&#34;color:#50fa7b&#34;&gt;FromContext&lt;/span&gt;(ctx)
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; ok {
+				fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;handle: tarceID=%s parentID=%s\n&amp;#34;&lt;/span&gt;, traceID, parentID)
+			}
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;fn&lt;/span&gt;(ctx, req, rsp)
+		}
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;新建链路&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;ctx = trace.&lt;span style=&#34;color:#50fa7b&#34;&gt;ToContext&lt;/span&gt;(ctx, uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewString&lt;/span&gt;(), uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewString&lt;/span&gt;())
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;链路调用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// 新建链路
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;ctx, span &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; trace.&lt;span style=&#34;color:#50fa7b&#34;&gt;Start&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;echo&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#6272a4&#34;&gt;// 停止 span
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;defer&lt;/span&gt; trace.&lt;span style=&#34;color:#50fa7b&#34;&gt;Finish&lt;/span&gt;(span)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;捕获链路&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;traceID, parentID, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; trace.&lt;span style=&#34;color:#50fa7b&#34;&gt;FromContext&lt;/span&gt;(ctx)
+&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; ok {
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;call: tarceID=%s parentID=%s\n&amp;#34;&lt;/span&gt;, traceID, parentID)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     

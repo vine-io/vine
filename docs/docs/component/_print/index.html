@@ -2474,8 +2474,100 @@ logger wrapper: after call
     
 	<h1 id="pg-39eacc854f3fd422544f82d390b1f48c">14.2 - 链路追踪</h1>
     
-	<p>// TODO</p>
+	<h2 id="什么是链路追踪">什么是链路追踪</h2>
+<p>链路追踪，全称分布式链路追踪。在微服务架构下，系统由大量服务组成，每个服务可能是由不同的团队开发、可能使用不同的编程语言来实现、有可能布在了几千台服务器，横跨多个不同的数据中心…例如一次请求往往会涉及到多个服务，在系统发生故障的时候，快速定位和解决问题，就需要追踪服务请求序列。因此，分析性能问题的工具以及理解系统的行为变得很重要。链路追踪正是用于解决这个问题。</p>
+<p><strong>Vine</strong> 中通过 wrapper 实现链路追踪。</p>
+<h2 id="实例">实例</h2>
+<p>我们提供一个简单的代码实例，来说明链路追踪的工作方式:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;context&#34;</span>
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/examples/wrapper/pb&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client/grpc&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/trace&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/trace/memory&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/util/wrapper&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">type</span> hello <span style="color:#8be9fd;font-style:italic">struct</span> {
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (h hello) <span style="color:#50fa7b">Echo</span>(ctx context.Context, request <span style="color:#ff79c6">*</span>pb.Request, response <span style="color:#ff79c6">*</span>pb.Response) <span style="color:#8be9fd">error</span> {
+	ctx, span <span style="color:#ff79c6">:=</span> trace.DefaultTracer.<span style="color:#50fa7b">Start</span>(ctx, <span style="color:#f1fa8c">&#34;echo&#34;</span>)
+	<span style="color:#ff79c6">defer</span> trace.DefaultTracer.<span style="color:#50fa7b">Finish</span>(span)
+	
+	response.Result = request.Name
+	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+		vine.<span style="color:#50fa7b">WrapHandler</span>(<span style="color:#50fa7b">HandlerWrapper</span>()),
+	)
+
+	s.<span style="color:#50fa7b">Init</span>()
+
+	pb.<span style="color:#50fa7b">RegisterHelloHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>hello{})
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+        <span style="color:#6272a4">// grpc 加载 trace wrapper
+</span><span style="color:#6272a4"></span>		cli <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewClient</span>(client.<span style="color:#50fa7b">WrapCall</span>(<span style="color:#50fa7b">CallWrapper</span>()))
+		cli = wrapper.<span style="color:#50fa7b">TraceCall</span>(s.<span style="color:#50fa7b">Name</span>(), memory.<span style="color:#50fa7b">NewTracer</span>(), cli)
+		cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewHelloService</span>(s.<span style="color:#50fa7b">Name</span>(), cli)
+		cc.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.Request{<span style="color:#f1fa8c">&#34;Client&#34;</span>})
+	}()
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">CallWrapper</span>() client.CallWrapper {
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn client.CallFunc) client.CallFunc {
+		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, node <span style="color:#ff79c6">*</span>registry.Node, req client.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}, opts client.CallOptions) <span style="color:#8be9fd">error</span> {
+			traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
+			<span style="color:#ff79c6">if</span> ok {
+				fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;call: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
+			}
+			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, node, req, rsp, opts)
+		}
+	}
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">HandlerWrapper</span>() server.HandlerWrapper {
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn server.HandlerFunc) server.HandlerFunc {
+		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, req server.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+			traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
+			<span style="color:#ff79c6">if</span> ok {
+				fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;handle: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
+			}
+			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, req, rsp)
+		}
+	}
+}
+</code></pre></div><p>新建链路</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">ctx = trace.<span style="color:#50fa7b">ToContext</span>(ctx, uuid.<span style="color:#50fa7b">NewString</span>(), uuid.<span style="color:#50fa7b">NewString</span>())
+</code></pre></div><p>链路调用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 新建链路
+</span><span style="color:#6272a4"></span>ctx, span <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">Start</span>(ctx, <span style="color:#f1fa8c">&#34;echo&#34;</span>)
+<span style="color:#6272a4">// 停止 span
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">defer</span> trace.<span style="color:#50fa7b">Finish</span>(span)
+</code></pre></div><p>捕获链路</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
+<span style="color:#ff79c6">if</span> ok {
+	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;call: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
+}
+</code></pre></div>
 </div>
 
 
