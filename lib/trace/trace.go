@@ -119,3 +119,15 @@ func (n *noop) Finish(*Span) error {
 func (n *noop) Read(...ReadOption) ([]*Span, error) {
 	return nil, nil
 }
+
+func Start(ctx context.Context, name string) (context.Context, *Span) {
+	return DefaultTracer.Start(ctx, name)
+}
+
+func Finish(span *Span) error {
+	return DefaultTracer.Finish(span)
+}
+
+func Read(opts ...ReadOption) ([]*Span, error) {
+	return DefaultTracer.Read(opts...)
+}

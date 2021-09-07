@@ -1201,7 +1201,106 @@ if (!doNotTrack) {
 	<h1>概述</h1>
         
 	
-	<p>// TODO</p>
+	<h2 id="简介">简介</h2>
+<p><strong>Vine</strong> 装载器等同于&quot;中间件&quot;。</p>
+<blockquote>
+<p>中间件（英语：Middleware），又译中间件、中介层，是一类提供系统软件和应用软件之间连接、便于软件各部件之间的沟通的软件，应用软件可以借助中间件在不同的技术架构之间共享信息与资源。中间件位于客户机服务器的操作系统之上，管理着计算资源和网络通信。 &ndash; 维基百科</p>
+</blockquote>
+<h2 id="wrapper">wrapper</h2>
+<p><strong>Vine</strong> 中包含输入输出的 wrappr 分别在 <code>Client</code> 和 <code>Server</code> 中使用，定义如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// client
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> CallFunc <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, node <span style="color:#ff79c6">*</span>registry.Node, req Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}, opts CallOptions) <span style="color:#8be9fd">error</span>
+<span style="color:#6272a4">// CallWrapper is a low level wrapper for the CallFunc
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> CallWrapper <span style="color:#8be9fd;font-style:italic">func</span>(CallFunc) CallFunc
+<span style="color:#6272a4">// Wrapper wraps a client and returns a client
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Wrapper <span style="color:#8be9fd;font-style:italic">func</span>(Client) Client
+<span style="color:#6272a4">// StreamWrapper wraps a Stream and returns the equivalent
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> StreamWrapper <span style="color:#8be9fd;font-style:italic">func</span>(Stream) Stream
+
+<span style="color:#6272a4">// server
+</span><span style="color:#6272a4">// HandlerFunc represents a single method of a handler. It&#39;s used primarily
+</span><span style="color:#6272a4">// for the wrappers. What&#39;s handed to the actual method is the concrete
+</span><span style="color:#6272a4">// request and response types.
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> HandlerFunc <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, req Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+<span style="color:#6272a4">// SubscriberFunc represents a single method of a subscriber. It&#39;s used primarily
+</span><span style="color:#6272a4">// for the wrappers. What&#39;s handed to the actual method is the concrete
+</span><span style="color:#6272a4">// publication message.
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> SubscriberFunc <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, msg Message) <span style="color:#8be9fd">error</span>
+<span style="color:#6272a4">// HandlerWrapper wraps the HandlerFunc and returns the equivalent
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> HandlerWrapper <span style="color:#8be9fd;font-style:italic">func</span>(HandlerFunc) HandlerFunc
+<span style="color:#6272a4">// SubscriberWrapper wraps the SubscriberFunc and returns the equivalent
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> SubscriberWrapper <span style="color:#8be9fd;font-style:italic">func</span>(SubscriberFunc) SubscriberFunc
+<span style="color:#6272a4">// StreamWrapper wraps a Stream interface and returns the equivalent.
+</span><span style="color:#6272a4">// Because streams exist for the lifetime of a method invocation this
+</span><span style="color:#6272a4">// is a convenient way to wrap a Stream as its in use for trace, monitoring.
+</span><span style="color:#6272a4">// metrics, etc.
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> StreamWrapper <span style="color:#8be9fd;font-style:italic">func</span>(Stream) Stream
+</code></pre></div><p><strong>Vine</strong> 内部集成五中类型的 wrapper:
+client wrapper:</p>
+<ul>
+<li>CallWrapper: 拦截 client Call 请求</li>
+<li>StreamWrapper: 拦截 client Stream 请求</li>
+</ul>
+<p>server wrapper:</p>
+<ul>
+<li>HandlerWrapper: 拦截 grpc simple 请求</li>
+<li>SubscriberWrapper: 连接 broker 订阅</li>
+<li>StreamWrapper:  连接 grpc stream 请求</li>
+</ul>
+<h2 id="自定义-wrapper">自定义 wrapper</h2>
+<p>我们通过实例代码来说明 wrapper 的内部工作原理：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;context&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	vine.<span style="color:#50fa7b">NewService</span>(
+        <span style="color:#6272a4">// 加载自定义的 wrapper
+</span><span style="color:#6272a4"></span>		vine.<span style="color:#50fa7b">WrapCall</span>(<span style="color:#50fa7b">LoggerWrapper</span>(), <span style="color:#50fa7b">SubWrapper</span>()),
+	)
+}
+
+<span style="color:#6272a4">// 定义一个 CallWrapper, 拦截 client Call 请求
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">LoggerWrapper</span>() client.CallWrapper {
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn client.CallFunc) client.CallFunc {
+		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, node <span style="color:#ff79c6">*</span>registry.Node, req client.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}, opts client.CallOptions) <span style="color:#8be9fd">error</span> {
+
+			log.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;logger wrapper: before call&#34;</span>)
+			err <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">fn</span>(ctx, node, req, rsp, opts)
+			log.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;logger wrapper: after call&#34;</span>)
+
+			<span style="color:#ff79c6">return</span> err
+		}
+	}
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">SubWrapper</span>() client.CallWrapper {
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn client.CallFunc) client.CallFunc {
+		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, node <span style="color:#ff79c6">*</span>registry.Node, req client.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}, opts client.CallOptions) <span style="color:#8be9fd">error</span> {
+
+			log.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;sub wrapper: before call&#34;</span>)
+			err <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">fn</span>(ctx, node, req, rsp, opts)
+			log.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;sub wrapper: after call&#34;</span>)
+
+			<span style="color:#ff79c6">return</span> err
+		}
+	}
+}
+</code></pre></div><p>请求输出:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">logger wrapper: before call
+sub wrapper: before call
+sub wrapper: after call
+logger wrapper: after call
+</code></pre></div><p>由此可见 wrapper 链路是一个 <code>&quot;洋葱模型&quot;</code>:</p>
+<p><img src="vinewrapper.png" alt=""></p>
 
         <div class="section-index">
     
@@ -1294,7 +1393,7 @@ if (!doNotTrack) {
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 1, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/2d79908cc6296f3c1eddba3c6f603a4831e34476">modify (2d79908)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 6, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/290caa4b93aa39d71703f88c12535299b84d4874">modify (290caa4)</a>
 </div>
 </div>
 
