@@ -58,7 +58,7 @@ func main() {
 	generator.RegisterPlugin(dp)
 
 	g := generator.New("deepcopy")
-	g.EnableEdit()
+	g.EasyHeader()
 
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {

@@ -23,22 +23,140 @@
       <description>
         
         
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;p&gt;我们提供一套 &lt;code&gt;Protobuf&lt;/code&gt; 文件格式和神生成代码的规范，帮助用户写出更标准的接口。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 项目的推崇以 &lt;strong&gt;资源&lt;/strong&gt; 为核心。接口的设计和代码的规范都按照 &lt;strong&gt;资源&lt;/strong&gt; 展开。每个接口的设计遵循以下的规则:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;根据需求确定资源 (领域模型)。&lt;/li&gt;
+&lt;li&gt;每个接口实际为资源的方法或者是针对资源的操作。&lt;/li&gt;
+&lt;li&gt;每个 service 为资源操作的集合。&lt;/li&gt;
+&lt;li&gt;前端请求时提交的数据可直接转化为资源的内部属性。&lt;/li&gt;
+&lt;li&gt;提供的 API 接口格式统一为针对资源的曹组。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;目录结构&#34;&gt;目录结构&lt;/h2&gt;
+&lt;p&gt;API 接口统一存放在 api 目录下，proto 文件同时转化为 gRPC 和 HTTP 两种接口。&lt;/p&gt;
+&lt;p&gt;项目中定义 Proto，以 api 为根目录。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;├── service    
+│   └── helloworld
+│       └── v1
+│           ├── helloworld.pb.go
+│           ├── helloworld.pb.validator.go
+│           ├── helloworld.pb.vine.go
+│           └── helloworld.proto
+└── types
+    └── core
+        └── v1
+            ├── core.pb.dao.go
+            ├── core.pb.deepcopy.go
+            ├── core.pb.go
+            ├── core.pb.validator.go
+            └── core.proto
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;api 下有两个子目录，分别对应&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;types (领域模型或者资源)，格式为 &lt;code&gt;group/version/name.proto&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;services (gRPC、http 接口)，格式为 &lt;code&gt;service/version/name.proto&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;包名&#34;&gt;包名&lt;/h2&gt;
+&lt;p&gt;包名为应用的标识，用户生成 gRPC 请求路径，或者 proto 文件之间引用。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;建议在 $GOPATH/src 生成代码 proto 代码。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;go_package&#34;&gt;go_package&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; go_package &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/lack-io/foo/api/types/&amp;lt;group&amp;gt;/&amp;lt;version&amp;gt;;&amp;lt;group&amp;gt;&amp;lt;version&amp;gt;&amp;#34;&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;java_package&#34;&gt;java_package&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; java_multiple_files &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;true&lt;/span&gt;;
+&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; java_package &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;io.vine.services.&amp;lt;group&amp;gt;.&amp;lt;version&amp;gt;&amp;#34;&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;import&#34;&gt;import&lt;/h2&gt;
+&lt;p&gt;service proto 依赖 types protobuf，以 $GOPATH/src 为更目录引入对应 proto。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/foo/api/types/core/v1/core.proto&amp;#34;&lt;/span&gt;
 
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: 依赖注入</title>
-      <link>https://vine-io.github.io/vine/docs/guides/di/</link>
-      <pubDate>Fri, 27 Aug 2021 09:35:49 +0800</pubDate>
-      
-      <guid>https://vine-io.github.io/vine/docs/guides/di/</guid>
-      <description>
-        
-        
-        &lt;p&gt;// TODO&lt;/p&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Request&lt;/span&gt; {
+    corev1.Request req &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;repo&#34;&gt;repo&lt;/h2&gt;
+&lt;p&gt;当需要数据持久化时，有 types proto 生成对应的数据库交互代码。详细的说明可以参考 &lt;a href=&#34;https://vine-io.github.io/vine/docs/guides/dao/&#34;&gt;proto-gen-dao&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;代码的存放规则为，&lt;em&gt;谁实现，谁存放&lt;/em&gt;。生成的代码存放在对应服务更目录的 &lt;code&gt;infra/repo&lt;/code&gt; 下，需要在 proto 文件的头部指定生成路径:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/repo;repo
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;protoc&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;命令规范&#34;&gt;命令规范&lt;/h2&gt;
+&lt;h3 id=&#34;目录结构-1&#34;&gt;目录结构&lt;/h3&gt;
+&lt;p&gt;包名为小写，且同与目录一致: 如 &lt;code&gt;hellowrold/v1/helloworld.proto&lt;/code&gt; 的包名为 &lt;code&gt;helloworldv1&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;文件结构&#34;&gt;文件结构&lt;/h3&gt;
+&lt;p&gt;文件应该命名为：lower_snake_case.proto 所有Proto应按下列方式排列:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;License header (if applicable)&lt;/li&gt;
+&lt;li&gt;File overview&lt;/li&gt;
+&lt;li&gt;Syntax&lt;/li&gt;
+&lt;li&gt;Package&lt;/li&gt;
+&lt;li&gt;Imports (sorted)&lt;/li&gt;
+&lt;li&gt;File options&lt;/li&gt;
+&lt;li&gt;Service&lt;/li&gt;
+&lt;li&gt;Message&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;service-和-message&#34;&gt;Service 和 Message&lt;/h3&gt;
+&lt;p&gt;使用驼峰命名法命名 service, method 和 message。Service 的名称格式为 &lt;code&gt;&amp;lt;PackageName&amp;gt;Service&lt;/code&gt; 以 &lt;code&gt;Service&lt;/code&gt; 为后缀。&lt;/p&gt;
+&lt;p&gt;Method 的格式为:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;service&lt;/span&gt; EchoService {
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; EmptyMethod(Empty) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (Empty);
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; Echo(EchoReq) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (EchoRsp);
+}
 
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Empty&lt;/span&gt; {}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;EchoReq&lt;/span&gt; {}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;EchoRsp&lt;/span&gt; {}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Method 的输入输出 Message 没有其他字段时，使用 &lt;code&gt;Empty&lt;/code&gt;。Method 的输入 message 以 &lt;code&gt;Req&lt;/code&gt; 结尾。输出 message 以 &lt;code&gt;Rsp&lt;/code&gt; 结尾。&lt;/p&gt;
+&lt;h3 id=&#34;字段&#34;&gt;字段&lt;/h3&gt;
+&lt;p&gt;字段使用驼峰命名法(首字母小写)，&lt;code&gt;repeated&lt;/code&gt; 数组类型是结尾加小写:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;User&lt;/span&gt; {
+    &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+    &lt;span style=&#34;color:#ff79c6&#34;&gt;repeated&lt;/span&gt; &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; tags &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;枚举-enums&#34;&gt;枚举 Enums&lt;/h3&gt;
+&lt;p&gt;使用驼峰命名法（首字母大写）命名枚举类型，使用 “大写下划线大写” 的方式命名枚举值：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;enum&lt;/span&gt; Color {
+  RED &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt;;
+  BLACK &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;每一个枚举值以分号结尾，而非逗号。&lt;/p&gt;
+&lt;h3 id=&#34;注释-comment&#34;&gt;注释 Comment&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Service，描述清楚服务的作用&lt;/li&gt;
+&lt;li&gt;Method，描述清楚接口的功能特性&lt;/li&gt;
+&lt;li&gt;Field，描述清楚字段准确的信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;完整实例&#34;&gt;完整实例&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;proto3&amp;#34;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; gpmv1;
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; go_package &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gpm/api/service/gpm/v1;gpmv1&amp;#34;&lt;/span&gt;;
+&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; java_multiple_files &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;true&lt;/span&gt;;
+&lt;span style=&#34;color:#ff79c6&#34;&gt;option&lt;/span&gt; java_package &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;io.vine.services.gpm.v1&amp;#34;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gpm/api/types/gpm/v1/gpm.proto&amp;#34;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:openapi
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;service&lt;/span&gt; GpmService {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:summary=查询单个服务
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:get=/api/v1/Service/{name}
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;rpc&lt;/span&gt; GetService(GetServiceReq) &lt;span style=&#34;color:#ff79c6&#34;&gt;returns&lt;/span&gt; (GetServiceRsp);
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Empty&lt;/span&gt; {}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// GetService 请求参数
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;GetServiceReq&lt;/span&gt; {
+  &lt;span style=&#34;color:#6272a4&#34;&gt;// 服务名称
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:required
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// GetService 返回结果
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;GetServiceRsp&lt;/span&gt; {
+  gpmv1.Service &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;service&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
@@ -865,8 +983,107 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
       <description>
         
         
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;protoc-gen-deepcopy 帮助用户生成资源的深拷贝接口，减少用户编写代码。&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;h3 id=&#34;1先编写-deepcopyproto-文件&#34;&gt;1.先编写 deepcopy.proto 文件&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:deepcopy
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Person&lt;/span&gt; {
+  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; name &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+  &lt;span style=&#34;color:#8be9fd&#34;&gt;bytes&lt;/span&gt; any &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;;
+  &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; email &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;4&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2安装-protoc-gen-deepcopy&#34;&gt;2.安装 protoc-gen-deepcopy&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3生成-validate-方法&#34;&gt;3.生成 Validate() 方法&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src --gogo_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:.  --deepcopy_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/deepcopy.proto
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下代码:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(out &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;out = &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;in
+}
 
+&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new Person.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopy&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; in &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+	}
+	out &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;new&lt;/span&gt;(Person)
+	in.&lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(out)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; out
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;4验证&#34;&gt;4.验证&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	p &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;helloworld.Person{
+		Name:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Vine&amp;#34;&lt;/span&gt;,
+		Any:   []&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;byte&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;),
+		Email: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;aa@gmail.com&amp;#34;&lt;/span&gt;,
+	}
+
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%p %v\n&amp;#34;&lt;/span&gt;, p, p)
+	pc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; p.&lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopy&lt;/span&gt;()
+	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Printf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%p %v\n&amp;#34;&lt;/span&gt;, pc, pc)
+}
+&lt;span style=&#34;color:#6272a4&#34;&gt;// output:  
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;//  0xc0002ea280 name:&amp;#34;Vine&amp;#34; any:&amp;#34;Hello&amp;#34; email:&amp;#34;aa@gmail.com&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;//  0xc0002ea2c0 name:&amp;#34;Vine&amp;#34; any:&amp;#34;Hello&amp;#34; email:&amp;#34;aa@gmail.com&amp;#34;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;语法解析&#34;&gt;语法解析&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;protoc-gen-deepcopy&lt;/code&gt; 通过解析 &lt;code&gt;protobuf&lt;/code&gt; 中的注释来生成 &lt;code&gt;deepcopy&lt;/code&gt; 接口。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:deepcopy
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Struct&lt;/span&gt; {
+    &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; field1 &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
+    &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; field2 &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;语法规则&#34;&gt;语法规则&lt;/h3&gt;
+&lt;p&gt;有效的注释有以下的规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;注释必须以 &lt;code&gt;+gen&lt;/code&gt; 作为开头&lt;/li&gt;
+&lt;li&gt;注释的内容必须紧贴对应的字段，中间不能有空行&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;类型支持&#34;&gt;类型支持&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;message&lt;/code&gt; 类型规则:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;deepcopy: 生成 DeepCopy 方法&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:deepcopy
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;P&lt;/span&gt; {
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;runtime=&lt;group&gt;/&lt;version&gt;: 实现 &lt;code&gt;runtime.Entity&lt;/code&gt; 接口&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;// +gen:runtime=a/v1
+message Person {
+  string name = 1;
+  bytes any = 3;
+  string email = 4;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;生成如下代码:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(out &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;out = &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;in
+}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// GVK is an auto-generated gvk function, get the information like group, version and name of Person.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;GVK&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;runtime.GroupVersionKind {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;runtime.GroupVersionKind{Group: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;, Version: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;v1&amp;#34;&lt;/span&gt;, Kind: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Person&amp;#34;&lt;/span&gt;}
+}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopyFrom is an auto-generated deepcopy function, copying value from Person.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyFrom&lt;/span&gt;(src runtime.Entity) {
+	o &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; src.(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person)
+	o.&lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(in)
+}
+
+&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new Person.
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopy&lt;/span&gt;() runtime.Entity {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; in &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+	}
+	out &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;new&lt;/span&gt;(Person)
+	in.&lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(out)
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; out
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     

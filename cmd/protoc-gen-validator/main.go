@@ -59,6 +59,7 @@ func main() {
 
 	g := generator.New("validator")
 	g.EasyHeader()
+	g.EnableEdit()
 
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {

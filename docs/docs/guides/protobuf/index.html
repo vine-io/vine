@@ -925,31 +925,6 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/guides/di/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">依赖注入</a>
-  </li>
-  <ul>
-    <li class="collapse " id="vinedocsguidesdi">
-      
-      
-      
-    </li>
-  </ul>
-</ul>
-
-        
-      
-      
-      
-        
-          
-
-
-
-
-
-
-<ul class="td-sidebar-nav__section pr-md-3">
-  <li class="td-sidebar-nav__section-title">
     <a  href="/vine/docs/guides/vine/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">Vine 工具</a>
   </li>
   <ul>
@@ -1082,7 +1057,7 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/operator/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">项目部署</a>
+    <a  href="/vine/docs/operator/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">服务部署</a>
   </li>
   <ul>
     <li class="collapse " id="vinedocsoperator">
@@ -1145,6 +1120,31 @@ if (!doNotTrack) {
 
 
 
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#目录结构">目录结构</a></li>
+    <li><a href="#包名">包名</a>
+      <ul>
+        <li><a href="#go_package">go_package</a></li>
+        <li><a href="#java_package">java_package</a></li>
+      </ul>
+    </li>
+    <li><a href="#import">import</a></li>
+    <li><a href="#repo">repo</a></li>
+    <li><a href="#命令规范">命令规范</a>
+      <ul>
+        <li><a href="#目录结构-1">目录结构</a></li>
+        <li><a href="#文件结构">文件结构</a></li>
+        <li><a href="#service-和-message">Service 和 Message</a></li>
+        <li><a href="#字段">字段</a></li>
+        <li><a href="#枚举-enums">枚举 Enums</a></li>
+        <li><a href="#注释-comment">注释 Comment</a></li>
+      </ul>
+    </li>
+    <li><a href="#完整实例">完整实例</a></li>
+  </ul>
+</nav>
+
 
 
           </div>
@@ -1191,8 +1191,140 @@ if (!doNotTrack) {
 	<h1>Protobuf 规范</h1>
         
 	
-	<p>// TODO</p>
+	<p>我们提供一套 <code>Protobuf</code> 文件格式和神生成代码的规范，帮助用户写出更标准的接口。</p>
+<p><strong>Vine</strong> 项目的推崇以 <strong>资源</strong> 为核心。接口的设计和代码的规范都按照 <strong>资源</strong> 展开。每个接口的设计遵循以下的规则:</p>
+<ol>
+<li>根据需求确定资源 (领域模型)。</li>
+<li>每个接口实际为资源的方法或者是针对资源的操作。</li>
+<li>每个 service 为资源操作的集合。</li>
+<li>前端请求时提交的数据可直接转化为资源的内部属性。</li>
+<li>提供的 API 接口格式统一为针对资源的曹组。</li>
+</ol>
+<h2 id="目录结构">目录结构</h2>
+<p>API 接口统一存放在 api 目录下，proto 文件同时转化为 gRPC 和 HTTP 两种接口。</p>
+<p>项目中定义 Proto，以 api 为根目录。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">├── service    
+│   └── helloworld
+│       └── v1
+│           ├── helloworld.pb.go
+│           ├── helloworld.pb.validator.go
+│           ├── helloworld.pb.vine.go
+│           └── helloworld.proto
+└── types
+    └── core
+        └── v1
+            ├── core.pb.dao.go
+            ├── core.pb.deepcopy.go
+            ├── core.pb.go
+            ├── core.pb.validator.go
+            └── core.proto
+</code></pre></div><p>api 下有两个子目录，分别对应</p>
+<ul>
+<li>types (领域模型或者资源)，格式为 <code>group/version/name.proto</code></li>
+<li>services (gRPC、http 接口)，格式为 <code>service/version/name.proto</code></li>
+</ul>
+<h2 id="包名">包名</h2>
+<p>包名为应用的标识，用户生成 gRPC 请求路径，或者 proto 文件之间引用。</p>
+<blockquote>
+<p>建议在 $GOPATH/src 生成代码 proto 代码。</p>
+</blockquote>
+<h3 id="go_package">go_package</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/foo/api/types/&lt;group&gt;/&lt;version&gt;;&lt;group&gt;&lt;version&gt;&#34;</span>;
+</code></pre></div><h3 id="java_package">java_package</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">option</span> java_multiple_files <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
+<span style="color:#ff79c6">option</span> java_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;io.vine.services.&lt;group&gt;.&lt;version&gt;&#34;</span>;
+</code></pre></div><h2 id="import">import</h2>
+<p>service proto 依赖 types protobuf，以 $GOPATH/src 为更目录引入对应 proto。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/foo/api/types/core/v1/core.proto&#34;</span>
 
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
+    corev1.Request req <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+</code></pre></div><h2 id="repo">repo</h2>
+<p>当需要数据持久化时，有 types proto 生成对应的数据库交互代码。详细的说明可以参考 <a href="https://vine-io.github.io/vine/docs/guides/dao/">proto-gen-dao</a>。</p>
+<p>代码的存放规则为，<em>谁实现，谁存放</em>。生成的代码存放在对应服务更目录的 <code>infra/repo</code> 下，需要在 proto 文件的头部指定生成路径:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/repo;repo
+</span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
+</code></pre></div><h2 id="命令规范">命令规范</h2>
+<h3 id="目录结构-1">目录结构</h3>
+<p>包名为小写，且同与目录一致: 如 <code>hellowrold/v1/helloworld.proto</code> 的包名为 <code>helloworldv1</code>。</p>
+<h3 id="文件结构">文件结构</h3>
+<p>文件应该命名为：lower_snake_case.proto 所有Proto应按下列方式排列:</p>
+<ul>
+<li>License header (if applicable)</li>
+<li>File overview</li>
+<li>Syntax</li>
+<li>Package</li>
+<li>Imports (sorted)</li>
+<li>File options</li>
+<li>Service</li>
+<li>Message</li>
+</ul>
+<h3 id="service-和-message">Service 和 Message</h3>
+<p>使用驼峰命名法命名 service, method 和 message。Service 的名称格式为 <code>&lt;PackageName&gt;Service</code> 以 <code>Service</code> 为后缀。</p>
+<p>Method 的格式为:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">service</span> EchoService {
+    <span style="color:#ff79c6">rpc</span> EmptyMethod(Empty) <span style="color:#ff79c6">returns</span> (Empty);
+    <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp);
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Empty</span> {}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {}
+</code></pre></div><p>Method 的输入输出 Message 没有其他字段时，使用 <code>Empty</code>。Method 的输入 message 以 <code>Req</code> 结尾。输出 message 以 <code>Rsp</code> 结尾。</p>
+<h3 id="字段">字段</h3>
+<p>字段使用驼峰命名法(首字母小写)，<code>repeated</code> 数组类型是结尾加小写:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">User</span> {
+    <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+    <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> tags <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+}
+</code></pre></div><h3 id="枚举-enums">枚举 Enums</h3>
+<p>使用驼峰命名法（首字母大写）命名枚举类型，使用 “大写下划线大写” 的方式命名枚举值：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">enum</span> Color {
+  RED <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  BLACK <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+</code></pre></div><p>每一个枚举值以分号结尾，而非逗号。</p>
+<h3 id="注释-comment">注释 Comment</h3>
+<ul>
+<li>Service，描述清楚服务的作用</li>
+<li>Method，描述清楚接口的功能特性</li>
+<li>Field，描述清楚字段准确的信息</li>
+</ul>
+<h2 id="完整实例">完整实例</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+
+<span style="color:#ff79c6">package</span> gpmv1;
+
+<span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/gpm/api/service/gpm/v1;gpmv1&#34;</span>;
+<span style="color:#ff79c6">option</span> java_multiple_files <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
+<span style="color:#ff79c6">option</span> java_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;io.vine.services.gpm.v1&#34;</span>;
+
+<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/gpm/api/types/gpm/v1/gpm.proto&#34;</span>;
+
+<span style="color:#6272a4">// +gen:openapi
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> GpmService {
+  <span style="color:#6272a4">// +gen:summary=查询单个服务
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:get=/api/v1/Service/{name}
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> GetService(GetServiceReq) <span style="color:#ff79c6">returns</span> (GetServiceRsp);
+}
+
+<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Empty</span> {}
+
+<span style="color:#6272a4">// GetService 请求参数
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">GetServiceReq</span> {
+  <span style="color:#6272a4">// 服务名称
+</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:required
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+
+<span style="color:#6272a4">// GetService 返回结果
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">GetServiceRsp</span> {
+  gpmv1.Service <span style="color:#8be9fd;font-style:italic">service</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+}
+</code></pre></div>
         <div class="section-index">
     
     
@@ -1277,14 +1409,12 @@ if (!doNotTrack) {
         
             
         
-            
-        
     
 </div>
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 August 27, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/be4076c1c535f4231b8482b741890fdcf34431f4">完整文档结构 (be4076c)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 8, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/0341fb6dbaeac1f8fb1dd0e35a3f15bac7e88893">protobuf 规范 (0341fb6)</a>
 </div>
 </div>
 

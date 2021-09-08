@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://vine-io.github.io/vine/docs/guides/protobuf/</loc>
-    <lastmod>2021-08-27T09:41:41+08:00</lastmod>
+    <lastmod>2021-09-08T15:07:00+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/wrapper/overview/</loc>
     <lastmod>2021-09-07T10:09:23+08:00</lastmod>
@@ -13,9 +13,6 @@
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/registry/</loc>
     <lastmod>2021-09-02T10:13:39+08:00</lastmod>
-  </url><url>
-    <loc>https://vine-io.github.io/vine/docs/guides/di/</loc>
-    <lastmod>2021-08-27T09:41:41+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/wrapper/trace/</loc>
     <lastmod>2021-09-07T13:51:51+08:00</lastmod>
@@ -54,7 +51,7 @@
     <lastmod>2021-09-06T19:26:52+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/wrapper/ratelimiter/</loc>
-    <lastmod>2021-09-08T10:17:37+08:00</lastmod>
+    <lastmod>2021-09-08T11:07:41+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/validate/</loc>
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
@@ -63,10 +60,10 @@
     <lastmod>2021-09-01T09:58:46+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/deepcopy/</loc>
-    <lastmod>2021-08-27T09:41:41+08:00</lastmod>
+    <lastmod>2021-09-08T15:39:49+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/wrapper/breaker/</loc>
-    <lastmod>2021-09-08T10:17:37+08:00</lastmod>
+    <lastmod>2021-09-08T11:07:41+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/plugins/</loc>
     <lastmod>2021-09-08T10:17:37+08:00</lastmod>

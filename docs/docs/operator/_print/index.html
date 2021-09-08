@@ -19,14 +19,14 @@
 <link rel="icon" type="image/png" href="/vine/favicons/android-144x144.png" sizes="144x144">
 <link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
 
-<title>项目部署 | Vine</title><meta property="og:title" content="项目部署" />
+<title>服务部署 | Vine</title><meta property="og:title" content="服务部署" />
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://vine-io.github.io/vine/docs/operator/" /><meta property="og:site_name" content="Vine" />
 
-<meta itemprop="name" content="项目部署">
+<meta itemprop="name" content="服务部署">
 <meta itemprop="description" content="Vine 文档"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="项目部署"/>
+<meta name="twitter:title" content="服务部署"/>
 <meta name="twitter:description" content="Vine 文档"/>
 
 
@@ -132,7 +132,7 @@ This the multi-page printable view of this section.
 
 
 
-<h1 class="title">项目部署</h1>
+<h1 class="title">服务部署</h1>
 
 
 
@@ -140,8 +140,35 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p>// TODO</p>
+      <p>这个我们介绍两种服务部署方式。</p>
+<h2 id="docker">docker</h2>
+<p><strong>Vine</strong> 中默认提供了用于构建程序的 Dockerfile 文件。用于构建服务镜像。</p>
+<h3 id="dockerfile">Dockerfile</h3>
+<p>编辑 <code>_output/Dockerfile</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#ff79c6">FROM</span><span style="color:#f1fa8c"> debian:stable-slim</span>
+<span style="color:#ff79c6">ADD</span> helloworld /helloworld
 
+<span style="color:#ff79c6">EXPOSE</span><span style="color:#f1fa8c"> 11500</span>
+
+<span style="color:#ff79c6">ENTRYPOINT</span> [ <span style="color:#f1fa8c">&#34;/helloworld&#34;</span>, <span style="color:#f1fa8c">&#34;--server-address=0.0.0.0:11500&#34;</span> ]
+</code></pre></div><h3 id="编译项目">编译项目</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine build service --output<span style="color:#ff79c6">=</span>_output/helloworld 
+</code></pre></div><h3 id="构建镜像">构建镜像</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">cd</span> _output
+docker build -t helloworld .
+</code></pre></div><h3 id="启动服务">启动服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">docker run <span style="color:#ff79c6">--</span>rm <span style="color:#ff79c6">-</span>p <span style="color:#bd93f9">11500</span>:<span style="color:#bd93f9">11500</span> helloworl
+</code></pre></div><h2 id="gpm">gpm</h2>
+<p><a href="https://github.com/vine-io/gpm">gpm</a> 是基于 <strong>Vine</strong> 开发的项目管理服务。合适于在没有 docker 环境的机器上管理 <strong>Vine</strong> 服务。</p>
+<h3 id="启动-gpm">启动 gpm</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">gpm start <span style="color:#ff79c6">-</span>A &#39;<span style="color:#ff79c6">--</span>server<span style="color:#ff79c6">-</span>address=<span style="color:#bd93f9">0.0.0.0</span>:<span style="color:#bd93f9">7700</span>&#39;
+</code></pre></div><h3 id="服务打包">服务打包</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpm tar --name helloworld.tar.gz --target main
+</code></pre></div><h3 id="安装服务">安装服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpm --host 192.168.3.111:7700 install --package helloworld.tar.gz --name helloworld --dir /opt/helloworld --bin /opt/helloworld/main --args <span style="color:#f1fa8c">&#39;--server-address=0.0.0.0:11500&#39;</span> --version v1.0.0
+</code></pre></div><h3 id="启动服务-1">启动服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpm --host 192.168.3.111:7700 start --name helloworld
+</code></pre></div>
 </div>
 </div>
 
