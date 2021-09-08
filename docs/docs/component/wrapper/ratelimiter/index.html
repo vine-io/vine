@@ -19,14 +19,14 @@
 <link rel="icon" type="image/png" href="/vine/favicons/android-144x144.png" sizes="144x144">
 <link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
 
-<title>请求限流 | Vine</title><meta property="og:title" content="请求限流" />
+<title>限流器 | Vine</title><meta property="og:title" content="限流器" />
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://vine-io.github.io/vine/docs/component/wrapper/ratelimiter/" /><meta property="og:site_name" content="Vine" />
 
-<meta itemprop="name" content="请求限流">
+<meta itemprop="name" content="限流器">
 <meta itemprop="description" content="Vine 文档"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="请求限流"/>
+<meta name="twitter:title" content="限流器"/>
 <meta name="twitter:description" content="Vine 文档"/>
 
 
@@ -793,10 +793,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/wrapper/breaker/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">请求熔断</a>
+    <a  href="/vine/docs/component/wrapper/ratelimiter/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">限流器</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentwrapperbreaker">
+    <li class="collapse show" id="vinedocscomponentwrapperratelimiter">
       
       
       
@@ -818,10 +818,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/wrapper/ratelimiter/" class="align-left pl-0 pr-2 active td-sidebar-link td-sidebar-link__section">请求限流</a>
+    <a  href="/vine/docs/component/wrapper/breaker/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">断路器</a>
   </li>
   <ul>
-    <li class="collapse show" id="vinedocscomponentwrapperratelimiter">
+    <li class="collapse " id="vinedocscomponentwrapperbreaker">
       
       
       
@@ -1129,7 +1129,7 @@ if (!doNotTrack) {
 
     <a href="https://github.com/vine-io/vine-docs/edit/main/content/zh/docs/component/wrapper/ratelimiter/_index.md" target="_blank"><i class="fa fa-edit fa-fw"></i> 编辑此页</a>
     <a href="https://github.com/vine-io/vine-docs/new/main/content/zh/docs/component/wrapper/ratelimiter/_index.md?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60getting-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" target="_blank"><i class="fa fa-edit fa-fw"></i> 添加子页面</a>
-    <a href="https://github.com/vine-io/vine-docs/issues/new?title=%e8%af%b7%e6%b1%82%e9%99%90%e6%b5%81" target="_blank"><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
+    <a href="https://github.com/vine-io/vine-docs/issues/new?title=%e9%99%90%e6%b5%81%e5%99%a8" target="_blank"><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
     
       
       <a href="https://github.com/vine-io/vine/issues/new" target="_blank"><i class="fas fa-tasks fa-fw"></i> 提交项目问题</a>
@@ -1144,6 +1144,19 @@ if (!doNotTrack) {
 
 
 
+
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#简介">简介</a></li>
+    <li><a href="#限流算法">限流算法</a>
+      <ul>
+        <li><a href="#漏桶">漏桶</a></li>
+        <li><a href="#令牌桶">令牌桶</a></li>
+      </ul>
+    </li>
+    <li><a href="#使用">使用</a></li>
+  </ul>
+</nav>
 
 
 
@@ -1190,7 +1203,7 @@ if (!doNotTrack) {
 
 
 <li class="breadcrumb-item active" aria-current="page">
-	<a href="https://vine-io.github.io/vine/docs/component/wrapper/ratelimiter/">请求限流</a>
+	<a href="https://vine-io.github.io/vine/docs/component/wrapper/ratelimiter/">限流器</a>
 </li>
 
 	</ol>
@@ -1198,10 +1211,57 @@ if (!doNotTrack) {
 
             
 <div class="td-content">
-	<h1>请求限流</h1>
+	<h1>限流器</h1>
         
 	
-	
+	<h2 id="简介">简介</h2>
+<p>缓存、降级和限流是高并发系统时有三把利器。</p>
+<p>限流(限制并发/请求量),它的目的是通过对并发访问/请求进行限速或者一个时间窗口内的请求进行限速来保护系统，如果请求达到上限值，服务端可以采取拒接服务、排队或等待、降级。</p>
+<h2 id="限流算法">限流算法</h2>
+<p>常见的限流算法有: 令牌桶、漏桶。</p>
+<h3 id="漏桶">漏桶</h3>
+<p>漏桶(Leaky Bucket)算法思路很简单，水(请求)先进入到漏桶里，漏桶以一定的速度出水(接口有响应速率)，当水流入速度过大会直接溢出(访问频率超过接口响应速率)，然后就拒绝请求，可以看出漏桶算法能强行限制数据的传输速率。
+<img src="2021-09-08-10-57-08.png" alt=""></p>
+<h3 id="令牌桶">令牌桶</h3>
+<p>令牌桶算法(Token Bucket)和 Leaky Bucket 效果一样但方向相反的算法，更加容易理解。随着时间流逝，系统会按恒定 1/QPS 时间间隔(如果QPS=100,则间隔是10ms)往桶里加入 Token (想象和漏洞漏水相反,有个水龙头在不断的加水)，如果桶已经满了就不再加了。新请求来临时，会各自拿走一个Token，如果没有Token可拿了就阻塞或者拒绝服务。</p>
+<p><img src="2021-09-08-10-57-47.png" alt=""></p>
+<h2 id="使用">使用</h2>
+<p><strong>Vine</strong> 的 wrapper 可以实现限流器功能:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
+
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;context&#34;</span>
+
+	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/examples/wrapper/pb&#34;</span>
+	ub <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/wrapper/ratelimiter/uber&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">type</span> hello <span style="color:#8be9fd;font-style:italic">struct</span>{}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (h hello) <span style="color:#50fa7b">Echo</span>(ctx context.Context, request <span style="color:#ff79c6">*</span>pb.Request, response <span style="color:#ff79c6">*</span>pb.Response) <span style="color:#8be9fd">error</span> {
+	response.Result = request.Name
+	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	handler <span style="color:#ff79c6">:=</span> ub.<span style="color:#50fa7b">NewHandlerWrapper</span>(<span style="color:#bd93f9">1000</span>)
+
+	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;helloworld&#34;</span>),
+		vine.<span style="color:#50fa7b">WrapHandler</span>(handler),
+	)
+
+	s.<span style="color:#50fa7b">Init</span>()
+
+	pb.<span style="color:#50fa7b">RegisterHelloHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>hello{})
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+}
+</code></pre></div>
         <div class="section-index">
     
     
@@ -1293,7 +1353,7 @@ if (!doNotTrack) {
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 6, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/290caa4b93aa39d71703f88c12535299b84d4874">modify (290caa4)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 8, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/55abd68649a72dab1a0724c91d395dba9743ff07">breaker (55abd68)</a>
 </div>
 </div>
 

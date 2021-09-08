@@ -793,10 +793,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/wrapper/breaker/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">请求熔断</a>
+    <a  href="/vine/docs/component/wrapper/ratelimiter/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">限流器</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentwrapperbreaker">
+    <li class="collapse " id="vinedocscomponentwrapperratelimiter">
       
       
       
@@ -818,10 +818,10 @@ if (!doNotTrack) {
 
 <ul class="td-sidebar-nav__section pr-md-3">
   <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/wrapper/ratelimiter/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">请求限流</a>
+    <a  href="/vine/docs/component/wrapper/breaker/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">断路器</a>
   </li>
   <ul>
-    <li class="collapse " id="vinedocscomponentwrapperratelimiter">
+    <li class="collapse " id="vinedocscomponentwrapperbreaker">
       
       
       
@@ -1201,8 +1201,59 @@ if (!doNotTrack) {
 	<h1>元数据</h1>
         
 	
-	<p>// TODO</p>
+	<h2 id="简介">简介</h2>
+<blockquote>
+<p>元数据是用来描述数据的数据（Data that describes other data）。</p>
+</blockquote>
+<p><strong>Vine</strong> 中的元数据统一封装在 <code>context.Context</code> 中。通过 wrapper 的特性使我们可以在无入侵的情况下修改元数据信息。</p>
+<h2 id="metadata">metadata</h2>
+<p><code>metadata</code> 模块用于 <strong>Vine</strong> 元数据的操作，支持的操作如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> (
+    <span style="color:#f1fa8c">&#34;context&#34;</span>
+    <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/util/context/metadata&#34;</span>
+)
 
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+    <span style="color:#6272a4">// 从 ctx 获取 key
+</span><span style="color:#6272a4"></span>    val, ok <span style="color:#ff79c6">:=</span> metadata.<span style="color:#50fa7b">Get</span>(ctx, <span style="color:#f1fa8c">&#34;key&#34;</span>)
+    <span style="color:#6272a4">// 修改 ctx 中的 key
+</span><span style="color:#6272a4"></span>    metadata.<span style="color:#50fa7b">Set</span>(ctx, <span style="color:#f1fa8c">&#34;key&#34;</span>, <span style="color:#f1fa8c">&#34;value&#34;</span>)
+    <span style="color:#6272a4">// 删除 ctx 中的 key
+</span><span style="color:#6272a4"></span>    metadata.<span style="color:#50fa7b">Delete</span>(ctx, <span style="color:#f1fa8c">&#34;key&#34;</span>)
+    <span style="color:#6272a4">// 获取 ctx 中的元数据
+</span><span style="color:#6272a4"></span>    md, _ <span style="color:#ff79c6">:=</span> metadata.<span style="color:#50fa7b">FromContext</span>(ctx)
+    <span style="color:#6272a4">// 封装 md
+</span><span style="color:#6272a4"></span>    ctx = metadata.<span style="color:#50fa7b">NewContext</span>(ctx, md)
+    <span style="color:#6272a4">// 完整拷贝元数据
+</span><span style="color:#6272a4"></span>    md = metadata.<span style="color:#50fa7b">Copy</span>(md)
+    <span style="color:#6272a4">// 合并 ctx 中的元数据
+</span><span style="color:#6272a4"></span>    ctx = metadata.<span style="color:#50fa7b">MergeContext</span>(ctx, md, <span style="color:#ff79c6">true</span>)
+}
+</code></pre></div><h2 id="使用">使用</h2>
+<p>在有 ctx 作为入参的地方都可以使用 metadata。如果不希望破坏业务代码，推荐在 wrapper 中使用:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">CallWrapper</span>() client.CallWrapper {
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn client.CallFunc) client.CallFunc {
+		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, node <span style="color:#ff79c6">*</span>registry.Node, req client.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}, opts client.CallOptions) <span style="color:#8be9fd">error</span> {
+			md, _ <span style="color:#ff79c6">:=</span> metadata.<span style="color:#50fa7b">FromContext</span>(ctx)
+			<span style="color:#6272a4">// 追加 client=wrapper
+</span><span style="color:#6272a4"></span>			md.<span style="color:#50fa7b">Set</span>(<span style="color:#f1fa8c">&#34;client&#34;</span>, <span style="color:#f1fa8c">&#34;wrapper&#34;</span>)
+			ctx = metadata.<span style="color:#50fa7b">NewContext</span>(ctx, md)
+			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, node, req, rsp, opts)
+		}
+	}
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">HandlerWrapper</span>() server.HandlerWrapper {
+	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn server.HandlerFunc) server.HandlerFunc {
+		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, req server.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+			val, _ <span style="color:#ff79c6">:=</span> metadata.<span style="color:#50fa7b">Get</span>(ctx, <span style="color:#f1fa8c">&#34;client&#34;</span>)
+            <span style="color:#6272a4">// 获取 client
+</span><span style="color:#6272a4"></span>			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;client: &#34;</span>, val)
+			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, req, rsp)
+		}
+	}
+}
+</code></pre></div>
         <div class="section-index">
     
     
@@ -1294,7 +1345,7 @@ if (!doNotTrack) {
 
 	
 	
-	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 1, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/2d79908cc6296f3c1eddba3c6f603a4831e34476">modify (2d79908)</a>
+	<div class="text-muted mt-5 pt-3 border-top">最后修改 September 8, 2021: <a  href="https://github.com/vine-io/vine-docs/commit/d8a4331a9fd3f237fbb333efafc09a3f816cf7c7">metadata (d8a4331)</a>
 </div>
 </div>
 

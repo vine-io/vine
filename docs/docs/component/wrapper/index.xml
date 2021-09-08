@@ -242,8 +242,92 @@ logger wrapper: after call
       <description>
         
         
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;通过 wrapper 的特性，我们可以对 &lt;code&gt;Client&lt;/code&gt; 的输出和对 &lt;code&gt;Server&lt;/code&gt; 输入的数据进行合法性校验。&lt;/p&gt;
+&lt;h2 id=&#34;实现&#34;&gt;实现&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
 
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+
+	pb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/examples/wrapper/pb&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/client&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/client/grpc&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server&amp;#34;&lt;/span&gt;
+	verrs &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/errors&amp;#34;&lt;/span&gt;
+	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/logger&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/trace/memory&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/util/wrapper&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; hello &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt;{}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (h hello) &lt;span style=&#34;color:#50fa7b&#34;&gt;Echo&lt;/span&gt;(ctx context.Context, request &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Request, response &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Response) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	response.Result = request.Name
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+		vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;helloworld&amp;#34;&lt;/span&gt;),
+		vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapHandler&lt;/span&gt;(&lt;span style=&#34;color:#50fa7b&#34;&gt;HandlerValidatorWrapper&lt;/span&gt;()),
+	)
+
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+	pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterHelloHandler&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Server&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;hello{})
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second)
+		cli &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewClient&lt;/span&gt;(client.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapCall&lt;/span&gt;(&lt;span style=&#34;color:#50fa7b&#34;&gt;CallValidatorWrapper&lt;/span&gt;()))
+		cli = wrapper.&lt;span style=&#34;color:#50fa7b&#34;&gt;TraceCall&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(), memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewTracer&lt;/span&gt;(), cli)
+		cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHelloService&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(), cli)
+		rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Echo&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;pb.Request{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;})
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+			log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+		}
+		fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(rsp)
+	}()
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+	}
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Validator &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
+	&lt;span style=&#34;color:#50fa7b&#34;&gt;Validate&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;CallValidatorWrapper&lt;/span&gt;() client.CallWrapper {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(fn client.CallFunc) client.CallFunc {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx context.Context, node &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node, req client.Request, rsp &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, opts client.CallOptions) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; v, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; req.&lt;span style=&#34;color:#50fa7b&#34;&gt;Body&lt;/span&gt;().(Validator); ok {
+				&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; v.&lt;span style=&#34;color:#50fa7b&#34;&gt;Validate&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+					&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; verrs.&lt;span style=&#34;color:#50fa7b&#34;&gt;BadRequest&lt;/span&gt;(req.&lt;span style=&#34;color:#50fa7b&#34;&gt;Service&lt;/span&gt;(), err.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;())
+				}
+			}
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;fn&lt;/span&gt;(ctx, node, req, rsp, opts)
+		}
+	}
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;HandlerValidatorWrapper&lt;/span&gt;() server.HandlerWrapper {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(fn server.HandlerFunc) server.HandlerFunc {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx context.Context, req server.Request, rsp &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; v, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; req.&lt;span style=&#34;color:#50fa7b&#34;&gt;Body&lt;/span&gt;().(Validator); ok {
+				&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; v.&lt;span style=&#34;color:#50fa7b&#34;&gt;Validate&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+					&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; verrs.&lt;span style=&#34;color:#50fa7b&#34;&gt;BadRequest&lt;/span&gt;(req.&lt;span style=&#34;color:#50fa7b&#34;&gt;Service&lt;/span&gt;(), err.&lt;span style=&#34;color:#50fa7b&#34;&gt;Error&lt;/span&gt;())
+				}
+			}
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;fn&lt;/span&gt;(ctx, req, rsp)
+		}
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
@@ -256,27 +340,64 @@ logger wrapper: after call
       <description>
         
         
-        &lt;p&gt;// TODO&lt;/p&gt;
+        &lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;元数据是用来描述数据的数据（Data that describes other data）。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 中的元数据统一封装在 &lt;code&gt;context.Context&lt;/code&gt; 中。通过 wrapper 的特性使我们可以在无入侵的情况下修改元数据信息。&lt;/p&gt;
+&lt;h2 id=&#34;metadata&#34;&gt;metadata&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;metadata&lt;/code&gt; 模块用于 &lt;strong&gt;Vine&lt;/strong&gt; 元数据的操作，支持的操作如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
+    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/util/context/metadata&amp;#34;&lt;/span&gt;
+)
 
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 从 ctx 获取 key
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    val, ok &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 修改 ctx 中的 key
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;Set&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;value&amp;#34;&lt;/span&gt;)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 删除 ctx 中的 key
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;Delete&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 获取 ctx 中的元数据
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    md, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;FromContext&lt;/span&gt;(ctx)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 封装 md
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    ctx = metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewContext&lt;/span&gt;(ctx, md)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 完整拷贝元数据
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    md = metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;Copy&lt;/span&gt;(md)
+    &lt;span style=&#34;color:#6272a4&#34;&gt;// 合并 ctx 中的元数据
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    ctx = metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;MergeContext&lt;/span&gt;(ctx, md, &lt;span style=&#34;color:#ff79c6&#34;&gt;true&lt;/span&gt;)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;在有 ctx 作为入参的地方都可以使用 metadata。如果不希望破坏业务代码，推荐在 wrapper 中使用:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;CallWrapper&lt;/span&gt;() client.CallWrapper {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(fn client.CallFunc) client.CallFunc {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx context.Context, node &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.Node, req client.Request, rsp &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}, opts client.CallOptions) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			md, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;FromContext&lt;/span&gt;(ctx)
+			&lt;span style=&#34;color:#6272a4&#34;&gt;// 追加 client=wrapper
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			md.&lt;span style=&#34;color:#50fa7b&#34;&gt;Set&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;client&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;wrapper&amp;#34;&lt;/span&gt;)
+			ctx = metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewContext&lt;/span&gt;(ctx, md)
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;fn&lt;/span&gt;(ctx, node, req, rsp, opts)
+		}
+	}
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;HandlerWrapper&lt;/span&gt;() server.HandlerWrapper {
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(fn server.HandlerFunc) server.HandlerFunc {
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx context.Context, req server.Request, rsp &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+			val, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; metadata.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;client&amp;#34;&lt;/span&gt;)
+            &lt;span style=&#34;color:#6272a4&#34;&gt;// 获取 client
+&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;client: &amp;#34;&lt;/span&gt;, val)
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;fn&lt;/span&gt;(ctx, req, rsp)
+		}
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     
     <item>
-      <title>Docs: 请求熔断</title>
-      <link>https://vine-io.github.io/vine/docs/component/wrapper/breaker/</link>
-      <pubDate>Fri, 27 Aug 2021 09:33:11 +0800</pubDate>
-      
-      <guid>https://vine-io.github.io/vine/docs/component/wrapper/breaker/</guid>
-      <description>
-        
-        
-        &lt;p&gt;// TODO&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: 请求限流</title>
+      <title>Docs: 限流器</title>
       <link>https://vine-io.github.io/vine/docs/component/wrapper/ratelimiter/</link>
       <pubDate>Fri, 27 Aug 2021 09:33:36 +0800</pubDate>
       
@@ -284,7 +405,138 @@ logger wrapper: after call
       <description>
         
         
+        &lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;
+&lt;p&gt;缓存、降级和限流是高并发系统时有三把利器。&lt;/p&gt;
+&lt;p&gt;限流(限制并发/请求量),它的目的是通过对并发访问/请求进行限速或者一个时间窗口内的请求进行限速来保护系统，如果请求达到上限值，服务端可以采取拒接服务、排队或等待、降级。&lt;/p&gt;
+&lt;h2 id=&#34;限流算法&#34;&gt;限流算法&lt;/h2&gt;
+&lt;p&gt;常见的限流算法有: 令牌桶、漏桶。&lt;/p&gt;
+&lt;h3 id=&#34;漏桶&#34;&gt;漏桶&lt;/h3&gt;
+&lt;p&gt;漏桶(Leaky Bucket)算法思路很简单，水(请求)先进入到漏桶里，漏桶以一定的速度出水(接口有响应速率)，当水流入速度过大会直接溢出(访问频率超过接口响应速率)，然后就拒绝请求，可以看出漏桶算法能强行限制数据的传输速率。
+&lt;img src=&#34;2021-09-08-10-57-08.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;令牌桶&#34;&gt;令牌桶&lt;/h3&gt;
+&lt;p&gt;令牌桶算法(Token Bucket)和 Leaky Bucket 效果一样但方向相反的算法，更加容易理解。随着时间流逝，系统会按恒定 1/QPS 时间间隔(如果QPS=100,则间隔是10ms)往桶里加入 Token (想象和漏洞漏水相反,有个水龙头在不断的加水)，如果桶已经满了就不再加了。新请求来临时，会各自拿走一个Token，如果没有Token可拿了就阻塞或者拒绝服务。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2021-09-08-10-57-47.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 的 wrapper 可以实现限流器功能:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
+
+	pb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/examples/wrapper/pb&amp;#34;&lt;/span&gt;
+	ub &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/wrapper/ratelimiter/uber&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/logger&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; hello &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt;{}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (h hello) &lt;span style=&#34;color:#50fa7b&#34;&gt;Echo&lt;/span&gt;(ctx context.Context, request &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Request, response &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Response) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	response.Result = request.Name
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	handler &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; ub.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHandlerWrapper&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;1000&lt;/span&gt;)
+
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+		vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;helloworld&amp;#34;&lt;/span&gt;),
+		vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapHandler&lt;/span&gt;(handler),
+	)
+
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+	pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterHelloHandler&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Server&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;hello{})
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: 断路器</title>
+      <link>https://vine-io.github.io/vine/docs/component/wrapper/breaker/</link>
+      <pubDate>Fri, 27 Aug 2021 09:33:11 +0800</pubDate>
+      
+      <guid>https://vine-io.github.io/vine/docs/component/wrapper/breaker/</guid>
+      <description>
         
+        
+        &lt;h2 id=&#34;什么是断路器&#34;&gt;什么是断路器&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;断路器（又称熔断器，Circuit Breaker，简称CB），广泛使用于工业生产和日常生活中，主要功能是合上和断开回路（ON/OFF POWER）。别名:空气开关、保险掣、无熔丝开关。断路器会在短路和严重超载的情况下切断电路，从而有效的保护回路中的电器。&amp;ndash; 维基百科&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;雪崩效应: 微服务之间的数据交互是通过远程调用来完成。服务A调用服务B，服务B调用服务C。如果某一时间调用链路上的一个服务不可用，但是其他服务还在不断调用这个服务，或者不断的重试，就会导致系统资源不断被占用，出现级联故障，从而造成这个系统可不用。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;breaker&lt;/code&gt; 的出现正是为了解决这个问题，当某个服务不可用是，调用端会开启熔断检测，当请求的错误达到一定阈值的时候，开启熔断关闭。这时所有调用这个服务的请求直接报错，避免出现级联故障。同时每个一段时间检测服务请求状态，如果服务请求成功，关闭熔断，链路恢复。它实际是中特殊的服务降级方式，是一种软件高并发解决方案。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;2021-09-08-10-04-36.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 通过 wrapper 特性实现熔断器功能，在 &lt;code&gt;Client Call&lt;/code&gt; 请求中添加熔断 wrapper。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
+
+&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;context&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
+
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/sony/gobreaker&amp;#34;&lt;/span&gt;
+	pb &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/examples/wrapper/pb&amp;#34;&lt;/span&gt;
+	bk &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/plugins/wrapper/breaker/gobreaker&amp;#34;&lt;/span&gt;
+	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/logger&amp;#34;&lt;/span&gt;
+)
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; hello &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt;{}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (h hello) &lt;span style=&#34;color:#50fa7b&#34;&gt;Echo&lt;/span&gt;(ctx context.Context, request &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Request, response &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;pb.Response) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; {
+	response.Result = request.Name
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
+}
+
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+	bs &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gobreaker.Settings{
+		Name:          &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;breaker&amp;#34;&lt;/span&gt;,
+		MaxRequests:   &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;,
+		Interval:      time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;,
+		Timeout:       time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;15&lt;/span&gt;,
+		ReadyToTrip: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(counts gobreaker.Counts) &lt;span style=&#34;color:#8be9fd&#34;&gt;bool&lt;/span&gt; {
+			failureRatio &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;float64&lt;/span&gt;(counts.TotalFailures) &lt;span style=&#34;color:#ff79c6&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;float64&lt;/span&gt;(counts.Requests)
+			&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; counts.Requests &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; failureRatio &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;0.6&lt;/span&gt;
+		},
+		OnStateChange: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(name &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, from gobreaker.State, to gobreaker.State) {
+			log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Info&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;%s %s =&amp;gt; %s&amp;#34;&lt;/span&gt;, name, from.&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(), to.&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;())
+		},
+	}
+	breaker &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; bk.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewCustomClientWrapper&lt;/span&gt;(bs, bk.BreakService)
+
+	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(
+		vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;helloworld&amp;#34;&lt;/span&gt;),
+		vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;WrapClient&lt;/span&gt;(breaker),
+	)
+
+	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+
+	pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterHelloHandler&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Server&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;hello{})
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
+		time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second)
+		cc &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; pb.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewHelloService&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(), s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Client&lt;/span&gt;())
+		rsp, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Echo&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;pb.Request{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;})
+		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+			log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+		}
+		fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(rsp)
+		os.&lt;span style=&#34;color:#50fa7b&#34;&gt;Exit&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;0&lt;/span&gt;)
+	}()
+
+	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     

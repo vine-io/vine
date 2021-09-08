@@ -620,7 +620,7 @@ vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;(&lt;span 
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/wrapper/breaker/gobreaker&#34;&gt;gobreaker&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/wrapper/breaker/hystrix&#34;&gt;hystrix&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;限流:&lt;/p&gt;
+&lt;p&gt;限流器:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/wrapper/ratelimiter/ratelimiter&#34;&gt;ratelimiter&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/vine-io/plugins/tree/main/wrapper/ratelimiter/uber&#34;&gt;uber&lt;/a&gt;&lt;/li&gt;

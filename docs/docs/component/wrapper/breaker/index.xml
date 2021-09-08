@@ -1,8 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Vine – 请求熔断</title>
+    <title>Vine – 断路器</title>
     <link>https://vine-io.github.io/vine/docs/component/wrapper/breaker/</link>
-    <description>Recent content in 请求熔断 on Vine</description>
+    <description>Recent content in 断路器 on Vine</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Fri, 27 Aug 2021 09:33:11 +0800</lastBuildDate>
     

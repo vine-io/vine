@@ -19,14 +19,14 @@
 <link rel="icon" type="image/png" href="/vine/favicons/android-144x144.png" sizes="144x144">
 <link rel="icon" type="image/png" href="/vine/favicons/android-192x192.png" sizes="192x192">
 
-<title>请求熔断 | Vine</title><meta property="og:title" content="请求熔断" />
+<title>断路器 | Vine</title><meta property="og:title" content="断路器" />
 <meta property="og:description" content="Vine 文档" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://vine-io.github.io/vine/docs/component/wrapper/breaker/" /><meta property="og:site_name" content="Vine" />
 
-<meta itemprop="name" content="请求熔断">
+<meta itemprop="name" content="断路器">
 <meta itemprop="description" content="Vine 文档"><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="请求熔断"/>
+<meta name="twitter:title" content="断路器"/>
 <meta name="twitter:description" content="Vine 文档"/>
 
 
@@ -132,7 +132,7 @@ This the multi-page printable view of this section.
 
 
 
-<h1 class="title">请求熔断</h1>
+<h1 class="title">断路器</h1>
 
 
 
@@ -140,8 +140,78 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p>// TODO</p>
+      <h2 id="什么是断路器">什么是断路器</h2>
+<blockquote>
+<p>断路器（又称熔断器，Circuit Breaker，简称CB），广泛使用于工业生产和日常生活中，主要功能是合上和断开回路（ON/OFF POWER）。别名:空气开关、保险掣、无熔丝开关。断路器会在短路和严重超载的情况下切断电路，从而有效的保护回路中的电器。&ndash; 维基百科</p>
+</blockquote>
+<p>雪崩效应: 微服务之间的数据交互是通过远程调用来完成。服务A调用服务B，服务B调用服务C。如果某一时间调用链路上的一个服务不可用，但是其他服务还在不断调用这个服务，或者不断的重试，就会导致系统资源不断被占用，出现级联故障，从而造成这个系统可不用。</p>
+<p><code>breaker</code> 的出现正是为了解决这个问题，当某个服务不可用是，调用端会开启熔断检测，当请求的错误达到一定阈值的时候，开启熔断关闭。这时所有调用这个服务的请求直接报错，避免出现级联故障。同时每个一段时间检测服务请求状态，如果服务请求成功，关闭熔断，链路恢复。它实际是中特殊的服务降级方式，是一种软件高并发解决方案。</p>
+<p><img src="2021-09-08-10-04-36.png" alt=""></p>
+<h2 id="使用">使用</h2>
+<p><strong>Vine</strong> 通过 wrapper 特性实现熔断器功能，在 <code>Client Call</code> 请求中添加熔断 wrapper。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
 
+<span style="color:#ff79c6">import</span> (
+	<span style="color:#f1fa8c">&#34;context&#34;</span>
+	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+	<span style="color:#f1fa8c">&#34;os&#34;</span>
+	<span style="color:#f1fa8c">&#34;time&#34;</span>
+
+	<span style="color:#f1fa8c">&#34;github.com/sony/gobreaker&#34;</span>
+	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/examples/wrapper/pb&#34;</span>
+	bk <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/wrapper/breaker/gobreaker&#34;</span>
+	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+)
+
+<span style="color:#8be9fd;font-style:italic">type</span> hello <span style="color:#8be9fd;font-style:italic">struct</span>{}
+
+<span style="color:#8be9fd;font-style:italic">func</span> (h hello) <span style="color:#50fa7b">Echo</span>(ctx context.Context, request <span style="color:#ff79c6">*</span>pb.Request, response <span style="color:#ff79c6">*</span>pb.Response) <span style="color:#8be9fd">error</span> {
+	response.Result = request.Name
+	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+}
+
+<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+	bs <span style="color:#ff79c6">:=</span> gobreaker.Settings{
+		Name:          <span style="color:#f1fa8c">&#34;breaker&#34;</span>,
+		MaxRequests:   <span style="color:#bd93f9">10</span>,
+		Interval:      time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">10</span>,
+		Timeout:       time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">15</span>,
+		ReadyToTrip: <span style="color:#8be9fd;font-style:italic">func</span>(counts gobreaker.Counts) <span style="color:#8be9fd">bool</span> {
+			failureRatio <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">float64</span>(counts.TotalFailures) <span style="color:#ff79c6">/</span> <span style="color:#8be9fd;font-style:italic">float64</span>(counts.Requests)
+			<span style="color:#ff79c6">return</span> counts.Requests <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">&amp;&amp;</span> failureRatio <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0.6</span>
+		},
+		OnStateChange: <span style="color:#8be9fd;font-style:italic">func</span>(name <span style="color:#8be9fd">string</span>, from gobreaker.State, to gobreaker.State) {
+			log.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;%s %s =&gt; %s&#34;</span>, name, from.<span style="color:#50fa7b">String</span>(), to.<span style="color:#50fa7b">String</span>())
+		},
+	}
+	breaker <span style="color:#ff79c6">:=</span> bk.<span style="color:#50fa7b">NewCustomClientWrapper</span>(bs, bk.BreakService)
+
+	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;helloworld&#34;</span>),
+		vine.<span style="color:#50fa7b">WrapClient</span>(breaker),
+	)
+
+	s.<span style="color:#50fa7b">Init</span>()
+
+	pb.<span style="color:#50fa7b">RegisterHelloHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>hello{})
+
+	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+		time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+		cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewHelloService</span>(s.<span style="color:#50fa7b">Name</span>(), s.<span style="color:#50fa7b">Client</span>())
+		rsp, err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.Request{<span style="color:#f1fa8c">&#34;&#34;</span>})
+		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+			log.<span style="color:#50fa7b">Fatal</span>(err)
+		}
+		fmt.<span style="color:#50fa7b">Println</span>(rsp)
+		os.<span style="color:#50fa7b">Exit</span>(<span style="color:#bd93f9">0</span>)
+	}()
+
+	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+		log.<span style="color:#50fa7b">Fatal</span>(err)
+	}
+}
+</code></pre></div>
 </div>
 </div>
 
