@@ -5,6 +5,8 @@ var (
 package {{.Group}}{{.Version}};
 
 option go_package = "{{.Dir}}/api/types/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option java_multiple_files = true;
+option java_package = "io.vine.types.{{.Group}}.{{.Version}}";
 
 // +gen:runtime={{.Group}}/{{.Version}}
 message {{title .Name}}Message {
@@ -17,6 +19,8 @@ message {{title .Name}}Message {
 package {{.Group}}{{.Version}};
 
 option go_package = "{{.Dir}}/api/service/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option java_multiple_files = true;
+option java_package = "io.vine.services.{{.Group}}.{{.Version}}";
 
 // +gen:openapi
 service {{title .Name}}Service {
