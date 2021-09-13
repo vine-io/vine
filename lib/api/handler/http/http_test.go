@@ -29,13 +29,13 @@ import (
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
 	"github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/api/resolver"
 	"github.com/vine-io/vine/lib/api/resolver/vpath"
 	"github.com/vine-io/vine/lib/api/router"
 	regRouter "github.com/vine-io/vine/lib/api/router/registry"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 func testHttp(t *testing.T, path, service, ns string) {

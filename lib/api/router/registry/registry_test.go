@@ -27,7 +27,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
 func TestStoreRegex(t *testing.T) {

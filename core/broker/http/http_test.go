@@ -31,8 +31,6 @@ import (
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
-
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 var (

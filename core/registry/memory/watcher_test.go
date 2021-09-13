@@ -26,7 +26,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	regpb "github.com/vine-io/vine/proto/apis/registry"
+	"github.com/vine-io/vine/core/registry"
 )
 
 func TestWatcher(t *testing.T) {

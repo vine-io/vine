@@ -29,7 +29,6 @@ import (
 	"time"
 
 	"github.com/vine-io/vine/core/registry"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 )
 
 var (

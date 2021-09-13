@@ -32,6 +32,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/serenize/snaker"
 	"github.com/vine-io/cli"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
@@ -43,11 +44,9 @@ import (
 	httpapi "github.com/vine-io/vine/lib/api/server/http"
 	"github.com/vine-io/vine/lib/cmd"
 	log "github.com/vine-io/vine/lib/logger"
-	regpb "github.com/vine-io/vine/proto/apis/registry"
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
 	"github.com/vine-io/vine/util/stats"
-	"github.com/serenize/snaker"
 	"golang.org/x/net/publicsuffix"
 )
 
