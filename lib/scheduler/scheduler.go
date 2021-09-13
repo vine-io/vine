@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 
-package vine
+package scheduler
 
 import "github.com/vine-io/gscheduler"
 

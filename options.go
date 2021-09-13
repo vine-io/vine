@@ -38,6 +38,7 @@ import (
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/config"
 	"github.com/vine-io/vine/lib/dao"
+	"github.com/vine-io/vine/lib/scheduler"
 	"github.com/vine-io/vine/lib/trace"
 )
 
@@ -78,7 +79,7 @@ func newOptions(opts ...Option) Options {
 		Dialect:   dao.DefaultDialect,
 		Cache:     cache.DefaultCache,
 		Registry:  registry.DefaultRegistry,
-		Scheduler: DefaultScheduler,
+		Scheduler: scheduler.DefaultScheduler,
 		Context:   context.Background(),
 		Signal:    true,
 	}
