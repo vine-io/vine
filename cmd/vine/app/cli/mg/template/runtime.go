@@ -41,9 +41,9 @@ var ({{range .Toml.Mod}}
 )
 {{end}}
 var (
-	GitTag    string
-	GitCommit string
-	BuildDate string
+	GitTag    = ""
+	GitCommit = ""
+	BuildDate = ""
 	GetVersion = func() string {
 		v := GitTag
 		if GitCommit != "" {
