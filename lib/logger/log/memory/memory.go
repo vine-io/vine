@@ -26,13 +26,8 @@ package memory
 import (
 	"fmt"
 
-	log2 "github.com/vine-io/vine/lib/logger/log"
+	"github.com/vine-io/vine/lib/logger/log"
 	"github.com/vine-io/vine/util/ring"
-)
-
-var (
-	// DefaultSize of the logger buffer
-	DefaultSize = 1024
 )
 
 // memoryLog is default vine log
@@ -41,9 +36,9 @@ type memoryLog struct {
 }
 
 // NewLog returns default Logger with
-func NewLog(opts ...log2.Option) log2.Log {
+func NewLog(opts ...log.Option) log.Log {
 	// get default options
-	options := log2.DefaultOptions()
+	options := log.DefaultOptions()
 
 	// apply requested options
 	for _, o := range opts {
@@ -56,14 +51,14 @@ func NewLog(opts ...log2.Option) log2.Log {
 }
 
 // Write writes logs into logger
-func (l *memoryLog) Write(r log2.Record) error {
+func (l *memoryLog) Write(r log.Record) error {
 	l.Buffer.Put(fmt.Sprint(r.Message))
 	return nil
 }
 
 // Read reads logs and returns them
-func (l *memoryLog) Read(opts ...log2.ReadOption) ([]log2.Record, error) {
-	options := log2.ReadOptions{}
+func (l *memoryLog) Read(opts ...log.ReadOption) ([]log.Record, error) {
+	options := log.ReadOptions{}
 	// initialize the read options
 	for _, o := range opts {
 		o(&options)
@@ -92,9 +87,9 @@ func (l *memoryLog) Read(opts ...log2.ReadOption) ([]log2.Record, error) {
 		}
 	}
 
-	records := make([]log2.Record, 0, len(entries))
+	records := make([]log.Record, 0, len(entries))
 	for _, entry := range entries {
-		record := log2.Record{
+		record := log.Record{
 			Timestamp: entry.Timestamp,
 			Message:   entry.Value,
 		}
@@ -106,11 +101,11 @@ func (l *memoryLog) Read(opts ...log2.ReadOption) ([]log2.Record, error) {
 
 // Stream returns channel for reading log records
 // along with a stop channel, close it when done
-func (l *memoryLog) Stream() (log2.Stream, error) {
+func (l *memoryLog) Stream() (log.Stream, error) {
 	// get stream channel from ring buffer
 	stream, stop := l.Buffer.Stream()
 	// make a buffered channel
-	records := make(chan log2.Record, 128)
+	records := make(chan log.Record, 128)
 	// get last 10 records
 	last10 := l.Buffer.Get(10)
 
@@ -118,7 +113,7 @@ func (l *memoryLog) Stream() (log2.Stream, error) {
 	go func() {
 		// first send last 10 records
 		for _, entry := range last10 {
-			records <- log2.Record{
+			records <- log.Record{
 				Timestamp: entry.Timestamp,
 				Message:   entry.Value,
 				Metadata:  make(map[string]string),
@@ -126,7 +121,7 @@ func (l *memoryLog) Stream() (log2.Stream, error) {
 		}
 		// now stream continuously
 		for entry := range stream {
-			records <- log2.Record{
+			records <- log.Record{
 				Timestamp: entry.Timestamp,
 				Message:   entry.Value,
 				Metadata:  make(map[string]string),
