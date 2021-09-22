@@ -99,7 +99,7 @@ type Request interface {
 	Read() ([]byte, error)
 	// Codec the encoded message body
 	Codec() codec.Reader
-	// Stream indicates whether its a stream
+	// Stream indicates whether it's a stream
 	Stream() bool
 }
 
