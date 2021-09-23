@@ -402,6 +402,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		// only change if we have the server and type differs
 		if s, ok := c.opts.Servers[name]; ok && (*c.opts.Server).String() != name {
 			*c.opts.Server = s()
+			server.DefaultServer = *c.opts.Server
 		}
 	}
 
