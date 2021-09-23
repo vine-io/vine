@@ -24,38 +24,38 @@ package vine
 
 import (
 	"github.com/vine-io/vine/core/broker"
-	"github.com/vine-io/vine/core/broker/http"
+	hBroker "github.com/vine-io/vine/core/broker/http"
 	"github.com/vine-io/vine/core/client"
-	"github.com/vine-io/vine/core/client/grpc"
+	gclient "github.com/vine-io/vine/core/client/grpc"
 	"github.com/vine-io/vine/core/registry"
-	"github.com/vine-io/vine/core/registry/mdns"
+	mRegistry "github.com/vine-io/vine/core/registry/mdns"
 	"github.com/vine-io/vine/core/server"
-	serverGrpc "github.com/vine-io/vine/core/server/grpc"
+	gserver "github.com/vine-io/vine/core/server/grpc"
 	"github.com/vine-io/vine/lib/cache"
-	memCache "github.com/vine-io/vine/lib/cache/memory"
+	mCache "github.com/vine-io/vine/lib/cache/memory"
 	"github.com/vine-io/vine/lib/config"
-	configMemory "github.com/vine-io/vine/lib/config/memory"
+	mConfig "github.com/vine-io/vine/lib/config/memory"
 	"github.com/vine-io/vine/lib/dao"
-	daoNop "github.com/vine-io/vine/lib/dao/nop"
+	nopDao "github.com/vine-io/vine/lib/dao/nop"
 	"github.com/vine-io/vine/lib/trace"
-	traceMem "github.com/vine-io/vine/lib/trace/memory"
+	mTrace "github.com/vine-io/vine/lib/trace/memory"
 )
 
 func init() {
 	// default registry
-	registry.DefaultRegistry = mdns.NewRegistry()
+	registry.DefaultRegistry = mRegistry.NewRegistry()
 	// default broker
-	broker.DefaultBroker = http.NewBroker()
+	broker.DefaultBroker = hBroker.NewBroker()
 	// default client
-	client.DefaultClient = grpc.NewClient()
+	client.DefaultClient = gclient.NewClient()
 	// default server
-	server.DefaultServer = serverGrpc.NewServer()
+	server.DefaultServer = gserver.NewServer()
 	// default config
-	config.DefaultConfig = configMemory.NewConfig()
+	config.DefaultConfig = mConfig.NewConfig()
 	// default dao
-	dao.DefaultDialect = daoNop.NewDialect()
+	dao.DefaultDialect = nopDao.NewDialect()
 	// default cache
-	cache.DefaultCache = memCache.NewCache()
+	cache.DefaultCache = mCache.NewCache()
 	// default trace
-	trace.DefaultTracer = traceMem.NewTracer()
+	trace.DefaultTracer = mTrace.NewTracer()
 }
