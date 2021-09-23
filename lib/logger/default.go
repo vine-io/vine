@@ -194,7 +194,7 @@ func (l *defaultLogger) Logf(level Level, format string, args ...interface{}) {
 	dlog.DefaultLog.Write(rec)
 
 	t := rec.Timestamp.Format("2006-01-02 15:04:05")
-	fmt.Printf("%s %s %v\n", t, metadata, rec.Message)
+	fmt.Fprintf(l.opts.Out, "%s%s %v\n", t, metadata, rec.Message)
 }
 
 func (l *defaultLogger) Options() Options {
