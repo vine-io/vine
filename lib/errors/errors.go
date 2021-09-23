@@ -31,6 +31,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	json "github.com/json-iterator/go"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
@@ -44,8 +45,8 @@ type Error struct {
 	Stacks   []*Stack `protobuf:"bytes,7,rep,name=stacks,proto3" json:"stacks,omitempty"`
 }
 
-func (m *Error) Reset()         { *m = Error{} }
-func (m *Error) String() string { return proto.CompactTextString(m) }
+func (e *Error) Reset()         { *e = Error{} }
+func (e *Error) String() string { return proto.CompactTextString(e) }
 func (*Error) ProtoMessage()    {}
 
 type Child struct {
@@ -75,6 +76,17 @@ func New(id, detail string, code int32) *Error {
 		Detail: detail,
 		Status: http.StatusText(int(code)),
 	}
+	return e
+}
+
+func (e *Error) WithId(id string) *Error {
+	e.Id = id
+	return e
+}
+
+func (e *Error) WithCode(code int32) *Error {
+	e.Code = code
+	e.Status = http.StatusText(int(code))
 	return e
 }
 
@@ -167,6 +179,16 @@ func Conflict(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 409)
 }
 
+// PreconditionFailed generates a 412 error.
+func PreconditionFailed(id, format string, a ...interface{}) *Error {
+	return New(id, fmt.Sprintf(format, a...), 412)
+}
+
+// TooManyRequests generates a 429 error.
+func TooManyRequests(id, format string, a ...interface{}) *Error {
+	return New(id, fmt.Sprintf(format, a...), 429)
+}
+
 // InternalServerError generates a 500 error.
 func InternalServerError(id, format string, a ...interface{}) *Error {
 	return New(id, fmt.Sprintf(format, a...), 500)
@@ -242,6 +264,39 @@ func FromErr(err error) *Error {
 		if se, ok := err.(interface {
 			GRPCStatus() *status.Status
 		}); ok {
+			s := se.GRPCStatus()
+			switch s.Code() {
+			case codes.OK:
+				return &Error{Code: 0}
+			case codes.Canceled:
+				return Timeout("", s.Message())
+			case codes.DeadlineExceeded:
+				return GatewayTimeout("", s.Message())
+			case codes.NotFound:
+				return NotFound("", s.Message())
+			case codes.AlreadyExists:
+				return Conflict("", s.Message())
+			case codes.PermissionDenied:
+				return Forbidden("", s.Message())
+			case codes.ResourceExhausted:
+				return TooManyRequests("", s.Message())
+			case codes.FailedPrecondition:
+				return PreconditionFailed("", s.Message())
+			case codes.Aborted:
+				return Conflict("", s.Message())
+			case codes.OutOfRange:
+				return BadGateway("", s.Message())
+			case codes.Unimplemented:
+				return NotImplemented("", s.Message())
+			case codes.Internal:
+				return InternalServerError("", s.Message())
+			case codes.Unavailable:
+				return ServiceUnavailable("", s.Message())
+			case codes.DataLoss:
+				return InternalServerError("", s.Message())
+			case codes.Unauthenticated:
+				return Unauthorized("", s.Message())
+			}
 			return Parse(se.GRPCStatus().Message())
 		}
 	}
