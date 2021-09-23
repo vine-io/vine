@@ -364,6 +364,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 
 		*c.opts.Cache = s(cache.WithClient(vineClient))
+		cache.DefaultCache = *c.opts.Cache
 	}
 	// Set the dialect
 	if name := ctx.String("dao-dialect"); len(name) > 0 {
@@ -373,6 +374,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 
 		*c.opts.Dialect = d()
+		dao.DefaultDialect = *c.opts.Dialect
 	}
 
 	// Set the tracer
@@ -383,6 +385,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 
 		*c.opts.Tracer = r()
+		trace.DefaultTracer = *c.opts.Tracer
 	}
 
 	// Set the client
@@ -390,6 +393,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		// only change if we have the client and type differs
 		if cl, ok := c.opts.Clients[name]; ok && (*c.opts.Client).String() != name {
 			*c.opts.Client = cl()
+			client.DefaultClient = *c.opts.Client
 		}
 	}
 
@@ -409,6 +413,8 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 
 		*c.opts.Registry = r()
+		registry.DefaultRegistry = *c.opts.Registry
+
 		serverOpts = append(serverOpts, server.Registry(*c.opts.Registry))
 		clientOpts = append(clientOpts, client.Registry(*c.opts.Registry))
 
@@ -431,6 +437,8 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 
 		*c.opts.Broker = b()
+		broker.DefaultBroker = *c.opts.Broker
+
 		serverOpts = append(serverOpts, server.Broker(*c.opts.Broker))
 		clientOpts = append(clientOpts, client.Broker(*c.opts.Broker))
 	}
@@ -443,6 +451,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		}
 
 		*c.opts.Selector = s(selector.Registry(*c.opts.Registry))
+		selector.DefaultSelector = *c.opts.Selector
 
 		// No server option here. Should there be?
 		clientOpts = append(clientOpts, client.Selector(*c.opts.Selector))
