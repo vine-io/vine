@@ -366,6 +366,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 		*c.opts.Cache = s(cache.WithClient(vineClient))
 		cache.DefaultCache = *c.opts.Cache
 	}
+
 	// Set the dialect
 	if name := ctx.String("dao-dialect"); len(name) > 0 {
 		d, ok := c.opts.Dialects[name]
@@ -559,7 +560,7 @@ func (c *cmd) Before(ctx *cli.Context) error {
 	}
 
 	// We have some command line opts for the server.
-	// Lets set it up
+	// Let's set it up
 	if len(serverOpts) > 0 && *c.opts.Server != nil {
 		if err := (*c.opts.Server).Init(serverOpts...); err != nil {
 			log.Fatalf("Error configuring server: %v", err)

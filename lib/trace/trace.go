@@ -76,12 +76,11 @@ const (
 )
 
 // FromContext returns a span from context
-func FromContext(ctx context.Context) (traceID string, parentSpanID string, isFound bool) {
+func FromContext(ctx context.Context) ( string,  string,  bool) {
 	traceID, traceOk := metadata.Get(ctx, traceIDKey)
 	vineID, vineOk := metadata.Get(ctx, "Vine-Id")
 	if !traceOk && !vineOk {
-		isFound = false
-		return
+		return "", "", false
 	}
 	if !traceOk {
 		traceID = vineID
