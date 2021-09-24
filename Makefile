@@ -17,7 +17,6 @@ vendor:
 
 release:
 ifeq "$(TAG)" ""
-	@echo $(TAG)
 	@echo "missing tag"
 	exit 1
 endif
@@ -38,35 +37,35 @@ build-tag:
 tar-windows:
 	mkdir -p _output/windows-amd64
 	for i in $(TOOLS); do \
-	    GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/windows-amd64/$$i.exe cmd/$$i/main.go ;\
+	    GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/windows-amd64/$$i.exe cmd/$$i/main.go ;\
 	done && \
 	cd _output && rm -fr $(NAME)-windows-amd64-$(GIT_TAG).zip && zip $(NAME)-windows-amd64-$(GIT_TAG).zip windows-amd64/* && rm -fr windows-amd64
 
 tar-linux-amd64:
 	mkdir -p _output/linux-amd64
 	for i in $(TOOLS); do \
-	    GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/linux-amd64/$$i cmd/$$i/main.go ;\
+	    GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/linux-amd64/$$i cmd/$$i/main.go ;\
 	done && \
 	cd _output && rm -fr $(NAME)-linux-amd64-$(GIT_TAG).tar.gz && tar -zcvf $(NAME)-linux-amd64-$(GIT_TAG).tar.gz linux-amd64/* && rm -fr linux-amd64
 
 tar-linux-arm64:
 	mkdir -p _output/linux-arm64
 	for i in $(TOOLS); do \
-	    GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/linux-arm64/$$i cmd/$$i/main.go ;\
+	    GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/linux-arm64/$$i cmd/$$i/main.go ;\
 	done && \
 	cd _output && rm -fr $(NAME)-linux-arm64-$(GIT_TAG).tar.gz && tar -zcvf $(NAME)-linux-arm64-$(GIT_TAG).tar.gz linux-arm64/* && rm -fr linux-arm64
 
 tar-darwin-amd64:
 	mkdir -p _output/darwin-amd64
 	for i in $(TOOLS); do \
-	    GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/darwin-amd64/$$i cmd/$$i/main.go ;\
+	    GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/darwin-amd64/$$i cmd/$$i/main.go ;\
 	done && \
 	cd _output && rm -fr $(NAME)-darwin-amd64-$(GIT_TAG).tar.gz && tar -zcvf $(NAME)-darwin-amd64-$(GIT_TAG).tar.gz darwin-amd64/* && rm -fr darwin-amd64
 
 tar-darwin-arm64:
 	mkdir -p _output/darwin-arm64
 	for i in $(TOOLS); do \
-	    GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w" -o _output/darwin-arm64/$$i cmd/$$i/main.go ;\
+	    GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/darwin-arm64/$$i cmd/$$i/main.go ;\
 	done && \
 	cd _output && rm -fr $(NAME)-darwin-arm64-$(GIT_TAG).tar.gz && tar -zcvf $(NAME)-darwin-arm64-$(GIT_TAG).tar.gz darwin-arm64/* && rm -fr darwin-arm64
 
