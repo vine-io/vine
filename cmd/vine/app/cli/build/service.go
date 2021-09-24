@@ -122,7 +122,7 @@ func buildFunc(mod *tool.Mod, output string, flags []string, cluster bool) {
 		}
 	}
 
-	args := append(flags1, "go", "build")
+	args := []string{"go", "build"}
 	if output != "" {
 		args = append(args, "-o", output)
 	} else if mod.Output != "" {
@@ -131,7 +131,6 @@ func buildFunc(mod *tool.Mod, output string, flags []string, cluster bool) {
 	args = append(args, flags2...)
 	args = append(args, mod.Main)
 
-	fmt.Printf("%s\n", strings.Join(args, " "))
 	now := time.Now()
 
 	var out []byte
@@ -139,11 +138,19 @@ func buildFunc(mod *tool.Mod, output string, flags []string, cluster bool) {
 	switch runtime.GOOS {
 	case "windows":
 		ft := fmt.Sprintf("%s.bat", uuid.New().String())
-		_ = ioutil.WriteFile(ft, []byte( strings.Join(args, " ")), 0755)
-		out, err = exec.Command("cmd", "/C", ft).CombinedOutput()
+		fmt.Printf("%s\n", strings.Join(append(flags1, args...), " "))
+		_ = ioutil.WriteFile(ft, []byte(strings.Join(args, " ")), 0755)
+		cmd := exec.Command("cmd", "/C", ft)
+		cmd.Env = os.Environ()
+		cmd.Env = append(cmd.Env, flags1...)
+		out, err = cmd.CombinedOutput()
 		_ = os.Remove(ft)
 	default:
-		out, err = exec.Command("/bin/sh", "-c", strings.Join(args, " ")).CombinedOutput()
+		args = append(flags1, args...)
+		fmt.Printf("%s\n", strings.Join(args, " "))
+		cmd := exec.Command("/bin/sh", "-c", strings.Join(args, " "))
+		cmd.Env = os.Environ()
+		out, err = cmd.CombinedOutput()
 	}
 	if err != nil {
 		fmt.Printf("build %s: %v\n", mod.Name, string(out))
