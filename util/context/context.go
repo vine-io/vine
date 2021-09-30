@@ -53,8 +53,10 @@ func FromRequest(c *fiber.Ctx) context.Context {
 	if _, ok = md.Get("Host"); !ok {
 		md.Set("Host", string(c.Request().Host()))
 	}
-	// pass http method
 	md.Set("Method", c.Method())
+	if _, ok = md.Get("Vine-Api-Path"); !ok {
+		md.Set("Vine-Api-Path", c.Path())
+	}
 	return metadata.NewContext(ctx, md)
 }
 
