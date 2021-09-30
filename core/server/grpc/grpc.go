@@ -368,6 +368,16 @@ func (g *grpcServer) handler(svc interface{}, stream grpc.ServerStream) error {
 }
 
 func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, mtype *methodType, ct string, ctx context.Context) error {
+	fullMethod, ok := grpc.MethodFromServerStream(stream)
+	if !ok {
+		return status.Errorf(codes.Internal, "method does not exist in context")
+	}
+
+	serviceName, methodName, err := serverMethod(fullMethod)
+	if err != nil {
+		return status.New(codes.InvalidArgument, err.Error()).Err()
+	}
+
 	for {
 		var argv, replyv reflect.Value
 
@@ -417,11 +427,20 @@ func (g *grpcServer) processRequest(stream grpc.ServerStream, service *service, 
 			return err
 		}
 
+		codec := &grpcCodec{
+			method:   fmt.Sprintf("%s.%s", serviceName, methodName),
+			endpoint: fmt.Sprintf("%s.%s", serviceName, methodName),
+			target:   g.opts.Name,
+			s:        stream,
+			c:        cc,
+		}
+
 		// create a client.Request
 		r := &rpcRequest{
 			service:     g.opts.Name,
-			contentType: ct,
 			method:      fmt.Sprintf("%s.%s", service.name, mtype.method.Name),
+			contentType: ct,
+			codec:       codec,
 			body:        b,
 			payload:     argvi,
 		}
