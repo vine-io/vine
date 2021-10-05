@@ -67,7 +67,7 @@ type CallOptions struct {
 	Address []string
 	// Backoff func
 	Backoff BackoffFunc
-	// Check if retriable func
+	// Check if retryable func
 	Retry RetryFunc
 	// Transport Dial Timeout
 	DialTimeout time.Duration
