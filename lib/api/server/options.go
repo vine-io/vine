@@ -37,6 +37,7 @@ type Options struct {
 	TLSConfig  *tls.Config
 	Resolver   resolver.Resolver
 	Wrappers   []Wrapper
+	Cfg        *fiber.Config
 }
 
 type Wrapper func() fiber.Handler
@@ -68,5 +69,11 @@ func TLSConfig(t *tls.Config) Option {
 func Resolver(r resolver.Resolver) Option {
 	return func(o *Options) {
 		o.Resolver = r
+	}
+}
+
+func Config(cfg *fiber.Config) Option {
+	return func(o *Options) {
+		o.Cfg = cfg
 	}
 }

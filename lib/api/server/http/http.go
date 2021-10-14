@@ -32,10 +32,31 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/vine-io/vine/lib/api/server"
+	"github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 )
 
 var DefaultBodyLimit = 1024 * 1024 * 1024 * 1024 * 1024 // 1 PB
+var DefaultErrorHandler = func(ctx *fiber.Ctx, err error) error {
+	// Status code defaults to 500
+	code := fiber.StatusInternalServerError
+	body := fiber.Map{"id": "go.vine.api", "status": "", "detail": "", "code": code}
+
+	if e, ok := err.(*errors.Error); ok {
+		code = int(e.Code)
+		body["status"] = e.Status
+		body["detail"] = e.Detail
+		body["code"] = e.Code
+	} else if e, ok := err.(*fiber.Error); ok {
+		// Retrieve the custom status code if it's an fiber.*Error
+		code = e.Code
+		body["detail"] = e.Error()
+		body["code"] = e.Code
+	}
+
+	// Return from handler
+	return ctx.Status(code).JSON(body)
+}
 
 type httpServer struct {
 	app  *fiber.App
@@ -52,9 +73,17 @@ func NewServer(address string, opts ...server.Option) server.Server {
 		o(&options)
 	}
 
+	if options.Cfg == nil {
+		options.Cfg = &fiber.Config{
+			BodyLimit:             DefaultBodyLimit,
+			DisableStartupMessage: true,
+			ErrorHandler:          DefaultErrorHandler,
+		}
+	}
+
 	return &httpServer{
 		opts:    options,
-		app:     fiber.New(fiber.Config{BodyLimit: DefaultBodyLimit, DisableStartupMessage: true}),
+		app:     fiber.New(*options.Cfg),
 		address: address,
 		exit:    make(chan chan error),
 	}
