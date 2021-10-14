@@ -40,7 +40,7 @@ var DefaultBodyLimit = 1024 * 1024 * 1024 * 1024 * 1024 // 1 PB
 var DefaultErrorHandler = func(ctx *fiber.Ctx, err error) error {
 	// Status code defaults to 500
 	code := fiber.StatusInternalServerError
-	body := fiber.Map{"id": "go.vine.api", "status": "", "detail": "", "code": code}
+	body := fiber.Map{"id": "go.vine.api", "code": code}
 
 	if e, ok := err.(*errors.Error); ok {
 		code = int(e.Code)
