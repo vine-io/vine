@@ -312,11 +312,11 @@ func (g *validator) generateStringField(field *generator.FieldDescriptor) {
 			g.P("}")
 		case _minLen:
 			g.P("if !(len(m.", fieldName, ") >= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, %s.Errorf(\"field '%%s%s' length must less than '%s'\", prefix))", g.fmtPkg.Use(), field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, %s.Errorf(\"field '%%s%s' length must great than '%s'\", prefix))", g.fmtPkg.Use(), field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _maxLen:
 			g.P("if !(len(m.", fieldName, ") <= ", tag.Value, ") {")
-			g.P(fmt.Sprintf("errs = append(errs, %s.Errorf(\"field '%%s%s' length must great than '%s'\", prefix))", g.fmtPkg.Use(), field.Proto.GetJsonName(), tag.Value))
+			g.P(fmt.Sprintf("errs = append(errs, %s.Errorf(\"field '%%s%s' length must less than '%s'\", prefix))", g.fmtPkg.Use(), field.Proto.GetJsonName(), tag.Value))
 			g.P("}")
 		case _prefix:
 			value := TrimString(tag.Value, "\"")
