@@ -529,8 +529,6 @@ vine new service foo
 ├── go.mod
 ├── go.sum
 ├── pkg  // 服务内部代码
-│   ├── app  // ------- DDD 的 application 层，
-│   │   └── foo.go
 │   ├── app.go  // -------- 构造和组合各层代码，提供给 cmd/main.go
 │   ├── biz  // ---------- DDD 的 domain 层，维护业务代码
 │   │   └── foo.go
@@ -539,7 +537,7 @@ vine new service foo
 │   │   │   └── cache.go
 │   │   └── repo  // ------- 数据库 repository，数据交互
 │   │       └── repo.go
-│   ├── interfaces   // ---------- DDD 的 interfaces 层，提供对外的 gRPC 接口 
+│   ├── service   // ---------- DDD 的 interfaces 层，提供对外的 gRPC 接口 
 │   │   └── foo.go
 │   └── runtime
 │       ├── doc.go  // 维护服务版本信息
@@ -575,8 +573,6 @@ vine new service helloworld
 ├── go.mod
 ├── pkg   
 │   ├── helloworld // -------- 多服务是，pkg 每个目录代码一个服务
-│   │   ├── app
-│   │   │   └── helloworld.go
 │   │   ├── app.go
 │   │   ├── biz
 │   │   │   └── helloworld.go
@@ -585,7 +581,7 @@ vine new service helloworld
 │   │   │   │   └── cache.go
 │   │   │   └── repo
 │   │   │       └── repo.go
-│   │   └── interfaces
+│   │   └── service
 │   │       └── helloworld.go
 │   └── runtime  // ------ 多个服务间的通用代码
 │       ├── doc.go

@@ -1,18 +1,18 @@
 package template
 
 var (
-	SingleINF = `package interfaces
+	SingleINF = `package service
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
-	log "github.com/vine-io/vine/lib/logger"
 	verrs "github.com/vine-io/vine/lib/errors"
+	log "github.com/vine-io/vine/lib/logger"
 
+	"{{.Dir}}/pkg/biz"
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
-	"{{.Dir}}/pkg/app"
 
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
@@ -20,7 +20,7 @@ import (
 type {{title .Name}}API struct{
 	vine.Service
 
-	H app.{{title .Name}} ` + "`inject:\"\"`" + `
+	H biz.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -113,25 +113,26 @@ func New() *{{title .Name}}API {
 }
 `
 
-	SingleINFWithAPI = `package interfaces
+	SingleINFWithAPI = `package service
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
-	log "github.com/vine-io/vine/lib/logger"
 	verrs "github.com/vine-io/vine/lib/errors"
+	log "github.com/vine-io/vine/lib/logger"
 
+	"{{.Dir}}/pkg/biz"
 	"{{.Dir}}/pkg/runtime"
 	"{{.Dir}}/pkg/runtime/inject"
-	"{{.Dir}}/pkg/app"
+
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
 type {{title .Name}}API struct{
 	vine.Service
 
-	H app.{{title .Name}} ` + "`inject:\"\"`" + `
+	H biz.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -224,25 +225,26 @@ func New() *{{title .Name}}API {
 }
 `
 
-	ClusterINF = `package interfaces
+	ClusterINF = `package service
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
-	log "github.com/vine-io/vine/lib/logger"
 	verrs "github.com/vine-io/vine/lib/errors"
+	log "github.com/vine-io/vine/lib/logger"
 
+	"{{.Dir}}/pkg/{{.Name}}/biz"
 	"{{.Dir}}/pkg/runtime"
-	"{{.Dir}}/pkg/{{.Name}}/app"
 	"{{.Dir}}/pkg/runtime/inject"
+
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
 type {{title .Name}}API struct{
 	vine.Service
 
-	H app.{{title .Name}} ` + "`inject:\"\"`" + `
+	H biz.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code
@@ -335,25 +337,26 @@ func New() *{{title .Name}}API {
 }
 `
 
-	ClusterINFWithAPI = `package interfaces
+	ClusterINFWithAPI = `package service
 
 import (
 	"context"
 
 	"github.com/vine-io/vine"
-	log "github.com/vine-io/vine/lib/logger"
 	verrs "github.com/vine-io/vine/lib/errors"
+	log "github.com/vine-io/vine/lib/logger"
 
+	"{{.Dir}}/pkg/{{.Name}}/biz"
 	"{{.Dir}}/pkg/runtime"
-	"{{.Dir}}/pkg/{{.Name}}/app"
 	"{{.Dir}}/pkg/runtime/inject"
+
 	pb "{{.Dir}}/api/service/{{.Group}}/{{.Version}}"
 )
 
 type {{title .Name}}API struct{
 	vine.Service
 
-	H app.{{title .Name}} ` + "`inject:\"\"`" + `
+	H biz.{{title .Name}} ` + "`inject:\"\"`" + `
 }
 
 // Call is a single request handler called via client.Call or the generated client code

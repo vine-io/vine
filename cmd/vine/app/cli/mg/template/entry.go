@@ -28,17 +28,17 @@ var (
 import (
 	log "github.com/vine-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/interfaces"
+	"{{.Dir}}/pkg/service"
 )
 
 func Run() {
-	s := interfaces.New()
+	app := service.New()
 
-	if err := s.Init(); err != nil {
+	if err := app.Init(); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := s.Run(); err != nil {
+	if err := app.Run(); err != nil {
 		log.Fatal(err)
 	}
 }`
@@ -48,11 +48,11 @@ func Run() {
 import (
 	log "github.com/vine-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/{{.Name}}/interfaces"
+	"{{.Dir}}/pkg/{{.Name}}/service"
 )
 
 func Run() {
-	app := interfaces.New()
+	app := service.New()
 
 	if err := app.Init(); err != nil {
 		log.Fatal(err)
