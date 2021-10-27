@@ -21,9 +21,7 @@ ifeq "$(TAG)" ""
 	exit 1
 endif
 	git tag $(TAG)
-	sed -i "" "s/GitCommit = ".*"/GitCommit = \"$(GIT_COMMIT)\"/g" cmd/vine/version/version.go
-	sed -i "" "s/GitTag    = ".*"/GitTag    = \"$(GIT_TAG)\"/g" cmd/vine/version/version.go
-	sed -i "" "s/BuildDate = ".*"/BuildDate = \"$(BUILD_DATE)\"/g" cmd/vine/version/version.go
+	make build-tag
 	git add .
 	git commit -m "$(TAG)"
 	git tag -d $(TAG)
