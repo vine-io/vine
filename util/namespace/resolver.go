@@ -24,9 +24,9 @@ package namespace
 
 import (
 	"net"
+	"net/http"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"golang.org/x/net/publicsuffix"
 
 	log "github.com/vine-io/vine/lib/logger"
@@ -46,11 +46,11 @@ func (r Resolver) String() string {
 	return "internal/namespace"
 }
 
-func (r Resolver) ResolveWithType(c *fiber.Ctx) string {
-	return r.Resolve(c) + "." + r.svcType
+func (r Resolver) ResolveWithType(req *http.Request) string {
+	return r.Resolve(req) + "." + r.svcType
 }
 
-func (r Resolver) Resolve(c *fiber.Ctx) string {
+func (r Resolver) Resolve(req *http.Request) string {
 	// check to see what the provided namespace is, we only do
 	// domain mapping if the namespace is set to 'domain'
 	if r.namespace != "domain" {
@@ -58,12 +58,12 @@ func (r Resolver) Resolve(c *fiber.Ctx) string {
 	}
 
 	// determine the host, e.g. dev.vine.mu:8080
-	host := c.Hostname()
+	host := req.URL.Hostname()
 	if len(host) == 0 {
-		if h, _, err := net.SplitHostPort(string(c.Request().Host())); err == nil {
+		if h, _, err := net.SplitHostPort(req.Host); err == nil {
 			host = h // host does contain a port
 		} else if strings.Contains(err.Error(), "missing port in address") {
-			host = string(c.Request().Host()) // host does not contain a port
+			host = string(req.Host) // host does not contain a port
 		}
 	}
 

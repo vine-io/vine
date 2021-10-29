@@ -6,12 +6,14 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/evanphx/json-patch/v5 v5.2.0
-	github.com/fasthttp/websocket v1.4.3
+	github.com/fasthttp/websocket v1.4.3 // indirect
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/gin-gonic/gin v1.7.4
 	github.com/gofiber/fiber/v2 v2.7.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.2.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/hashicorp/hcl v1.0.0
 	github.com/imdario/mergo v0.3.11
 	github.com/jinzhu/inflection v1.0.0
@@ -25,11 +27,11 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
 	github.com/stretchr/testify v1.7.0
-	github.com/valyala/fasthttp v1.23.0
+	github.com/valyala/fasthttp v1.23.0 // indirect
 	github.com/vine-io/cli v1.3.0
 	github.com/vine-io/gscheduler v0.3.0
 	github.com/xlab/treeprint v1.0.0
-	go.uber.org/atomic v1.9.0
+	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 	google.golang.org/grpc v1.38.0

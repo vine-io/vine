@@ -24,13 +24,12 @@ package openapi
 
 import (
 	"bytes"
-	"encoding/json"
 	"html/template"
 	"mime"
+	"path/filepath"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gin-gonic/gin"
 	"github.com/rakyll/statik/fs"
 	"github.com/vine-io/vine/core/registry"
 	log "github.com/vine-io/vine/lib/logger"
@@ -41,26 +40,26 @@ import (
 
 var DefaultPrefix = "/openapi-ui/"
 
-func RegisterOpenAPI(app *fiber.App) {
+func RegisterOpenAPI(router *gin.Engine) {
 	mime.AddExtensionType(".svg", "image/svg+xml")
 	statikFs, err := fs.New()
 	if err != nil {
 		log.Fatalf("Starting OpenAPI: %v", err)
 	}
-	app.All(DefaultPrefix, openAPIHandler)
-	app.Use(DefaultPrefix, filesystem.New(filesystem.Config{Root: statikFs}))
-	app.Get("/openapi.json", openAPIJOSNHandler)
-	app.Get("/services", openAPIServiceHandler)
+	router.GET(DefaultPrefix, openAPIHandler)
+	router.StaticFS(filepath.Join(DefaultPrefix, "static/"), statikFs)
+	router.GET("/openapi.json", openAPIJOSNHandler)
+	router.GET("/services", openAPIServiceHandler)
 	log.Infof("Starting OpenAPI at %v", DefaultPrefix)
 }
 
-func openAPIHandler(ctx *fiber.Ctx) error {
-	if ct := ctx.Get("Content-Type", ""); ct == "application/json" {
-		ctx.Request().Header.Set("Content-Type", ct)
-		return nil
+func openAPIHandler(ctx *gin.Context) {
+	if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
+		ctx.Header("Content-Type", ct)
+		return
 	}
 	var tmpl string
-	style := ctx.Query("style", "")
+	style := ctx.Query("style")
 	switch style {
 	case "redoc":
 		tmpl = redocTmpl
@@ -68,13 +67,14 @@ func openAPIHandler(ctx *fiber.Ctx) error {
 		tmpl = swaggerTmpl
 	}
 
-	return render(ctx, tmpl, nil)
+	render(ctx, tmpl, nil)
 }
 
-func openAPIJOSNHandler(ctx *fiber.Ctx) error {
+func openAPIJOSNHandler(ctx *gin.Context) {
 	services, err := registry.ListServices()
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		ctx.JSON(500, err.Error())
+		return
 	}
 	tags := make(map[string]*registry.OpenAPITag, 0)
 	paths := make(map[string]*registry.OpenAPIPath, 0)
@@ -155,40 +155,41 @@ func openAPIJOSNHandler(ctx *fiber.Ctx) error {
 	for _, tag := range tags {
 		openapi.Tags = append(openapi.Tags, tag)
 	}
-	data, _ := json.MarshalIndent(openapi, "", " ")
-	return ctx.Send(data)
+	ctx.JSON(200, openapi)
 }
 
-func openAPIServiceHandler(ctx *fiber.Ctx) error {
+func openAPIServiceHandler(ctx *gin.Context) {
 	services, err := registry.ListServices()
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		ctx.JSON(500, err.Error())
+		return
 	}
 	out := make([]*registry.Service, 0)
 	for _, item := range services {
 		list, _ := registry.GetService(item.Name)
 		out = append(out, list...)
 	}
-	data, _ := json.MarshalIndent(out, "", " ")
-	return ctx.Send(data)
+	ctx.JSON(200, out)
 }
 
-func render(ctx *fiber.Ctx, tmpl string, data interface{}) error {
+func render(ctx *gin.Context, tmpl string, data interface{}) {
 	t, err := template.New("template").Funcs(template.FuncMap{
 		//		"format": format,
 	}).Parse(layoutTemplate)
 	if err != nil {
-		return fiber.NewError(500, "Error occurred:"+err.Error())
+		ctx.Data(500, "text/html", []byte("Error occurred:"+err.Error()))
+		return
 	}
 	t, err = t.Parse(tmpl)
 	if err != nil {
-		return fiber.NewError(500, "Error occurred:"+err.Error())
+		ctx.Data(500, "text/html", []byte("Error occurred:"+err.Error()))
+		return
 	}
 	buf := bytes.NewBuffer([]byte(""))
 	if err := t.ExecuteTemplate(buf, "layout", data); err != nil {
-		return fiber.NewError(500, "Error occurred:"+err.Error())
+		ctx.Data(500, "text/html", []byte("Error occurred:"+err.Error()))
+		return
 	}
 
-	ctx.Set("Content-Type", "text/html")
-	return ctx.SendString(buf.String())
+	ctx.Data(200, "text/html", buf.Bytes())
 }

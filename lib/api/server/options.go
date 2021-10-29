@@ -24,23 +24,24 @@ package server
 
 import (
 	"crypto/tls"
+	"net/http"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/lib/api/resolver"
+	"github.com/vine-io/vine/lib/api/server/cors"
 )
 
 type Option func(o *Options)
 
 type Options struct {
 	EnableCORS bool
+	CORSConfig *cors.Config
 	EnableTLS  bool
 	TLSConfig  *tls.Config
 	Resolver   resolver.Resolver
 	Wrappers   []Wrapper
-	Cfg        *fiber.Config
 }
 
-type Wrapper func() fiber.Handler
+type Wrapper func(handler http.Handler) http.Handler
 
 func WrapHandler(w Wrapper) Option {
 	return func(o *Options) {
@@ -51,6 +52,12 @@ func WrapHandler(w Wrapper) Option {
 func EnableCORS(b bool) Option {
 	return func(o *Options) {
 		o.EnableCORS = b
+	}
+}
+
+func CORSConfig(c *cors.Config) Option {
+	return func(o *Options) {
+		o.CORSConfig = c
 	}
 }
 
@@ -69,11 +76,5 @@ func TLSConfig(t *tls.Config) Option {
 func Resolver(r resolver.Resolver) Option {
 	return func(o *Options) {
 		o.Resolver = r
-	}
-}
-
-func Config(cfg *fiber.Config) Option {
-	return func(o *Options) {
-		o.Cfg = cfg
 	}
 }

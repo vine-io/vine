@@ -72,7 +72,7 @@ func Encode(e *Endpoint) map[string]string {
 	// endpoint map
 	ep := make(map[string]string)
 
-	// set vals only if they exist
+	// set values only if they exist
 	set := func(k, v string) {
 		if len(v) == 0 {
 			return

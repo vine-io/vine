@@ -23,16 +23,14 @@
 package handler
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine/core/client"
-	"github.com/vine-io/vine/lib/api/server/cors"
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/errors"
 	"github.com/vine-io/vine/util/helper"
@@ -48,19 +46,21 @@ type rpcRequest struct {
 
 // RPC Handler passes on a JSON or form encoded RPC request to
 // a service.
-func RPC(c *fiber.Ctx) error {
+func RPC(c *gin.Context) {
+	c.ClientIP()
 
-	if c.Method() == "OPTIONS" {
-		return cors.SetHeaders(c)
+	if c.Request.Method == "OPTIONS" {
+		return
 	}
 
-	if c.Method() != "POST" {
-		return fiber.NewError(405, "Method not allowed")
+	if c.Request.Method != "POST" {
+		c.JSON(405, "Method not allowed")
+		return
 	}
 
-	badRequest := func(description string) error {
+	badRequest := func(description string) {
 		e := errors.BadRequest("go.vine.rpc", description)
-		return fiber.NewError(400, e.Error())
+		c.JSON(400, e.Error())
 	}
 
 	var service, endpoint, address string
@@ -69,7 +69,7 @@ func RPC(c *fiber.Ctx) error {
 	// response content type
 	c.Set("Content-Type", "application/json")
 
-	ct := c.Get("Content-Type")
+	ct := c.GetHeader("Content-Type")
 
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
 	if idx := strings.IndexRune(ct, ';'); idx >= 0 {
@@ -80,11 +80,12 @@ func RPC(c *fiber.Ctx) error {
 	case "application/json":
 		var rpcReq rpcRequest
 
-		d := json.NewDecoder(bytes.NewBuffer(c.Body()))
+		d := json.NewDecoder(c.Request.Body)
 		d.UseNumber()
 
 		if err := d.Decode(&rpcReq); err != nil {
-			return badRequest(err.Error())
+			badRequest(err.Error())
+			return
 		}
 
 		service = rpcReq.Service
@@ -101,33 +102,35 @@ func RPC(c *fiber.Ctx) error {
 			d.UseNumber()
 
 			if err := d.Decode(&request); err != nil {
-				return badRequest("error decoding request string: " + err.Error())
-
+				badRequest("error decoding request string: " + err.Error())
+				return
 			}
 		}
 	default:
-		service = c.FormValue("service")
-		endpoint = c.FormValue("endpoint")
-		address = c.FormValue("address")
+		service = c.PostForm("service")
+		endpoint = c.PostForm("endpoint")
+		address = c.PostForm("address")
 		if len(endpoint) == 0 {
-			endpoint = c.FormValue("method")
+			endpoint = c.PostForm("method")
 		}
 
-		d := json.NewDecoder(strings.NewReader(c.FormValue("request")))
+		d := json.NewDecoder(strings.NewReader(c.PostForm("request")))
 		d.UseNumber()
 
 		if err := d.Decode(&request); err != nil {
-			return badRequest("error decoding request string: " + err.Error())
+			badRequest("error decoding request string: " + err.Error())
+			return
 		}
 	}
 
 	if len(service) == 0 {
-		return badRequest("invalid service")
-
+		badRequest("invalid service")
+		return
 	}
 
 	if len(endpoint) == 0 {
-		return badRequest("invalid endpoint")
+		badRequest("invalid endpoint")
+		return
 	}
 
 	// create request/response
@@ -136,11 +139,11 @@ func RPC(c *fiber.Ctx) error {
 	req := (*cmd.DefaultOptions().Client).NewRequest(service, endpoint, request, client.WithContentType("application/json"))
 
 	// create context
-	ctx := helper.RequestToContext(c)
+	ctx := helper.RequestToContext(c.Request)
 
 	var opts []client.CallOption
 
-	timeout, _ := strconv.Atoi(c.Get("Timeout"))
+	timeout, _ := strconv.Atoi(c.GetHeader("Timeout"))
 	// set timeout
 	if timeout > 0 {
 		opts = append(opts, client.WithRequestTimeout(time.Duration(timeout)*time.Second))
@@ -166,12 +169,10 @@ func RPC(c *fiber.Ctx) error {
 		default:
 			c.Status(int(ce.Code))
 		}
-		_, err = c.Write([]byte(ce.Error()))
-		return err
+		c.Writer.Write([]byte(ce.Error()))
 	}
 
 	b, _ := response.MarshalJSON()
 	c.Set("Content-Length", strconv.Itoa(len(b)))
-	_, err = c.Write(b)
-	return err
+	c.Writer.Write(b)
 }

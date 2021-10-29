@@ -23,12 +23,14 @@
 // Package handler provides http handlers
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-// Handler represents a HTTP handler that manages a request
+// Handler represents HTTP handler that manages a request
 type Handler interface {
-	// Handle return fiber App
-	Handle(ctx *fiber.Ctx) error
+	// Handle return gin.Context
+	Handle(ctx *gin.Context)
 	// String the name of handler
 	String() string
 }

@@ -23,9 +23,10 @@
 package web
 
 import (
+	"net/http"
+	"net/url"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/client/selector/dns"
 	"github.com/vine-io/vine/core/registry"
@@ -75,13 +76,13 @@ func TestWebResolver(t *testing.T) {
 
 			r.Register(v)
 
-			//u, err := url.Parse("https://" + service.Host + service.Path)
-			//if err != nil {
-			//	t.Fatal(err)
-			//}
+			u, err := url.Parse("https://" + service.Host + service.Path)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-			req := fiber.Ctx{}
-			if endpoint, err := res.Resolve(&req); err != nil {
+			req, _ := http.NewRequest("GET", u.String(), nil)
+			if endpoint, err := res.Resolve(req); err != nil {
 				t.Fatalf("Failed to resolve %v: %v", service, err)
 			} else if endpoint.Host != "127.0.0.1:8080" {
 				t.Fatalf("Failed to resolve %v", service.Host)

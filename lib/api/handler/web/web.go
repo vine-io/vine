@@ -29,13 +29,14 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine/core/client/selector"
-	"github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/api"
+	"github.com/vine-io/vine/lib/api/handler"
 	ctx "github.com/vine-io/vine/util/context"
 )
 
@@ -48,35 +49,37 @@ type webHandler struct {
 	s    *api.Service
 }
 
-func (wh *webHandler) Handle(c *fiber.Ctx) error {
-	service, err := wh.getService(c)
+func (wh *webHandler) Handle(ctx *gin.Context) {
+	service, err := wh.getService(ctx)
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		ctx.JSON(500, err)
+		return
 	}
 
 	if len(service) == 0 {
-		return fiber.NewError(400)
+		ctx.JSON(500, err)
+		return
 	}
 
 	rp, err := url.Parse(service)
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		ctx.JSON(500, err)
+		return
 	}
 
-	if isWebSocket(c) {
-		return wh.serveWebSocket(rp.Host, c)
+	if isWebSocket(ctx) {
+		wh.serveWebSocket(rp.Host, ctx)
+		return
 	}
 
-	//c.Redirect()
-	//return httputil.NewSingleHostReverseProxy(rp).Handle(c)
-	return c.Redirect(rp.String())
+	httputil.NewSingleHostReverseProxy(rp).ServeHTTP(ctx.Writer, ctx.Request)
 }
 
 // getService returns the service for this request from the selector
-func (wh *webHandler) getService(c *fiber.Ctx) (string, error) {
+func (wh *webHandler) getService(c *gin.Context) (string, error) {
 	var service *api.Service
 
-	r := ctx.NewRequestCtx(c, ctx.FromRequest(c))
+	r := c.Request.Clone(ctx.FromRequest(c.Request))
 	if wh.s != nil {
 		// we were given the service
 		service = wh.s
@@ -105,45 +108,48 @@ func (wh *webHandler) getService(c *fiber.Ctx) (string, error) {
 }
 
 // serveWebSocket used to serve a web socket proxied connection
-func (wh *webHandler) serveWebSocket(host string, c *fiber.Ctx) error {
-	req := new(fiber.Request)
-	c.Request().CopyTo(req)
+func (wh *webHandler) serveWebSocket(host string, c *gin.Context) {
+	ctx := c.Copy()
 
 	if len(host) == 0 {
-		return fiber.NewError(500, "invalid host")
+		ctx.JSON(500, "invalid host")
+		return
 	}
 
 	// set x-forward-for
-	if clientIP, _, err := net.SplitHostPort(c.IP()); err == nil {
-		if ips := c.Get("X-Forwarded-For"); ips != "" {
+	if clientIP, _, err := net.SplitHostPort(c.ClientIP()); err == nil {
+		if ips := ctx.GetHeader("X-Forwarded-For"); ips != "" {
 			clientIP = ips + ", " + clientIP
 		}
-		c.Set("X-Forwarded-For", clientIP)
+		c.Header("X-Forwarded-For", clientIP)
 	}
 
 	// connect to the backend host
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		ctx.JSON(500, err)
+		return
 	}
 
-	c.Response()
 	// hijack the connection
-	hj, ok := c.Context().Conn().(http.Hijacker)
+	hj, ok := ctx.Request.Body.(http.Hijacker)
 	if !ok {
-		return fiber.NewError(500, "failed to connect")
+		ctx.JSON(500, "failed to connect")
+		return
 	}
 
 	nc, _, err := hj.Hijack()
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		ctx.JSON(500, err.Error())
+		return
 	}
 
 	defer nc.Close()
 	defer conn.Close()
 
-	if err = req.BodyWriteTo(conn); err != nil {
-		return fiber.NewError(500, err.Error())
+	if err = ctx.Request.Write(conn); err != nil {
+		ctx.JSON(500, err.Error())
+		return
 	}
 
 	errCh := make(chan error, 2)
@@ -157,13 +163,11 @@ func (wh *webHandler) serveWebSocket(host string, c *fiber.Ctx) error {
 	go cp(nc, conn)
 
 	<-errCh
-
-	return nil
 }
 
-func isWebSocket(c *fiber.Ctx) bool {
+func isWebSocket(ctx *gin.Context) bool {
 	contains := func(key, val string) bool {
-		vv := strings.Split(c.Get(key), ",")
+		vv := strings.Split(ctx.GetHeader(key), ",")
 		for _, v := range vv {
 			if val == strings.ToLower(strings.TrimSpace(v)) {
 				return true

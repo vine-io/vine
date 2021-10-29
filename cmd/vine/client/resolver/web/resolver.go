@@ -25,10 +25,10 @@ package web
 import (
 	"errors"
 	"net"
+	"net/http"
 	"regexp"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/core/client/selector"
 	res "github.com/vine-io/vine/lib/api/resolver"
 	"github.com/vine-io/vine/util/namespace"
@@ -44,7 +44,7 @@ type Resolver struct {
 	// Type of resolver e.g path, domain
 	Type string
 	// a function which returns the namespace of the request
-	Namespace func(c *fiber.Ctx) string
+	Namespace func(req *http.Request) string
 	// selector to find services
 	Selector selector.Selector
 }
@@ -61,13 +61,13 @@ func (r *Resolver) String() string {
 
 // Info checks whether this is a web request.
 // It returns host, namespace and whether its internal
-func (r *Resolver) Info(c *fiber.Ctx) (string, string, bool) {
+func (r *Resolver) Info(req *http.Request) (string, string, bool) {
 	// set to host
-	host := c.Hostname()
+	host := req.URL.Hostname()
 
 	// set as req.Host if blank
 	if len(host) == 0 {
-		host = string(c.Request().Host())
+		host = req.Host
 	}
 
 	// split out ip
@@ -76,7 +76,7 @@ func (r *Resolver) Info(c *fiber.Ctx) (string, string, bool) {
 	}
 
 	// determine the namespace of the request
-	namespace := r.Namespace(c)
+	namespace := r.Namespace(req)
 
 	// overide host if the namespace is go.vine.web, since
 	// this will also catch localhost & 127.0.0.1, resulting
@@ -105,24 +105,24 @@ func (r *Resolver) Info(c *fiber.Ctx) (string, string, bool) {
 	// Check for services info path, also handled by vine web but
 	// not a top level path. TODO: Find a better way of detecting and
 	// handling the non-proxied paths.
-	if strings.HasPrefix(c.Path(), "/service/") {
+	if strings.HasPrefix(req.URL.Path, "/service/") {
 		return host, namespace, true
 	}
 
 	// Check if the request is a top level path
-	isWeb := strings.Count(c.Path(), "/") == 1
+	isWeb := strings.Count(req.URL.Path, "/") == 1
 	return host, namespace, isWeb
 }
 
 // Resolve replaces the values of Host, Path, Scheme to calla backend service
 // It accounts for subdomains for service names based on namespace
-func (r *Resolver) Resolve(c *fiber.Ctx) (*res.Endpoint, error) {
+func (r *Resolver) Resolve(req *http.Request) (*res.Endpoint, error) {
 	// get host, namespace and if its an internal request
-	host, _, _ := r.Info(c)
+	host, _, _ := r.Info(req)
 
 	// check for vine web
 	if r.Type == "path" || host == "web.vine.mu" {
-		return r.resolveWithPath(c)
+		return r.resolveWithPath(req)
 	}
 
 	domain, err := publicsuffix.EffectiveTLDPlusOne(host)
@@ -146,7 +146,7 @@ func (r *Resolver) Resolve(c *fiber.Ctx) (*res.Endpoint, error) {
 		// for vine.mu subdomains, we route foo.vine.mu/bar to
 		// go.vine.web.bar
 		name = defaultNamespace + "." + alias
-	} else if comps := strings.Split(c.Path(), "/"); len(comps) > 0 {
+	} else if comps := strings.Split(req.URL.Path, "/"); len(comps) > 0 {
 		// for non vine.mu subdomains, we route foo.m3o.app/bar to
 		// foo.web.bar
 		name = alias + ".web." + comps[1]
@@ -156,7 +156,7 @@ func (r *Resolver) Resolve(c *fiber.Ctx) (*res.Endpoint, error) {
 	next, err := r.Selector.Select(name)
 	if err == selector.ErrNotFound {
 		// fallback to path based
-		return r.resolveWithPath(c)
+		return r.resolveWithPath(req)
 	} else if err != nil {
 		return nil, err
 	}
@@ -170,14 +170,14 @@ func (r *Resolver) Resolve(c *fiber.Ctx) (*res.Endpoint, error) {
 	// we're done
 	return &res.Endpoint{
 		Name:   alias,
-		Method: c.Method(),
+		Method: req.Method,
 		Host:   s.Address,
-		Path:   c.Path(),
+		Path:   req.URL.Path,
 	}, nil
 }
 
-func (r *Resolver) resolveWithPath(c *fiber.Ctx) (*res.Endpoint, error) {
-	parts := strings.Split(c.Path(), "/")
+func (r *Resolver) resolveWithPath(req *http.Request) (*res.Endpoint, error) {
+	parts := strings.Split(req.URL.Path, "/")
 	if len(parts) < 2 {
 		return nil, errors.New("unknown service")
 	}
@@ -186,7 +186,7 @@ func (r *Resolver) resolveWithPath(c *fiber.Ctx) (*res.Endpoint, error) {
 		return nil, res.ErrInvalidPath
 	}
 
-	_, namespace, _ := r.Info(c)
+	_, namespace, _ := r.Info(req)
 	next, err := r.Selector.Select(namespace + "." + parts[1])
 	if err == selector.ErrNotFound {
 		return nil, res.ErrNotFound
@@ -203,7 +203,7 @@ func (r *Resolver) resolveWithPath(c *fiber.Ctx) (*res.Endpoint, error) {
 	// we're done
 	return &res.Endpoint{
 		Name:   parts[1],
-		Method: c.Path(),
+		Method: req.URL.Path,
 		Host:   s.Address,
 		Path:   "/" + strings.Join(parts[2:], "/"),
 	}, nil

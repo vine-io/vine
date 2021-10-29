@@ -23,7 +23,7 @@
 package resolver
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
 )
 
 // NewOptions returns new initialised options
@@ -48,7 +48,7 @@ func WithHandler(h string) Option {
 }
 
 // WithNamespace sets the function which determines the namespace for a request
-func WithNamespace(n func(*fiber.Ctx) string) Option {
+func WithNamespace(n func(r *http.Request) string) Option {
 	return func(o *Options) {
 		o.Namespace = n
 	}

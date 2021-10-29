@@ -24,8 +24,9 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/vine-io/vine/lib/api"
-	ctx "github.com/vine-io/vine/util/context"
 )
 
 // Router is used to determine an endpoint for a request
@@ -35,11 +36,11 @@ type Router interface {
 	// Close stop the router
 	Close() error
 	// Endpoint returns an api.Service endpoint or an error if it does not exist
-	Endpoint(c *ctx.RequestCtx) (*api.Service, error)
+	Endpoint(r *http.Request) (*api.Service, error)
 	// Register endpoint in router
 	Register(ep *api.Endpoint) error
 	// Deregister endpoint from router
 	Deregister(ep *api.Endpoint) error
 	// Route returns an api.Service route
-	Route(c *ctx.RequestCtx) (*api.Service, error)
+	Route(r *http.Request) (*api.Service, error)
 }

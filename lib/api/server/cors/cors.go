@@ -23,49 +23,57 @@
 package cors
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/vine-io/vine/lib/api/handler"
+	"net/http"
 )
 
+type Config struct {
+	AllowOrigin      string
+	AllowCredentials bool
+	AllowMethods     string
+	AllowHeaders     string
+}
+
 // CombinedCORSHandler wraps a server and provides CORS headers
-func CombinedCORSHandler() handler.Handler {
-	return &corsHandler{}
-}
+func CombinedCORSHandler(h http.Handler, config *Config) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if config != nil {
+			SetHeaders(w, r, config)
+		}
+		if r.Method == "OPTIONS" {
+			return
+		}
 
-type corsHandler struct {
-}
-
-func (c *corsHandler) Handle(ctx *fiber.Ctx) error {
-	SetHeaders(ctx)
-
-	if ctx.Method() == "OPTIONS" {
-		return nil
-	}
-
-	return ctx.Next()
-}
-
-func (c corsHandler) String() string {
-	return "cors"
+		h.ServeHTTP(w, r)
+	})
 }
 
 // SetHeaders sets the CORS headers
-func SetHeaders(ctx *fiber.Ctx) error {
-	set := func(ctx *fiber.Ctx, k, v string) {
-		if v := ctx.Get(k); len(v) > 0 {
+func SetHeaders(w http.ResponseWriter, _ *http.Request, config *Config) {
+	set := func(w http.ResponseWriter, k, v string) {
+		if v := w.Header().Get(k); len(v) > 0 {
 			return
 		}
-		ctx.Set(k, v)
+		w.Header().Set(k, v)
 	}
-
-	if origin := ctx.Get("Origin", ""); len(origin) > 0 {
-		set(ctx, "Access-Control-Allow-Origin", origin)
+	//For forward-compatible code, default values may not be provided in the future
+	if config.AllowCredentials {
+		set(w, "Access-Control-Allow-Credentials", "true")
 	} else {
-		set(ctx, "Access-Control-Allow-Origin", "*")
+		set(w, "Access-Control-Allow-Credentials", "false")
 	}
-
-	set(ctx, "Access-Control-Allow-Credentials", "true")
-	set(ctx, "Access-Control-Allow-Methods", "POST, PATCH, GET, OPTIONS, PUT, DELETE")
-	set(ctx, "Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-	return nil
+	if config.AllowOrigin == "" {
+		set(w, "Access-Control-Allow-Origin", "*")
+	} else {
+		set(w, "Access-Control-Allow-Origin", config.AllowOrigin)
+	}
+	if config.AllowMethods == "" {
+		set(w, "Access-Control-Allow-Methods", "POST, PATCH, GET, OPTIONS, PUT, DELETE")
+	} else {
+		set(w, "Access-Control-Allow-Methods", config.AllowMethods)
+	}
+	if config.AllowHeaders == "" {
+		set(w, "Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	} else {
+		set(w, "Access-Control-Allow-Headers", config.AllowHeaders)
+	}
 }

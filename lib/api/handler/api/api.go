@@ -26,12 +26,12 @@ package api
 import (
 	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/lib/api"
 	"github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/errors"
-	"github.com/vine-io/vine/lib/api"
 	ctx "github.com/vine-io/vine/util/context"
 )
 
@@ -45,26 +45,26 @@ type apiHandler struct {
 }
 
 // Handle API handler is the default handler which takes api.Request and returns api.Response
-func (a *apiHandler) Handle(c *fiber.Ctx) error {
+func (a *apiHandler) Handle(c *gin.Context) {
 	bsize := handler.DefaultMaxRecvSize
 	if a.opts.MaxRecvSize > 0 {
 		bsize = a.opts.MaxRecvSize
 	}
 
-	c.Context().SetBodyStream(c.Context().RequestBodyStream(), int(bsize))
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, bsize)
 
-	request, err := requestToProto(c)
+	request, err := requestToProto(c.Request)
 	if err != nil {
 		er := errors.InternalServerError("go.vine.client", err.Error())
-		c.Set("Content-Type", "application/json")
-		return fiber.NewError(500, er.Error())
+		c.JSON(200, er.Error())
+		return
 	}
 
 	var service *api.Service
 
 	// create the context from headers
-	cx := ctx.FromRequest(c)
-	r := ctx.NewRequestCtx(c, cx)
+	cx := ctx.FromRequest(c.Request)
+	r := c.Request.Clone(cx)
 	if a.s != nil {
 		// we were given the service
 		service = a.s
@@ -73,15 +73,15 @@ func (a *apiHandler) Handle(c *fiber.Ctx) error {
 		s, err := a.opts.Router.Route(r)
 		if err != nil {
 			er := errors.InternalServerError("go.vine.client", err.Error())
-			c.Set("Content-Type", "application/json")
-			return fiber.NewError(500, er.Error())
+			c.JSON(500, er)
+			return
 		}
 		service = s
 	} else {
 		// we have no way of routing the request
 		er := errors.InternalServerError("go.vine.client", "no route found")
-		c.Set("Content-Type", "application/json")
-		return fiber.NewError(500, er.Error())
+		c.JSON(500, er)
+		return
 	}
 
 	// create request and response
@@ -93,29 +93,28 @@ func (a *apiHandler) Handle(c *fiber.Ctx) error {
 	so := selector.WithStrategy(strategy(service.Services))
 
 	if err := cc.Call(cx, req, rsp, client.WithSelectOption(so)); err != nil {
-		c.Set("Content-Type", "application/json")
 		ce := errors.Parse(err.Error())
 		if ce.Code == 0 {
-			return fiber.NewError(500, ce.Error())
+			c.JSON(500, ce)
+			return
 		}
-		return fiber.NewError(int(ce.Code), ce.Error())
+		c.JSON(500, ce)
+		return
 	} else if rsp.StatusCode == 0 {
 		rsp.StatusCode = http.StatusOK
 	}
 
 	for _, header := range rsp.Header {
 		for _, val := range header.Values {
-			r.Request().Header.Add(header.Key, val)
+			c.Request.Header.Add(header.Key, val)
 		}
 	}
 
-	if len(r.Get("Content-Type")) == 0 {
-		r.Set("Content-Type", "application/json")
+	if len(c.GetHeader("Content-Type")) == 0 {
+		c.Header("Content-Type", "application/json")
 	}
 
-	r.SendStatus(int(rsp.StatusCode))
-	r.SendString(rsp.Body)
-	return nil
+	c.JSON(int(rsp.StatusCode), rsp.Body)
 }
 
 func (a *apiHandler) String() string {

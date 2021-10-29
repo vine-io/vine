@@ -28,23 +28,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fasthttp/websocket"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	json "github.com/json-iterator/go"
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/codec/bytes"
-	"github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/lib/api"
-	ctx "github.com/vine-io/vine/util/context"
-	"github.com/valyala/fasthttp"
+	"github.com/vine-io/vine/lib/logger"
 )
 
 // serveWebSocket will stream rpc back over websockets assuming json
-func serveWebSocket(r *ctx.RequestCtx, service *api.Service, c client.Client) error {
+func serveWebSocket(ctx *gin.Context, service *api.Service, c client.Client) {
 	var op int
 
-	ct := r.Get("Content-Type")
+	ct := ctx.GetHeader("Content-Type")
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
 	if idx := strings.IndexRune(ct, ';'); idx >= 0 {
 		ct = ct[:idx]
@@ -59,7 +57,7 @@ func serveWebSocket(r *ctx.RequestCtx, service *api.Service, c client.Client) er
 	}
 
 	hdr := make(http.Header)
-	if proto := r.Get("Set-WebSocket-Protocol"); proto != "" {
+	if proto := ctx.GetHeader("Set-WebSocket-Protocol"); proto != "" {
 		for _, p := range strings.Split(proto, ",") {
 			switch p {
 			case "binary":
@@ -68,104 +66,103 @@ func serveWebSocket(r *ctx.RequestCtx, service *api.Service, c client.Client) er
 			}
 		}
 	}
-	payload, err := requestPayload(r)
+	payload, err := requestPayload(ctx.Request)
 	if err != nil {
 		logger.Error(err)
-		return err
+		return
 	}
 
-	upgrader := websocket.FastHTTPUpgrader{
+	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 30 * time.Second,
 		ReadBufferSize:   1024 * 32,
 		WriteBufferSize:  1024 * 32,
 		//Subprotocols:      nil,
-		Error: func(c *fasthttp.RequestCtx, status int, reason error) {
+		Error: func(w http.ResponseWriter, r *http.Request, status int, reason error) {
 
 		},
-		CheckOrigin: func(c *fasthttp.RequestCtx) bool {
+		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
 		EnableCompression: false,
 	}
 
-	return upgrader.Upgrade(r.Ctx.Context(), func(conn *websocket.Conn) {
+	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, ctx.Request.Header)
 
-		defer func() {
-			if err := conn.Close(); err != nil {
-				logger.Error(err)
-				return
-			}
-		}()
-
-		var request interface{}
-		if !b.Equal(payload, []byte(`{}`)) {
-			switch ct {
-			case "application/json", "":
-				m := json.RawMessage(payload)
-				request = &m
-			default:
-				request = &bytes.Frame{Data: payload}
-			}
-		}
-
-		// we always need to set content type for message
-		if ct == "" {
-			ct = "application/json"
-		}
-		req := c.NewRequest(
-			service.Name,
-			service.Endpoint.Name,
-			request,
-			client.WithContentType(ct),
-			client.StreamingRequest(),
-		)
-
-		so := selector.WithStrategy(strategy(service.Services))
-		// create a new stream
-		stream, err := c.Stream(r, req, client.WithSelectOption(so))
-		if err != nil {
+	defer func() {
+		if err := conn.Close(); err != nil {
 			logger.Error(err)
 			return
 		}
+	}()
 
-		if request != nil {
-			if err = stream.Send(request); err != nil {
+	var request interface{}
+	if !b.Equal(payload, []byte(`{}`)) {
+		switch ct {
+		case "application/json", "":
+			m := json.RawMessage(payload)
+			request = &m
+		default:
+			request = &bytes.Frame{Data: payload}
+		}
+	}
+
+	// we always need to set content type for message
+	if ct == "" {
+		ct = "application/json"
+	}
+	req := c.NewRequest(
+		service.Name,
+		service.Endpoint.Name,
+		request,
+		client.WithContentType(ct),
+		client.StreamingRequest(),
+	)
+
+	so := selector.WithStrategy(strategy(service.Services))
+	// create a new stream
+	stream, err := c.Stream(ctx, req, client.WithSelectOption(so))
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+
+	if request != nil {
+		if err = stream.Send(request); err != nil {
+			logger.Error(err)
+			return
+		}
+	}
+
+	go writeLoop(conn, stream)
+
+	rsp := stream.Response()
+
+	// receive from stream and send to client
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-stream.Context().Done():
+			return
+		default:
+			// read backend response body
+			buf, err := rsp.Read()
+			if err != nil {
+				// wants to avoid import  grpc/status.Status
+				if strings.Contains(err.Error(), "context canceled") {
+					return
+				}
+				logger.Error(err)
+				return
+			}
+
+			// write the response
+			if err := conn.WriteMessage(op, buf); err != nil {
 				logger.Error(err)
 				return
 			}
 		}
-
-		go writeLoop(conn, stream)
-
-		rsp := stream.Response()
-
-		// receive from stream and send to client
-		for {
-			select {
-			case <-r.Context().Done():
-				return
-			case <-stream.Context().Done():
-				return
-			default:
-				// read backend response body
-				buf, err := rsp.Read()
-				if err != nil {
-					// wants to avoid import  grpc/status.Status
-					if strings.Contains(err.Error(), "context canceled") {
-						return
-					}
-					logger.Error(err)
-					return
-				}
-
-				// write the response
-				if err := conn.WriteMessage(op, buf); err != nil {
-					logger.Error(err)
-					return
-				}
-			}
-		}
-	})
+	}
 }
 
 // writeLoop
@@ -212,7 +209,7 @@ func writeLoop(conn *websocket.Conn, stream client.Stream) {
 	}
 }
 
-func isStream(c *fiber.Ctx, svc *api.Service) bool {
+func isStream(c *gin.Context, svc *api.Service) bool {
 	// check if it's a web socket
 	if !isWebSocket(c) {
 		return false
@@ -233,9 +230,9 @@ func isStream(c *fiber.Ctx, svc *api.Service) bool {
 	return false
 }
 
-func isWebSocket(c *fiber.Ctx) bool {
+func isWebSocket(c *gin.Context) bool {
 	contains := func(key, val string) bool {
-		vv := strings.Split(c.Get(key), ",")
+		vv := strings.Split(c.GetHeader(key), ",")
 		for _, v := range vv {
 			if val == strings.ToLower(strings.TrimSpace(v)) {
 				return true

@@ -24,77 +24,38 @@ package context
 
 import (
 	"context"
+	"net/http"
 	"net/textproto"
-	"time"
+	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/util/context/metadata"
 )
 
-func FromRequest(c *fiber.Ctx) context.Context {
-	ctx := c.Context()
-	md, ok := metadata.FromContext(ctx)
+func FromRequest(r *http.Request) context.Context {
+	md, ok := metadata.FromContext(r.Context())
 	if !ok {
 		md = make(metadata.Metadata)
 	}
-	c.Request().Header.VisitAll(func(k, value []byte) {
-		key := string(k)
+	for key, values := range r.Header {
 		switch key {
 		case "Connection", "Content-Length":
-			return
+			continue
 		}
-		md.Set(textproto.CanonicalMIMEHeaderKey(key), string(value))
-	})
+		md.Set(textproto.CanonicalMIMEHeaderKey(key), strings.Join(values, ","))
+	}
 	if v, ok := md.Get("X-Forwarded-For"); ok {
-		md["X-Forwarded-For"] = v + ", " + c.Context().RemoteAddr().String()
+		md["X-Forwarded-For"] = v + ", " + r.RemoteAddr
 	} else {
-		md["X-Forwarded-For"] = c.Context().RemoteAddr().String()
+		md["X-Forwarded-For"] = r.RemoteAddr
 	}
 	if _, ok = md.Get("Host"); !ok {
-		md.Set("Host", string(c.Request().Host()))
+		md.Set("Host", r.Host)
 	}
-	md.Set("Method", c.Method())
+	md.Set("Method", r.Method)
 	if _, ok = md.Get("Vine-Api-Path"); !ok {
-		md.Set("Vine-Api-Path", c.Path())
+		if r.URL != nil {
+			md.Set("Vine-Api-Path", r.URL.Path)
+		}
 	}
-	return metadata.NewContext(ctx, md)
-}
-
-type RequestCtx struct {
-	*fiber.Ctx
-	ctx context.Context
-}
-
-var _ context.Context = (*RequestCtx)(nil)
-
-func (c *RequestCtx) Clone(ctx context.Context) *RequestCtx {
-	c.ctx = ctx
-	return c
-}
-
-func (c *RequestCtx) Context() context.Context {
-	return c.ctx
-}
-
-func (c *RequestCtx) Deadline() (deadline time.Time, ok bool) {
-	return c.ctx.Deadline()
-}
-
-func (c *RequestCtx) Done() <-chan struct{} {
-	return c.ctx.Done()
-}
-
-func (c *RequestCtx) Err() error {
-	return c.ctx.Err()
-}
-
-func (c *RequestCtx) Value(key interface{}) interface{} {
-	return c.ctx.Value(key)
-}
-
-func NewRequestCtx(c *fiber.Ctx, ctx context.Context) *RequestCtx {
-	return &RequestCtx{
-		Ctx: c,
-		ctx: ctx,
-	}
+	return metadata.NewContext(r.Context(), md)
 }

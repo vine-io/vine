@@ -24,7 +24,8 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
+
 	"github.com/vine-io/vine/lib/api/resolver"
 )
 
@@ -36,19 +37,19 @@ type Resolver struct {
 	Options resolver.Options
 }
 
-func (r *Resolver) Resolve(c *fiber.Ctx) (*resolver.Endpoint, error) {
+func (r *Resolver) Resolve(req *http.Request) (*resolver.Endpoint, error) {
 	var name, method string
 
 	switch r.Options.Handler {
 	// internal handlers
 	case "meta", "api", "rpc", "vine":
-		name, method = apiRoute(c.Path())
+		name, method = apiRoute(req.URL.Path)
 	default:
-		method = c.Method()
-		name = proxyRoute(c.Path())
+		method = req.Method
+		name = proxyRoute(req.URL.Path)
 	}
 
-	ns := r.Options.Namespace(c)
+	ns := r.Options.Namespace(req)
 	return &resolver.Endpoint{
 		Name:   ns + "." + name,
 		Method: method,

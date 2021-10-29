@@ -31,7 +31,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 type stats struct {
@@ -63,21 +63,23 @@ var (
 	total = 24
 )
 
-func render(ctx *fiber.Ctx, tmpl string, data interface{}) error {
+func render(ctx *gin.Context, tmpl string, data interface{})  {
 	t, err := template.New("template").Funcs(template.FuncMap{
 		//		"format": format,
 	}).Parse(layoutTemplate)
 	if err != nil {
-		return fiber.NewError(500, "Error occurred:"+err.Error())
+		ctx.JSON(500, "Error occurred:"+err.Error())
+		return
 	}
 	t, err = t.Parse(tmpl)
 	if err != nil {
-		return fiber.NewError(500, "Error occurred:"+err.Error())
+		ctx.JSON(500, "Error occurred:"+err.Error())
+		return
 	}
-	if err := t.ExecuteTemplate(ctx, "layout", data); err != nil {
-		return fiber.NewError(500, "Error occurred:"+err.Error())
+	if err = t.ExecuteTemplate(ctx.Writer, "layout", data); err != nil {
+		ctx.JSON(500, "Error occurred:"+err.Error())
+		return
 	}
-	return nil
 }
 
 func (s *stats) run() {
@@ -145,20 +147,20 @@ func (s *stats) ServeHTTP(h http.Handler) http.Handler {
 	})
 }
 
-func (s *stats) StatsHandler(ctx *fiber.Ctx) error {
-	if ct := ctx.Get("Content-Type", ""); ct == "application/json" {
+func (s *stats) StatsHandler(ctx *gin.Context) {
+	if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
 		s.RLock()
 		b, err := json.Marshal(s)
 		s.RUnlock()
 		if err != nil {
-			return fiber.NewError(500, err.Error())
+			ctx.JSON(500, err.Error())
+			return
 		}
-		ctx.Request().Header.Set("Content-Type", ct)
-		ctx.Write(b)
-		return nil
+		ctx.JSON(200, b)
+		return
 	}
 
-	return render(ctx, statsTemplate, nil)
+	render(ctx, statsTemplate, nil)
 }
 
 func (s *stats) Start() error {

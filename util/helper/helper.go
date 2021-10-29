@@ -29,21 +29,21 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine/util/context/metadata"
 )
 
-func RequestToContext(c *fiber.Ctx) context.Context {
+func RequestToContext(r *http.Request) context.Context {
 	ctx := context.Background()
 	md := make(metadata.Metadata)
-	c.Request().Header.VisitAll(func(key, value []byte) {
-		md.Set(string(key), string(value))
-	})
+	for key, values := range r.Header {
+		md.Set(key, strings.Join(values, ","))
+	}
 	return metadata.NewContext(ctx, md)
 }
 

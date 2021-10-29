@@ -24,9 +24,9 @@
 package path
 
 import (
+	"net/http"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/lib/api/resolver"
 )
 
@@ -34,19 +34,19 @@ type Resolver struct {
 	opts resolver.Options
 }
 
-func (r *Resolver) Resolve(c *fiber.Ctx) (*resolver.Endpoint, error) {
-	if c.Path() == "/" {
+func (r *Resolver) Resolve(req *http.Request) (*resolver.Endpoint, error) {
+	if req.URL.Path == "/" {
 		return nil, resolver.ErrNotFound
 	}
 
-	parts := strings.Split(c.Path()[1:], "/")
-	ns := r.opts.Namespace(c)
+	parts := strings.Split(req.URL.Path[1:], "/")
+	ns := r.opts.Namespace(req)
 
 	return &resolver.Endpoint{
 		Name:   ns + "." + parts[0],
-		Host:   string(c.Request().Host()),
-		Method: c.Method(),
-		Path:   c.Path(),
+		Host:   req.Host,
+		Method: req.Method,
+		Path:   req.URL.Path,
 	}, nil
 }
 

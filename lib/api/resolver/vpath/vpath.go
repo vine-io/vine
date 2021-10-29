@@ -25,10 +25,10 @@ package vpath
 
 import (
 	"errors"
+	"net/http"
 	"regexp"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/vine-io/vine/lib/api/resolver"
 )
 
@@ -44,36 +44,36 @@ var (
 	re = regexp.MustCompile("^v[0-9]+$")
 )
 
-func (r *Resolver) Resolve(c *fiber.Ctx) (*resolver.Endpoint, error) {
-	if c.Path() == "/" {
+func (r *Resolver) Resolve(req *http.Request) (*resolver.Endpoint, error) {
+	if req.URL.Path == "/" {
 		return nil, errors.New("unknown name")
 	}
 
-	parts := strings.Split(c.Path()[1:], "/")
+	parts := strings.Split(req.URL.Path[1:], "/")
 	if len(parts) == 1 {
 		return &resolver.Endpoint{
-			Name:   r.withNamespace(c, parts...),
-			Host:   string(c.Request().Host()),
-			Method: c.Method(),
-			Path:   c.Path(),
+			Name:   r.withNamespace(req, parts...),
+			Host:   req.Host,
+			Method: req.Method,
+			Path:   req.URL.Path,
 		}, nil
 	}
 
 	// /v1/foo
 	if re.MatchString(parts[0]) {
 		return &resolver.Endpoint{
-			Name:   r.withNamespace(c, parts[0:2]...),
-			Host:   string(c.Request().Host()),
-			Method: c.Method(),
-			Path:   c.Path(),
+			Name:   r.withNamespace(req, parts[0:2]...),
+			Host:   req.Host,
+			Method: req.Method,
+			Path:   req.URL.Path,
 		}, nil
 	}
 
 	return &resolver.Endpoint{
-		Name:   r.withNamespace(c, parts[0]),
-		Host:   string(c.Request().Host()),
-		Method: c.Method(),
-		Path:   c.Path(),
+		Name:   r.withNamespace(req, parts[0]),
+		Host:   req.Host,
+		Method: req.Method,
+		Path:   req.URL.Path,
 	}, nil
 }
 
@@ -81,8 +81,8 @@ func (r *Resolver) String() string {
 	return "path"
 }
 
-func (r *Resolver) withNamespace(c *fiber.Ctx, parts ...string) string {
-	ns := r.opts.Namespace(c)
+func (r *Resolver) withNamespace(req *http.Request, parts ...string) string {
+	ns := r.opts.Namespace(req)
 	if len(ns) == 0 {
 		return strings.Join(parts, ".")
 	}

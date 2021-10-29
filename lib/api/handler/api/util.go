@@ -23,11 +23,12 @@
 package api
 
 import (
-	"bytes"
+	"fmt"
 	"mime"
 	"net"
+	"net/http"
+	"strings"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/oxtoacart/bpool"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/registry"
@@ -39,31 +40,35 @@ var (
 	bufferPool = bpool.NewSizedBufferPool(1024, 8)
 )
 
-func requestToProto(c *fiber.Ctx) (*api.Request, error) {
+func requestToProto(r *http.Request) (*api.Request, error) {
+	if err := r.ParseForm(); err != nil {
+		return nil, fmt.Errorf("Error parsing form: %v", err)
+	}
+
 	req := &api.Request{
-		Path:   string(c.Request().URI().Path()),
-		Method: c.Method(),
+		Path:   r.URL.Path,
+		Method: r.Method,
 		Header: make(map[string]*api.Pair),
 		Get:    make(map[string]*api.Pair),
 		Post:   make(map[string]*api.Pair),
-		Url:    c.Request().URI().String(),
+		Url:    r.URL.String(),
 	}
 
-	ct, _, err := mime.ParseMediaType(c.Get("Content-Type"))
+	ct, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	if err != nil {
 		ct = "text/plain; charset=UTF-8" //default CT is text/plain
-		c.Set("Content-Type", ct)
+		r.Header.Set("Content-Type", ct)
 	}
 
 	//set the body:
-	if len(c.Body()) != 0 {
+	if r.Body != nil {
 		switch ct {
 		case "application/x-www-form-urlencoded":
 			// expect form vals in Post data
 		default:
 			buf := bufferPool.Get()
 			defer bufferPool.Put(buf)
-			if _, err = buf.ReadFrom(bytes.NewBuffer(c.Body())); err != nil {
+			if _, err = buf.ReadFrom(r.Body); err != nil {
 				return nil, err
 			}
 			req.Body = buf.String()
@@ -71,9 +76,9 @@ func requestToProto(c *fiber.Ctx) (*api.Request, error) {
 	}
 
 	// Set X-Forwarded-For if it does not exist
-	if ip, _, err := net.SplitHostPort(c.IP()); err == nil {
-		if prior := c.Get("X-Forwarded-For"); prior != "" {
-			ip = prior + ", " + ip
+	if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		if prior, ok := r.Header["X-Forwarded-For"]; ok {
+			ip = strings.Join(prior, ", ") + ", " + ip
 		}
 
 		// Set the header
@@ -86,12 +91,11 @@ func requestToProto(c *fiber.Ctx) (*api.Request, error) {
 	// Host is stripped from net/http Headers so let's add it
 	req.Header["Host"] = &api.Pair{
 		Key:    "Host",
-		Values: []string{string(c.Request().Host())},
+		Values: []string{r.Host},
 	}
 
 	// Get data
-	c.Request().URI().QueryArgs().VisitAll(func(k, v []byte) {
-		key, value := string(k), string(v)
+	for key, vals := range r.URL.Query() {
 		header, ok := req.Get[key]
 		if !ok {
 			header = &api.Pair{
@@ -99,33 +103,31 @@ func requestToProto(c *fiber.Ctx) (*api.Request, error) {
 			}
 			req.Get[key] = header
 		}
-		header.Values = append(header.Values, value)
-	})
+		header.Values = vals
+	}
 
 	// Post data
-	c.Request().PostArgs().VisitAll(func(k, v []byte) {
-		key, value := string(k), string(v)
+	for key, vals := range r.PostForm {
 		header, ok := req.Post[key]
 		if !ok {
 			header = &api.Pair{
 				Key: key,
 			}
-			req.Get[key] = header
+			req.Post[key] = header
 		}
-		header.Values = append(header.Values, value)
-	})
+		header.Values = vals
+	}
 
-	c.Request().Header.VisitAll(func(k, v []byte) {
-		key, value := string(k), string(v)
+	for key, vals := range r.Header {
 		header, ok := req.Header[key]
 		if !ok {
 			header = &api.Pair{
 				Key: key,
 			}
-			req.Get[key] = header
+			req.Header[key] = header
 		}
-		header.Values = append(header.Values, value)
-	})
+		header.Values = vals
+	}
 
 	return req, nil
 }

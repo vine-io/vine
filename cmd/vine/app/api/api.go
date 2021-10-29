@@ -27,7 +27,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/cli"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
 	"github.com/vine-io/vine/lib/api/handler/openapi"
@@ -126,11 +126,12 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	// create the router
-	app := fiber.New(fiber.Config{DisableStartupMessage: true})
+	gin.SetMode(gin.ReleaseMode)
+	app := gin.New()
 
 	if ctx.Bool("enable-stats") {
 		st := stats.New()
-		app.All("/stats", st.StatsHandler)
+		app.Any("/stats", st.StatsHandler)
 		st.Start()
 		defer st.Stop()
 	}
@@ -139,18 +140,20 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		openapi.RegisterOpenAPI(app)
 	}
 
-	app.Get("/", func(c *fiber.Ctx) error {
+	app.GET("/", func(c *gin.Context) {
 		response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
-		return c.Send([]byte(response))
+		c.JSON(200, response)
+		return
 	})
 
 	// strip favicon.ico
-	app.Get("/favicon.ico", func(ctx *fiber.Ctx) error { return nil })
+	app.GET("/favicon.ico", func(ctx *gin.Context) { return })
 
 	// register rpc handler
 	if EnableRPC {
 		log.Infof("Registering RPC Handler at %s", RPCPath)
-		app.All(RPCPath, handler.RPC)
+		app.Group(RPCPath, handler.RPC)
+		return
 	}
 
 	// create the namespace resolver
@@ -187,7 +190,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		app.Group(APIPath, rp.Handle)
+		app.Use(rp.Handle)
 	case "api":
 		log.Infof("Registering API Request Handler at %s", APIPath)
 		rt := regRouter.NewRouter(
@@ -200,7 +203,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		app.Group(APIPath, ap.Handle)
+		app.Use(ap.Handle)
 	case "event":
 		log.Infof("Registering API Event Handler at %s", APIPath)
 		rt := regRouter.NewRouter(
@@ -213,7 +216,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 			ahandler.WithRouter(rt),
 			ahandler.WithClient(svc.Client()),
 		)
-		app.Group(APIPath, ev.Handle)
+		app.Use(ev.Handle)
 	case "http", "proxy":
 		log.Infof("Registering API HTTP Handler at %s", ProxyPath)
 		rt := regRouter.NewRouter(

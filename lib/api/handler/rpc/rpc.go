@@ -24,7 +24,6 @@
 package rpc
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -32,7 +31,7 @@ import (
 	"strings"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	json "github.com/json-iterator/go"
 	"github.com/oxtoacart/bpool"
 	"github.com/vine-io/vine/core/client"
@@ -115,26 +114,25 @@ func strategy(services []*registry.Service) selector.Strategy {
 	}
 }
 
-func (h *rpcHandler) Handle(c *fiber.Ctx) error {
+func (h *rpcHandler) Handle(c *gin.Context) {
 
 	bsize := handler.DefaultMaxRecvSize
 	if h.opts.MaxRecvSize > 0 {
 		bsize = h.opts.MaxRecvSize
 	}
-	c.Context().SetBodyStream(c.Context().RequestBodyStream(), int(bsize))
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, bsize)
 	var service *api.Service
 
-	ct := c.Get("Content-Type")
+	ct := c.GetHeader("Content-Type")
 	if ct == "" {
-		c.Request().Header.Set("Content-Type", "application/json")
+		c.Header("Content-Type", "application/json")
 		ct = "application/json"
 	}
 
 	// create context
-	cx := ctx.FromRequest(c)
+	cx := ctx.FromRequest(c.Request)
 	// set merged context to request
-	r := ctx.NewRequestCtx(c, cx)
-
+	r := c.Request.Clone(cx)
 	if h.s != nil {
 		// we were given the service
 		service = h.s
@@ -143,14 +141,17 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 		s, err := h.opts.Router.Route(r)
 		if err != nil {
 			if err.Error() == "service not found" {
-				return writeError(c, errors.NotFound("go.vine.api", "invalid url"))
+				writeError(c, errors.NotFound("go.vine.api", "invalid url"))
+				return
 			}
-			return writeError(c, errors.BadGateway("go.vine.api", err.Error()))
+			writeError(c, errors.BadGateway("go.vine.api", err.Error()))
+			return
 		}
 		service = s
 	} else {
 		// we have no way of routing the request
-		return writeError(c, errors.BadGateway("go.vine.api", "no route found"))
+		writeError(c, errors.BadGateway("go.vine.api", "no route found"))
+		return
 	}
 
 	// Strip charset from Content-Type (like `application/json; charset=UTF-8`)
@@ -166,7 +167,8 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 		// drop older context as it can have timeouts and create new
 		//		md, _ := metadata.FromContext(cx)
 		// serveWebSocket(context.TODO(), w, r, service, c)
-		return serveWebSocket(r, service, cc)
+		serveWebSocket(c, service, cc)
+		return
 	}
 
 	// create strategy
@@ -174,9 +176,10 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 
 	// walk the standard call path
 	// get payload
-	br, err := requestPayload(r)
+	br, err := requestPayload(c.Request)
 	if err != nil {
-		return writeError(c, err)
+		writeError(c, err)
+		return
 	}
 
 	var rsp []byte
@@ -202,13 +205,15 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 
 		// make the call
 		if err := cc.Call(cx, req, response, client.WithSelectOption(so)); err != nil {
-			return writeError(c, err)
+			writeError(c, err)
+			return
 		}
 
 		// marshall response
 		rsp, err = response.Marshal()
 		if err != nil {
-			return writeError(c, err)
+			writeError(c, err)
+			return
 		}
 
 	default:
@@ -235,20 +240,20 @@ func (h *rpcHandler) Handle(c *fiber.Ctx) error {
 		)
 		// make the call
 		if err := cc.Call(cx, req, &response, client.WithSelectOption(so)); err != nil {
-			return writeError(c, err)
+			writeError(c, err)
+			return
 		}
 
 		// marshall response
 		rsp, err = response.MarshalJSON()
 		if err != nil {
-			return writeError(c, err)
+			writeError(c, err)
+			return
 		}
 	}
 
 	// write the response
 	writeResponse(c, rsp)
-
-	return nil
 }
 
 func (h *rpcHandler) String() string {
@@ -267,12 +272,12 @@ func hasCodec(ct string, codecs []string) bool {
 // requestPayload takes a *http.Request.
 // If the request is a GET the query string parameters are extracted and marshaled to JSON and the raw bytes are returned.
 // If the request method is a POST the request body is read and returned
-func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
+func requestPayload(r *http.Request) ([]byte, error) {
 	var err error
 
 	// we have to decode json-rpc and proto-rpc because we suck
 	// well actually because there's no proxy codec right now
-	ct := r.Get("Content-Type")
+	ct := r.Header.Get("Content-Type")
 	switch {
 	case strings.Contains(ct, "application/json-rpc"):
 		msg := codec.Message{
@@ -280,7 +285,7 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 			Header: make(map[string]string),
 		}
 
-		c := jsonrpc.NewCodec(&buffer{io.NopCloser(bytes.NewBuffer(r.Body()))})
+		c := jsonrpc.NewCodec(&buffer{r.Body})
 		if err = c.ReadHeader(&msg, codec.Request); err != nil {
 			return nil, err
 		}
@@ -294,7 +299,7 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 			Type:   codec.Request,
 			Header: make(map[string]string),
 		}
-		c := protorpc.NewCodec(&buffer{io.NopCloser(bytes.NewBuffer(r.Body()))})
+		c := protorpc.NewCodec(&buffer{io.NopCloser(r.Body)})
 		if err = c.ReadHeader(&msg, codec.Request); err != nil {
 			return nil, err
 		}
@@ -306,18 +311,17 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 	case strings.Contains(ct, "application/x-www-form-urlencoded"):
 		// generate a new set of values from the form
 		vals := make(map[string]string)
-		r.Request().PostArgs().VisitAll(func(k, v []byte) {
-			vals[string(k)] = string(v)
-		})
-		r.Ctx.Context().QueryArgs().VisitAll(func(k, v []byte) {
-			key := string(k)
+		for key, values := range r.PostForm {
+			vals[key] = strings.Join(values, ",")
+		}
+		for key, values := range r.URL.Query() {
 			vv, ok := vals[key]
 			if !ok {
-				vals[key] = string(v)
+				vals[key] = strings.Join(values, ",")
 			} else {
-				vals[key] = vv + "," + string(v)
+				vals[key] = vv + "," + strings.Join(values, ",")
 			}
-		})
+		}
 
 		// marshal
 		return json.Marshal(vals)
@@ -325,9 +329,9 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 	}
 
 	// otherwise as per usual
-	cctx := r.Context()
-	// don't use metadata.FromContext as it mangles names
-	md, ok := metadata.FromContext(cctx)
+	rctx := r.Context()
+	// dont user meadata.FromContext as it mangles names
+	md, ok := metadata.FromContext(rctx)
 	if !ok {
 		md = make(map[string]string)
 	}
@@ -353,10 +357,9 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 	req := make(map[string]interface{}, len(md))
 
 	// get fields from url values
-	query := string(r.Request().URI().QueryString())
-	if len(query) > 0 {
+	if len(r.URL.RawQuery) > 0 {
 		umd := make(map[string]interface{})
-		err = qson.Unmarshal(&umd, query)
+		err = qson.Unmarshal(&umd, r.URL.RawQuery)
 		if err != nil {
 			return nil, err
 		}
@@ -366,7 +369,7 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 	}
 
 	// restore context without fields
-	r = r.Clone(metadata.NewContext(cctx, md))
+	*r = *r.Clone(metadata.NewContext(rctx, md))
 
 	for k, v := range matches {
 		ps := strings.Split(k, ".")
@@ -406,7 +409,7 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 		return nil, err
 	}
 
-	switch r.Method() {
+	switch r.Method {
 	case "GET":
 		// empty response
 		if strings.Contains(ct, "application/json") && string(out) == "{}" {
@@ -419,7 +422,7 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 		bodybuf := []byte("{}")
 		buf := bufferPool.Get()
 		defer bufferPool.Put(buf)
-		if _, err := buf.ReadFrom(bytes.NewBuffer(r.Body())); err != nil {
+		if _, err := buf.ReadFrom(r.Body); err != nil {
 			return nil, err
 		}
 		if b := buf.Bytes(); len(b) > 0 {
@@ -477,7 +480,7 @@ func requestPayload(r *ctx.RequestCtx) ([]byte, error) {
 	return []byte{}, nil
 }
 
-func writeError(c *fiber.Ctx, err error) error {
+func writeError(c *gin.Context, err error) {
 	ce := errors.Parse(err.Error())
 
 	switch ce.Code {
@@ -487,40 +490,35 @@ func writeError(c *fiber.Ctx, err error) error {
 		ce.Id = "go.vine.api"
 		ce.Status = http.StatusText(500)
 		ce.Detail = "error during request: " + ce.Detail
-		c.Response().SetStatusCode(500)
 	default:
 		// handle unknown error code
 		if ce.Code < 100 || ce.Code > 999 {
 			ce.Code = 500
 		}
-		c.Response().SetStatusCode(int(ce.Code))
 	}
-
-	// response content type
-	c.Set("Content-Type", "application/json")
 
 	// Set trailers
-	if strings.Contains(c.Get("Content-Type"), "application/grpc") {
-		c.Set("Trailer", "grpc-status")
-		c.Set("Trailer", "grpc-message")
-		c.Set("grpc-status", "13")
-		c.Set("grpc-message", ce.Detail)
+	if strings.Contains(c.GetHeader("Content-Type"), "application/grpc") {
+		c.Header("Trailer", "grpc-status")
+		c.Header("Trailer", "grpc-message")
+		c.Header("grpc-status", "13")
+		c.Header("grpc-message", ce.Detail)
 	}
 
-	logger.Errorf("code=%d [%s] %s | %s", ce.Code, c.Method(), c.Path(), ce.Detail)
-	return c.JSON(ce)
+	logger.Errorf("code=%d [%s] %s | %s", ce.Code, c.Request.Method, c.Request.URL.Path, ce.Detail)
+	c.JSON(int(ce.Code), ce)
 }
 
-func writeResponse(c *fiber.Ctx, rsp []byte) {
-	c.Set("Content-Type", c.Get("Content-Type"))
-	c.Set("Content-Length", strconv.Itoa(len(rsp)))
+func writeResponse(c *gin.Context, rsp []byte) {
+	c.Header("Content-Type", c.GetHeader("Content-Type"))
+	c.Header("Content-Length", strconv.Itoa(len(rsp)))
 
 	// Set trailers
-	if strings.Contains(c.Get("Content-Type"), "application/grpc") {
-		c.Set("Trailer", "grpc-status")
-		c.Set("Trailer", "grpc-message")
-		c.Set("grpc-status", "0")
-		c.Set("grpc-message", "")
+	if strings.Contains(c.GetHeader("Content-Type"), "application/grpc") {
+		c.Header("Trailer", "grpc-status")
+		c.Header("Trailer", "grpc-message")
+		c.Header("grpc-status", "0")
+		c.Header("grpc-message", "")
 	}
 
 	code := http.StatusOK
@@ -529,13 +527,8 @@ func writeResponse(c *fiber.Ctx, rsp []byte) {
 		code = http.StatusNoContent
 	}
 
-	// write response
-	c.Response().SetStatusCode(code)
-	_, err := c.Write(rsp)
-	if err != nil {
-		logger.Error(err)
-	}
-	logger.Infof("code=%d [%s] %s", code, c.Method(), c.Path())
+	c.Data(200, c.GetHeader("Context-Type"), rsp)
+	logger.Infof("code=%d [%s] %s", code, c.Request.Method, c.Request.URL.Path)
 }
 
 func NewHandler(opts ...handler.Option) handler.Handler {

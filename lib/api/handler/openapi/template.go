@@ -47,9 +47,9 @@ var (
 	swaggerTmpl = `
 {{ define "title"}}<title>Swagger UI</title>{{end}}
 {{ define "style" }}
-<link rel="stylesheet" type="text/css" href="./swagger/swagger-ui.css" >
-    <link rel="icon" type="image/png" href="./swagger/favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="./swagger/favicon-16x16.png" sizes="16x16" />
+<link rel="stylesheet" type="text/css" href="./static/swagger/swagger-ui.css" >
+    <link rel="icon" type="image/png" href="./static/swagger/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="./static/swagger/favicon-16x16.png" sizes="16x16" />
     <style>
       html
       {
@@ -74,8 +74,8 @@ var (
 {{end}}
 {{ define "scripts" }}
 <div id="swagger-ui"></div>
-    <script src="./swagger/swagger-ui-bundle.js" charset="UTF-8"> </script>
-    <script src="./swagger/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
+    <script src="./static/swagger/swagger-ui-bundle.js" charset="UTF-8"> </script>
+    <script src="./static/swagger/swagger-ui-standalone-preset.js" charset="UTF-8"> </script>
     <script>
     window.onload = function() {
       // Begin Swagger UI call region
@@ -102,7 +102,7 @@ var (
 	redocTmpl = `
 {{ define "title" }}<title>Redoc</title>{{end}}
 {{ define "style" }}
-    <link href="./redoc/redoc.css" rel="stylesheet">
+    <link href="./static/redoc/redoc.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -112,7 +112,7 @@ var (
 {{end}}
 {{ define "scripts" }}
 	<redoc spec-url='/openapi.json'></redoc>
-	<script src="./redoc/redoc.standalone.js"></script>
+	<script src="./static/redoc/redoc.standalone.js"></script>
 {{end}}
 `
 )

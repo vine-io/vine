@@ -29,7 +29,7 @@ type Pair struct {
 	Values []string `json:"values,omitempty"`
 }
 
-// A HTTP request as RPC
+// Request A HTTP request as RPC
 // Forward by the api handler
 type Request struct {
 	Method string           `json:"method,omitempty"`
@@ -41,7 +41,7 @@ type Request struct {
 	Url    string           `json:"url,omitempty"`
 }
 
-// A HTTP response as RPC
+// Response A HTTP response as RPC
 // Expected response for the api handler
 type Response struct {
 	StatusCode int32            `json:"statusCode,omitempty"`
@@ -49,7 +49,7 @@ type Response struct {
 	Body       string           `json:"body,omitempty"`
 }
 
-// A HTTP event as RPC
+// Event A HTTP event as RPC
 // Forwarded by the event handler
 type Event struct {
 	// e.g login

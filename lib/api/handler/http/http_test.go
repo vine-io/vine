@@ -28,7 +28,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
 	"github.com/vine-io/vine/lib/api/handler"
@@ -88,7 +88,7 @@ func testHttp(t *testing.T, path, service, ns string) {
 	p := NewHandler(handler.WithRouter(rt))
 
 	// execute the handler
-	ctx := fiber.Ctx{}
+	ctx := gin.Context{}
 	p.Handle(&ctx)
 
 	if w.Code != 200 {

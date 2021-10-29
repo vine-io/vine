@@ -23,7 +23,9 @@
 package handler
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine/lib/errors"
 
 	"github.com/vine-io/vine"
@@ -41,43 +43,49 @@ import (
 type metaHandler struct {
 	c  client.Client
 	r  router.Router
-	ns func(*fiber.Ctx) string
+	ns func(*http.Request) string
 }
 
-func (m *metaHandler) Handle(c *fiber.Ctx) error {
+func (m *metaHandler) Handle(c *gin.Context) {
 
-	r := ctx.NewRequestCtx(c, ctx.FromRequest(c))
+	r := c.Request.Clone(ctx.FromRequest(c.Request))
 	service, err := m.r.Route(r)
 	if err != nil {
-		err := errors.InternalServerError(m.ns(c), err.Error())
-		c.Set("Content-Type", "application/json")
-		return fiber.NewError(500, err.Error())
+		err := errors.InternalServerError(m.ns(c.Request), err.Error())
+		c.JSON(500, err.Error())
+		return
 	}
 
 	// TODO: don't do this ffs
 	switch service.Endpoint.Handler {
 	// web socket handler
 	case aweb.Handler:
-		return aweb.WithService(service, handler.WithClient(m.c)).Handle(c)
+		aweb.WithService(service, handler.WithClient(m.c)).Handle(c)
+		return
 	// proxy handler
 	case "proxy", ahttp.Handler:
-		return ahttp.WithService(service, handler.WithClient(m.c)).Handle(c)
+		ahttp.WithService(service, handler.WithClient(m.c)).Handle(c)
+		return
 	// rpcx handler
 	case arpc.Handler:
-		return arpc.WithService(service, handler.WithClient(m.c)).Handle(c)
+		arpc.WithService(service, handler.WithClient(m.c)).Handle(c)
+		return
 	// event handler
 	case event.Handler:
 		ev := event.NewHandler(
-			handler.WithNamespace(m.ns(c)),
+			handler.WithNamespace(m.ns(c.Request)),
 			handler.WithClient(m.c),
 		)
-		return ev.Handle(c)
+		ev.Handle(c)
+		return
 	// api handler
 	case aapi.Handler:
-		return aapi.WithService(service, handler.WithClient(m.c)).Handle(c)
+		aapi.WithService(service, handler.WithClient(m.c)).Handle(c)
+		return
 	// default handler: rpc
 	default:
-		return arpc.WithService(service, handler.WithClient(m.c)).Handle(c)
+		arpc.WithService(service, handler.WithClient(m.c)).Handle(c)
+		return
 	}
 }
 
@@ -86,7 +94,7 @@ func (m *metaHandler) String() string {
 }
 
 // Meta is a http.Handler that routes based on endpoint metadata
-func Meta(s vine.Service, r router.Router, ns func(ctx *fiber.Ctx) string) handler.Handler {
+func Meta(s vine.Service, r router.Router, ns func(*http.Request) string) handler.Handler {
 	return &metaHandler{
 		c:  s.Client(),
 		r:  r,

@@ -31,7 +31,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/serenize/snaker"
 	"github.com/vine-io/cli"
 	"github.com/vine-io/vine"
@@ -75,7 +75,7 @@ var (
 )
 
 type service struct {
-	app *fiber.App
+	app *gin.Engine
 	// registry we use
 	registry registry.Registry
 	// the resolver
@@ -95,7 +95,7 @@ type reg struct {
 }
 
 // Handle serves the web dashboard and proxies where appropriate
-func (s *service) Handle(c *fiber.Ctx) error {
+func (s *service) Handle(c *gin.Context) {
 	//host := string(c.Request().Host())
 	//if len(c.Request().Host()) == 0 {
 	//	r.URL.Host = r.Host
@@ -165,12 +165,12 @@ func (s *service) Handle(c *fiber.Ctx) error {
 	//}
 
 	// otherwise serve the proxy
-	return s.prx.Handler(c)
+	s.prx.Handler(c)
 }
 
 // proxy is a http reverse proxy
 func (s *service) proxy() *proxy {
-	director := func(c *fiber.Ctx) {
+	director := func(c *gin.Context) {
 		//kill := func() {
 		//	r.URL.Host = ""
 		//	r.URL.Path = ""
@@ -251,18 +251,18 @@ func formatEndpoint(v *registry.Value, r int) string {
 	return fmt.Sprintf(strings.Join(fparts, ""), vals...)
 }
 
-func faviconHandler(c *fiber.Ctx) error {
-	return nil
+func faviconHandler(c *gin.Context) {
+	return
 }
 
-func (s *service) indexHandler(c *fiber.Ctx) error {
-	cors.SetHeaders(c)
+func (s *service) indexHandler(c *gin.Context) {
+	cors.SetHeaders(c.Writer, c.Request, &cors.Config{})
 
-	if c.Method() == "OPTIONS" {
-		return nil
+	if c.Request.Method == "OPTIONS" {
+		return
 	}
 
-	services, err := s.registry.ListServices(registry.ListContext(c.Context()))
+	services, err := s.registry.ListServices(registry.ListContext(c))
 	if err != nil {
 		log.Errorf("Error listing services: %v", err)
 	}
@@ -274,7 +274,7 @@ func (s *service) indexHandler(c *fiber.Ctx) error {
 	}
 
 	// if the resolver is subdomain, we will need the domain
-	domain, _ := publicsuffix.EffectiveTLDPlusOne(c.Hostname())
+	domain, _ := publicsuffix.EffectiveTLDPlusOne(c.Request.URL.Hostname())
 
 	var webServices []webService
 	for _, svc := range services {
@@ -306,10 +306,10 @@ func (s *service) indexHandler(c *fiber.Ctx) error {
 	}
 
 	data := templateData{len(webServices) > 0, webServices}
-	return s.render(c, indexTemplate, data)
+	s.render(c, indexTemplate, data)
 }
 
-func (s *service) registryHandler(c *fiber.Ctx) error {
+func (s *service) registryHandler(c *gin.Context) {
 	//vars := mux.Vars(c)
 	//svc := vars["name"]
 	//
@@ -363,10 +363,9 @@ func (s *service) registryHandler(c *fiber.Ctx) error {
 	//}
 
 	//return s.render(c, registryTemplate, services)
-	return nil
 }
 
-func (s *service) callHandler(c *fiber.Ctx) error {
+func (s *service) callHandler(c *gin.Context) {
 	//services, err := s.registry.ListServices(registry.ListContext(c.Context()))
 	//if err != nil {
 	//	log.Errorf("Error listing services: %v", err)
@@ -405,10 +404,9 @@ func (s *service) callHandler(c *fiber.Ctx) error {
 	//}
 	//
 	//return s.render(c, callTemplate, serviceMap)
-	return nil
 }
 
-func (s *service) render(c *fiber.Ctx, tmpl string, data interface{}) error {
+func (s *service) render(c *gin.Context, tmpl string, data interface{}) {
 	//t, err := template.New("template").Funcs(template.FuncMap{
 	//	"format": format,
 	//	"Title":  strings.Title,
@@ -450,7 +448,6 @@ func (s *service) render(c *fiber.Ctx, tmpl string, data interface{}) error {
 	//}); err != nil {
 	//	http.Error(w, "Error occurred:"+err.Error(), 500)
 	//}
-	return nil
 }
 
 func Run(ctx *cli.Context, svcOpts ...vine.Option) {
@@ -482,7 +479,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	reg := &reg{Registry: *cmd.DefaultOptions().Registry}
 
 	s := &service{
-		app:      fiber.New(fiber.Config{DisableStartupMessage: true}),
+		app:      gin.New(),
 		registry: reg,
 		// our internal resolver
 		resolver: &web.Resolver{
@@ -498,7 +495,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	if ctx.Bool("enable-stats") {
 		statsURL = "/stats"
 		st := stats.New()
-		s.app.All("/stats", st.StatsHandler)
+		s.app.Any("/stats", st.StatsHandler)
 		st.Start()
 		defer st.Stop()
 	}
@@ -507,13 +504,13 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	p := s.proxy()
 
 	// the web handler itself
-	s.app.All("/favicon.ico", faviconHandler)
-	s.app.All("/client", s.callHandler)
-	s.app.All("/services", s.registryHandler)
-	s.app.All("/service/{name}", s.registryHandler)
-	s.app.All("/rpc", handler.RPC)
-	s.app.All("/{service:[a-zA-Z0-9]+}", p.Handler)
-	s.app.All("/", s.indexHandler)
+	s.app.Any("/favicon.ico", faviconHandler)
+	s.app.Any("/client", s.callHandler)
+	s.app.Any("/services", s.registryHandler)
+	s.app.Any("/service/{name}", s.registryHandler)
+	s.app.Any("/rpc", handler.RPC)
+	s.app.Any("/{service:[a-zA-Z0-9]+}", p.Handler)
+	s.app.Any("/", s.indexHandler)
 
 	// insert the proxy
 	s.prx = p

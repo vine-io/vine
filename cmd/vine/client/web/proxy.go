@@ -28,17 +28,17 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
 type proxy struct {
 	// The default http reverse proxy
 	//Router *httputil.ReverseProxy
 	// The director which picks the route
-	Director func(c *fiber.Ctx)
+	Director func(ctx *gin.Context)
 }
 
-func (p *proxy) Handler(c *fiber.Ctx) error {
+func (p *proxy) Handler(ctx *gin.Context) {
 	//if !isWebSocket(c) {
 	//	// the usual path
 	//	p.Router.ServeHTTP(w, r)
@@ -46,43 +46,48 @@ func (p *proxy) Handler(c *fiber.Ctx) error {
 	//}
 
 	// the websocket path
-	p.Director(c)
-	host := string(c.Request().Host())
+	p.Director(ctx)
+	host := ctx.Request.Host
 
 	if len(host) == 0 {
-		return fiber.NewError(500, "invalid host")
+		ctx.JSON(500, "invalid host")
+		return
 	}
 
 	// set x-forward-for
-	if clientIP, _, err := net.SplitHostPort(c.IP()); err == nil {
-		if ips := c.Get("X-Forwarded-For"); ips != "" {
+	if clientIP, _, err := net.SplitHostPort(ctx.ClientIP()); err == nil {
+		if ips := ctx.GetHeader("X-Forwarded-For"); ips != "" {
 			clientIP = ips + ", " + clientIP
 		}
-		c.Set("X-Forwarded-For", clientIP)
+		ctx.Header("X-Forwarded-For", clientIP)
 	}
 
 	// connect to the backend host
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		ctx.JSON(500, err)
+		return
 	}
 
 	// hijack the connection
-	hj, ok := c.Context().Conn().(http.Hijacker)
+	hj, ok := ctx.Request.Body.(http.Hijacker)
 	if !ok {
-		return fiber.NewError(500, "failed to connect")
+		ctx.JSON(500, "failed to connect")
+		return
 	}
 
 	nc, _, err := hj.Hijack()
 	if err != nil {
-		return err
+		ctx.JSON(500, err)
+		return
 	}
 
 	defer nc.Close()
 	defer conn.Close()
 
-	if _, err = c.Request().WriteTo(conn); err != nil {
-		return err
+	if err = ctx.Request.Write(conn); err != nil {
+		ctx.JSON(500, err)
+		return
 	}
 
 	errCh := make(chan error, 2)
@@ -96,13 +101,11 @@ func (p *proxy) Handler(c *fiber.Ctx) error {
 	go cp(nc, conn)
 
 	<-errCh
-
-	return nil
 }
 
-func isWebSocket(c *fiber.Ctx) bool {
+func isWebSocket(c *gin.Context) bool {
 	contains := func(key, val string) bool {
-		vv := strings.Split(c.Get(key), ",")
+		vv := strings.Split(c.GetHeader(key), ",")
 		for _, v := range vv {
 			if val == strings.ToLower(strings.TrimSpace(v)) {
 				return true

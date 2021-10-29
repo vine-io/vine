@@ -24,15 +24,15 @@
 package event
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"path"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/oxtoacart/bpool"
 
@@ -91,17 +91,17 @@ func evRoute(ns, p string) (string, string) {
 	return topic, action
 }
 
-func (e *event) Handle(c *fiber.Ctx) error {
+func (e *event) Handle(c *gin.Context) {
 	bsize := handler.DefaultMaxRecvSize
 	if e.opts.MaxRecvSize > 0 {
 		bsize = e.opts.MaxRecvSize
 	}
-	c.Context().SetBodyStream(c.Context().RequestBodyStream(), int(bsize))
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, bsize)
 
 	// request to topic:event
 	// create event
 	// publish to topic
-	topic, action := evRoute(e.opts.Namespace, string(c.Request().URI().Path()))
+	topic, action := evRoute(e.opts.Namespace, c.Request.URL.Path)
 
 	// create event
 	ev := &api.Event{
@@ -112,8 +112,7 @@ func (e *event) Handle(c *fiber.Ctx) error {
 		Timestamp: time.Now().Unix(),
 	}
 
-	c.Request().Header.VisitAll(func(k, v []byte) {
-		key, vals := string(k), string(v)
+	for key, values := range c.Request.Header {
 		header, ok := ev.Header[key]
 		if !ok {
 			header = &api.Pair{
@@ -121,19 +120,20 @@ func (e *event) Handle(c *fiber.Ctx) error {
 			}
 			ev.Header[key] = header
 		}
-		header.Values = []string{vals}
-	})
+		header.Values = values
+	}
 
 	// set body
-	if c.Method() == "GET" {
-		bytes, _ := json.Marshal(c.Request().URI().QueryString())
+	if c.Request.Method == "GET" {
+		bytes, _ := json.Marshal(c.Request.URL.RawQuery)
 		ev.Data = string(bytes)
 	} else {
 		// Read body
 		buf := bufferPool.Get()
 		defer bufferPool.Put(buf)
-		if _, err := buf.ReadFrom(bytes.NewBuffer(c.Body())); err != nil {
-			return fiber.NewError(500, err.Error())
+		if _, err := buf.ReadFrom(c.Request.Body); err != nil {
+			c.JSON(200, err.Error())
+			return
 		}
 		ev.Data = buf.String()
 	}
@@ -145,10 +145,11 @@ func (e *event) Handle(c *fiber.Ctx) error {
 	p := cc.NewMessage(topic, ev)
 
 	// publish event
-	if err := cc.Publish(ctx.FromRequest(c), p); err != nil {
-		return fiber.NewError(500, err.Error())
+	if err := cc.Publish(ctx.FromRequest(c.Request), p); err != nil {
+		c.JSON(500, err.Error())
+		return
 	}
-	return nil
+	return
 }
 
 func (e *event) String() string {

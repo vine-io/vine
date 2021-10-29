@@ -26,12 +26,13 @@ package http
 import (
 	"errors"
 	"fmt"
+	"net/http/httputil"
 	"net/url"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine/core/client/selector"
-	"github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/api"
+	"github.com/vine-io/vine/lib/api/handler"
 	ctx "github.com/vine-io/vine/util/context"
 )
 
@@ -46,30 +47,32 @@ type httpHandler struct {
 	s *api.Service
 }
 
-func (h *httpHandler) Handle(c *fiber.Ctx) error {
+func (h *httpHandler) Handle(c *gin.Context) {
 	service, err := h.getService(c)
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		c.JSON(500, err.Error())
+		return
 	}
 
 	if len(service) == 0 {
-		return fiber.NewError(404)
+		c.JSON(404, "")
+		return
 	}
 
 	rp, err := url.Parse(service)
 	if err != nil {
-		return fiber.NewError(500)
+		c.JSON(500, "")
+		return
 	}
 
-	//httputil.NewSingleHostReverseProxy(rp).ServeHTTP(w, r)
-	return c.Redirect(rp.String())
+	httputil.NewSingleHostReverseProxy(rp).ServeHTTP(c.Writer, c.Request)
 }
 
 // getService returns the service for this request from the selector
-func (h *httpHandler) getService(c *fiber.Ctx) (string, error) {
+func (h *httpHandler) getService(c *gin.Context) (string, error) {
 	var service *api.Service
 
-	r := ctx.NewRequestCtx(c, ctx.FromRequest(c))
+	r := c.Request.Clone(ctx.FromRequest(c.Request))
 	if h.s != nil {
 		// we were given the service
 		service = h.s
