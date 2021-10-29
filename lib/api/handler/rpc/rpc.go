@@ -137,7 +137,7 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 		// we were given the service
 		service = h.s
 	} else if h.opts.Router != nil {
-		// try get service from router
+		// try to get service from router
 		s, err := h.opts.Router.Route(r)
 		if err != nil {
 			if err.Error() == "service not found" {
@@ -176,7 +176,7 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 
 	// walk the standard call path
 	// get payload
-	br, err := requestPayload(c.Request)
+	br, err := requestPayload(r)
 	if err != nil {
 		writeError(c, err)
 		return

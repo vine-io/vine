@@ -372,8 +372,7 @@ func (r *registryRouter) Endpoint(req *http.Request) (*api.Service, error) {
 				md.Set("x-api-field-"+k, v)
 			}
 			md.Set("x-api-body", ep.Body)
-			// TODO: Req.Clone from context metadata
-			req = req.Clone(metadata.NewContext(ctx, md))
+			*req = *req.Clone(metadata.NewContext(ctx, md))
 			break
 		}
 
@@ -408,7 +407,7 @@ func (r *registryRouter) Route(req *http.Request) (*api.Service, error) {
 		return nil, errors.New("router closed")
 	}
 
-	// try get an endpoint
+	// try to get an endpoint
 	ep, err := r.Endpoint(req)
 	if err == nil {
 		return ep, nil
