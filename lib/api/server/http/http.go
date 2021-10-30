@@ -30,30 +30,9 @@ import (
 	"sync"
 
 	"github.com/vine-io/vine/lib/api/server"
+	"github.com/vine-io/vine/lib/api/server/cors"
 	log "github.com/vine-io/vine/lib/logger"
 )
-
-//var DefaultBodyLimit = 1024 * 1024 * 1024 * 1024 * 1024 // 1 PB
-//var DefaultErrorHandler = func(ctx *fiber.Ctx, err error) error {
-//	// Status code defaults to 500
-//	code := fiber.StatusInternalServerError
-//	body := fiber.Map{"id": "go.vine.api", "code": code}
-//
-//	if e, ok := err.(*errors.Error); ok {
-//		code = int(e.Code)
-//		body["status"] = e.Status
-//		body["detail"] = e.Detail
-//		body["code"] = e.Code
-//	} else if e, ok := err.(*fiber.Error); ok {
-//		// Retrieve the custom status code if it's an fiber.*Error
-//		code = e.Code
-//		body["detail"] = e.Error()
-//		body["code"] = e.Code
-//	}
-//
-//	// Return from handler
-//	return ctx.Status(code).JSON(body)
-//}
 
 type httpServer struct {
 	mux  *http.ServeMux
@@ -69,14 +48,6 @@ func NewServer(address string, opts ...server.Option) server.Server {
 	for _, o := range opts {
 		o(&options)
 	}
-
-	//if options.Cfg == nil {
-	//	options.Cfg = &fiber.Config{
-	//		BodyLimit:             DefaultBodyLimit,
-	//		DisableStartupMessage: true,
-	//		ErrorHandler:          DefaultErrorHandler,
-	//	}
-	//}
 
 	return &httpServer{
 		opts:    options,
@@ -108,17 +79,8 @@ func (s *httpServer) Handle(path string, handler http.Handler) {
 
 	// wrap with cors
 	if s.opts.EnableCORS {
-		//handler = cors.CombinedCORSHandler(handler, s.opts.CORSConfig)
+		handler = cors.CombinedCORSHandler(handler, s.opts.CORSConfig)
 	}
-
-	//s.app.Use(logger.New(logger.Config{
-	//	Format:       "${time} ${status} - [${latency}] | [${method}]  ${path}\n",
-	//	TimeFormat:   "2006-01-02 15:04:05",
-	//	TimeZone:     "Local",
-	//	TimeInterval: 0,
-	//	Output:       log.DefaultLogger.Options().Out,
-	//}))
-	//s.app.Mount(path, app)
 
 	s.mux.Handle(path, handler)
 }

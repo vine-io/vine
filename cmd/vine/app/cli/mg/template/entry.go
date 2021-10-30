@@ -66,7 +66,7 @@ func Run() {
 	GatewayEntry = `package {{.Name}}
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine"
@@ -153,7 +153,9 @@ func Run() {
 	opts = append(opts, server.EnableCORS(true))
 
 	// create the router
-	app := fiber.New(fiber.Config{DisableStartupMessage: true})
+	gin.SetMode(gin.ReleaseMode)
+	app := gin.New()
+	app.Use(gin.Recovery())
 
 	if enableOpenAPI {
 		openapi.RegisterOpenAPI(app)
@@ -179,7 +181,7 @@ func Run() {
 		ahandler.WithRouter(rt),
 		ahandler.WithClient(svc.Client()),
 	)
-	app.Group(APIPath, rp.Handle)
+	app.Use(rp.Handle)
 
 	api := httpapi.NewServer(Address)
 

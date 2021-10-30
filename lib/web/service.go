@@ -34,8 +34,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/cli"
 
 	svc "github.com/vine-io/vine"
@@ -52,7 +51,7 @@ import (
 type service struct {
 	opts Options
 
-	app *fiber.App
+	app *gin.Engine
 	svc *registry.Service
 
 	sync.RWMutex
@@ -63,9 +62,10 @@ type service struct {
 
 func newService(opts ...Option) Service {
 	options := newOptions(opts...)
+	gin.SetMode(gin.ReleaseMode)
 	s := &service{
 		opts:   options,
-		app:    fiber.New(fiber.Config{DisableStartupMessage: true}),
+		app:    gin.New(),
 		static: true,
 	}
 	s.svc = s.genSrv()
@@ -221,7 +221,7 @@ func (s *service) start() error {
 	svc.Endpoints = s.svc.Endpoints
 	s.svc = svc
 
-	var app *fiber.App
+	var app *gin.Engine
 
 	if s.opts.App != nil {
 		app = s.opts.App
@@ -243,13 +243,13 @@ func (s *service) start() error {
 				_, err := os.Stat(static)
 				if err == nil {
 					logger.Infof("Enabling static file serving from %s", static)
-					s.app.Use("/", filesystem.New(filesystem.Config{Root: http.Dir(static)}))
+					s.app.StaticFS("/", http.Dir(static))
 				}
 			}
 		})
 	}
 
-	go app.Listener(l)
+	go app.RunListener(l)
 
 	for _, fn := range s.opts.AfterStart {
 		if err := fn(); err != nil {
@@ -310,7 +310,7 @@ func (s *service) Client() *http.Client {
 	}
 }
 
-func (s *service) Handle(method, pattern string, handler fiber.Handler) {
+func (s *service) Handle(method, pattern string, handler gin.HandlerFunc) {
 	var seen bool
 	s.RLock()
 	for _, ep := range s.svc.Endpoints {
@@ -341,27 +341,23 @@ func (s *service) Handle(method, pattern string, handler fiber.Handler) {
 	// register the handler
 	switch method {
 	case MethodHead:
-		s.app.Head(pattern, handler)
+		s.app.HEAD(pattern, handler)
 	case MethodGet:
-		s.app.Get(pattern, handler)
+		s.app.GET(pattern, handler)
 	case MethodPut:
-		s.app.Put(pattern, handler)
+		s.app.PUT(pattern, handler)
 	case MethodPatch:
-		s.app.Patch(pattern, handler)
+		s.app.PATCH(pattern, handler)
 	case MethodPost:
-		s.app.Post(pattern, handler)
+		s.app.POST(pattern, handler)
 	case MethodDelete:
-		s.app.Delete(pattern, handler)
-	case MethodConnect:
-		s.app.Connect(pattern, handler)
+		s.app.DELETE(pattern, handler)
 	case MethodOptions:
-		s.app.Options(pattern, handler)
-	case MethodTrace:
-		s.app.Trace(pattern, handler)
+		s.app.OPTIONS(pattern, handler)
 	case MethodAny:
-		s.app.All(pattern, handler)
+		s.app.Any(pattern, handler)
 	default:
-		s.app.All(pattern, handler)
+		s.app.Any(pattern, handler)
 	}
 }
 

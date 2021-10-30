@@ -28,7 +28,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
@@ -50,7 +50,7 @@ type Service interface {
 	Client() *http.Client
 	Init(opts ...Option) error
 	Options() Options
-	Handle(method, pattern string, handler fiber.Handler)
+	Handle(method, pattern string, handler gin.HandlerFunc)
 	Run() error
 }
 

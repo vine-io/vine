@@ -27,7 +27,7 @@ import (
 	"crypto/tls"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/cli"
 
 	"github.com/vine-io/vine"
@@ -52,7 +52,7 @@ type Options struct {
 	// RegisterCheck runs a check function before registering the service
 	RegisterCheck func(context.Context) error
 
-	App *fiber.App
+	App *gin.Engine
 
 	// Alternative Options
 	Context context.Context
@@ -180,8 +180,8 @@ func RegisterInterval(t time.Duration) Option {
 	}
 }
 
-// App for custom fiber.App
-func App(app *fiber.App) Option {
+// App for custom gin.Engine
+func App(app *gin.Engine) Option {
 	return func(o *Options) {
 		o.App = app
 	}

@@ -6,11 +6,9 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/evanphx/json-patch/v5 v5.2.0
-	github.com/fasthttp/websocket v1.4.3 // indirect
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-gonic/gin v1.7.4
-	github.com/gofiber/fiber/v2 v2.7.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.2

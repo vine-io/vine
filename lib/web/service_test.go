@@ -33,7 +33,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
 )
@@ -45,7 +45,7 @@ func TestService(t *testing.T) {
 		beforeStopCalled  bool
 		afterStopCalled   bool
 		str               = `<html><body><h1>Hello World</h1></body></html>`
-		fn                = func(c *fiber.Ctx) error { return c.SendString(str) }
+		fn                = func(c *gin.Context) { c.String(200, str) }
 		reg               = memory.NewRegistry()
 	)
 
@@ -191,7 +191,7 @@ func TestOptions(t *testing.T) {
 		reg              = memory.NewRegistry()
 		registerTTL      = 123 * time.Second
 		registerInterval = 456 * time.Second
-		app              = fiber.New()
+		app              = gin.New()
 		metadata         = map[string]string{"key": "val"}
 		secure           = true
 	)
@@ -259,7 +259,7 @@ func eventually(pass func() bool, fail func(...interface{})) {
 func TestTLS(t *testing.T) {
 	var (
 		str    = `<html><body><h1>Hello World</h1></body></html>`
-		fn     = func(c *fiber.Ctx) error { return c.SendString(str) }
+		fn     = func(c *gin.Context) { c.String(200, str) }
 		secure = true
 		reg    = memory.NewRegistry()
 	)

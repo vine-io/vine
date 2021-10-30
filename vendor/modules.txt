@@ -1,8 +1,6 @@
 # github.com/BurntSushi/toml v0.3.1
 ## explicit
 github.com/BurntSushi/toml
-# github.com/andybalholm/brotli v1.0.1
-github.com/andybalholm/brotli
 # github.com/beorn7/perks v1.0.1
 github.com/beorn7/perks/quantile
 # github.com/bitly/go-simplejson v0.5.0
@@ -17,8 +15,6 @@ github.com/davecgh/go-spew/spew
 # github.com/evanphx/json-patch/v5 v5.2.0
 ## explicit
 github.com/evanphx/json-patch/v5
-# github.com/fasthttp/websocket v1.4.3
-## explicit
 # github.com/felixge/httpsnoop v1.0.1
 ## explicit
 github.com/felixge/httpsnoop
@@ -41,18 +37,6 @@ github.com/go-playground/locales/currency
 github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.4.1
 github.com/go-playground/validator/v10
-# github.com/gofiber/fiber/v2 v2.7.1
-## explicit
-github.com/gofiber/fiber/v2
-github.com/gofiber/fiber/v2/internal/bytebufferpool
-github.com/gofiber/fiber/v2/internal/colorable
-github.com/gofiber/fiber/v2/internal/encoding/ascii
-github.com/gofiber/fiber/v2/internal/encoding/json
-github.com/gofiber/fiber/v2/internal/isatty
-github.com/gofiber/fiber/v2/internal/schema
-github.com/gofiber/fiber/v2/internal/uuid
-github.com/gofiber/fiber/v2/middleware/filesystem
-github.com/gofiber/fiber/v2/utils
 # github.com/gogo/protobuf v1.3.2
 ## explicit
 github.com/gogo/protobuf/gogoproto
@@ -96,10 +80,6 @@ github.com/jinzhu/now
 # github.com/json-iterator/go v1.1.11
 ## explicit
 github.com/json-iterator/go
-# github.com/klauspost/compress v1.11.8
-github.com/klauspost/compress/flate
-github.com/klauspost/compress/gzip
-github.com/klauspost/compress/zlib
 # github.com/kr/pretty v0.2.1
 ## explicit
 github.com/kr/pretty
@@ -158,16 +138,8 @@ github.com/shurcooL/sanitized_anchor_name
 github.com/stretchr/testify/assert
 # github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
-# github.com/valyala/bytebufferpool v1.0.0
-github.com/valyala/bytebufferpool
 # github.com/valyala/fasthttp v1.23.0
 ## explicit
-github.com/valyala/fasthttp
-github.com/valyala/fasthttp/fasthttputil
-github.com/valyala/fasthttp/reuseport
-github.com/valyala/fasthttp/stackless
-# github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a
-github.com/valyala/tcplisten
 # github.com/vine-io/cli v1.3.0
 ## explicit
 github.com/vine-io/cli
