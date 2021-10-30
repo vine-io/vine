@@ -188,7 +188,7 @@ func Run() {
 	if err := api.Init(opts...); err != nil {
 		log.Fatal(err)
     }
-	api.Handle("/", app)
+	api.Handle(APIPath, app)
 
 	// Start API
 	if err := api.Start(); err != nil {
