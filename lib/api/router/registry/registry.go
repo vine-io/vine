@@ -150,7 +150,7 @@ func (r *registryRouter) store(services []*registry.Service) {
 				continue
 			}
 
-			// try get endpoint
+			// try to get endpoint
 			ep, ok := eps[key]
 			if !ok {
 				ep = &api.Service{Name: service.Name}

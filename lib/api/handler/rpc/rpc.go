@@ -299,7 +299,7 @@ func requestPayload(r *http.Request) ([]byte, error) {
 			Type:   codec.Request,
 			Header: make(map[string]string),
 		}
-		c := protorpc.NewCodec(&buffer{io.NopCloser(r.Body)})
+		c := protorpc.NewCodec(&buffer{r.Body})
 		if err = c.ReadHeader(&msg, codec.Request); err != nil {
 			return nil, err
 		}
