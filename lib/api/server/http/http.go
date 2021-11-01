@@ -92,7 +92,7 @@ func (s *httpServer) Start() error {
 	if s.opts.EnableTLS && s.opts.TLSConfig != nil {
 		l, err = tls.Listen("tcp", s.address, s.opts.TLSConfig)
 	} else {
-		// otherwise plain listen
+		// otherwise, plain listen
 		l, err = net.Listen("tcp", s.address)
 	}
 	if err != nil {
