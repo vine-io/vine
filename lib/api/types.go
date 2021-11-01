@@ -22,7 +22,9 @@
 
 package api
 
-import "github.com/vine-io/vine/core/registry"
+import (
+	"github.com/vine-io/vine/core/registry"
+)
 
 type Pair struct {
 	Key    string   `json:"key,omitempty"`
