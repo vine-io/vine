@@ -69,7 +69,7 @@ func (g *grpcStream) Recv(msg interface{}) (err error) {
 	defer g.setError(err)
 	if err = g.stream.RecvMsg(msg); err != nil {
 		// #202 - inconsistent gRPC stream behavior
-		// the only way to tell if the stream is done is when we get a EOF on the Recv
+		// the only way to tell if the stream is done is when we get an EOF on the Recv
 		// here we should close the underlying gRPC ClientConn
 		closeErr := g.Close()
 		if err == io.EOF && closeErr != nil {

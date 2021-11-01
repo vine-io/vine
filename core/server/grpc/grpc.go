@@ -722,7 +722,7 @@ func (g *grpcServer) Register() error {
 	// Maps are ordered randomly, sort the keys for consistency
 	var handlerList []string
 	for n, e := range g.handlers {
-		// Only advertise non internal handlers
+		// Only advertise non-internal handlers
 		if !e.Options().Internal {
 			handlerList = append(handlerList, n)
 		}

@@ -272,7 +272,7 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 
 	st, err := cc.NewStream(newCtx, desc, methodToGRPC(req.Service(), req.Endpoint()), grpcCallOptions...)
 	if err != nil {
-		// we need to cleanup as we dialled and created a context
+		// we need to clean up as we dialled and created a context
 		// cancel the context
 		cancel()
 		// close the connection
