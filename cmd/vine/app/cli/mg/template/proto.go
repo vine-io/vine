@@ -2,6 +2,7 @@ package template
 
 var (
 	ProtoType = `syntax = "proto3";
+
 package {{.Group}}{{.Version}};
 
 option go_package = "{{.Dir}}/api/types/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
@@ -24,7 +25,7 @@ option java_package = "io.vine.services.{{.Group}}.{{.Version}}";
 
 // +gen:openapi
 service {{title .Name}}Service {
-	// +gen:post=/{{.Group}}/{{.Version}}/{{.Name}}/Call
+	// +gen:post=/api/{{.Group}}/{{.Version}}/{{.Name}}/Call
 	rpc Call(Request) returns (Response) {}
 	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
 	rpc PingPong(stream Ping) returns (stream Pong) {}
@@ -64,7 +65,7 @@ option go_package = "{{.Dir}}/api/service/{{.Group}}/{{.Version}};{{.Group}}{{.V
 
 // +gen:openapi
 service {{title .Name}}Service {
-	// +gen:post=/{{.Group}}/{{.Version}}/{{.Name}}/Call
+	// +gen:post=/api/{{.Group}}/{{.Version}}/{{.Name}}/Call
 	rpc {{title .Name}}Call({{title .Name}}Request) returns ({{title .Name}}Response) {}
 }
 
