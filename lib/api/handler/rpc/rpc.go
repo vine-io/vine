@@ -125,7 +125,7 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 
 	ct := c.GetHeader("Content-Type")
 	if ct == "" {
-		c.Header("Content-Type", "application/json")
+		c.Request.Header.Set("Content-Type", "application/json")
 		ct = "application/json"
 	}
 

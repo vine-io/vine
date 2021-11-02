@@ -121,7 +121,7 @@ func (wh *webHandler) serveWebSocket(host string, c *gin.Context) {
 		if ips := ctx.GetHeader("X-Forwarded-For"); ips != "" {
 			clientIP = ips + ", " + clientIP
 		}
-		c.Header("X-Forwarded-For", clientIP)
+		c.Request.Header.Set("X-Forwarded-For", clientIP)
 	}
 
 	// connect to the backend host

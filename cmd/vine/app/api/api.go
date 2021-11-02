@@ -24,20 +24,19 @@
 package api
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vine-io/cli"
-	"github.com/vine-io/vine/cmd/vine/app/api/handler"
-	"github.com/vine-io/vine/lib/api/handler/openapi"
 
+	"github.com/vine-io/cli"
 	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/cmd/vine/app/api/handler"
 	rrvine "github.com/vine-io/vine/cmd/vine/client/resolver/api"
 	ahandler "github.com/vine-io/vine/lib/api/handler"
 	aapi "github.com/vine-io/vine/lib/api/handler/api"
 	"github.com/vine-io/vine/lib/api/handler/event"
 	ahttp "github.com/vine-io/vine/lib/api/handler/http"
+	"github.com/vine-io/vine/lib/api/handler/openapi"
 	arpc "github.com/vine-io/vine/lib/api/handler/rpc"
 	aweb "github.com/vine-io/vine/lib/api/handler/web"
 	"github.com/vine-io/vine/lib/api/resolver"
@@ -141,8 +140,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	app.GET("/", func(c *gin.Context) {
-		response := fmt.Sprintf(`{"version": "%s"}`, ctx.App.Version)
-		c.JSON(200, response)
+		c.JSON(200, gin.H{"version": ctx.App.Version})
 		return
 	})
 
@@ -152,7 +150,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	// register rpc handler
 	if EnableRPC {
 		log.Infof("Registering RPC Handler at %s", RPCPath)
-		app.Group(RPCPath, handler.RPC)
+		app.Use(handler.RPC)
 		return
 	}
 

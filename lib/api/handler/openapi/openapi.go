@@ -55,7 +55,7 @@ func RegisterOpenAPI(router *gin.Engine) {
 
 func openAPIHandler(ctx *gin.Context) {
 	if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
-		ctx.Header("Content-Type", ct)
+		ctx.Request.Header.Set("Content-Type", ct)
 		return
 	}
 	var tmpl string

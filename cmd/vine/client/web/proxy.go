@@ -59,7 +59,7 @@ func (p *proxy) Handler(ctx *gin.Context) {
 		if ips := ctx.GetHeader("X-Forwarded-For"); ips != "" {
 			clientIP = ips + ", " + clientIP
 		}
-		ctx.Header("X-Forwarded-For", clientIP)
+		ctx.Request.Header.Set("X-Forwarded-For", clientIP)
 	}
 
 	// connect to the backend host

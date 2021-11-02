@@ -111,7 +111,7 @@ func (a *apiHandler) Handle(c *gin.Context) {
 	}
 
 	if len(c.GetHeader("Content-Type")) == 0 {
-		c.Header("Content-Type", "application/json")
+		c.Request.Header.Set("Content-Type", "application/json")
 	}
 
 	c.JSON(int(rsp.StatusCode), rsp.Body)
