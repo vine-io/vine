@@ -26,6 +26,7 @@ import (
 	"bytes"
 	"html/template"
 	"mime"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -46,28 +47,28 @@ func RegisterOpenAPI(router *gin.Engine) {
 	if err != nil {
 		log.Fatalf("Starting OpenAPI: %v", err)
 	}
-	router.GET(DefaultPrefix, openAPIHandler)
+	router.GET(DefaultPrefix, swaggerHandler)
+	router.GET(path.Join(DefaultPrefix, "redoc"), redocHandler)
 	router.StaticFS(filepath.Join(DefaultPrefix, "static/"), statikFs)
 	router.GET("/openapi.json", openAPIJOSNHandler)
 	router.GET("/services", openAPIServiceHandler)
 	log.Infof("Starting OpenAPI at %v", DefaultPrefix)
 }
 
-func openAPIHandler(ctx *gin.Context) {
+func swaggerHandler(ctx *gin.Context) {
 	if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
 		ctx.Request.Header.Set("Content-Type", ct)
 		return
 	}
-	var tmpl string
-	style := ctx.Query("style")
-	switch style {
-	case "redoc":
-		tmpl = redocTmpl
-	default:
-		tmpl = swaggerTmpl
-	}
+	render(ctx, swaggerTmpl, nil)
+}
 
-	render(ctx, tmpl, nil)
+func redocHandler(ctx *gin.Context) {
+	if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
+		ctx.Request.Header.Set("Content-Type", ct)
+		return
+	}
+	render(ctx, redocTmpl, nil)
 }
 
 func openAPIJOSNHandler(ctx *gin.Context) {

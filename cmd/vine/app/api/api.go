@@ -139,7 +139,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		openapi.RegisterOpenAPI(app)
 	}
 
-	app.GET("/", func(c *gin.Context) {
+	app.GET(APIPath, func(c *gin.Context) {
 		c.JSON(200, gin.H{"version": ctx.App.Version})
 		return
 	})
@@ -255,7 +255,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	api := httpapi.NewServer(Address)
 
 	api.Init(opts...)
-	api.Handle("/", app)
+	api.Handle(APIPath, app)
 
 	// Start API
 	if err := api.Start(); err != nil {

@@ -1248,7 +1248,7 @@ if (!doNotTrack) {
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine api <span style="color:#ff79c6">--</span>handler=rpc <span style="color:#ff79c6">--</span>enable<span style="color:#ff79c6">-</span>openapi
 </code></pre></div><p>启动用访问 url <code>http://127.0.0.1:8080/openapi-ui/</code> 效果如下:</p>
 <p><img src="2021-01-25-18-58-50.png" alt="swagger-openapi"></p>
-<p><em>Vine</em> 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 <code>http://127.0.0.1:8080/openapi-ui/?style=redoc</code>，效果如下：</p>
+<p><em>Vine</em> 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 <code>http://127.0.0.1:8080/openapi-ui/redoc</code>，效果如下：</p>
 <p><img src="2021-01-25-19-04-57.png" alt="redoc-openapi"></p>
 <h2 id="语法解析">语法解析</h2>
 <p><code>protoc-gen-vine</code> 通过解析 <code>protobuf</code> 中的注释来生成 OpenAPI3.0 文档。</p>

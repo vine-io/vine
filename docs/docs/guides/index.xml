@@ -507,7 +507,7 @@ OPTIONS:
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;vine api &lt;span style=&#34;color:#ff79c6&#34;&gt;--&lt;/span&gt;handler=rpc &lt;span style=&#34;color:#ff79c6&#34;&gt;--&lt;/span&gt;enable&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;openapi
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动用访问 url &lt;code&gt;http://127.0.0.1:8080/openapi-ui/&lt;/code&gt; 效果如下:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;2021-01-25-18-58-50.png&#34; alt=&#34;swagger-openapi&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Vine&lt;/em&gt; 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 &lt;code&gt;http://127.0.0.1:8080/openapi-ui/?style=redoc&lt;/code&gt;，效果如下：&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Vine&lt;/em&gt; 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 &lt;code&gt;http://127.0.0.1:8080/openapi-ui/redoc&lt;/code&gt;，效果如下：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;2021-01-25-19-04-57.png&#34; alt=&#34;redoc-openapi&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;语法解析&#34;&gt;语法解析&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;protoc-gen-vine&lt;/code&gt; 通过解析 &lt;code&gt;protobuf&lt;/code&gt; 中的注释来生成 OpenAPI3.0 文档。&lt;/p&gt;
