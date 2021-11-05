@@ -127,6 +127,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	// create the router
 	gin.SetMode(gin.ReleaseMode)
 	app := gin.New()
+	app.Use(gin.Recovery())
 
 	if ctx.Bool("enable-stats") {
 		st := stats.New()
