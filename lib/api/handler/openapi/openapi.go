@@ -28,15 +28,12 @@ import (
 	"mime"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rakyll/statik/fs"
 	"github.com/vine-io/vine/core/registry"
-	log "github.com/vine-io/vine/lib/logger"
-	maddr "github.com/vine-io/vine/util/addr"
-
 	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 var DefaultPrefix = "/openapi-ui/"
@@ -77,86 +74,8 @@ func openAPIJOSNHandler(ctx *gin.Context) {
 		ctx.JSON(500, err.Error())
 		return
 	}
-	tags := make(map[string]*registry.OpenAPITag, 0)
-	paths := make(map[string]*registry.OpenAPIPath, 0)
-	schemas := make(map[string]*registry.Model, 0)
-	security := &registry.SecuritySchemes{}
-	servers := make([]*registry.OpenAPIServer, 0)
-	for _, item := range services {
-		list, err := registry.GetService(item.Name)
-		if err != nil {
-			continue
-		}
-		if item.Name == "go.vine.api" {
-			for _, node := range item.Nodes {
-				if v, ok := node.Metadata["api-address"]; ok {
-					if strings.HasPrefix(v, ":") {
-						for _, ip := range maddr.IPv4s() {
-							if ip == "localhost" || ip == "127.0.0.1" {
-								continue
-							}
-							v = ip + v
-						}
-					}
-					if !strings.HasPrefix(v, "http://") || !strings.HasPrefix(v, "https://") {
-						v = "http://" + v
-					}
-					servers = append(servers, &registry.OpenAPIServer{
-						Url:         v,
-						Description: item.Name,
-					})
-				}
-			}
-		}
-
-		for _, i := range list {
-			if len(i.Apis) == 0 {
-				continue
-			}
-			for _, api := range i.Apis {
-				if api == nil || api.Components.SecuritySchemes == nil {
-					continue
-				}
-				for _, tag := range api.Tags {
-					tags[tag.Name] = tag
-				}
-				for name, path := range api.Paths {
-					paths[name] = path
-				}
-				for name, schema := range api.Components.Schemas {
-					schemas[name] = schema
-				}
-				if api.Components.SecuritySchemes.Basic != nil {
-					security.Basic = api.Components.SecuritySchemes.Basic
-				}
-				if api.Components.SecuritySchemes.Bearer != nil {
-					security.Bearer = api.Components.SecuritySchemes.Bearer
-				}
-				if api.Components.SecuritySchemes.ApiKeys != nil {
-					security.ApiKeys = api.Components.SecuritySchemes.ApiKeys
-				}
-			}
-		}
-	}
-	openapi := &registry.OpenAPI{
-		Openapi: "3.0.1",
-		Info: &registry.OpenAPIInfo{
-			Title:       "Vine Document",
-			Description: "OpenAPI3.0",
-			Version:     "latest",
-		},
-		Tags:    []*registry.OpenAPITag{},
-		Paths:   paths,
-		Servers: servers,
-		Components: &registry.OpenAPIComponents{
-			SecuritySchemes: security,
-			Schemas:         schemas,
-		},
-	}
-	for _, tag := range tags {
-		openapi.Tags = append(openapi.Tags, tag)
-	}
-	ctx.JSON(200, openapi)
+	doc.Init(services...)
+	ctx.JSON(200, doc.Out())
 }
 
 func openAPIServiceHandler(ctx *gin.Context) {
