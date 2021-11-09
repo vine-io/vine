@@ -35,9 +35,7 @@ import (
 var TagString = "gen"
 
 const (
-	// message tag
 	_deepcopy = "deepcopy"
-	_runtime  = "runtime"
 
 	// field common tag
 	_inline = "inline"
@@ -122,43 +120,13 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 	g.P()
 
 	tags := g.extractTags(msg.Comments)
-	_, ok1 := tags[_deepcopy]
-	_, ok2 := tags[_runtime]
-	if !ok1 && !ok2 {
+	_, ok := tags[_deepcopy]
+	if !ok {
 		return
 	}
 
-	v, ok := tags[_runtime]
-	if !ok {
-		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
-		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
-	} else {
-		vv := v.Value
-		pkg := g.NewImport("github.com/vine-io/vine/util/runtime", "runtime")
-		g.P(fmt.Sprintf(`// GVK is an auto-generated gvk function, get the information like group, version and name of %s.`, mname))
-		var group, version string
-		if vv != "" {
-			parts := strings.Split(vv, "/")
-			version = parts[0]
-			if len(parts) > 1 {
-				group = parts[0]
-				version = parts[1]
-			}
-		} else {
-			version = "v1"
-		}
-		g.P(fmt.Sprintf(`func (in *%s) GVK() *%s.GroupVersionKind {`, mname, pkg.Use()))
-		g.P(fmt.Sprintf(`return &%s.GroupVersionKind{Group: "%s", Version: "%s", Kind: "%s"}`, pkg.Use(), group, version, mname))
-		g.P("}")
-		g.P()
-		g.P(fmt.Sprintf(`// DeepCopyFrom is an auto-generated deepcopy function, copying value from %s.`, mname))
-		g.P(fmt.Sprintf(`func (in *%s) DeepCopyFrom(src %s.Entity) {`, mname, pkg.Use()))
-		g.P(fmt.Sprintf(`o := src.(*%s)`, mname))
-		g.P(`o.DeepCopyInto(in)`)
-		g.P(`}`)
-		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
-		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() %s.Entity {`, mname, pkg.Use()))
-	}
+	g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
+	g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
 	g.P(`if in == nil {`)
 	g.P(`return nil`)
 	g.P(`}`)

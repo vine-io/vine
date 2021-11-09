@@ -65,7 +65,7 @@ type MapFields struct {
 	Value *descriptor.FieldDescriptorProto
 }
 
-type Repo struct {
+type Storage struct {
 	Name    string
 	PK      *Field
 	MFields map[string]*Field
