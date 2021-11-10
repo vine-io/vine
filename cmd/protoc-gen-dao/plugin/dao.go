@@ -264,7 +264,7 @@ func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDe
 			}
 
 			_, pkExists := fTags[_pk]
-			if pkExists && s.PK == nil && (strings.ToLower(field.Name) == "id" || strings.ToLower(field.Name) == "uuid") {
+			if pkExists && s.PK == nil && (strings.HasSuffix(strings.ToLower(field.Name), "id")) {
 				s.PK = field
 				for _, tag := range field.Tags {
 					if tag.Key == "dao" {

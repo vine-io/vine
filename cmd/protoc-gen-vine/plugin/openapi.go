@@ -867,8 +867,9 @@ func (g *vine) extractPathParams(path string) []string {
 func (g *vine) extractImportMessageName(msg *generator.MessageDescriptor) string {
 	pkg := msg.Proto.GoImportPath().String()
 	pkg = TrimString(pkg, `"`)
-	if index := strings.LastIndex(pkg, "/"); index > 0 {
-		pkg = pkg[index+1:]
-	}
+	//if index := strings.LastIndex(pkg, "/"); index > 0 {
+	//	pkg = pkg[index+1:]
+	//}
+	pkg = strings.ReplaceAll(pkg, "/", ".")
 	return pkg + "." + msg.Proto.GetName()
 }

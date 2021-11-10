@@ -936,9 +936,9 @@ func (g *grpcServer) Start() error {
 
 	log.Infof("Server [grpc] Listening on %s", ts.Addr().String())
 
-	g.RLock()
+	g.Lock()
 	g.opts.Address = ts.Addr().String()
-	g.RUnlock()
+	g.Unlock()
 
 	// only connect if we're subscribed
 	if len(g.subscribers) > 0 {
