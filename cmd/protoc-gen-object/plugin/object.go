@@ -101,9 +101,12 @@ func (g *object) Generate(file *generator.FileDescriptor) {
 	} else if strings.HasPrefix(goOptionPkg, goPkg) {
 		version = strings.TrimPrefix(goOptionPkg, goPkg)
 	}
+
+	goPkg = strings.TrimSuffix(goPkg, version)
 	if goPkg == "core" {
 		goPkg = ""
 	}
+
 
 	g.P("// GroupName is the group name for this API")
 	g.P(fmt.Sprintf(`const GroupName = "%s"`, goPkg))

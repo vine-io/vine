@@ -117,7 +117,7 @@ func runProto(ctx *cli.Context) {
 			Group:   group,
 			Version: pv,
 			Type:    "api",
-			Plugins: []string{"validator", "dao", "deepcopy"},
+			Plugins: []string{"validator", "dao", "deepcopy", "object"},
 		})
 	}
 
