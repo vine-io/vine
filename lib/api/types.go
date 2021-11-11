@@ -23,6 +23,7 @@
 package api
 
 import (
+	"github.com/gogo/protobuf/proto"
 	"github.com/vine-io/vine/core/registry"
 )
 
@@ -105,3 +106,25 @@ type Service struct {
 	// Versions of this service
 	Services []*registry.Service `json:"services,omitempty"`
 }
+
+type FileDesc struct {
+	// 文件名称
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// 读取偏离量
+	Offset int64 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+}
+
+func (m *FileDesc) Reset()         { *m = FileDesc{} }
+func (m *FileDesc) String() string { return proto.CompactTextString(m) }
+func (*FileDesc) ProtoMessage()    {}
+
+type FileHeader struct {
+	Name   string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Size   int64  `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+	Length int64  `protobuf:"varint,3,opt,name=length,proto3" json:"length,omitempty"`
+	Chunk  []byte `protobuf:"bytes,4,opt,name=chunk,proto3" json:"chunk,omitempty"`
+}
+
+func (m *FileHeader) Reset()         { *m = FileHeader{} }
+func (m *FileHeader) String() string { return proto.CompactTextString(m) }
+func (*FileHeader) ProtoMessage()    {}

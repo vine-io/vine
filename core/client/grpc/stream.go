@@ -119,8 +119,6 @@ func (g *grpcStream) CloseSend() error {
 		return nil
 	}
 
-	// cancel the context
-	//defer g.cancel()
 	g.closed = true
 	return g.stream.CloseSend()
 }

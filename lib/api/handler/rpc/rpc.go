@@ -172,6 +172,11 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 		return
 	}
 
+	if isDownLoadLink(service) {
+		downLoadHandler(c, service, cc)
+		return
+	}
+
 	// if stream we currently only support json
 	if isStream(c, service) {
 		// drop older context as it can have timeouts and create new

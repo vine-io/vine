@@ -32,6 +32,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gogo/protobuf/proto"
 	"github.com/gorilla/websocket"
 	json "github.com/json-iterator/go"
 	"github.com/vine-io/vine/core/client"
@@ -293,6 +294,7 @@ func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client) {
 	request = &m
 
 	ct := "application/json"
+	ctx.Request.Header.Set("Content-Type", ct)
 	req := c.NewRequest(
 		service.Name,
 		service.Endpoint.Name,
@@ -320,41 +322,47 @@ func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client) {
 			data[key] = values
 		}
 
-		var fd multipart.File
 		var e error
-		for _, headers := range form.File {
-			for _, header := range headers {
-				data["name"] = header.Filename
-				data["size"] = header.Size
+		if form.File == nil || len(form.File) == 0 {
+			if e = stream.Send(data); e != nil {
+				ech <- e
+			}
+		} else {
+			var fd multipart.File
+			for _, headers := range form.File {
+				for _, header := range headers {
+					data["name"] = header.Filename
+					data["size"] = header.Size
 
-				fd, e = header.Open()
-				if e != nil {
-					ech <- e
-					return
-				}
-
-				buf := make([]byte, 4096)
-				for {
-					n, e1 := fd.Read(buf)
-					if e1 != nil && e1 != io.EOF {
-						ech <- e1
-						_ = fd.Close()
+					fd, e = header.Open()
+					if e != nil {
+						ech <- e
 						return
 					}
 
-					if n > 0 {
-						data["length"] = n
-						data["chunk"] = buf[:n]
-						if ee := stream.Send(data); ee != nil {
-							ech <- ee
+					buf := make([]byte, 4096)
+					for {
+						n, e1 := fd.Read(buf)
+						if e1 != nil && e1 != io.EOF {
+							ech <- e1
 							_ = fd.Close()
 							return
 						}
-					}
 
-					if e1 == io.EOF {
-						_ = fd.Close()
-						break
+						if n > 0 {
+							data["length"] = n
+							data["chunk"] = buf[:n]
+							if ee := stream.Send(data); ee != nil {
+								ech <- ee
+								_ = fd.Close()
+								return
+							}
+						}
+
+						if e1 == io.EOF {
+							_ = fd.Close()
+							break
+						}
 					}
 				}
 			}
@@ -390,4 +398,108 @@ func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client) {
 
 func isMultipart(c *gin.Context) bool {
 	return strings.Contains(c.ContentType(), "multipart/form-data")
+}
+
+func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client) {
+	vals := make(map[string]string)
+	for key, values := range ctx.Request.URL.Query() {
+		vv, ok := vals[key]
+		if !ok {
+			vals[key] = strings.Join(values, ",")
+		} else {
+			vals[key] = vv + "," + strings.Join(values, ",")
+		}
+	}
+
+	for key, values := range ctx.Request.Form {
+		vv, ok := vals[key]
+		if !ok {
+			vals[key] = strings.Join(values, ",")
+		} else {
+			vals[key] = vv + "," + strings.Join(values, ",")
+		}
+	}
+
+	br, err := json.Marshal(vals)
+	if err != nil {
+		writeError(ctx, err)
+		return
+	}
+
+	request := &api.FileDesc{}
+	err = json.Unmarshal(br, request)
+	if err != nil {
+		writeError(ctx, fmt.Errorf("read request values: %v", err))
+		return
+	}
+
+	ct := "application/proto"
+	req := c.NewRequest(
+		service.Name,
+		service.Endpoint.Name,
+		request,
+		client.WithContentType(ct),
+		client.StreamingRequest(),
+	)
+
+	so := selector.WithStrategy(strategy(service.Services))
+	// create a new stream
+	stream, err := c.Stream(ctx, req, client.WithSelectOption(so))
+	if err != nil {
+		logger.Error(err)
+		writeError(ctx, fmt.Errorf("create stream: %v", err))
+		return
+	}
+	defer stream.Close()
+
+	if err = stream.Send(request); err != nil {
+		logger.Error(err)
+		writeError(ctx, err)
+		return
+	}
+
+	ctx.Writer.Header().Set("Accept-Ranges", "bytes")
+	ctx.Writer.Header().Set("Content-Type", "application/octet-stream")
+	disposition := fmt.Sprintf(`attachment; filename="%s"`, request.Name)
+	ctx.Writer.Header().Set("Content-Disposition", disposition)
+
+	rsp := stream.Response()
+	reader := &fileReader{response: rsp}
+
+	ctx.Writer.WriteHeader(200)
+	_, err = io.Copy(ctx.Writer, reader)
+	if err != nil {
+		writeError(ctx, err)
+		return
+	}
+	return
+}
+
+func isDownLoadLink(s *api.Service) bool {
+	return s.Endpoint.Stream == api.Server && strings.HasSuffix(strings.ToLower(s.Endpoint.Name), "download")
+}
+
+type fileReader struct {
+	response client.Response
+}
+
+func (fr *fileReader) Read(b []byte) (n int, err error) {
+	frame := &api.FileHeader{}
+	buf, e := fr.response.Read()
+	if e != nil && e != io.EOF {
+		return 0, e
+	}
+	err = proto.Unmarshal(buf, frame)
+	if err != nil {
+		return 0, err
+	}
+	if frame.Length > 0 {
+		copy(b, frame.Chunk[:frame.Length])
+		n = int(frame.Length)
+		return n, nil
+	}
+	if e == io.EOF {
+		return 0, e
+	}
+	return
 }

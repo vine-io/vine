@@ -39,7 +39,7 @@ func FromRequest(r *http.Request) context.Context {
 	for key, values := range r.Header {
 		switch key {
 		case "Connection", "Content-Length":
-			//continue
+			continue
 		}
 		md.Set(textproto.CanonicalMIMEHeaderKey(key), strings.Join(values, ","))
 	}

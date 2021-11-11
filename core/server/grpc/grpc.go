@@ -548,7 +548,7 @@ func (g *grpcServer) processStream(stream grpc.ServerStream, service *service, m
 		var errStatus *status.Status
 		switch verr := appErr.(type) {
 		case *errors.Error:
-			// vine.Error now proto based and we can attach it to grpc status
+			// vine.Error now proto based, and we can attach it to grpc status
 			statusCode = vineError(verr)
 			statusDesc = verr.Error()
 			errStatus, err = status.New(statusCode, statusDesc).WithDetails(verr)
