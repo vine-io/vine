@@ -122,8 +122,8 @@ func extractEndpoint(method reflect.Method) *registry.Endpoint {
 	}
 
 	if stream {
-		ep.Metadata = map[string]string{
-			"stream": fmt.Sprintf("%v", stream),
+		if _, exists := ep.Metadata["stream"]; !exists {
+			ep.Metadata["stream"] = fmt.Sprintf("%v", stream)
 		}
 	}
 

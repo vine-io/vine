@@ -151,3 +151,7 @@ func (h *httpStream) Close() error {
 		return h.conn.Close()
 	}
 }
+
+func (h *httpStream) CloseSend() error {
+	return h.Close()
+}

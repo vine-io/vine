@@ -24,6 +24,9 @@ package rpc
 
 import (
 	b "bytes"
+	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"strings"
 	"time"
@@ -222,7 +225,7 @@ func isStream(c *gin.Context, svc *api.Service) bool {
 				continue
 			}
 			// matched if the name
-			if v := ep.Metadata["stream"]; v == "true" {
+			if v := ep.Metadata["stream"]; v != "" {
 				return true
 			}
 		}
@@ -246,4 +249,145 @@ func isWebSocket(c *gin.Context) bool {
 	}
 
 	return false
+}
+
+func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client) {
+	if service.Endpoint.Stream != api.Client {
+		writeError(ctx, fmt.Errorf("server endpoint must be gRPC client stream"))
+		return
+	}
+
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		writeError(ctx, err)
+		return
+	}
+
+	vals := make(map[string]string)
+	for key, values := range ctx.Request.URL.Query() {
+		vv, ok := vals[key]
+		if !ok {
+			vals[key] = strings.Join(values, ",")
+		} else {
+			vals[key] = vv + "," + strings.Join(values, ",")
+		}
+	}
+
+	for key, values := range form.Value {
+		vv, ok := vals[key]
+		if !ok {
+			vals[key] = strings.Join(values, ",")
+		} else {
+			vals[key] = vv + "," + strings.Join(values, ",")
+		}
+	}
+
+	br, err := json.Marshal(vals)
+	if err != nil {
+		writeError(ctx, err)
+		return
+	}
+
+	var request interface{}
+	m := json.RawMessage(br)
+	request = &m
+
+	ct := "application/json"
+	req := c.NewRequest(
+		service.Name,
+		service.Endpoint.Name,
+		request,
+		client.WithContentType(ct),
+		client.StreamingRequest(),
+	)
+
+	so := selector.WithStrategy(strategy(service.Services))
+	// create a new stream
+	stream, err := c.Stream(ctx, req, client.WithSelectOption(so))
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	defer stream.Close()
+
+	done := make(chan struct{})
+	ech := make(chan error, 1)
+
+	process := func(service *api.Service, s client.Stream, files map[string][]*multipart.FileHeader, vals map[string]string) {
+
+		data := map[string]interface{}{}
+		for key, values := range vals {
+			data[key] = values
+		}
+
+		var fd multipart.File
+		var e error
+		for _, headers := range form.File {
+			for _, header := range headers {
+				data["name"] = header.Filename
+				data["size"] = header.Size
+
+				fd, e = header.Open()
+				if e != nil {
+					ech <- e
+					return
+				}
+
+				buf := make([]byte, 4096)
+				for {
+					n, e1 := fd.Read(buf)
+					if e1 != nil && e1 != io.EOF {
+						ech <- e1
+						_ = fd.Close()
+						return
+					}
+
+					if n > 0 {
+						data["length"] = n
+						data["chunk"] = buf[:n]
+						if ee := stream.Send(data); ee != nil {
+							ech <- ee
+							_ = fd.Close()
+							return
+						}
+					}
+
+					if e1 == io.EOF {
+						_ = fd.Close()
+						break
+					}
+				}
+			}
+		}
+
+		if e = stream.CloseSend(); e != nil {
+			ech <- e
+			return
+		}
+
+		close(done)
+	}
+
+	go process(service, stream, form.File, vals)
+
+	select {
+	case err = <-ech:
+		writeError(ctx, err)
+		return
+	case <-done:
+	}
+
+	rsp := stream.Response()
+	result, err := rsp.Read()
+	if err != nil {
+		writeError(ctx, err)
+		return
+	}
+
+	writeResponse(ctx, result)
+	return
+}
+
+func isMultipart(c *gin.Context) bool {
+	return strings.Contains(c.ContentType(), "multipart/form-data")
 }

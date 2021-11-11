@@ -204,19 +204,19 @@ func (r *staticRouter) Endpoint(req *http.Request) (*api.Service, error) {
 	}
 
 	// hack for stream endpoint
-	if ep.apiep.Stream {
+	if ep.apiep.Stream != "" {
 		for _, svc := range services {
 			if len(svc.Endpoints) == 0 {
 				e := &registry.Endpoint{}
 				e.Name = strings.Join(epf[1:], ".")
 				e.Metadata = make(map[string]string)
-				e.Metadata["stream"] = "true"
+				e.Metadata["stream"] = string(ep.apiep.Stream)
 				svc.Endpoints = append(svc.Endpoints, e)
 			}
 			for _, e := range svc.Endpoints {
 				e.Name = strings.Join(epf[1:], ".")
 				e.Metadata = make(map[string]string)
-				e.Metadata["stream"] = "true"
+				e.Metadata["stream"] = string(ep.apiep.Stream)
 			}
 		}
 	}

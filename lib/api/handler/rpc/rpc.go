@@ -61,7 +61,7 @@ var (
 		"application/json-rpc",
 	}
 
-	// support proto codecs
+	// supported proto codecs
 	protoCodecs = []string{
 		"application/grpc",
 		"application/grpc+proto",
@@ -69,6 +69,11 @@ var (
 		"application/protobuf",
 		"application/proto-rpc",
 		"application/octet-stream",
+	}
+
+	// supported multipart/form-data codecs
+	dataCodecs = []string{
+		"multipart/form-data",
 	}
 
 	bufferPool = bpool.NewSizedBufferPool(1024, 8)
@@ -161,6 +166,11 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 
 	// vine client
 	cc := h.opts.Client
+
+	if isMultipart(c) {
+		multipartHandler(c, service, cc)
+		return
+	}
 
 	// if stream we currently only support json
 	if isStream(c, service) {

@@ -66,6 +66,14 @@ type Event struct {
 	Data string `json:"data,omitempty"`
 }
 
+type StreamType string
+
+const (
+	Server        StreamType = "server"
+	Client        StreamType = "client"
+	Bidirectional StreamType = "bidirectional"
+)
+
 // Endpoint is a mapping between an RPC method and HTTP endpoint
 type Endpoint struct {
 	// RPC Method e.g. Greeter.Hello
@@ -85,7 +93,7 @@ type Endpoint struct {
 	// "string" - inner message value
 	Body string `json:"body,omitempty"`
 	// Stream flag
-	Stream bool `json:"stream,omitempty"`
+	Stream StreamType `json:"stream,omitempty"`
 }
 
 // Service represents an API service

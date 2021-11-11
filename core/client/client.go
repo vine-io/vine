@@ -97,8 +97,10 @@ type Stream interface {
 	Recv(interface{}) error
 	// Error returns the stream error
 	Error() error
-	// Close closes the stream
+	// Close closes the stream and close Conn
 	Close() error
+	// CloseSend closes the stream
+	CloseSend() error
 }
 
 var (

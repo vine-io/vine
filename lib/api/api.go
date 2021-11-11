@@ -86,6 +86,7 @@ func Encode(e *Endpoint) map[string]string {
 	set("method", strings.Join(e.Method, ","))
 	set("path", strings.Join(e.Path, ","))
 	set("host", strings.Join(e.Host, ","))
+	set("stream", string(e.Stream))
 
 	return ep
 }
@@ -99,10 +100,11 @@ func Decode(e map[string]string) *Endpoint {
 	return &Endpoint{
 		Name:        e["endpoint"],
 		Description: e["description"],
+		Handler:     e["handler"],
 		Method:      slice(e["method"]),
 		Path:        slice(e["path"]),
 		Host:        slice(e["host"]),
-		Handler:     e["handler"],
+		Stream:      StreamType(e["stream"]),
 	}
 }
 

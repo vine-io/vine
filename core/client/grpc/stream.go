@@ -91,21 +91,36 @@ func (g *grpcStream) setError(e error) {
 	g.Unlock()
 }
 
-// Close the gRPC send stream
+// Close the gRPC send stream and gRPC connection
 // #202 - inconsistent gRPC stream behavior
 // The underlying gRPC stream should not be closed here since the
 // stream should still be able to receive after this function call
-// TODO: should the conn be closed in another way?
 func (g *grpcStream) Close() error {
+	g.Lock()
+	defer g.Unlock()
+
+	if g.closed {
+		_ = g.conn.Close()
+		return nil
+	}
+	// cancel the context
+	defer g.cancel()
+	g.closed = true
+	_ = g.stream.CloseSend()
+	return g.conn.Close()
+}
+
+// CloseSend the gRPC send stream
+func (g *grpcStream) CloseSend() error {
 	g.Lock()
 	defer g.Unlock()
 
 	if g.closed {
 		return nil
 	}
+
 	// cancel the context
-	g.cancel()
+	//defer g.cancel()
 	g.closed = true
-	_ = g.stream.CloseSend()
-	return g.conn.Close()
+	return g.stream.CloseSend()
 }
