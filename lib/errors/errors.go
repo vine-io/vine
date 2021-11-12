@@ -35,14 +35,45 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+type StatusCode int32
+
+func (c StatusCode) String() string {
+	switch c {
+	case StatusClientException:
+		return "Custom Vine Request Exception"
+	case StatusServerException:
+		return "Custom Vine Server Exception"
+	}
+	return http.StatusText(int(c))
+}
+
+const (
+	StatusBadRequest          StatusCode = 400
+	StatusUnauthorized                   = 401
+	StatusForbidden                      = 403
+	StatusNotFound                       = 404
+	StatusMethodNotAllowed               = 405
+	StatusTimeout                        = 408
+	StatusConflict                       = 409
+	StatusPreconditionFiled              = 412
+	StatusTooManyRequests                = 429
+	StatusClientException                = 499
+	StatusInternalServerError            = 500
+	StatusNotImplemented                 = 501
+	StatusBadGateway                     = 502
+	StatusServiceUnavailable             = 503
+	StatusGatewayTimeout                 = 504
+	StatusServerException                = 599
+)
+
 type Error struct {
-	Id       string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Code     int32    `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
-	Detail   string   `protobuf:"bytes,3,opt,name=detail,proto3" json:"detail,omitempty"`
-	Status   string   `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
-	Position string   `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`
-	Child    *Child   `protobuf:"bytes,6,opt,name=child,proto3" json:"child,omitempty"`
-	Stacks   []*Stack `protobuf:"bytes,7,rep,name=stacks,proto3" json:"stacks,omitempty"`
+	Id       string     `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Code     StatusCode `protobuf:"varint,2,opt,name=code,proto3" json:"code,omitempty"`
+	Detail   string     `protobuf:"bytes,3,opt,name=detail,proto3" json:"detail,omitempty"`
+	Status   string     `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Position string     `protobuf:"bytes,5,opt,name=position,proto3" json:"position,omitempty"`
+	Child    *Child     `protobuf:"bytes,6,opt,name=child,proto3" json:"child,omitempty"`
+	Stacks   []*Stack   `protobuf:"bytes,7,rep,name=stacks,proto3" json:"stacks,omitempty"`
 }
 
 func (e *Error) Reset()         { *e = Error{} }
@@ -69,12 +100,12 @@ func (m *Stack) String() string { return proto.CompactTextString(m) }
 func (*Stack) ProtoMessage()    {}
 
 // New generates a custom error.
-func New(id, detail string, code int32) *Error {
+func New(id, detail string, code StatusCode) *Error {
 	e := &Error{
 		Id:     id,
 		Code:   code,
 		Detail: detail,
-		Status: http.StatusText(int(code)),
+		Status: code.String(),
 	}
 	return e
 }
@@ -84,9 +115,9 @@ func (e *Error) WithId(id string) *Error {
 	return e
 }
 
-func (e *Error) WithCode(code int32) *Error {
+func (e *Error) WithCode(code StatusCode) *Error {
 	e.Code = code
-	e.Status = http.StatusText(int(code))
+	e.Status = code.String()
 	return e
 }
 
@@ -128,9 +159,41 @@ func (e *Error) WithStack(code int32, detail string, pos ...bool) *Error {
 	return e
 }
 
-func (e *Error) Error() string {
+func (e Error) Error() string {
 	b, _ := json.Marshal(e)
 	return string(b)
+}
+
+func (e Error) ToGRPC() *status.Status {
+	switch e.Code {
+	case StatusBadRequest, StatusClientException:
+		return status.New(codes.InvalidArgument, e.Detail)
+	case StatusUnauthorized:
+		return status.New(codes.Unauthenticated, e.Detail)
+	case StatusForbidden:
+		return status.New(codes.PermissionDenied, e.Detail)
+	case StatusNotFound, StatusMethodNotAllowed:
+		return status.New(codes.NotFound, e.Detail)
+	case StatusTimeout, StatusGatewayTimeout:
+		return status.New(codes.Canceled, e.Detail)
+	case StatusConflict:
+		return status.New(codes.AlreadyExists, e.Detail)
+	case StatusPreconditionFiled:
+		return status.New(codes.FailedPrecondition, e.Detail)
+	case StatusTooManyRequests:
+		return status.New(codes.ResourceExhausted, e.Detail)
+
+	case StatusInternalServerError, StatusServerException:
+		return status.New(codes.Internal, e.Detail)
+	case StatusNotImplemented:
+		return status.New(codes.Unimplemented, e.Detail)
+	case StatusBadGateway:
+		return status.New(codes.OutOfRange, e.Detail)
+	case StatusServiceUnavailable:
+		return status.New(codes.Unavailable, e.Detail)
+	default:
+		return status.New(codes.OK, "")
+	}
 }
 
 // Parse tries to parse a JSON string into an error. If that
@@ -146,92 +209,82 @@ func Parse(err string) *Error {
 
 // BadRequest generates a 400 error.
 func BadRequest(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 400)
+	return New(id, fmt.Sprintf(format, a...), StatusBadRequest)
 }
 
 // Unauthorized generates a 401 error.
 func Unauthorized(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 401)
+	return New(id, fmt.Sprintf(format, a...), StatusUnauthorized)
 }
 
 // Forbidden generates a 403 error.
 func Forbidden(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 403)
+	return New(id, fmt.Sprintf(format, a...), StatusForbidden)
 }
 
 // NotFound generates a 404 error.
 func NotFound(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 404)
+	return New(id, fmt.Sprintf(format, a...), StatusNotFound)
 }
 
 // MethodNotAllowed generates a 405 error.
 func MethodNotAllowed(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 405)
+	return New(id, fmt.Sprintf(format, a...), StatusMethodNotAllowed)
 }
 
 // Timeout generates a 408 error.
 func Timeout(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 408)
+	return New(id, fmt.Sprintf(format, a...), StatusTimeout)
 }
 
 // Conflict generates a 409 error.
 func Conflict(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 409)
+	return New(id, fmt.Sprintf(format, a...), StatusConflict)
 }
 
 // PreconditionFailed generates a 412 error.
 func PreconditionFailed(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 412)
+	return New(id, fmt.Sprintf(format, a...), StatusPreconditionFiled)
 }
 
 // TooManyRequests generates a 429 error.
 func TooManyRequests(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 429)
+	return New(id, fmt.Sprintf(format, a...), StatusTooManyRequests)
+}
+
+// ClientException generates a custom client exception.
+func ClientException(id, format string, a ...interface{}) *Error {
+	return New(id, fmt.Sprintf(format, a...), StatusClientException)
 }
 
 // InternalServerError generates a 500 error.
 func InternalServerError(id, format string, a ...interface{}) *Error {
-	return New(id, fmt.Sprintf(format, a...), 500)
+	return New(id, fmt.Sprintf(format, a...), StatusInternalServerError)
 }
 
 // NotImplemented generates a 501 error
 func NotImplemented(id, format string, a ...interface{}) *Error {
-	return &Error{
-		Id:     id,
-		Code:   501,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(501),
-	}
+	return New(id, fmt.Sprintf(format, a...), StatusNotImplemented)
 }
 
 // BadGateway generates a 502 error
 func BadGateway(id, format string, a ...interface{}) *Error {
-	return &Error{
-		Id:     id,
-		Code:   502,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(502),
-	}
+	return New(id, fmt.Sprintf(format, a...), StatusBadGateway)
 }
 
 // ServiceUnavailable generates a 503 error
 func ServiceUnavailable(id, format string, a ...interface{}) *Error {
-	return &Error{
-		Id:     id,
-		Code:   503,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(503),
-	}
+	return New(id, fmt.Sprintf(format, a...), StatusServiceUnavailable)
 }
 
 // GatewayTimeout generates a 504 error
 func GatewayTimeout(id, format string, a ...interface{}) *Error {
-	return &Error{
-		Id:     id,
-		Code:   504,
-		Detail: fmt.Sprintf(format, a...),
-		Status: http.StatusText(504),
-	}
+	return New(id, fmt.Sprintf(format, a...), StatusTimeout)
+}
+
+// ServerException generates a custom server exception
+func ServerException(id, format string, a ...interface{}) *Error {
+	return New(id, fmt.Sprintf(format, a...), StatusServerException)
 }
 
 // Equal tries to compare errors
@@ -270,6 +323,8 @@ func FromErr(err error) *Error {
 				return &Error{Code: 0}
 			case codes.Canceled:
 				return Timeout("", s.Message())
+			case codes.InvalidArgument:
+				return BadRequest("", s.Message())
 			case codes.DeadlineExceeded:
 				return GatewayTimeout("", s.Message())
 			case codes.NotFound:
