@@ -212,10 +212,10 @@ This the multi-page printable view of this section.
 <span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
     corev1.Request req <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
 }
-</code></pre></div><h2 id="repo">repo</h2>
+</code></pre></div><h2 id="storage">storage</h2>
 <p>当需要数据持久化时，有 types proto 生成对应的数据库交互代码。详细的说明可以参考 <a href="https://vine-io.github.io/vine/docs/guides/dao/">proto-gen-dao</a>。</p>
-<p>代码的存放规则为，<em>谁实现，谁存放</em>。生成的代码存放在对应服务更目录的 <code>infra/repo</code> 下，需要在 proto 文件的头部指定生成路径:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/repo;repo
+<p>代码的存放规则为，<em>谁实现，谁存放</em>。生成的代码存放在对应服务更目录的 <code>infra/storage</code> 下，需要在 proto 文件的头部指定生成路径:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/storage;storage
 </span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
 </code></pre></div><h2 id="命令规范">命令规范</h2>
 <h3 id="目录结构-1">目录结构</h3>
@@ -1251,41 +1251,6 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:deepcopy
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
-}
-</code></pre></div><ul>
-<li>runtime=<group>/<version>: 实现 <code>runtime.Entity</code> 接口</li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">// +gen:runtime=a/v1
-message Person {
-  string name = 1;
-  bytes any = 3;
-  string email = 4;
-}
-</code></pre></div><p>生成如下代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (in <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">DeepCopyInto</span>(out <span style="color:#ff79c6">*</span>Person) {
-	<span style="color:#ff79c6">*</span>out = <span style="color:#ff79c6">*</span>in
-}
-
-<span style="color:#6272a4">// GVK is an auto-generated gvk function, get the information like group, version and name of Person.
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (in <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">GVK</span>() <span style="color:#ff79c6">*</span>runtime.GroupVersionKind {
-	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">&amp;</span>runtime.GroupVersionKind{Group: <span style="color:#f1fa8c">&#34;a&#34;</span>, Version: <span style="color:#f1fa8c">&#34;v1&#34;</span>, Kind: <span style="color:#f1fa8c">&#34;Person&#34;</span>}
-}
-
-<span style="color:#6272a4">// DeepCopyFrom is an auto-generated deepcopy function, copying value from Person.
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (in <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">DeepCopyFrom</span>(src runtime.Entity) {
-	o <span style="color:#ff79c6">:=</span> src.(<span style="color:#ff79c6">*</span>Person)
-	o.<span style="color:#50fa7b">DeepCopyInto</span>(in)
-}
-
-<span style="color:#6272a4">// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new Person.
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (in <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">DeepCopy</span>() runtime.Entity {
-	<span style="color:#ff79c6">if</span> in <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">nil</span> {
-		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-	}
-	out <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">new</span>(Person)
-	in.<span style="color:#50fa7b">DeepCopyInto</span>(out)
-	<span style="color:#ff79c6">return</span> out
 }
 </code></pre></div>
 </div>

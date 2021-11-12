@@ -293,7 +293,8 @@ func (g *dao) generateRegTables(_ *generator.FileDescriptor) {
 	g.P(fmt.Sprintf(`func addKnownStorages(factory apistorage.Factory) error {`))
 	for k, table := range g.regTables {
 		name := g.wrapPkg(k)
-		g.P(fmt.Sprintf(`if err := factory.AddKnownStorage(SchemeGroupVersion.WithKind("%s"), &%s{}); err != nil {`, name, table))
+		sgv := g.wrapPkg("SchemeGroupVersion")
+		g.P(fmt.Sprintf(`if err := factory.AddKnownStorage(%s.WithKind("%s"), &%s{}); err != nil {`, sgv, name, table))
 		g.P("return nil")
 		g.P(`}`)
 	}

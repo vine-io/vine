@@ -170,8 +170,8 @@ vine new service foo
 │   ├── infra  // --------- DDD 的 infrastructure 层，底层通用代码
 │   │   ├── cache  // -------- 缓存相关
 │   │   │   └── cache.go
-│   │   └── repo  // ------- 数据库 repository，数据交互
-│   │       └── repo.go
+│   │   └── storage  // ------- 数据库 storage，数据交互
+│   │       └── storage.go
 │   ├── service   // ---------- DDD 的 interfaces 层，提供对外的 gRPC 接口 
 │   │   └── foo.go
 │   └── runtime
@@ -214,8 +214,8 @@ vine new service helloworld
 │   │   ├── infra
 │   │   │   ├── cache
 │   │   │   │   └── cache.go
-│   │   │   └── repo
-│   │   │       └── repo.go
+│   │   │   └── storage
+│   │   │       └── storage.go
 │   │   └── service
 │   │       └── helloworld.go
 │   └── runtime  // ------ 多个服务间的通用代码
@@ -249,7 +249,7 @@ vine new service helloworld
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;service&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;# proto 类型 service 和 api； service 表示 gRPC 服务，api 表示领域模型&lt;/span&gt;
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;group&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;foo&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;# proto 分组&lt;/span&gt;
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;version&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;v1&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;# proto 版本&lt;/span&gt;
-&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;gogo&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;vine&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;validator&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;# 执行 protoc 命令时携带的插件，可选 gogo、vine、validator、deepcopy、dao&lt;/span&gt;
+&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;gogo&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;vine&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;validator&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;# 执行 protoc 命令时携带的插件，可选 gogo、vine、validator、deepcopy、object、dao&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;cluster&#34;&gt;cluster&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;[&lt;/span&gt;package&lt;span style=&#34;color:#ff79c6&#34;&gt;]&lt;/span&gt;
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;kind&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;cluster&amp;#34;&lt;/span&gt;
@@ -333,8 +333,8 @@ vine init
 │   ├── biz
 │   │   └── foo.go
 │   └── infra
-│       ├── repo
-│       │   └── repo.go
+│       ├── storage
+│       │   └── storage.go
 │       └── cache
 │           └── cache.go
 ├── deploy

@@ -23,18 +23,18 @@
 package template
 
 var (
-	RepoHandler = `package repo
+	StorageHandler = `package storage
 
 import (
-	"{{.Dir}}/pkg/runtime/inject"
-	"github.com/vine-io/vine/util/runtime"
+	"github.com/vine-io/apimachinery/storage"
 )
 
 func init() {
-	_ = inject.Provide(sets)
-}
+	factory := storage.NewStorageFactory()
 
-var sets = runtime.NewRepoSet()
+	_ = factory
+	// err = XXX.AddToFactory(factory)
+}
 `
 
 	CacheHandler = `package cache

@@ -1,7 +1,8 @@
 package template
 
 var (
-	ProtoType = `syntax = "proto3";
+	ProtoType = `// +dao:output={{.Dir}}/pkg/runtime/storage/{{.Group}}{{.Version}}/{{.Name}};{{.Name}}
+syntax = "proto3";
 
 package {{.Group}}{{.Version}};
 
@@ -9,9 +10,21 @@ option go_package = "{{.Dir}}/api/types/{{.Group}}/{{.Version}};{{.Group}}{{.Ver
 option java_package = "io.vine.types.{{.Group}}.{{.Version}}";
 option java_multiple_files = true;
 
-// +gen:runtime={{.Group}}/{{.Version}}
-message {{title .Name}}Message {
-	string name = 1;
+import "github.com/vine-io/apimachinery/apis/meta/v1/meta.proto";
+
+// +gen:object
+message {{title .Name}} {
+	// +gen:inline
+	metav1.TypeMeta typeMeta = 1;
+	// +gen:inline
+	metav1.ObjectMeta metadata = 2;
+	
+	// +gen:required
+	{{title .Name}}Spec spec = 3;
+}
+
+message {{title .Name}}Spec {
+	
 }
 `
 

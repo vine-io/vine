@@ -72,10 +72,10 @@
 &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;Request&lt;/span&gt; {
     corev1.Request req &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;;
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;repo&#34;&gt;repo&lt;/h2&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;storage&#34;&gt;storage&lt;/h2&gt;
 &lt;p&gt;当需要数据持久化时，有 types proto 生成对应的数据库交互代码。详细的说明可以参考 &lt;a href=&#34;https://vine-io.github.io/vine/docs/guides/dao/&#34;&gt;proto-gen-dao&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;代码的存放规则为，&lt;em&gt;谁实现，谁存放&lt;/em&gt;。生成的代码存放在对应服务更目录的 &lt;code&gt;infra/repo&lt;/code&gt; 下，需要在 proto 文件的头部指定生成路径:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/repo;repo
+&lt;p&gt;代码的存放规则为，&lt;em&gt;谁实现，谁存放&lt;/em&gt;。生成的代码存放在对应服务更目录的 &lt;code&gt;infra/storage&lt;/code&gt; 下，需要在 proto 文件的头部指定生成路径:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/storage;storage
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;syntax &lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;protoc&amp;#34;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;命令规范&#34;&gt;命令规范&lt;/h2&gt;
 &lt;h3 id=&#34;目录结构-1&#34;&gt;目录结构&lt;/h3&gt;
@@ -1047,41 +1047,6 @@ func (m *Response) ValidateE(prefix &lt;span style=&#34;color:#8be9fd&#34;&gt;st
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-protobuf&#34; data-lang=&#34;protobuf&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// +gen:deepcopy
 &lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;message&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;P&lt;/span&gt; {
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;runtime=&lt;group&gt;/&lt;version&gt;: 实现 &lt;code&gt;runtime.Entity&lt;/code&gt; 接口&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;// +gen:runtime=a/v1
-message Person {
-  string name = 1;
-  bytes any = 3;
-  string email = 4;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;生成如下代码:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopyInto is an auto-generated deepcopy function, coping the receiver, writing into out. in must be no-nil.
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(out &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) {
-	&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;out = &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;in
-}
-
-&lt;span style=&#34;color:#6272a4&#34;&gt;// GVK is an auto-generated gvk function, get the information like group, version and name of Person.
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;GVK&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;runtime.GroupVersionKind {
-	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;runtime.GroupVersionKind{Group: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;, Version: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;v1&amp;#34;&lt;/span&gt;, Kind: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Person&amp;#34;&lt;/span&gt;}
-}
-
-&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopyFrom is an auto-generated deepcopy function, copying value from Person.
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyFrom&lt;/span&gt;(src runtime.Entity) {
-	o &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; src.(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person)
-	o.&lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(in)
-}
-
-&lt;span style=&#34;color:#6272a4&#34;&gt;// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new Person.
-&lt;/span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; (in &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Person) &lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopy&lt;/span&gt;() runtime.Entity {
-	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; in &lt;span style=&#34;color:#ff79c6&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt;
-	}
-	out &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;new&lt;/span&gt;(Person)
-	in.&lt;span style=&#34;color:#50fa7b&#34;&gt;DeepCopyInto&lt;/span&gt;(out)
-	&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt; out
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>

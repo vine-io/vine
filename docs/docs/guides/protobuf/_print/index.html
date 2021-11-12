@@ -189,10 +189,10 @@ This the multi-page printable view of this section.
 <span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
     corev1.Request req <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
 }
-</code></pre></div><h2 id="repo">repo</h2>
+</code></pre></div><h2 id="storage">storage</h2>
 <p>当需要数据持久化时，有 types proto 生成对应的数据库交互代码。详细的说明可以参考 <a href="https://vine-io.github.io/vine/docs/guides/dao/">proto-gen-dao</a>。</p>
-<p>代码的存放规则为，<em>谁实现，谁存放</em>。生成的代码存放在对应服务更目录的 <code>infra/repo</code> 下，需要在 proto 文件的头部指定生成路径:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/repo;repo
+<p>代码的存放规则为，<em>谁实现，谁存放</em>。生成的代码存放在对应服务更目录的 <code>infra/storage</code> 下，需要在 proto 文件的头部指定生成路径:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/storage;storage
 </span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
 </code></pre></div><h2 id="命令规范">命令规范</h2>
 <h3 id="目录结构-1">目录结构</h3>
