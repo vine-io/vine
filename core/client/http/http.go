@@ -272,7 +272,7 @@ func (h *httpClient) Call(ctx context.Context, req client.Request, rsp interface
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
+		return errors.Timeout("go.vine.client", "%v", ctx.Err())
 	default:
 	}
 
@@ -321,7 +321,7 @@ func (h *httpClient) Call(ctx context.Context, req client.Request, rsp interface
 
 		select {
 		case <-ctx.Done():
-			return errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
+			return errors.Timeout("go.vine.client", "%v", ctx.Err())
 		case err := <-ch:
 			// if the call succeeded lets bail early
 			if err == nil {
@@ -372,7 +372,7 @@ func (h *httpClient) Stream(ctx context.Context, req client.Request, opts ...cli
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return nil, errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
+		return nil, errors.Timeout("go.vine.client", "%v", ctx.Err())
 	default:
 	}
 
@@ -416,7 +416,7 @@ func (h *httpClient) Stream(ctx context.Context, req client.Request, opts ...cli
 
 		select {
 		case <-ctx.Done():
-			return nil, errors.New("go.vine.client", fmt.Sprintf("%v", ctx.Err()), 408)
+			return nil, errors.Timeout("go.vine.client", "%v", ctx.Err())
 		case rsp := <-ch:
 			// if the call succeeded lets bail early
 			if rsp.err == nil {

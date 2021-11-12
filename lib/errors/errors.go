@@ -49,21 +49,21 @@ func (c StatusCode) String() string {
 
 const (
 	StatusBadRequest          StatusCode = 400
-	StatusUnauthorized                   = 401
-	StatusForbidden                      = 403
-	StatusNotFound                       = 404
-	StatusMethodNotAllowed               = 405
-	StatusTimeout                        = 408
-	StatusConflict                       = 409
-	StatusPreconditionFiled              = 412
-	StatusTooManyRequests                = 429
-	StatusClientException                = 499
-	StatusInternalServerError            = 500
-	StatusNotImplemented                 = 501
-	StatusBadGateway                     = 502
-	StatusServiceUnavailable             = 503
-	StatusGatewayTimeout                 = 504
-	StatusServerException                = 599
+	StatusUnauthorized        StatusCode = 401
+	StatusForbidden           StatusCode = 403
+	StatusNotFound            StatusCode = 404
+	StatusMethodNotAllowed    StatusCode = 405
+	StatusTimeout             StatusCode = 408
+	StatusConflict            StatusCode = 409
+	StatusPreconditionFiled   StatusCode = 412
+	StatusTooManyRequests     StatusCode = 429
+	StatusClientException     StatusCode = 499
+	StatusInternalServerError StatusCode = 500
+	StatusNotImplemented      StatusCode = 501
+	StatusBadGateway          StatusCode = 502
+	StatusServiceUnavailable  StatusCode = 503
+	StatusGatewayTimeout      StatusCode = 504
+	StatusServerException     StatusCode = 599
 )
 
 type Error struct {
