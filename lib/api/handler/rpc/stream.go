@@ -464,7 +464,7 @@ func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client) {
 	ctx.Writer.Header().Set("Content-Disposition", disposition)
 
 	rsp := stream.Response()
-	reader := &fileReader{response: rsp}
+	reader := &responseReader{conn: rsp}
 
 	ctx.Writer.WriteHeader(200)
 	_, err = io.Copy(ctx.Writer, reader)
@@ -479,13 +479,13 @@ func isDownLoadLink(s *api.Service) bool {
 	return s.Endpoint.Stream == api.Server && strings.HasSuffix(strings.ToLower(s.Endpoint.Name), "download")
 }
 
-type fileReader struct {
-	response client.Response
+type responseReader struct {
+	conn client.Response
 }
 
-func (fr *fileReader) Read(b []byte) (n int, err error) {
+func (rr *responseReader) Read(b []byte) (n int, err error) {
 	frame := &api.FileHeader{}
-	buf, e := fr.response.Read()
+	buf, e := rr.conn.Read()
 	if e != nil && e != io.EOF {
 		return 0, e
 	}
@@ -494,8 +494,7 @@ func (fr *fileReader) Read(b []byte) (n int, err error) {
 		return 0, err
 	}
 	if frame.Length > 0 {
-		copy(b, frame.Chunk[:frame.Length])
-		n = int(frame.Length)
+		n = copy(b, frame.Chunk[:frame.Length])
 		return n, nil
 	}
 	if e == io.EOF {
