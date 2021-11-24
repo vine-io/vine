@@ -34,51 +34,48 @@ func init() {
 }
 
 type APIDoc struct {
-	once sync.Once
 	sync.RWMutex
 
 	Doc *registry.OpenAPI
 }
 
 func (ad *APIDoc) Init(services ...*registry.Service) {
-	ad.once.Do(func() {
-		for _, item := range services {
-			list, err := registry.GetService(item.Name)
-			if err != nil {
-				continue
-			}
-			if item.Name == "go.vine.api" {
-				for _, node := range item.Nodes {
-					if url, ok := node.Metadata["api-address"]; ok {
-						if strings.HasPrefix(url, ":") {
-							for _, ip := range maddr.IPv4s() {
-								if ip == "localhost" || ip == "127.0.0.1" {
-									continue
-								}
-								url = ip + url
+	for _, item := range services {
+		list, err := registry.GetService(item.Name)
+		if err != nil {
+			continue
+		}
+		if item.Name == "go.vine.api" {
+			for _, node := range item.Nodes {
+				if url, ok := node.Metadata["api-address"]; ok {
+					if strings.HasPrefix(url, ":") {
+						for _, ip := range maddr.IPv4s() {
+							if ip == "localhost" || ip == "127.0.0.1" {
+								continue
 							}
+							url = ip + url
 						}
-						if !strings.HasPrefix(url, "http://") || !strings.HasPrefix(url, "https://") {
-							url = "http://" + url
-						}
-						ad.AddServer(url, item.Name)
 					}
-				}
-			}
-
-			for _, i := range list {
-				if len(i.Apis) == 0 {
-					continue
-				}
-				for _, api := range i.Apis {
-					if api == nil || api.Components.SecuritySchemes == nil {
-						continue
+					if !strings.HasPrefix(url, "http://") || !strings.HasPrefix(url, "https://") {
+						url = "http://" + url
 					}
-					ad.AddEndpoint(api)
+					ad.AddServer(url, item.Name)
 				}
 			}
 		}
-	})
+
+		for _, i := range list {
+			if len(i.Apis) == 0 {
+				continue
+			}
+			for _, api := range i.Apis {
+				if api == nil || api.Components.SecuritySchemes == nil {
+					continue
+				}
+				ad.AddEndpoint(api)
+			}
+		}
+	}
 }
 
 func (ad *APIDoc) AddServer(url, desc string) {

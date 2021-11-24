@@ -30,7 +30,7 @@ import (
 	"github.com/vine-io/vine/core/server"
 )
 
-type Api interface {
+type API interface {
 	// Init initialise options
 	Init(...Option) error
 	// Options Get the options
