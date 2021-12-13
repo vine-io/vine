@@ -164,8 +164,8 @@ var (
 	DefaultId               = uuid.New().String()
 	DefaultServer           Server
 	DefaultRegisterCheck    = func(context.Context) error { return nil }
-	DefaultRegisterInterval = time.Second * 30
-	DefaultRegisterTTL      = time.Second * 90
+	DefaultRegisterInterval = time.Second * 20
+	DefaultRegisterTTL      = time.Second * 30
 )
 
 // DefaultOptions returns config options for the default service
