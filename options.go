@@ -114,9 +114,9 @@ func Client(c client.Client) Option {
 	}
 }
 
-// Context specifies a context for the service.
+// PutContext specifies a context for the service.
 // Can be used to signal shutdown of the service and for extra option values.
-func Context(ctx context.Context) Option {
+func PutContext(ctx context.Context) Option {
 	return func(o *Options) {
 		o.Context = ctx
 	}

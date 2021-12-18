@@ -175,7 +175,7 @@ func DefaultOptions() Options {
 
 // Init initialises the default server with options passed in
 func Init(opts ...Option) {
-	DefaultServer.Init(opts...)
+	_ = DefaultServer.Init(opts...)
 }
 
 // NewSubscriber creates a new subscriber interface with the given topic

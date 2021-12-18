@@ -289,7 +289,6 @@ func newCmd(opts ...Option) Cmd {
 		o(&options)
 	}
 
-
 	if len(options.Description) == 0 {
 		options.Description = "a vine service"
 	}
