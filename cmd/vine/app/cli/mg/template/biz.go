@@ -53,7 +53,7 @@ func (s *{{.Name}}) Init() error {
 	return nil
 }
 
-func (s *{{.Name}}) Call(ctx context.Context, name string) (string, error) {
+func (s *{{.Name}}) Call(ctx *vine.Context, name string) (string, error) {
 	return "reply: " + name, nil
 }
 
@@ -81,7 +81,7 @@ func init() {
 
 type {{title .Name}} interface {
 	Init() error
-	Call(ctx context.Context, name string) (string, error)
+	Call(ctx *vine.Context, name string) (string, error)
 	Stream()
 	PingPong()
 }
@@ -96,7 +96,7 @@ func (s *{{.Name}}) Init() error {
 	return nil
 }
 
-func (s *{{.Name}}) Call(ctx context.Context, name string) (string, error) {
+func (s *{{.Name}}) Call(ctx *vine.Context, name string) (string, error) {
 	return "reply: " + name, nil
 }
 
