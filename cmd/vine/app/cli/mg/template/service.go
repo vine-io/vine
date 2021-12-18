@@ -24,7 +24,7 @@ type {{title .Name}}API struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *{{title .Name}}API) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(s.Name(), err.Error())
 	}
@@ -33,7 +33,7 @@ func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -53,7 +53,7 @@ func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingReques
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -136,7 +136,7 @@ type {{title .Name}}API struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *{{title .Name}}API) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(s.Name(), err.Error())
 	}
@@ -145,7 +145,7 @@ func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -165,7 +165,7 @@ func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingReques
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -248,7 +248,7 @@ type {{title .Name}}API struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *{{title .Name}}API) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(s.Name(), err.Error())
 	}
@@ -257,7 +257,7 @@ func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -277,7 +277,7 @@ func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingReques
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -360,7 +360,7 @@ type {{title .Name}}API struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *{{title .Name}}API) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(s.Name(), err.Error())
 	}
@@ -369,7 +369,7 @@ func (s *{{title .Name}}API) Call(ctx context.Context, req *pb.Request, rsp *pb.
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *{{title .Name}}API) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -389,7 +389,7 @@ func (s *{{title .Name}}API) Stream(ctx context.Context, req *pb.StreamingReques
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *{{title .Name}}API) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *{{title .Name}}API) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
