@@ -368,9 +368,6 @@ func requestPayload(r *http.Request) ([]byte, error) {
 		}
 	}
 
-	// map of all fields
-	req := make(map[string]interface{}, len(md))
-
 	// get fields from url values
 	if len(r.URL.RawQuery) > 0 {
 		umd := make(map[string]interface{})
@@ -386,30 +383,9 @@ func requestPayload(r *http.Request) ([]byte, error) {
 	// restore context without fields
 	*r = *r.Clone(metadata.NewContext(rctx, md))
 
-	for k, v := range matches {
-		ps := strings.Split(k, ".")
-		if len(ps) == 1 {
-			req[k] = v
-			continue
-		}
-		em := make(map[string]interface{})
-		em[ps[len(ps)-1]] = v
-		for i := len(ps) - 2; i > 0; i-- {
-			nm := make(map[string]interface{})
-			nm[ps[i]] = em
-			em = nm
-		}
-		if vm, ok := req[ps[0]]; ok {
-			// nested map
-			nm := vm.(map[string]interface{})
-			for vk, vv := range em {
-				nm[vk] = vv
-			}
-			req[ps[0]] = nm
-		} else {
-			req[ps[0]] = em
-		}
-	}
+	// map of all fields
+	req := nestField(matches)
+
 	pathbuf := []byte("{}")
 	if len(req) > 0 {
 		pathbuf, err = json.Marshal(req)
@@ -493,6 +469,52 @@ func requestPayload(r *http.Request) ([]byte, error) {
 	}
 
 	return []byte{}, nil
+}
+
+func nestField(matches map[string]interface{}) map[string]interface{} {
+	req := make(map[string]interface{})
+
+	for k, v := range matches {
+		ps := strings.Split(k, ".")
+		if len(ps) == 1 {
+			req[k] = v
+			continue
+		}
+
+		var em map[string]interface{}
+		for i := 0; i < len(ps)-1; i++ {
+			if i == 0 {
+				if vm, exists := req[ps[0]]; !exists {
+					em = make(map[string]interface{})
+					req[ps[0]] = em
+				} else {
+					vv, ok := vm.(map[string]interface{})
+					if !ok {
+						em = make(map[string]interface{})
+					} else {
+						em = vv
+					}
+				}
+				continue
+			}
+
+			if vm, exists := em[ps[i]]; !exists {
+				vmm := make(map[string]interface{})
+				em[ps[i]] = vmm
+				em = vmm
+			} else {
+				vv, ok := vm.(map[string]interface{})
+				if !ok {
+					em = make(map[string]interface{})
+				} else {
+					em = vv
+				}
+			}
+		}
+
+		em[ps[len(ps)-1]] = v
+	}
+	return req
 }
 
 func writeError(c *gin.Context, err error) {
