@@ -783,7 +783,7 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
 			switch field.Map.Key.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
-				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, k))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.ParseOp(v), v, k))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
 			case descriptor.FieldDescriptorProto_TYPE_INT32, descriptor.FieldDescriptorProto_TYPE_INT64:
 				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, %s))`, g.daoPkg.Use(), column, g.daoPkg.Use(), `fmt.Sprintf("%d", k)`))
 			}
@@ -795,7 +795,7 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 			g.P(`if v == nil {`)
 			g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONHasKey, "", %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
 			g.P(`} else {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.ParseOp(v), v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
 			g.P("}")
 			g.P("}")
 			g.P("}")
@@ -825,7 +825,7 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 			g.P("}")
 		case _string:
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
-			g.P(fmt.Sprintf(`exprs = append(exprs, %s.Cond().Build("%s", m.%s))`, g.clausePkg.Use(), column, field.Name))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.Cond().Op(%s.ParseOp(m.%s)).Build("%s", m.%s))`, g.clausePkg.Use(), g.clausePkg.Use(), field.Name, column, field.Name))
 			g.P("}")
 		case _bool:
 			continue

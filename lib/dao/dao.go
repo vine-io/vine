@@ -28,6 +28,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/vine-io/vine/lib/dao/clause"
 	"github.com/vine-io/vine/lib/dao/schema"
@@ -115,6 +116,21 @@ func (j JSONOp) String() string {
 	default:
 		return fmt.Sprintf("%d", j)
 	}
+}
+
+func ParseOp(v interface{}) (op JSONOp) {
+	switch v.(type) {
+	case string:
+		vv := v.(string)
+		if strings.HasPrefix(vv, "%") || strings.HasSuffix(vv, "%") {
+			op = JSONLike
+		} else {
+			op = JSONEq
+		}
+	default:
+		op = JSONEq
+	}
+	return
 }
 
 // JSONQuery query column as json

@@ -22,6 +22,8 @@
 
 package clause
 
+import "strings"
+
 type EOp int32
 
 const (
@@ -34,6 +36,21 @@ const (
 	InOp
 	LikeOp
 )
+
+func ParseOp(v interface{}) (op EOp) {
+	switch v.(type) {
+	case string:
+		vv := v.(string)
+		if strings.HasPrefix(vv, "%") || strings.HasSuffix(vv, "%") {
+			op = LikeOp
+		} else {
+			op = EqOp
+		}
+	default:
+		op = EqOp
+	}
+	return
+}
 
 // condExpr the builder for interface Expression
 // condExpr
