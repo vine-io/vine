@@ -481,24 +481,9 @@ func nestField(matches map[string]interface{}) map[string]interface{} {
 			continue
 		}
 
-		var em map[string]interface{}
+		em := req
 		for i := 0; i < len(ps)-1; i++ {
-			if i == 0 {
-				if vm, exists := req[ps[0]]; !exists {
-					em = make(map[string]interface{})
-					req[ps[0]] = em
-				} else {
-					vv, ok := vm.(map[string]interface{})
-					if !ok {
-						em = make(map[string]interface{})
-					} else {
-						em = vv
-					}
-				}
-				continue
-			}
-
-			if vm, exists := em[ps[i]]; !exists {
+			if vm, ok := em[ps[i]]; !ok {
 				vmm := make(map[string]interface{})
 				em[ps[i]] = vmm
 				em = vmm
