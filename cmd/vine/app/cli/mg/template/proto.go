@@ -93,4 +93,27 @@ message {{title .Name}}Response {
 	string msg = 1;
 }
 `
+
+	Register = `package {{.Group}}{{.Version}}
+
+import (
+	"github.com/vine-io/apimachinery/runtime"
+	"github.com/vine-io/apimachinery/schema"
+)
+
+// GroupName is the group name for this API
+const GroupName = {{if eq .Group "core"}}""{{else}}"{{.Group}}"{{end}}
+
+// SchemeGroupVersion is group version used to register these objects
+var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: "{{.Version}}"}
+
+var (
+	SchemaBuilder = runtime.NewSchemeBuilder(addKnownTypes)
+	AddToScheme   = SchemaBuilder.AddToScheme
+	sets          = make([]runtime.Object, 0)
+)
+
+func addKnownTypes(scheme runtime.Scheme) error {
+	return scheme.AddKnownTypes(SchemeGroupVersion, sets...)
+}`
 )

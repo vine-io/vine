@@ -119,6 +119,15 @@ func runProto(ctx *cli.Context) {
 			Type:    "api",
 			Plugins: []string{"validator", "dao", "deepcopy", "object"},
 		})
+
+		registerFile := filepath.Join(c.Dir, "api", "types", group, pv, "register.go")
+		_, err := os.Stat(registerFile)
+		if os.IsNotExist(err) {
+			c.Files = append(c.Files, file{
+				Path: "api/types/" + group + "/" + pv + "/" + "register.go",
+				Tmpl: t2.Register,
+			})
+		}
 	}
 
 	if err := create(c); err != nil {

@@ -35,6 +35,7 @@ import (
 var TagString = "gen"
 
 const (
+	_object   = "object"
 	_deepcopy = "deepcopy"
 
 	// field common tag
@@ -89,6 +90,15 @@ func (g *deepcopy) Generate(file *generator.FileDescriptor) {
 		return
 	}
 
+	g.P(`func init() {`)
+	g.P(`sets = append(sets,`)
+	for _, msg := range file.Messages() {
+		g.generateSchemaTypes(file, msg)
+	}
+	g.P(`)`)
+	g.P(`}`)
+	g.P()
+
 	for _, msg := range file.Messages() {
 		g.generateMessage(file, msg)
 	}
@@ -120,21 +130,63 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 	g.P()
 
 	tags := g.extractTags(msg.Comments)
-	_, ok := tags[_deepcopy]
-	if !ok {
+	_, ok1 := tags[_object]
+	_, ok2 := tags[_deepcopy]
+	if !ok1 && !ok2 {
 		return
 	}
 
-	g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
-	g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
-	g.P(`if in == nil {`)
-	g.P(`return nil`)
-	g.P(`}`)
-	g.P(fmt.Sprintf(`out := new(%s)`, mname))
-	g.P(`in.DeepCopyInto(out)`)
-	g.P(`return out`)
-	g.P(`}`)
-	g.P()
+	if ok1 {
+		pkg := g.NewImport("github.com/vine-io/apimachinery/runtime", "runtime")
+		g.P("// assert to App implement to runtime.Object")
+		g.P(fmt.Sprintf(`var _ %s.Object = (*%s)(nil)`, pkg.Use(), mname))
+		g.P()
+		g.P(fmt.Sprintf(`// DeepFrom is an auto-generated deepcopy function, copying value from %s.`, mname))
+		g.P(fmt.Sprintf(`func (in *%s) DeepFrom(src %s.Object) {`, mname, pkg.Use()))
+		g.P(fmt.Sprintf(`o := src.(*%s)`, mname))
+		g.P(`o.DeepCopyInto(in)`)
+		g.P(`}`)
+		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
+		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() %s.Object {`, mname, pkg.Use()))
+		g.P(`if in == nil {`)
+		g.P(`return nil`)
+		g.P(`}`)
+		g.P(fmt.Sprintf(`out := new(%s)`, mname))
+		g.P(`in.DeepCopyInto(out)`)
+		g.P(`return out`)
+		g.P(`}`)
+		g.P()
+	}
+
+	if ok2 {
+		g.P(fmt.Sprintf(`// DeepCopy is an auto-generated deepcopy function, copying the receiver, creating a new %s.`, mname))
+		g.P(fmt.Sprintf(`func (in *%s) DeepCopy() *%s {`, mname, mname))
+		g.P(`if in == nil {`)
+		g.P(`return nil`)
+		g.P(`}`)
+		g.P(fmt.Sprintf(`out := new(%s)`, mname))
+		g.P(`in.DeepCopyInto(out)`)
+		g.P(`return out`)
+		g.P(`}`)
+		g.P()
+	}
+}
+
+func (g *deepcopy) generateSchemaTypes(file *generator.FileDescriptor, msg *generator.MessageDescriptor) {
+	if msg.Proto.File() != file {
+		return
+	}
+	if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
+		return
+	}
+
+	mname := msg.Proto.GetName()
+	tags := g.extractTags(msg.Comments)
+	_, ok := tags[_object]
+	if !ok {
+		return
+	}
+	g.P(fmt.Sprintf("&%s{},", mname))
 }
 
 func (g *deepcopy) generateRepeatedField(file *generator.FileDescriptor, msg *generator.MessageDescriptor, field *generator.FieldDescriptor) {

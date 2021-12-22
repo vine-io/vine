@@ -8,7 +8,7 @@ BUILD_DATE=$(shell date +%s)
 LDFLAGS=-X $(GIT_VERSION).GitCommit=$(GIT_COMMIT) -X $(GIT_VERSION).GitTag=$(GIT_TAG) -X $(GIT_VERSION).BuildDate=$(BUILD_DATE)
 IMAGE_TAG=$(GIT_TAG)-$(GIT_COMMIT)
 ROOT=github.com/vine-io/vine
-TOOLS=$(shell echo "vine protoc-gen-gogo protoc-gen-vine protoc-gen-dao protoc-gen-validator protoc-gen-deepcopy protoc-gen-object protoc-gen-cli" )
+TOOLS=$(shell echo "vine protoc-gen-gogo protoc-gen-vine protoc-gen-dao protoc-gen-validator protoc-gen-deepcopy protoc-gen-cli" )
 
 all: build
 
@@ -79,7 +79,6 @@ build-windows-tool:
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-dao.exe cmd/protoc-gen-dao/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-validator.exe cmd/protoc-gen-validator/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-deepcopy.exe cmd/protoc-gen-deepcopy/main.go
-	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-object.exe cmd/protoc-gen-object/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-cli.exe cmd/protoc-gen-cli/main.go
 	GOOS=windows go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/vine.exe cmd/vine/main.go
 
@@ -90,7 +89,6 @@ build-linux-tool:
 	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-dao cmd/protoc-gen-dao/main.go
 	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-validator cmd/protoc-gen-validator/main.go
 	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-deepcopy cmd/protoc-gen-deepcopy/main.go
-	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-object cmd/protoc-gen-object/main.go
 	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" -o _output/protoc-gen-cli cmd/protoc-gen-cli/main.go
 	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/vine.exe cmd/vine/main.go
 
@@ -101,7 +99,6 @@ install:
 	go get github.com/vine-io/vine/cmd/protoc-gen-vine
 	go get github.com/vine-io/vine/cmd/protoc-gen-validator
 	go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
-	go get github.com/vine-io/vine/cmd/protoc-gen-object
 	go get github.com/vine-io/vine/cmd/protoc-gen-dao
 	go get github.com/vine-io/vine/cmd/protoc-gen-cli
 
