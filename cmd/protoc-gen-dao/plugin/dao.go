@@ -29,6 +29,8 @@ import (
 	"go/parser"
 	"go/token"
 	"io/fs"
+	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -284,22 +286,56 @@ func (g *dao) generateRegTables(_ *generator.FileDescriptor) {
 		return
 	}
 
-	g.P("var (")
-	g.P(fmt.Sprintf("FactoryBuilder = %s.NewFactoryBuilder(addKnownStorages)", g.storagePkg.Use()))
-	g.P("AddToFactory = FactoryBuilder.AddToFactory")
-	g.P(")")
-	g.P()
+	//g.P("var (")
+	//g.P(fmt.Sprintf("FactoryBuilder = %s.NewFactoryBuilder(addKnownStorages)", g.storagePkg.Use()))
+	//g.P("AddToFactory = FactoryBuilder.AddToFactory")
+	//g.P(")")
+	//g.P()
+	//
+	//g.P(fmt.Sprintf(`func addKnownStorages(factory apistorage.Factory) error {`))
+	//for k, table := range g.regTables {
+	//	name := g.wrapPkg(k)
+	//	sgv := g.wrapPkg("SchemeGroupVersion")
+	//	g.P(fmt.Sprintf(`if err := factory.AddKnownStorage(%s.WithKind("%s"), &%s{}); err != nil {`, sgv, name, table))
+	//	g.P("return nil")
+	//	g.P(`}`)
+	//}
+	//
+	//g.P("return nil")
+	//g.P("}")
+	register := filepath.Join(g.gen.OutPut.Out, "register.go")
+	_, err := os.Stat(register)
+	if os.IsNotExist(err) {
+		tpl := fmt.Sprintf(`package %s
 
-	g.P(fmt.Sprintf(`func addKnownStorages(factory apistorage.Factory) error {`))
+import (
+	"github.com/vine-io/apimachinery/schema"
+	apistorage "github.com/vine-io/apimachinery/storage"
+)
+
+var (
+	FactoryBuilder = apistorage.NewFactoryBuilder(addKnownStorages)
+	store          = make(map[schema.GroupVersionKind]apistorage.Storage)
+	AddToFactory   = FactoryBuilder.AddToFactory
+)
+
+func addKnownStorages(factory apistorage.Factory) error {
+	for k, v := range store {
+		if err := factory.AddKnownStorage(k, v); err != nil {
+			return nil
+		}
+	}
+	return nil
+}`, g.gen.OutPut.Package)
+		_ = ioutil.WriteFile(register, []byte(tpl), 0755)
+	}
+	g.P("func init() {")
 	for k, table := range g.regTables {
 		name := g.wrapPkg(k)
 		sgv := g.wrapPkg("SchemeGroupVersion")
-		g.P(fmt.Sprintf(`if err := factory.AddKnownStorage(%s.WithKind("%s"), &%s{}); err != nil {`, sgv, name, table))
-		g.P("return nil")
-		g.P(`}`)
+		g.P(fmt.Sprintf(`store[%s.WithKind("%s")] = &%s{}`, sgv, name, table))
 	}
 
-	g.P("return nil")
 	g.P("}")
 }
 
