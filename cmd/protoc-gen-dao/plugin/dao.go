@@ -462,7 +462,7 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 		g.P(fmt.Sprintf("return %s.ErrInvalidObject", g.storagePkg.Use()))
 		g.P("}")
 		g.P()
-		g.P(fmt.Sprintf("m = From%s(in).(*%s)", pname, sname))
+		g.P(fmt.Sprintf("*m = *From%s(in).(*%s)", pname, sname))
 		g.P("return nil")
 		g.P("}")
 		g.P()
