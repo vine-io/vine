@@ -66,14 +66,15 @@ type MapFields struct {
 }
 
 type Storage struct {
-	Name    string
-	PK      *Field
-	MFields map[string]*Field
-	Fields  []*Field
-	SDField *Field
-	Desc    *generator.MessageDescriptor
-	Table   string
-	Deep    bool
+	Name     string
+	PK       *Field
+	MFields  map[string]*Field
+	Fields   []*Field
+	SDField  *Field
+	Desc     *generator.MessageDescriptor
+	Table    string
+	Deep     bool
+	TypeMeta bool
 }
 
 type FieldTag struct {

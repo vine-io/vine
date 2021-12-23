@@ -221,6 +221,9 @@ func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDe
 
 		_, isInline := fTags[_inline]
 		if isInline && item.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_MESSAGE {
+			if item.Proto.GetName() == "typeMeta" {
+				s.TypeMeta = true
+			}
 			subMsg := g.gen.ExtractMessage(item.Proto.GetTypeName())
 			g.buildFields(file, subMsg, s, n)
 			continue
@@ -800,6 +803,11 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 	g.P(`exprs := make([]clause.Expression, 0)`)
 	for _, field := range schema.Fields {
 		column := toColumnName(field.Name)
+		if schema.TypeMeta {
+			if field.Name == "Kind" || field.Name == "ApiVersion" {
+				continue
+			}
+		}
 		switch field.Type {
 		case _map:
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
