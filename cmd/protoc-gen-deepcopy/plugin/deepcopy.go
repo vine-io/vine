@@ -90,14 +90,7 @@ func (g *deepcopy) Generate(file *generator.FileDescriptor) {
 		return
 	}
 
-	g.P(`func init() {`)
-	g.P(`sets = append(sets,`)
-	for _, msg := range file.Messages() {
-		g.generateSchemaTypes(file, msg)
-	}
-	g.P(`)`)
-	g.P(`}`)
-	g.P()
+	g.generateSchemaTypes(file, file.Messages())
 
 	for _, msg := range file.Messages() {
 		g.generateMessage(file, msg)
@@ -172,21 +165,35 @@ func (g *deepcopy) generateMessage(file *generator.FileDescriptor, msg *generato
 	}
 }
 
-func (g *deepcopy) generateSchemaTypes(file *generator.FileDescriptor, msg *generator.MessageDescriptor) {
-	if msg.Proto.File() != file {
-		return
+func (g *deepcopy) generateSchemaTypes(file *generator.FileDescriptor, msgs []*generator.MessageDescriptor) {
+	sets := make([]string, 0)
+	for _, msg := range msgs {
+		if msg.Proto.File() != file {
+			continue
+		}
+		if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
+			continue
+		}
+
+		mname := msg.Proto.GetName()
+		tags := g.extractTags(msg.Comments)
+		if _, ok := tags[_object]; ok {
+			sets = append(sets, mname)
+		}
 	}
-	if msg.Proto.Options != nil && msg.Proto.Options.GetMapEntry() {
+
+	if len(sets) == 0 {
 		return
 	}
 
-	mname := msg.Proto.GetName()
-	tags := g.extractTags(msg.Comments)
-	_, ok := tags[_object]
-	if !ok {
-		return
+	g.P(`func init() {`)
+	g.P(`sets = append(sets,`)
+	for _, s := range sets {
+		g.P(fmt.Sprintf("&%s{},", s))
 	}
-	g.P(fmt.Sprintf("&%s{},", mname))
+	g.P(`)`)
+	g.P(`}`)
+	g.P()
 }
 
 func (g *deepcopy) generateRepeatedField(file *generator.FileDescriptor, msg *generator.MessageDescriptor, field *generator.FieldDescriptor) {
