@@ -254,7 +254,7 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 			client.WithContentType(ct),
 		)
 		// make the call
-		if err := cc.Call(cx, req, &response, client.WithSelectOption(so)); err != nil {
+		if err = cc.Call(cx, req, &response, client.WithSelectOption(so)); err != nil {
 			writeError(c, err)
 			return
 		}
@@ -413,7 +413,7 @@ func requestPayload(r *http.Request) ([]byte, error) {
 		bodybuf := []byte("{}")
 		buf := bufferPool.Get()
 		defer bufferPool.Put(buf)
-		if _, err := buf.ReadFrom(r.Body); err != nil {
+		if _, err = buf.ReadFrom(r.Body); err != nil {
 			return nil, err
 		}
 		if b := buf.Bytes(); len(b) > 0 {
