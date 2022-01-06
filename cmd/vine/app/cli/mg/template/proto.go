@@ -32,8 +32,8 @@ message {{title .Name}}Spec {
 
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/api/service/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
-option java_package = "io.vine.service.{{.Group}}.{{.Version}}";
+option go_package = "{{.Dir}}/api/services/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option java_package = "io.vine.services.{{.Group}}.{{.Version}}";
 option java_multiple_files = true;
 
 // +gen:openapi
@@ -74,8 +74,8 @@ message Pong {
 
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/api/service/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
-option java_package = "io.vine.service.{{.Group}}.{{.Version}}";
+option go_package = "{{.Dir}}/api/services/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option java_package = "io.vine.services.{{.Group}}.{{.Version}}";
 option java_multiple_files = true;
 
 // +gen:openapi

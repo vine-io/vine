@@ -28,7 +28,7 @@ var (
 import (
 	"context"
 
-	"{{.Dir}}/pkg/runtime/inject"
+	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
 )
 
@@ -53,7 +53,11 @@ func (s *{{.Name}}) Init() error {
 	return nil
 }
 
-func (s *{{.Name}}) Call(ctx *vine.Context, name string) (string, error) {
+func (s *{{.Name}}) Start() error {
+	return nil
+}
+
+func (s *{{.Name}}) Call(ctx context.Context, name string) (string, error) {
 	return "reply: " + name, nil
 }
 
@@ -71,7 +75,7 @@ func (s *{{.Name}}) PingPong() {
 import (
 	"context"
 
-	"{{.Dir}}/pkg/runtime/inject"
+	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
 )
 
@@ -81,7 +85,7 @@ func init() {
 
 type {{title .Name}} interface {
 	Init() error
-	Call(ctx *vine.Context, name string) (string, error)
+	Call(ctx context.Context, name string) (string, error)
 	Stream()
 	PingPong()
 }
@@ -96,7 +100,11 @@ func (s *{{.Name}}) Init() error {
 	return nil
 }
 
-func (s *{{.Name}}) Call(ctx *vine.Context, name string) (string, error) {
+func (s *{{.Name}}) Start() error {
+	return nil
+}
+
+func (s *{{.Name}}) Call(ctx context.Context, name string) (string, error) {
 	return "reply: " + name, nil
 }
 

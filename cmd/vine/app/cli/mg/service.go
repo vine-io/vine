@@ -152,7 +152,7 @@ func runSRV(ctx *cli.Context) {
 			c.Toml.Proto,
 			tool.Proto{
 				Name:    name,
-				Pb:      filepath.Join(c.Dir, "api", "service", name, "v1", name+".proto"),
+				Pb:      filepath.Join(c.Dir, "api", "services", name, "v1", name+".proto"),
 				Group:   name,
 				Version: "v1",
 				Type:    "service",
@@ -166,9 +166,9 @@ func runSRV(ctx *cli.Context) {
 		}
 		c.Files = []file{
 			{"cmd/" + name + "/main.go", t2.ClusterCMD},
-			{"pkg/runtime/doc.go", t2.Doc},
-			{"pkg/runtime/inject/inject.go", t2.Inject},
+			{"pkg/version/version.go", t2.Version},
 			{"pkg/" + name + "/app.go", t2.ClusterEntry},
+			{"pkg/" + name + "/builtin.go", t2.ClusterBuiltin},
 			{"pkg/" + name + "/service/" + name + ".go", srvTpl},
 			{"pkg/" + name + "/biz/" + name + ".go", t2.ClusterBiz},
 			{"pkg/" + name + "/infra/storage/storage.go", t2.StorageHandler},
@@ -176,7 +176,7 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
 			{"deploy/config/" + name + ".ini", t2.ConfSRV},
 			{"deploy/systemd/" + name + ".service", t2.SystemedSRV},
-			{"api/service/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
+			{"api/services/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
 			{"Makefile", t2.ClusterMakefile},
 			{"vine.toml", t2.TOML},
 		}
@@ -198,7 +198,7 @@ func runSRV(ctx *cli.Context) {
 			c.Toml.Proto,
 			tool.Proto{
 				Name:    name,
-				Pb:      filepath.Join(c.Dir, "api", "service", name, "v1", name+".proto"),
+				Pb:      filepath.Join(c.Dir, "api", "services", name, "v1", name+".proto"),
 				Group:   name,
 				Version: "v1",
 				Type:    "service",
@@ -212,9 +212,9 @@ func runSRV(ctx *cli.Context) {
 		}
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
-			{"pkg/runtime/doc.go", t2.Doc},
-			{"pkg/runtime/inject/inject.go", t2.Inject},
+			{"pkg/version/version.go", t2.Version},
 			{"pkg/app.go", t2.SingleEntry},
+			{"pkg/builtin.go", t2.SimpleBuiltin},
 			{"pkg/service/" + name + ".go", srvTpl},
 			{"pkg/biz/" + name + ".go", t2.SingleBiz},
 			{"pkg/infra/storage/storage.go", t2.StorageHandler},
@@ -222,7 +222,7 @@ func runSRV(ctx *cli.Context) {
 			{"deploy/Dockerfile", t2.DockerSRV},
 			{"deploy/" + name + ".ini", t2.ConfSRV},
 			{"deploy/" + name + ".service", t2.SystemedSRV},
-			{"api/service/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
+			{"api/services/" + name + "/v1/" + name + ".proto", t2.ProtoSRV},
 			{"Makefile", t2.SingleMakefile},
 			{"vine.toml", t2.TOML},
 		}

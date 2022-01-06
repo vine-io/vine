@@ -26,42 +26,134 @@ var (
 	SingleEntry = `package pkg
 
 import (
+	"github.com/vine-io/apimachinery/inject"
+	"github.com/vine-io/apimachinery/server"
+	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/service"
+	"{{.Dir}}/pkg/version"
 )
 
 func Run() {
-	app := service.New()
+	var err error
 
-	if err := app.Init(); err != nil {
+	srv := vine.NewService()
+	opts := []vine.Option{
+		vine.Name(version.{{title .Name}}Name),
+		vine.Id(version.{{title .Name}}Id),
+		vine.Version(version.GetVersion()),
+		vine.Metadata(map[string]string{
+			"namespace": version.Namespace,
+		}),
+	}
+
+	srv.Init(opts...)
+
+	if err = inject.Provide(srv, srv.Server(), srv.Client()); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := app.Run(); err != nil {
+	if err = inject.Populate(); err != nil {
 		log.Fatal(err)
+	}
+
+	for _, o := range inject.Objects() {
+		if h, ok := o.Value.(server.Service); ok {
+			if err = h.Register(srv.Server()); err != nil {
+				log.Fatalf("register vine service: %v", err)
+			}
+			continue
+		}
+
+		if impl, ok := o.Value.(server.BizImpl); ok {
+			if err = impl.Init(); err != nil {
+				log.Fatalf("biz init: %v", o.Name, err)
+			}
+
+			if err = impl.Start(); err != nil {
+				log.Fatalf("biz start: %v", o.Name, err)
+			}
+		}
+	}
+
+	if err = srv.Run(); err != nil {
+		log.Fatalf("start server: %v", err)
 	}
 }`
+
+	SimpleBuiltin = `package pkg
+
+import (
+	_ "{{.Dir}}/pkg/biz"
+	_ "{{.Dir}}/pkg/service"
+)
+`
 
 	ClusterEntry = `package {{.Name}}
 
 import (
+	"github.com/vine-io/apimachinery/inject"
+	"github.com/vine-io/apimachinery/server"
+	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/{{.Name}}/service"
+	"{{.Dir}}/pkg/version"
 )
 
 func Run() {
-	app := service.New()
+	var err error
 
-	if err := app.Init(); err != nil {
+	srv := vine.NewService()
+	opts := []vine.Option{
+		vine.Name(version.{{title .Name}}Name),
+		vine.Id(version.{{title .Name}}Id),
+		vine.Version(version.GetVersion()),
+		vine.Metadata(map[string]string{
+			"namespace": version.Namespace,
+		}),
+	}
+
+	srv.Init(opts...)
+
+	if err = inject.Provide(srv, srv.Server(), srv.Client()); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := app.Run(); err != nil {
+	if err = inject.Populate(); err != nil {
 		log.Fatal(err)
+	}
+
+	for _, o := range inject.Objects() {
+		if h, ok := o.Value.(server.Service); ok {
+			if err = h.Register(srv.Server()); err != nil {
+				log.Fatalf("register vine service: %v", err)
+			}
+			continue
+		}
+
+		if impl, ok := o.Value.(server.BizImpl); ok {
+			if err = impl.Init(); err != nil {
+				log.Fatalf("biz init: %v", o.Name, err)
+			}
+
+			if err = impl.Start(); err != nil {
+				log.Fatalf("biz start: %v", o.Name, err)
+			}
+		}
+	}
+
+	if err = srv.Run(); err != nil {
+		log.Fatalf("start server: %v", err)
 	}
 }`
+
+	ClusterBuiltin = `package {{.Name}}
+
+import (
+	_ "{{.Dir}}/pkg/{{.Name}}/biz"
+	_ "{{.Dir}}/pkg/{{.Name}}/service"
+)
+`
 
 	GatewayEntry = `package {{.Name}}
 
