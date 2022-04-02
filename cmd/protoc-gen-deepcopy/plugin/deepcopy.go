@@ -250,8 +250,12 @@ func (g *deepcopy) generateMessageField(file *generator.FileDescriptor, field *g
 	subMsg := g.gen.ExtractMessage(field.Proto.GetTypeName())
 	fpkg := subMsg.Proto.TypeName()[0]
 	if file != subMsg.Proto.File() {
-		pkg := string(g.gen.AddImport(subMsg.Proto.GoImportPath()))
-		fpkg = pkg + "." + fpkg
+		spath := subMsg.Proto.GoImportPath()
+		lpath := strings.Split(g.gen.File().Options.GetGoPackage(), ";")[0]
+		if strings.ReplaceAll(spath.String(), `"`, "") != lpath {
+			pkg := string(g.gen.AddImport(spath))
+			fpkg = pkg + "." + fpkg
+		}
 	}
 	tags := g.extractTags(field.Comments)
 	_, isInline := tags[_inline]
