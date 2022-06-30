@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/api/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/api/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/component/api/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1179,19 +1179,19 @@ if (!doNotTrack) {
 <p><strong>API</strong> 是一个可插拔的 API 接口，由 <strong>Registry</strong> 驱动，可帮助构建强大的公共 API 网关.</p>
 <p><strong>API</strong> 库提供 api 网关路由功能。微服务体系结构将应用程序逻辑分离到单独的服务中. api 网关提供单个入口点，以将这些服务合并到统一 api 中。 <strong>API</strong> 使用在 <strong>Registry</strong> 元数据中定义的路由来生成路由规则并服务 http 请求.</p>
 <h2 id="启动-api-服务">启动 api 服务</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># 提供 http 服务和 swagger </span>
-vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
-</code></pre></div><h2 id="创建网关">创建网关</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine new gateway api
-</code></pre></div><p>启动</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go run cmd/api/main.go --api-address<span style="color:#ff79c6">=</span>127.0.0.1:8080
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4"># 提供 http 服务和 swagger </span>
+</span></span><span style="display:flex;"><span>vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
+</span></span></code></pre></div><h2 id="创建网关">创建网关</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vine new gateway api
+</span></span></code></pre></div><p>启动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go run cmd/api/main.go --api-address<span style="color:#ff79c6">=</span>127.0.0.1:8080
+</span></span></code></pre></div><blockquote>
 <p>一个服务同时提供 gRPC 和 http 接口可以参考 <a href="https://github.com/vine-io/examples/tree/main/api">api</a></p>
 </blockquote>
 <h2 id="测试">测试</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -X POST <span style="color:#f1fa8c">&#34;http://127.0.0.1:8080/helloworld/v1/helloworld/Call&#34;</span> -H  <span style="color:#f1fa8c">&#34;accept: application/json&#34;</span> -H  <span style="color:#f1fa8c">&#34;Content-Type: application/json&#34;</span> -d <span style="color:#f1fa8c">&#34;{\&#34;name\&#34;:\&#34;hello\&#34;}&#34;</span>
-&gt; <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;reply: hello&#34;</span><span style="color:#ff79c6">}</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -X POST <span style="color:#f1fa8c">&#34;http://127.0.0.1:8080/helloworld/v1/helloworld/Call&#34;</span> -H  <span style="color:#f1fa8c">&#34;accept: application/json&#34;</span> -H  <span style="color:#f1fa8c">&#34;Content-Type: application/json&#34;</span> -d <span style="color:#f1fa8c">&#34;{\&#34;name\&#34;:\&#34;hello\&#34;}&#34;</span>
+</span></span><span style="display:flex;"><span>&gt; <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;reply: hello&#34;</span><span style="color:#ff79c6">}</span>
+</span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1315,7 +1315,7 @@ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1343,7 +1343,7 @@ vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

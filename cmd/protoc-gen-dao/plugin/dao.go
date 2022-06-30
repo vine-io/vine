@@ -53,7 +53,8 @@ const (
 	// inline
 	_inline = "inline"
 	// dao primary key
-	_pk = "pk"
+	_pk         = "pk"
+	_daoExtract = "daoInject"
 )
 
 type Tag struct {
@@ -466,6 +467,11 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 		g.P("}")
 		g.P()
 	}
+
+	g.P(fmt.Sprintf(`func (m *%sStorage) WithTx(tx *dao.DB) *%s {
+	m.tx = tx
+	return m
+}`, pname, sname))
 
 	g.P(fmt.Sprintf(`func Register%s() error {`, pname))
 	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(&%s{})`, sname))
@@ -1064,6 +1070,8 @@ func (g *dao) buildDaoTags(field *generator.FieldDescriptor, autoIncr bool) *Fie
 			if autoIncr {
 				fTag.Values = append(fTag.Values, "autoIncrement")
 			}
+		case _daoExtract:
+			fTag.Values = append(fTag.Values, strings.ReplaceAll(tag.Value, `"`, ""))
 		}
 	}
 

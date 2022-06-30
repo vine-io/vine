@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/quickstart/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/quickstart/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/quickstart/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1186,30 +1186,30 @@ if (!doNotTrack) {
 <h2 id="定义接口">定义接口</h2>
 <h3 id="新建项目">新建项目</h3>
 <p>新建目录保存相关代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/greet
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/greet
+</span></span></code></pre></div><blockquote>
 <p>建议项目保存在 $GOPATH 下</p>
 </blockquote>
 <h3 id="新建-proto-文件">新建 *.proto 文件</h3>
 <p><strong>Vine</strong> 内部使用 <code>gRPC</code> 作为服务端，<code>*.proto</code> 是 google 公司开源的一种数据交换协议，类似 <code>json</code>。关于 <code>protobuf</code> 更详细的语法可以参考<a href="https://developers.google.com/protocol-buffers/docs/gotutorial">protobuf</a>。</p>
 <p>这里我们新建 <code>greet.proto</code> 文件，内容如下:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// mysite/proto/greet.proto
-</span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
-
-<span style="color:#ff79c6">package</span> greet;
-
-<span style="color:#8be9fd;font-style:italic">service</span> Greeter {
-  <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp) {}
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {
-  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {
-  <span style="color:#8be9fd">string</span> greeting <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#6272a4">// mysite/proto/greet.proto
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">package</span> greet;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">service</span> Greeter {
+</span></span><span style="display:flex;"><span>  <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp) {}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">string</span> greeting <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
 <p>更多的关于 <strong>Vine</strong> 的语法规则可以参考 <a href="/vine/docs/guides/openapi/">protoc-gen-vine</a></p>
 </blockquote>
 <h3 id="生成-api-接口">生成 API 接口</h3>
@@ -1220,162 +1220,161 @@ if (!doNotTrack) {
 <li><a href="https://github.com/vine-io/vine/tree/master/cmd/protoc-gen-vine">protoc-gen-vine</a></li>
 </ul>
 <p>使用 protoc、protoc-gen-gogo、protoc-gen-vine 来生成 protobuf code</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/gogo/protobuf
-go get github.com/vine-io/vine/cmd/protoc-gen-gogo
-go get github.com/vine-io/vine/cmd/protoc-gen-vine
-</code></pre></div><p>使用命令生成 <code>greet.pb.go</code> 和 <code>greet.vine.go</code> 文件:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src
-protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. mysite/proto/greet.proto
-</code></pre></div><p>执行成功后会生成新的文件:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mysite
-└── proto
-    ├── greet.pb.go       <span style="color:#6272a4"># 通过 protoc-gen-gogo 插件生成，包含结构体和 gRPC 的接口</span>
-    ├── greet.pb.vine.go  <span style="color:#6272a4"># 通过 protoc-gen-vine 插件生成，包含 Vine 框架接口</span>
-    └── greet.proto
-
-</code></pre></div><h2 id="定义服务">定义服务</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get github.com/gogo/protobuf
+</span></span><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+</span></span><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/protoc-gen-vine
+</span></span></code></pre></div><p>使用命令生成 <code>greet.pb.go</code> 和 <code>greet.vine.go</code> 文件:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src
+</span></span><span style="display:flex;"><span>protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. mysite/proto/greet.proto
+</span></span></code></pre></div><p>执行成功后会生成新的文件:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mysite
+</span></span><span style="display:flex;"><span>└── proto
+</span></span><span style="display:flex;"><span>    ├── greet.pb.go       <span style="color:#6272a4"># 通过 protoc-gen-gogo 插件生成，包含结构体和 gRPC 的接口</span>
+</span></span><span style="display:flex;"><span>    ├── greet.pb.vine.go  <span style="color:#6272a4"># 通过 protoc-gen-vine 插件生成，包含 Vine 框架接口</span>
+</span></span><span style="display:flex;"><span>    └── greet.proto
+</span></span></code></pre></div><h2 id="定义服务">定义服务</h2>
 <h3 id="实现-vine-服务">实现 Vine 服务</h3>
 <p>有了 proto 文件后，接下来就是编写服务端代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">mkdir -p server
-touch mysite/server/main.go
-</code></pre></div><p>服务端代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-	<span style="color:#f1fa8c">&#34;log&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
-	pb <span style="color:#f1fa8c">&#34;mysite/proto&#34;</span>
-)
-
-<span style="color:#6272a4">// greet 需要实现 pb.Greet 的接口
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> greet <span style="color:#8be9fd;font-style:italic">struct</span> {}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (g <span style="color:#ff79c6">*</span>greet) <span style="color:#50fa7b">Echo</span>(ctx context.Context, req <span style="color:#ff79c6">*</span>pb.EchoReq, rsp <span style="color:#ff79c6">*</span>pb.EchoRsp) <span style="color:#8be9fd">error</span> {
-	rsp.Greeting = <span style="color:#f1fa8c">&#34;hello: &#34;</span> <span style="color:#ff79c6">+</span> req.Name
-	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	<span style="color:#6272a4">// 构建新的服务
-</span><span style="color:#6272a4"></span>	app <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;greet&#34;</span>),
-	)
-
-	<span style="color:#6272a4">// 服务初始化
-</span><span style="color:#6272a4"></span>	app.<span style="color:#50fa7b">Init</span>()
-
-	<span style="color:#6272a4">// 注册服务
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(app.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>greet{}); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register greet hander: %v&#34;</span>, err)
-	}
-
-	<span style="color:#6272a4">// 服务启动
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> app.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;start greet server: %v&#34;</span>, err)
-	}
-}
-</code></pre></div><p>这样一个简易的 <strong>Vine</strong> 服务就完成了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>mkdir -p server
+</span></span><span style="display:flex;"><span>touch mysite/server/main.go
+</span></span></code></pre></div><p>服务端代码:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+</span></span><span style="display:flex;"><span>	pb <span style="color:#f1fa8c">&#34;mysite/proto&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// greet 需要实现 pb.Greet 的接口
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> greet <span style="color:#8be9fd;font-style:italic">struct</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (g <span style="color:#ff79c6">*</span>greet) <span style="color:#50fa7b">Echo</span>(ctx context.Context, req <span style="color:#ff79c6">*</span>pb.EchoReq, rsp <span style="color:#ff79c6">*</span>pb.EchoRsp) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>	rsp.Greeting = <span style="color:#f1fa8c">&#34;hello: &#34;</span> <span style="color:#ff79c6">+</span> req.Name
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 构建新的服务
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	app <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+</span></span><span style="display:flex;"><span>		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;greet&#34;</span>),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 服务初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	app.<span style="color:#50fa7b">Init</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 注册服务
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(app.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>greet{}); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register greet hander: %v&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 服务启动
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> app.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;start greet server: %v&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这样一个简易的 <strong>Vine</strong> 服务就完成了。</p>
 <blockquote>
 <p>更多服务端的内容请参考 <a href="/vine/docs/component/server/">内部服务</a></p>
 </blockquote>
 <h3 id="启动服务">启动服务</h3>
 <p>启动服务并绑定端口:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go run server/main.go
-2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:171 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting <span style="color:#ff79c6">[</span>service<span style="color:#ff79c6">]</span> greet
-2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:172 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info service <span style="color:#ff79c6">[</span>version<span style="color:#ff79c6">]</span> latest
-2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:920 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Server <span style="color:#ff79c6">[</span>grpc<span style="color:#ff79c6">]</span> Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:65235
-2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:761 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registry <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> Registering node: greet-d4d5e1a8-1bc0-4387-8fb2-1b5eda59055e
-2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>mdns/mdns_registry.go:266 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> registry create new service with ip: 192.168.11.167 <span style="color:#ff79c6">for</span>: 192.168.11.167
-</code></pre></div><p>如果用户没有指定 ip 和端口，则默认 ip 为 0.0.0.0，端口随机生成。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go run server/main.go
+</span></span><span style="display:flex;"><span>2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:171 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting <span style="color:#ff79c6">[</span>service<span style="color:#ff79c6">]</span> greet
+</span></span><span style="display:flex;"><span>2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:172 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info service <span style="color:#ff79c6">[</span>version<span style="color:#ff79c6">]</span> latest
+</span></span><span style="display:flex;"><span>2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:920 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Server <span style="color:#ff79c6">[</span>grpc<span style="color:#ff79c6">]</span> Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:65235
+</span></span><span style="display:flex;"><span>2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:761 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registry <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> Registering node: greet-d4d5e1a8-1bc0-4387-8fb2-1b5eda59055e
+</span></span><span style="display:flex;"><span>2021-08-27 13:24:18  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>mdns/mdns_registry.go:266 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> registry create new service with ip: 192.168.11.167 <span style="color:#ff79c6">for</span>: 192.168.11.167
+</span></span></code></pre></div><p>如果用户没有指定 ip 和端口，则默认 ip 为 0.0.0.0，端口随机生成。</p>
 <blockquote>
 <p>关于 <strong>Vine</strong> 服务的命令行参数可以参考 <a href="/vine/docs/component/cmd/">命令行参数</a></p>
 </blockquote>
 <h2 id="客户端">客户端</h2>
 <p>接下来我们编写客户端的代码来请求服务端:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p client
-touch client/main.go
-</code></pre></div><p>客户端代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client/grpc&#34;</span>
-	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
-	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/mysite/proto&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	<span style="color:#6272a4">// 选择 gRPC 客户端
-</span><span style="color:#6272a4"></span>	cc <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewClient</span>()
-	<span style="color:#6272a4">// 指定服务名称
-</span><span style="color:#6272a4"></span>	client <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;greet&#34;</span>, cc)
-
-	<span style="color:#6272a4">// 请求 Greet.Echo 接口
-</span><span style="color:#6272a4"></span>	rsp, err <span style="color:#ff79c6">:=</span> client.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.EchoReq{Name: <span style="color:#f1fa8c">&#34;lack&#34;</span>})
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatal</span>(err)
-	}
-
-	log.<span style="color:#50fa7b">Infof</span>(<span style="color:#f1fa8c">&#34;greet result: %v&#34;</span>, rsp.Greeting)
-}
-</code></pre></div><p>执行命令输出如下:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go run client/main.go
-2021-08-27 13:24:41  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>client/main.go:20 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info greet result: hello: lack
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p client
+</span></span><span style="display:flex;"><span>touch client/main.go
+</span></span></code></pre></div><p>客户端代码:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+</span></span><span style="display:flex;"><span>	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/mysite/proto&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 选择 gRPC 客户端
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	cc <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewClient</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 指定服务名称
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	client <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewGreeterService</span>(<span style="color:#f1fa8c">&#34;greet&#34;</span>, cc)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 请求 Greet.Echo 接口
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	rsp, err <span style="color:#ff79c6">:=</span> client.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.EchoReq{Name: <span style="color:#f1fa8c">&#34;lack&#34;</span>})
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatal</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	log.<span style="color:#50fa7b">Infof</span>(<span style="color:#f1fa8c">&#34;greet result: %v&#34;</span>, rsp.Greeting)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>执行命令输出如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go run client/main.go
+</span></span><span style="display:flex;"><span>2021-08-27 13:24:41  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>client/main.go:20 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info greet result: hello: lack
+</span></span></code></pre></div><blockquote>
 <p>更多关于客户端的内容可以参考 <a href="/vine/docs/component/client/">内部请求</a></p>
 </blockquote>
 <h2 id="api-接口">API 接口</h2>
 <p><strong>Vine</strong> 服务可以同时支持 <code>gRPC</code> 和 <code>Restful</code> 接口。</p>
 <h3 id="修改-greetproto-文件">修改 greet.proto 文件</h3>
 <p>先修改 greet.proto 文件:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
-
-<span style="color:#ff79c6">package</span> greet;
-
-<span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Greeter {
-  <span style="color:#6272a4">// +gen:get=/api/v1/echo
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp) {}
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {
-  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {
-  <span style="color:#8be9fd">string</span> greeting <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><p>重新生成 <code>greet.pb.vine.go</code> 文件:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --vine_out<span style="color:#ff79c6">=</span>:.  github.com/vine-io/vine/testdata/mysite/proto/greet.proto
-</code></pre></div><h3 id="安装-vine">安装 <code>vine</code>:</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/vine
-</code></pre></div><h3 id="启动网关">启动网关</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi  
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>openapi/openapi.go:56 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting OpenAPI at /openapi-ui/
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>api/api.go:179 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registering API RPC Handler at /
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>http/http.go:116 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info HTTP API Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:8080
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:171 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting <span style="color:#ff79c6">[</span>service<span style="color:#ff79c6">]</span> go.vine.api
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:172 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info service <span style="color:#ff79c6">[</span>version<span style="color:#ff79c6">]</span> latest
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:920 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Server <span style="color:#ff79c6">[</span>grpc<span style="color:#ff79c6">]</span> Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:50405
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:761 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registry <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> Registering node: go.vine.api-b405ca1d-ba24-4470-a18e-b1feeb22c5f6
-2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>mdns/mdns_registry.go:266 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> registry create new service with ip: 192.168.11.167 <span style="color:#ff79c6">for</span>: 192.168.11.167
-</code></pre></div><p>使用以下命令验证:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080/api/v1/echo<span style="color:#f1fa8c">\?</span>name<span style="color:#f1fa8c">\=</span>lack
-<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;greeting&#34;</span>:<span style="color:#f1fa8c">&#34;hello: lack&#34;</span><span style="color:#ff79c6">}</span>%
-</code></pre></div><p>完成的目录结构如下:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mysite
-├── client
-│   └── main.go
-├── proto
-│   ├── greet.pb.go
-│   ├── greet.pb.vine.go
-│   └── greet.proto
-└── server
-    └── main.go
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">package</span> greet;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:openapi
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Greeter {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:get=/api/v1/echo
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp) {}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">string</span> greeting <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>重新生成 <code>greet.pb.vine.go</code> 文件:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --vine_out<span style="color:#ff79c6">=</span>:.  github.com/vine-io/vine/testdata/mysite/proto/greet.proto
+</span></span></code></pre></div><h3 id="安装-vine">安装 <code>vine</code>:</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/vine
+</span></span></code></pre></div><h3 id="启动网关">启动网关</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi  
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>openapi/openapi.go:56 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting OpenAPI at /openapi-ui/
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>api/api.go:179 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registering API RPC Handler at /
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>http/http.go:116 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info HTTP API Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:8080
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:171 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Starting <span style="color:#ff79c6">[</span>service<span style="color:#ff79c6">]</span> go.vine.api
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>vine/service.go:172 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info service <span style="color:#ff79c6">[</span>version<span style="color:#ff79c6">]</span> latest
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:920 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Server <span style="color:#ff79c6">[</span>grpc<span style="color:#ff79c6">]</span> Listening on <span style="color:#ff79c6">[</span>::<span style="color:#ff79c6">]</span>:50405
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>grpc/grpc.go:761 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info Registry <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> Registering node: go.vine.api-b405ca1d-ba24-4470-a18e-b1feeb22c5f6
+</span></span><span style="display:flex;"><span>2021-08-27 13:38:54  <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>mdns/mdns_registry.go:266 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info <span style="color:#ff79c6">[</span>mdns<span style="color:#ff79c6">]</span> registry create new service with ip: 192.168.11.167 <span style="color:#ff79c6">for</span>: 192.168.11.167
+</span></span></code></pre></div><p>使用以下命令验证:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://127.0.0.1:8080/api/v1/echo<span style="color:#f1fa8c">\?</span>name<span style="color:#f1fa8c">\=</span>lack
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;greeting&#34;</span>:<span style="color:#f1fa8c">&#34;hello: lack&#34;</span><span style="color:#ff79c6">}</span>%
+</span></span></code></pre></div><p>完成的目录结构如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mysite
+</span></span><span style="display:flex;"><span>├── client
+</span></span><span style="display:flex;"><span>│   └── main.go
+</span></span><span style="display:flex;"><span>├── proto
+</span></span><span style="display:flex;"><span>│   ├── greet.pb.go
+</span></span><span style="display:flex;"><span>│   ├── greet.pb.vine.go
+</span></span><span style="display:flex;"><span>│   └── greet.proto
+</span></span><span style="display:flex;"><span>└── server
+</span></span><span style="display:flex;"><span>    └── main.go
+</span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1541,7 +1540,7 @@ touch client/main.go
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1569,7 +1568,7 @@ touch client/main.go
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

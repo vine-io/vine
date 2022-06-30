@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/config/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/config/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/component/config/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1217,99 +1217,99 @@ if (!doNotTrack) {
 <p><code>Source</code> 作为配置的读取来源。可以同时使用多个源。
 支持以下源:</p>
 <p>cli : 从 CLI 标志读取</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-    <span style="color:#6272a4">// New Service
-</span><span style="color:#6272a4"></span>    service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-        vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example&#34;</span>),
-        vine.<span style="color:#50fa7b">Flags</span>(
-            cli.StringFlag{
-                Name: <span style="color:#f1fa8c">&#34;database-address&#34;</span>,
-                Value: <span style="color:#f1fa8c">&#34;127.0.0.1&#34;</span>,
-                Usage: <span style="color:#f1fa8c">&#34;the db address&#34;</span>,
-            },
-        ),
-    )
-
-    <span style="color:#8be9fd;font-style:italic">var</span> clisrc source.Source
-
-    service.<span style="color:#50fa7b">Init</span>(
-        vine.<span style="color:#50fa7b">Action</span>(<span style="color:#8be9fd;font-style:italic">func</span>(c <span style="color:#ff79c6">*</span>cli.Context) {
-            clisrc = cli.<span style="color:#50fa7b">NewSource</span>(
-                cli.<span style="color:#50fa7b">Context</span>(c),
-	    )
-            <span style="color:#6272a4">// Alternatively, just setup your config right here
-</span><span style="color:#6272a4"></span>        }),
-    )
-    
-    <span style="color:#6272a4">// ... Load and use that source ...
-</span><span style="color:#6272a4"></span>    conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
-    conf.<span style="color:#50fa7b">Load</span>(clisrc)
-}
-</code></pre></div><p>env : 从环境变量中读取</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">src <span style="color:#ff79c6">:=</span> env.<span style="color:#50fa7b">NewSource</span>(
-	<span style="color:#6272a4">// optionally specify prefix
-</span><span style="color:#6272a4"></span>	env.<span style="color:#50fa7b">WithPrefix</span>(<span style="color:#f1fa8c">&#34;VINE&#34;</span>),
-)
-
-<span style="color:#6272a4">// Create new config
-</span><span style="color:#6272a4"></span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
-
-<span style="color:#6272a4">// Load env source
-</span><span style="color:#6272a4"></span>conf.<span style="color:#50fa7b">Load</span>(src)
-</code></pre></div><p>file : 从文件中读取</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	data <span style="color:#ff79c6">:=</span> []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">`{&#34;foo&#34;: &#34;bar&#34;}`</span>)
-	path <span style="color:#ff79c6">:=</span> filepath.<span style="color:#50fa7b">Join</span>(os.<span style="color:#50fa7b">TempDir</span>(), fmt.<span style="color:#50fa7b">Sprintf</span>(<span style="color:#f1fa8c">&#34;file.%d&#34;</span>, time.<span style="color:#50fa7b">Now</span>().<span style="color:#50fa7b">UnixNano</span>()))
-	fh, err <span style="color:#ff79c6">:=</span> os.<span style="color:#50fa7b">Create</span>(path)
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		t.<span style="color:#50fa7b">Error</span>(err)
-	}
-	<span style="color:#ff79c6">defer</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		fh.<span style="color:#50fa7b">Close</span>()
-		os.<span style="color:#50fa7b">Remove</span>(path)
-	}()
-
-	_, err = fh.<span style="color:#50fa7b">Write</span>(data)
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		t.<span style="color:#50fa7b">Error</span>(err)
-	}
-
-	f <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">NewSource</span>(<span style="color:#50fa7b">WithPath</span>(path))
-	c, err <span style="color:#ff79c6">:=</span> f.<span style="color:#50fa7b">Read</span>()
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		t.<span style="color:#50fa7b">Error</span>(err)
-	}
-}
-</code></pre></div><p>flag : 从标志中读取</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">flagSource <span style="color:#ff79c6">:=</span> flag.<span style="color:#50fa7b">NewSource</span>(
-	<span style="color:#6272a4">// optionally enable reading of unset flags and their default
-</span><span style="color:#6272a4"></span>	<span style="color:#6272a4">// values into config, defaults to false
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">IncludeUnset</span>(<span style="color:#ff79c6">true</span>)
-)
-<span style="color:#6272a4">// Create new config
-</span><span style="color:#6272a4"></span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
-
-<span style="color:#6272a4">// Load flag source
-</span><span style="color:#6272a4"></span>conf.<span style="color:#50fa7b">Load</span>(flagSource)
-</code></pre></div><p>memory : 从内存中读取</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">memorySource <span style="color:#ff79c6">:=</span> memory.<span style="color:#50fa7b">NewSource</span>(
-	memory.<span style="color:#50fa7b">WithJSON</span>(data),
-)
-<span style="color:#6272a4">// Create new config
-</span><span style="color:#6272a4"></span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
-<span style="color:#6272a4">// Load memory source
-</span><span style="color:#6272a4"></span>conf.<span style="color:#50fa7b">Load</span>(memorySource)
-</code></pre></div><h3 id="changeset">ChangeSet</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// New Service
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+</span></span><span style="display:flex;"><span>        vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;example&#34;</span>),
+</span></span><span style="display:flex;"><span>        vine.<span style="color:#50fa7b">Flags</span>(
+</span></span><span style="display:flex;"><span>            cli.StringFlag{
+</span></span><span style="display:flex;"><span>                Name: <span style="color:#f1fa8c">&#34;database-address&#34;</span>,
+</span></span><span style="display:flex;"><span>                Value: <span style="color:#f1fa8c">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>                Usage: <span style="color:#f1fa8c">&#34;the db address&#34;</span>,
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>        ),
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">var</span> clisrc source.Source
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    service.<span style="color:#50fa7b">Init</span>(
+</span></span><span style="display:flex;"><span>        vine.<span style="color:#50fa7b">Action</span>(<span style="color:#8be9fd;font-style:italic">func</span>(c <span style="color:#ff79c6">*</span>cli.Context) {
+</span></span><span style="display:flex;"><span>            clisrc = cli.<span style="color:#50fa7b">NewSource</span>(
+</span></span><span style="display:flex;"><span>                cli.<span style="color:#50fa7b">Context</span>(c),
+</span></span><span style="display:flex;"><span>	    )
+</span></span><span style="display:flex;"><span>            <span style="color:#6272a4">// Alternatively, just setup your config right here
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        }),
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// ... Load and use that source ...
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
+</span></span><span style="display:flex;"><span>    conf.<span style="color:#50fa7b">Load</span>(clisrc)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>env : 从环境变量中读取</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>src <span style="color:#ff79c6">:=</span> env.<span style="color:#50fa7b">NewSource</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// optionally specify prefix
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	env.<span style="color:#50fa7b">WithPrefix</span>(<span style="color:#f1fa8c">&#34;VINE&#34;</span>),
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Create new config
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Load env source
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>conf.<span style="color:#50fa7b">Load</span>(src)
+</span></span></code></pre></div><p>file : 从文件中读取</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	data <span style="color:#ff79c6">:=</span> []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">`{&#34;foo&#34;: &#34;bar&#34;}`</span>)
+</span></span><span style="display:flex;"><span>	path <span style="color:#ff79c6">:=</span> filepath.<span style="color:#50fa7b">Join</span>(os.<span style="color:#50fa7b">TempDir</span>(), fmt.<span style="color:#50fa7b">Sprintf</span>(<span style="color:#f1fa8c">&#34;file.%d&#34;</span>, time.<span style="color:#50fa7b">Now</span>().<span style="color:#50fa7b">UnixNano</span>()))
+</span></span><span style="display:flex;"><span>	fh, err <span style="color:#ff79c6">:=</span> os.<span style="color:#50fa7b">Create</span>(path)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		t.<span style="color:#50fa7b">Error</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">defer</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>		fh.<span style="color:#50fa7b">Close</span>()
+</span></span><span style="display:flex;"><span>		os.<span style="color:#50fa7b">Remove</span>(path)
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	_, err = fh.<span style="color:#50fa7b">Write</span>(data)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		t.<span style="color:#50fa7b">Error</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	f <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">NewSource</span>(<span style="color:#50fa7b">WithPath</span>(path))
+</span></span><span style="display:flex;"><span>	c, err <span style="color:#ff79c6">:=</span> f.<span style="color:#50fa7b">Read</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		t.<span style="color:#50fa7b">Error</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>flag : 从标志中读取</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>flagSource <span style="color:#ff79c6">:=</span> flag.<span style="color:#50fa7b">NewSource</span>(
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// optionally enable reading of unset flags and their default
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#6272a4">// values into config, defaults to false
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">IncludeUnset</span>(<span style="color:#ff79c6">true</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Create new config
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Load flag source
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>conf.<span style="color:#50fa7b">Load</span>(flagSource)
+</span></span></code></pre></div><p>memory : 从内存中读取</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>memorySource <span style="color:#ff79c6">:=</span> memory.<span style="color:#50fa7b">NewSource</span>(
+</span></span><span style="display:flex;"><span>	memory.<span style="color:#50fa7b">WithJSON</span>(data),
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Create new config
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Load memory source
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>conf.<span style="color:#50fa7b">Load</span>(memorySource)
+</span></span></code></pre></div><h3 id="changeset">ChangeSet</h3>
 <p><strong>Source</strong> 将 <strong>Config</strong> 作为一个 <strong>ChangeSet</strong> 返回，作为多个源的单一内部抽象。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// ChangeSet represents a set of changes from a source
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> ChangeSet <span style="color:#8be9fd;font-style:italic">struct</span> {
-	Data      []<span style="color:#8be9fd">byte</span>
-	CheckSum  <span style="color:#8be9fd">string</span>
-	Format    <span style="color:#8be9fd">string</span>
-	Source    <span style="color:#8be9fd">string</span>
-	Timestamp time.Time
-}
-</code></pre></div><h3 id="encoder">encoder</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// ChangeSet represents a set of changes from a source
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> ChangeSet <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>	Data      []<span style="color:#8be9fd">byte</span>
+</span></span><span style="display:flex;"><span>	CheckSum  <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	Format    <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	Source    <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	Timestamp time.Time
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="encoder">encoder</h3>
 <p><code>Encoder</code> 处理编码和解码。后端源可能以许多不停的格式存储。编码器使我们能够处理任何格式。如果未指定编码器，则默认为 json。
 支持以下编码格式：</p>
 <ul>
@@ -1321,195 +1321,195 @@ if (!doNotTrack) {
 </ul>
 <h3 id="reader">reader</h3>
 <p><code>Reader</code> 将多个 <strong>ChangeSet</strong> 表示为单个合并和查询的集合</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Reader is an interface for merging changesets
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Reader <span style="color:#8be9fd;font-style:italic">interface</span> {
-    <span style="color:#6272a4">// Merge multiple changeset into a single format
-</span><span style="color:#6272a4"></span>    <span style="color:#50fa7b">Merge</span>(<span style="color:#ff79c6">...*</span>source.ChangeSet) (<span style="color:#ff79c6">*</span>source.ChangeSet, <span style="color:#8be9fd">error</span>)
-    <span style="color:#6272a4">// Return Go assertable values
-</span><span style="color:#6272a4"></span>    <span style="color:#50fa7b">Values</span>(<span style="color:#ff79c6">*</span>source.ChangeSet) (Values, <span style="color:#8be9fd">error</span>)
-    <span style="color:#6272a4">// Name of the reader e.g json reader
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><p><code>Reader</code> 使用 <code>Encoder</code> 将 <strong>ChangeSet</strong> 解码为 <code>map[string]Values</code>，然后将它们合并到单个 <strong>ChangeSet</strong> 中。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Values is returned by the reader
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Values <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Bytes</span>() []<span style="color:#8be9fd">byte</span>
-	<span style="color:#50fa7b">Get</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>) Value
-	<span style="color:#50fa7b">Set</span>(val <span style="color:#8be9fd;font-style:italic">interface</span>{}, path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>)
-	<span style="color:#50fa7b">Del</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>)
-	<span style="color:#50fa7b">Map</span>() <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}
-	<span style="color:#50fa7b">Scan</span>(v <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-}
-</code></pre></div><p><code>Value</code> 接口允许强制转换，类型断言，返回默认值</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Value represents a value of any type
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Value <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Bool</span>(def <span style="color:#8be9fd">bool</span>) <span style="color:#8be9fd">bool</span>
-	<span style="color:#50fa7b">Int</span>(def <span style="color:#8be9fd">int64</span>) <span style="color:#8be9fd">int64</span>
-	<span style="color:#50fa7b">String</span>(def <span style="color:#8be9fd">string</span>) <span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">Float64</span>(def <span style="color:#8be9fd">float64</span>) <span style="color:#8be9fd">float64</span>
-	<span style="color:#50fa7b">Duration</span>(def time.Duration) time.Duration
-	<span style="color:#50fa7b">StringSlice</span>(def []<span style="color:#8be9fd">string</span>) []<span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">StringMap</span>(def <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>) <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">Scan</span>(val <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Bytes</span>() []<span style="color:#8be9fd">byte</span>
-}
-</code></pre></div><h3 id="config">Config</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Reader is an interface for merging changesets
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Reader <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// Merge multiple changeset into a single format
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#50fa7b">Merge</span>(<span style="color:#ff79c6">...*</span>source.ChangeSet) (<span style="color:#ff79c6">*</span>source.ChangeSet, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// Return Go assertable values
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#50fa7b">Values</span>(<span style="color:#ff79c6">*</span>source.ChangeSet) (Values, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// Name of the reader e.g json reader
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>Reader</code> 使用 <code>Encoder</code> 将 <strong>ChangeSet</strong> 解码为 <code>map[string]Values</code>，然后将它们合并到单个 <strong>ChangeSet</strong> 中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Values is returned by the reader
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Values <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Bytes</span>() []<span style="color:#8be9fd">byte</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Get</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>) Value
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Set</span>(val <span style="color:#8be9fd;font-style:italic">interface</span>{}, path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Del</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Map</span>() <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Scan</span>(v <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>Value</code> 接口允许强制转换，类型断言，返回默认值</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Value represents a value of any type
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Value <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Bool</span>(def <span style="color:#8be9fd">bool</span>) <span style="color:#8be9fd">bool</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Int</span>(def <span style="color:#8be9fd">int64</span>) <span style="color:#8be9fd">int64</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">String</span>(def <span style="color:#8be9fd">string</span>) <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Float64</span>(def <span style="color:#8be9fd">float64</span>) <span style="color:#8be9fd">float64</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Duration</span>(def time.Duration) time.Duration
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">StringSlice</span>(def []<span style="color:#8be9fd">string</span>) []<span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">StringMap</span>(def <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>) <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Scan</span>(val <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Bytes</span>() []<span style="color:#8be9fd">byte</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="config">Config</h3>
 <p><strong>Config</strong> 管理所有配置，抽象 source，encoder，reader。
 它从多个源读取，同步，监听，并将它们合并为单个可查询的源。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Config is an interface abstraction for dynamic configuration
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Config <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#6272a4">// provide the reader.Values interface
-</span><span style="color:#6272a4"></span>	reader.Values
-	<span style="color:#6272a4">// Init the config
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(opts <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#6272a4">// Options in the config
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#6272a4">// Stop the config loader/watcher
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
-	<span style="color:#6272a4">// Load config sources
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Load</span>(source <span style="color:#ff79c6">...</span>source.Source) <span style="color:#8be9fd">error</span>
-	<span style="color:#6272a4">// Force a source changeset sync
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Sync</span>() <span style="color:#8be9fd">error</span>
-	<span style="color:#6272a4">// Watch a value for changes
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Watch</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>) (Watcher, <span style="color:#8be9fd">error</span>)
-}
-</code></pre></div><h2 id="使用">使用</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Config is an interface abstraction for dynamic configuration
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Config <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// provide the reader.Values interface
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	reader.Values
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Init the config
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(opts <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Options in the config
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Stop the config loader/watcher
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Load config sources
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Load</span>(source <span style="color:#ff79c6">...</span>source.Source) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Force a source changeset sync
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Sync</span>() <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Watch a value for changes
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Watch</span>(path <span style="color:#ff79c6">...</span><span style="color:#8be9fd">string</span>) (Watcher, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="使用">使用</h2>
 <h3 id="实例配置">实例配置</h3>
 <p>只要我们有一个编码器来支持它，配置文件就可以是任务格式的。
 json 配置实例：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#ff79c6">&#34;hosts&#34;</span>: {
-        <span style="color:#ff79c6">&#34;database&#34;</span>: {
-            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.0.0.1&#34;</span>,
-            <span style="color:#ff79c6">&#34;port&#34;</span>: <span style="color:#bd93f9">3306</span>
-        },
-        <span style="color:#ff79c6">&#34;cache&#34;</span>: {
-            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.0.0.2&#34;</span>,
-            <span style="color:#ff79c6">&#34;port&#34;</span>: <span style="color:#bd93f9">6379</span>
-        }
-    }
-}
-</code></pre></div><h3 id="创建-config">创建 Config</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">&#34;hosts&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">&#34;database&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">&#34;port&#34;</span>: <span style="color:#bd93f9">3306</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#ff79c6">&#34;cache&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.0.0.2&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#ff79c6">&#34;port&#34;</span>: <span style="color:#bd93f9">6379</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="创建-config">创建 Config</h3>
 <p>创建一个新 <strong>Config</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
-
-conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
-</code></pre></div><h3 id="加载文件">加载文件</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">NewConfig</span>()
+</span></span></code></pre></div><h3 id="加载文件">加载文件</h3>
 <p>从文件加载配置，根据文件扩展名来确定配置格式。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
-
-<span style="color:#6272a4">// 加载 json 配置文件
-</span><span style="color:#6272a4"></span>config.<span style="color:#50fa7b">LoadFile</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>)
-</code></pre></div><p>如果扩展不存在，可指定 <code>encoder</code>。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/encoder/toml&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source/file&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	enc <span style="color:#ff79c6">:=</span> toml.<span style="color:#50fa7b">NewEncoder</span>()
-	
-	<span style="color:#6272a4">// 通过编码器加载 toml 文件
-</span><span style="color:#6272a4"></span>	config.<span style="color:#50fa7b">Load</span>(
-		file.<span style="color:#50fa7b">NewSource</span>(
-			file.<span style="color:#50fa7b">WithPath</span>(<span style="color:#f1fa8c">&#34;/tmp/config&#34;</span>),
-			source.<span style="color:#50fa7b">WithEncoder</span>(enc),
-		),
-	)
-}
-</code></pre></div><h3 id="读取配置">读取配置</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Map</span>()
-
-fmt.<span style="color:#50fa7b">Println</span>(conf[<span style="color:#f1fa8c">&#34;hosts&#34;</span>])
-</code></pre></div><p>扫描配置到结构体</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Host <span style="color:#8be9fd;font-style:italic">struct</span> {
-	Address <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;address&#34;`</span>
-	Port <span style="color:#8be9fd">int</span> <span style="color:#f1fa8c">`json:&#34;port&#34;`</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">type</span> Config <span style="color:#8be9fd;font-style:italic">struct</span> {
-	Hosts <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]Host <span style="color:#f1fa8c">`json:&#34;hosts&#34;`</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	pwd, _ <span style="color:#ff79c6">:=</span> os.<span style="color:#50fa7b">Getwd</span>()
-	err <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">LoadFile</span>(pwd <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;/config/&#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;config.json&#34;</span>)
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatal</span>(err)
-	}
-
-	<span style="color:#8be9fd;font-style:italic">var</span> cfg Config
-	config.<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>cfg)
-
-	fmt.<span style="color:#50fa7b">Println</span>(cfg.Hosts[<span style="color:#f1fa8c">&#34;database&#34;</span>].Address)
-}
-</code></pre></div><h3 id="读取值">读取值</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/services/config&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// 加载 json 配置文件
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>config.<span style="color:#50fa7b">LoadFile</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>)
+</span></span></code></pre></div><p>如果扩展不存在，可指定 <code>encoder</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/encoder/toml&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/config/source/file&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	enc <span style="color:#ff79c6">:=</span> toml.<span style="color:#50fa7b">NewEncoder</span>()
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 通过编码器加载 toml 文件
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	config.<span style="color:#50fa7b">Load</span>(
+</span></span><span style="display:flex;"><span>		file.<span style="color:#50fa7b">NewSource</span>(
+</span></span><span style="display:flex;"><span>			file.<span style="color:#50fa7b">WithPath</span>(<span style="color:#f1fa8c">&#34;/tmp/config&#34;</span>),
+</span></span><span style="display:flex;"><span>			source.<span style="color:#50fa7b">WithEncoder</span>(enc),
+</span></span><span style="display:flex;"><span>		),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="读取配置">读取配置</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>conf <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Map</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fmt.<span style="color:#50fa7b">Println</span>(conf[<span style="color:#f1fa8c">&#34;hosts&#34;</span>])
+</span></span></code></pre></div><p>扫描配置到结构体</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Host <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>	Address <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;address&#34;`</span>
+</span></span><span style="display:flex;"><span>	Port <span style="color:#8be9fd">int</span> <span style="color:#f1fa8c">`json:&#34;port&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Config <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>	Hosts <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]Host <span style="color:#f1fa8c">`json:&#34;hosts&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	pwd, _ <span style="color:#ff79c6">:=</span> os.<span style="color:#50fa7b">Getwd</span>()
+</span></span><span style="display:flex;"><span>	err <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">LoadFile</span>(pwd <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;/config/&#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;config.json&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatal</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#8be9fd;font-style:italic">var</span> cfg Config
+</span></span><span style="display:flex;"><span>	config.<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>cfg)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(cfg.Hosts[<span style="color:#f1fa8c">&#34;database&#34;</span>].Address)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="读取值">读取值</h3>
 <p>从配置扫描值到结构体</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Host <span style="color:#8be9fd;font-style:italic">struct</span> {
-    Address <span style="color:#8be9fd">string</span>  <span style="color:#f1fa8c">`json:&#34;address&#34;`</span>
-    Port    <span style="color:#8be9fd">int</span>     <span style="color:#f1fa8c">`json:&#34;port&#34;`</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">var</span> host Host
-
-config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>).<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>host)
-
-<span style="color:#6272a4">// 10.0.0.1 3306
-</span><span style="color:#6272a4"></span>fmt.<span style="color:#50fa7b">Println</span>(host.Address, host.Port)
-</code></pre></div><p>读取单个值作为 Go 类型</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Get address. Set default to localhost as fallback
-</span><span style="color:#6272a4"></span>address <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>, <span style="color:#f1fa8c">&#34;address&#34;</span>).<span style="color:#50fa7b">String</span>(<span style="color:#f1fa8c">&#34;localhost&#34;</span>)
-
-<span style="color:#6272a4">// Get port. Set default to 3000 as fallback
-</span><span style="color:#6272a4"></span>port <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>, <span style="color:#f1fa8c">&#34;port&#34;</span>).<span style="color:#50fa7b">Int</span>(<span style="color:#bd93f9">3000</span>)
-</code></pre></div><h3 id="监听配置">监听配置</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Host <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>    Address <span style="color:#8be9fd">string</span>  <span style="color:#f1fa8c">`json:&#34;address&#34;`</span>
+</span></span><span style="display:flex;"><span>    Port    <span style="color:#8be9fd">int</span>     <span style="color:#f1fa8c">`json:&#34;port&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> host Host
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>).<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>host)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// 10.0.0.1 3306
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>fmt.<span style="color:#50fa7b">Println</span>(host.Address, host.Port)
+</span></span></code></pre></div><p>读取单个值作为 Go 类型</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Get address. Set default to localhost as fallback
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>address <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>, <span style="color:#f1fa8c">&#34;address&#34;</span>).<span style="color:#50fa7b">String</span>(<span style="color:#f1fa8c">&#34;localhost&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Get port. Set default to 3000 as fallback
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>port <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Get</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>, <span style="color:#f1fa8c">&#34;port&#34;</span>).<span style="color:#50fa7b">Int</span>(<span style="color:#bd93f9">3000</span>)
+</span></span></code></pre></div><h3 id="监听配置">监听配置</h3>
 <p>监听配置文件。当文件更改时，更新到新值:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">w, err <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Watch</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>)
-<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-    <span style="color:#6272a4">// do something
-</span><span style="color:#6272a4"></span>}
-
-<span style="color:#6272a4">// wait for next value
-</span><span style="color:#6272a4"></span>v, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
-<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-    <span style="color:#6272a4">// do something
-</span><span style="color:#6272a4"></span>}
-
-<span style="color:#8be9fd;font-style:italic">var</span> host Host
-
-v.<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>host)
-</code></pre></div><h3 id="多源">多源</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>w, err <span style="color:#ff79c6">:=</span> config.<span style="color:#50fa7b">Watch</span>(<span style="color:#f1fa8c">&#34;hosts&#34;</span>, <span style="color:#f1fa8c">&#34;database&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// do something
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// wait for next value
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>v, err <span style="color:#ff79c6">:=</span> w.<span style="color:#50fa7b">Next</span>()
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// do something
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> host Host
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>v.<span style="color:#50fa7b">Scan</span>(<span style="color:#ff79c6">&amp;</span>host)
+</span></span></code></pre></div><h3 id="多源">多源</h3>
 <p>可以加载和合并多个源。合并优先级顺序相反:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">config.<span style="color:#50fa7b">Load</span>(
-    <span style="color:#6272a4">// base config from env
-</span><span style="color:#6272a4"></span>    env.<span style="color:#50fa7b">NewSource</span>()
-    <span style="color:#6272a4">// override env with flags
-</span><span style="color:#6272a4"></span>    flag.<span style="color:#50fa7b">NewSource</span>()
-    <span style="color:#6272a4">// override flags with file
-</span><span style="color:#6272a4"></span>    file.<span style="color:#50fa7b">NewSource</span>(file.<span style="color:#50fa7b">WatchPath</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>))
-)
-</code></pre></div><h3 id="设置源编码器">设置源编码器</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>config.<span style="color:#50fa7b">Load</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// base config from env
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    env.<span style="color:#50fa7b">NewSource</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// override env with flags
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    flag.<span style="color:#50fa7b">NewSource</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// override flags with file
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    file.<span style="color:#50fa7b">NewSource</span>(file.<span style="color:#50fa7b">WatchPath</span>(<span style="color:#f1fa8c">&#34;/tmp/config.json&#34;</span>))
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h3 id="设置源编码器">设置源编码器</h3>
 <p>源要求编码器对数据进行编码 / 解码并指定更改集格式.</p>
 <p>默认的编码器是 json. 要更改编码器可调整对应的类型选项.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> yaml.<span style="color:#50fa7b">NewEncoder</span>()
-
-s <span style="color:#ff79c6">:=</span> consul.<span style="color:#50fa7b">NewSource</span>(
-    source.<span style="color:#50fa7b">WithEncoder</span>(e),
-)
-</code></pre></div><h3 id="添加读取器编码器">添加读取器编码器</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>e <span style="color:#ff79c6">:=</span> yaml.<span style="color:#50fa7b">NewEncoder</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>s <span style="color:#ff79c6">:=</span> consul.<span style="color:#50fa7b">NewSource</span>(
+</span></span><span style="display:flex;"><span>    source.<span style="color:#50fa7b">WithEncoder</span>(e),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h3 id="添加读取器编码器">添加读取器编码器</h3>
 <p>读取器使用编码器从不同格式的源解码数据.</p>
 <p>默认的读取器支持 json, yaml, xml, toml 和 hcl. 它将合并的配置表示为 json.</p>
 <p>可以通过指定的选项来添加一个新的编码器.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">e <span style="color:#ff79c6">:=</span> yaml.<span style="color:#50fa7b">NewEncoder</span>()
-
-r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewReader</span>(
-    reader.<span style="color:#50fa7b">WithEncoder</span>(e),
-)
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>e <span style="color:#ff79c6">:=</span> yaml.<span style="color:#50fa7b">NewEncoder</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewReader</span>(
+</span></span><span style="display:flex;"><span>    reader.<span style="color:#50fa7b">WithEncoder</span>(e),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1633,7 +1633,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1661,7 +1661,7 @@ r <span style="color:#ff79c6">:=</span> json.<span style="color:#50fa7b">NewRead
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/guides/protobuf/">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/guides/protobuf/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/guides/protobuf/index.xml">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -152,22 +152,22 @@ This the multi-page printable view of this section.
 <h2 id="目录结构">目录结构</h2>
 <p>API 接口统一存放在 api 目录下，proto 文件同时转化为 gRPC 和 HTTP 两种接口。</p>
 <p>项目中定义 Proto，以 api 为根目录。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">├── service    
-│   └── helloworld
-│       └── v1
-│           ├── helloworld.pb.go
-│           ├── helloworld.pb.validator.go
-│           ├── helloworld.pb.vine.go
-│           └── helloworld.proto
-└── types
-    └── core
-        └── v1
-            ├── core.pb.dao.go
-            ├── core.pb.deepcopy.go
-            ├── core.pb.go
-            ├── core.pb.validator.go
-            └── core.proto
-</code></pre></div><p>api 下有两个子目录，分别对应</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>├── service    
+</span></span><span style="display:flex;"><span>│   └── helloworld
+</span></span><span style="display:flex;"><span>│       └── v1
+</span></span><span style="display:flex;"><span>│           ├── helloworld.pb.go
+</span></span><span style="display:flex;"><span>│           ├── helloworld.pb.validator.go
+</span></span><span style="display:flex;"><span>│           ├── helloworld.pb.vine.go
+</span></span><span style="display:flex;"><span>│           └── helloworld.proto
+</span></span><span style="display:flex;"><span>└── types
+</span></span><span style="display:flex;"><span>    └── core
+</span></span><span style="display:flex;"><span>        └── v1
+</span></span><span style="display:flex;"><span>            ├── core.pb.dao.go
+</span></span><span style="display:flex;"><span>            ├── core.pb.deepcopy.go
+</span></span><span style="display:flex;"><span>            ├── core.pb.go
+</span></span><span style="display:flex;"><span>            ├── core.pb.validator.go
+</span></span><span style="display:flex;"><span>            └── core.proto
+</span></span></code></pre></div><p>api 下有两个子目录，分别对应</p>
 <ul>
 <li>types (领域模型或者资源)，格式为 <code>group/version/name.proto</code></li>
 <li>services (gRPC、http 接口)，格式为 <code>service/version/name.proto</code></li>
@@ -178,23 +178,23 @@ This the multi-page printable view of this section.
 <p>建议在 $GOPATH/src 生成代码 proto 代码。</p>
 </blockquote>
 <h3 id="go_package">go_package</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/foo/api/types/&lt;group&gt;/&lt;version&gt;;&lt;group&gt;&lt;version&gt;&#34;</span>;
-</code></pre></div><h3 id="java_package">java_package</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">option</span> java_multiple_files <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
-<span style="color:#ff79c6">option</span> java_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;io.vine.services.&lt;group&gt;.&lt;version&gt;&#34;</span>;
-</code></pre></div><h2 id="import">import</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/lack-io/foo/api/types/&lt;group&gt;/&lt;version&gt;;&lt;group&gt;&lt;version&gt;&#34;</span>;
+</span></span></code></pre></div><h3 id="java_package">java_package</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#ff79c6">option</span> java_multiple_files <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">option</span> java_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;io.vine.services.&lt;group&gt;.&lt;version&gt;&#34;</span>;
+</span></span></code></pre></div><h2 id="import">import</h2>
 <p>service proto 依赖 types protobuf，以 $GOPATH/src 为更目录引入对应 proto。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/foo/api/types/core/v1/core.proto&#34;</span>
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
-    corev1.Request req <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><h2 id="storage">storage</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/foo/api/types/core/v1/core.proto&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
+</span></span><span style="display:flex;"><span>    corev1.Request req <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="storage">storage</h2>
 <p>当需要数据持久化时，有 types proto 生成对应的数据库交互代码。详细的说明可以参考 <a href="https://vine-io.github.io/vine/docs/guides/dao/">proto-gen-dao</a>。</p>
 <p>代码的存放规则为，<em>谁实现，谁存放</em>。生成的代码存放在对应服务更目录的 <code>infra/storage</code> 下，需要在 proto 文件的头部指定生成路径:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/storage;storage
-</span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
-</code></pre></div><h2 id="命令规范">命令规范</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#6272a4">// +dao:output=github.com/vine-io/foo/pkg/helloworld/infra/storage;storage
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;protoc&#34;</span>
+</span></span></code></pre></div><h2 id="命令规范">命令规范</h2>
 <h3 id="目录结构-1">目录结构</h3>
 <p>包名为小写，且同与目录一致: 如 <code>hellowrold/v1/helloworld.proto</code> 的包名为 <code>helloworldv1</code>。</p>
 <h3 id="文件结构">文件结构</h3>
@@ -212,30 +212,30 @@ This the multi-page printable view of this section.
 <h3 id="service-和-message">Service 和 Message</h3>
 <p>使用驼峰命名法命名 service, method 和 message。Service 的名称格式为 <code>&lt;PackageName&gt;Service</code> 以 <code>Service</code> 为后缀。</p>
 <p>Method 的格式为:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">service</span> EchoService {
-    <span style="color:#ff79c6">rpc</span> EmptyMethod(Empty) <span style="color:#ff79c6">returns</span> (Empty);
-    <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp);
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Empty</span> {}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {}
-</code></pre></div><p>Method 的输入输出 Message 没有其他字段时，使用 <code>Empty</code>。Method 的输入 message 以 <code>Req</code> 结尾。输出 message 以 <code>Rsp</code> 结尾。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">service</span> EchoService {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">rpc</span> EmptyMethod(Empty) <span style="color:#ff79c6">returns</span> (Empty);
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">rpc</span> Echo(EchoReq) <span style="color:#ff79c6">returns</span> (EchoRsp);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Empty</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoReq</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">EchoRsp</span> {}
+</span></span></code></pre></div><p>Method 的输入输出 Message 没有其他字段时，使用 <code>Empty</code>。Method 的输入 message 以 <code>Req</code> 结尾。输出 message 以 <code>Rsp</code> 结尾。</p>
 <h3 id="字段">字段</h3>
 <p>字段使用驼峰命名法(首字母小写)，<code>repeated</code> 数组类型是结尾加小写:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">User</span> {
-    <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-    <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> tags <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-</code></pre></div><h3 id="枚举-enums">枚举 Enums</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">User</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> tags <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="枚举-enums">枚举 Enums</h3>
 <p>使用驼峰命名法（首字母大写）命名枚举类型，使用 “大写下划线大写” 的方式命名枚举值：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">enum</span> Color {
-  RED <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
-  BLACK <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><p>每一个枚举值以分号结尾，而非逗号。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">enum</span> Color {
+</span></span><span style="display:flex;"><span>  RED <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+</span></span><span style="display:flex;"><span>  BLACK <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>每一个枚举值以分号结尾，而非逗号。</p>
 <h3 id="注释-comment">注释 Comment</h3>
 <ul>
 <li>Service，描述清楚服务的作用</li>
@@ -243,37 +243,37 @@ This the multi-page printable view of this section.
 <li>Field，描述清楚字段准确的信息</li>
 </ul>
 <h2 id="完整实例">完整实例</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
-
-<span style="color:#ff79c6">package</span> gpmv1;
-
-<span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/gpm/api/service/gpm/v1;gpmv1&#34;</span>;
-<span style="color:#ff79c6">option</span> java_multiple_files <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
-<span style="color:#ff79c6">option</span> java_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;io.vine.services.gpm.v1&#34;</span>;
-
-<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/gpm/api/types/gpm/v1/gpm.proto&#34;</span>;
-
-<span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> GpmService {
-  <span style="color:#6272a4">// +gen:summary=查询单个服务
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:get=/api/v1/Service/{name}
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> GetService(GetServiceReq) <span style="color:#ff79c6">returns</span> (GetServiceRsp);
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Empty</span> {}
-
-<span style="color:#6272a4">// GetService 请求参数
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">GetServiceReq</span> {
-  <span style="color:#6272a4">// 服务名称
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-
-<span style="color:#6272a4">// GetService 返回结果
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">GetServiceRsp</span> {
-  gpmv1.Service <span style="color:#8be9fd;font-style:italic">service</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">package</span> gpmv1;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/gpm/api/service/gpm/v1;gpmv1&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">option</span> java_multiple_files <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">true</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">option</span> java_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;io.vine.services.gpm.v1&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/gpm/api/types/gpm/v1/gpm.proto&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:openapi
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> GpmService {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:summary=查询单个服务
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:get=/api/v1/Service/{name}
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> GetService(GetServiceReq) <span style="color:#ff79c6">returns</span> (GetServiceRsp);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Empty</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// GetService 请求参数
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">GetServiceReq</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// 服务名称
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// GetService 返回结果
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">GetServiceRsp</span> {
+</span></span><span style="display:flex;"><span>  gpmv1.Service <span style="color:#8be9fd;font-style:italic">service</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
 </div>
 </div>
 
@@ -320,7 +320,7 @@ This the multi-page printable view of this section.
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -348,7 +348,7 @@ This the multi-page printable view of this section.
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

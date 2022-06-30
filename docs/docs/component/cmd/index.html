@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/cmd/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/cmd/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/component/cmd/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1177,51 +1177,51 @@ if (!doNotTrack) {
 	
 	<h2 id="概述">概述</h2>
 <p><strong>Vine</strong> 结合 <a href="https://github.com/vine-io/cli">cli</a> 提供 <code>Cmd</code> 模块，作为服务的命令工具：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Cmd <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#6272a4">// App The cli app within this cmd
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">App</span>() <span style="color:#ff79c6">*</span>cli.App
-	<span style="color:#6272a4">// Init Adds options, parses flags and initialise
-</span><span style="color:#6272a4"></span>	<span style="color:#6272a4">// exits on error
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(opts <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#6272a4">// Options set within this command
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
-}
-</code></pre></div><h2 id="使用">使用</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;log&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/cmd&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	c <span style="color:#ff79c6">:=</span> cmd.<span style="color:#50fa7b">NewCmd</span>()
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-
-	c.<span style="color:#50fa7b">App</span>().<span style="color:#50fa7b">RunAndExitOnError</span>()
-}
-</code></pre></div><h2 id="options">options</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Cmd <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// App The cli app within this cmd
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">App</span>() <span style="color:#ff79c6">*</span>cli.App
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Init Adds options, parses flags and initialise
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#6272a4">// exits on error
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(opts <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Options set within this command
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="使用">使用</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/cmd&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	c <span style="color:#ff79c6">:=</span> cmd.<span style="color:#50fa7b">NewCmd</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> c.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	c.<span style="color:#50fa7b">App</span>().<span style="color:#50fa7b">RunAndExitOnError</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="options">options</h2>
 <p>罗列 <code>Cmd</code> 的 options:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-    c <span style="color:#ff79c6">:=</span> cmd.<span style="color:#50fa7b">NewCmd</span>(
-		cmd.<span style="color:#50fa7b">Name</span>(),   <span style="color:#6272a4">// 设置 cli 启动名称
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Server</span>(), <span style="color:#6272a4">// 设置默认 Server 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Client</span>(), <span style="color:#6272a4">// 设置默认 Client 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Selector</span>(), <span style="color:#6272a4">// 设置 Client Selector 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Registry</span>(), <span style="color:#6272a4">// 设置默认 Registry 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Broker</span>(),  <span style="color:#6272a4">// 设置默认 Broker 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Tracer</span>(),  <span style="color:#6272a4">// 设置默认 Tracer 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Dialect</span>(), <span style="color:#6272a4">// 设置默认 Dialect 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Config</span>(),  <span style="color:#6272a4">// 设置默认 Config 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Cache</span>(),   <span style="color:#6272a4">// 设置 Cache 模块
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">CliApp</span>(),  <span style="color:#6272a4">// 设置 *cli.App
-</span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Description</span>(), <span style="color:#6272a4">// 设置 cli 描述信息
-</span><span style="color:#6272a4"></span>	)
-}
-</code></pre></div><h2 id="服务-cmd">服务 cmd</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>    c <span style="color:#ff79c6">:=</span> cmd.<span style="color:#50fa7b">NewCmd</span>(
+</span></span><span style="display:flex;"><span>		cmd.<span style="color:#50fa7b">Name</span>(),   <span style="color:#6272a4">// 设置 cli 启动名称
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Server</span>(), <span style="color:#6272a4">// 设置默认 Server 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Client</span>(), <span style="color:#6272a4">// 设置默认 Client 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Selector</span>(), <span style="color:#6272a4">// 设置 Client Selector 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Registry</span>(), <span style="color:#6272a4">// 设置默认 Registry 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Broker</span>(),  <span style="color:#6272a4">// 设置默认 Broker 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Tracer</span>(),  <span style="color:#6272a4">// 设置默认 Tracer 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Dialect</span>(), <span style="color:#6272a4">// 设置默认 Dialect 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Config</span>(),  <span style="color:#6272a4">// 设置默认 Config 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Cache</span>(),   <span style="color:#6272a4">// 设置 Cache 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">CliApp</span>(),  <span style="color:#6272a4">// 设置 *cli.App
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cmd.<span style="color:#50fa7b">Description</span>(), <span style="color:#6272a4">// 设置 cli 描述信息
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="服务-cmd">服务 cmd</h2>
 <p><strong>Vine</strong> 服务启动时初始化 <code>Cmd</code> 模块，每个服务支持以下的命令行参数:</p>
 <table>
 <thead>
@@ -1542,7 +1542,7 @@ if (!doNotTrack) {
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1570,7 +1570,7 @@ if (!doNotTrack) {
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

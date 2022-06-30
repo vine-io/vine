@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/quickstart/new/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/quickstart/new/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/quickstart/new/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1184,44 +1184,44 @@ if (!doNotTrack) {
 <li><a href="https://github.com/protocolbuffers/protobuf">protoc</a></li>
 </ul>
 <p>建议开启GO111MODULE</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go env -w <span style="color:#8be9fd;font-style:italic">GO111MODULE</span><span style="color:#ff79c6">=</span>on
-</code></pre></div><h2 id="安装">安装</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go env -w <span style="color:#8be9fd;font-style:italic">GO111MODULE</span><span style="color:#ff79c6">=</span>on
+</span></span></code></pre></div><h2 id="安装">安装</h2>
 <p>安装 <strong>Vine</strong> 工具</p>
 <p>go get 安装</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -u github.com/vine-io/vine/cmd/vine@latest
-go get -u github.com/vine-io/vine/cmd/protoc-gen-gogo@latest
-go get -u github.com/vine-io/vine/cmd/protoc-gen-vine@latest
-</code></pre></div><p>go install 安装</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go install github.com/vine-io/vine/cmd/vine@latest
-go install github.com/vine-io/vine/cmd/protoc-gen-gogo@latest
-go install github.com/vine-io/vine/cmd/protoc-gen-vine@latest
-</code></pre></div><p>源码编译安装</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/vine-io/vine
-<span style="color:#8be9fd;font-style:italic">cd</span> vine
-make build <span style="color:#ff79c6">&amp;&amp;</span> mv vine <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/bin/vine 
-</code></pre></div><h2 id="创建项目">创建项目</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># 新建项目根目录</span>
-mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/helloworld
-<span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/helloworld
-
-<span style="color:#6272a4"># 初始化目录</span>
-vine init
-<span style="color:#6272a4"># 新建服务</span>
-vine new service helloworld
-<span style="color:#6272a4"># 生成代码</span>
-vine build proto
-<span style="color:#6272a4"># 安装依赖</span>
-go mod vendor
-<span style="color:#6272a4"># 启动服务</span>
-vine run helloworld
-</code></pre></div><h2 id="启动服务">启动服务</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine run helloworld
-</code></pre></div><h2 id="启动网关">启动网关</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
-</code></pre></div><h2 id="测试">测试</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -X POST http://127.0.0.1:8080/foo/v1/foo/Call -H <span style="color:#f1fa8c">&#34;Content-Type: application/json&#34;</span>  -d <span style="color:#f1fa8c">&#34;{\&#34;name\&#34;:\&#34;World\&#34;}&#34;</span>
-<span style="color:#6272a4"># {&#34;msg&#34;:&#34;reply: World&#34;}</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get -u github.com/vine-io/vine/cmd/vine@latest
+</span></span><span style="display:flex;"><span>go get -u github.com/vine-io/vine/cmd/protoc-gen-gogo@latest
+</span></span><span style="display:flex;"><span>go get -u github.com/vine-io/vine/cmd/protoc-gen-vine@latest
+</span></span></code></pre></div><p>go install 安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/vine@latest
+</span></span><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/protoc-gen-gogo@latest
+</span></span><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/protoc-gen-vine@latest
+</span></span></code></pre></div><p>源码编译安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/vine-io/vine
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> vine
+</span></span><span style="display:flex;"><span>make build <span style="color:#ff79c6">&amp;&amp;</span> mv vine <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/bin/vine 
+</span></span></code></pre></div><h2 id="创建项目">创建项目</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4"># 新建项目根目录</span>
+</span></span><span style="display:flex;"><span>mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/helloworld
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/helloworld
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 初始化目录</span>
+</span></span><span style="display:flex;"><span>vine init
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 新建服务</span>
+</span></span><span style="display:flex;"><span>vine new service helloworld
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 生成代码</span>
+</span></span><span style="display:flex;"><span>vine build proto
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 安装依赖</span>
+</span></span><span style="display:flex;"><span>go mod vendor
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># 启动服务</span>
+</span></span><span style="display:flex;"><span>vine run helloworld
+</span></span></code></pre></div><h2 id="启动服务">启动服务</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vine run helloworld
+</span></span></code></pre></div><h2 id="启动网关">启动网关</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vine api --handler<span style="color:#ff79c6">=</span>rpc --enable-openapi
+</span></span></code></pre></div><h2 id="测试">测试</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -X POST http://127.0.0.1:8080/foo/v1/foo/Call -H <span style="color:#f1fa8c">&#34;Content-Type: application/json&#34;</span>  -d <span style="color:#f1fa8c">&#34;{\&#34;name\&#34;:\&#34;World\&#34;}&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4"># {&#34;msg&#34;:&#34;reply: World&#34;}</span>
+</span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1345,7 +1345,7 @@ vine run helloworld
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1373,7 +1373,7 @@ vine run helloworld
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

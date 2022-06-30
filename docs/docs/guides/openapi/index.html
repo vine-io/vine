@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/guides/openapi/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/guides/openapi/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/guides/openapi/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -88,7 +88,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1193,86 +1193,84 @@ if (!doNotTrack) {
 <p><em>Vine</em> 内部集成 openapi3.0，<code>protoc-gen-vine</code> 通过识别 protobuf 文件的注释生成 Openapi3.0 文档。类似 <a href="https://vine-io.github.io/vine/docs/tools/validate/">Validator</a>。</p>
 <h2 id="使用">使用</h2>
 <h3 id="1先编写-helloworldproto-文件">1.先编写 helloworld.proto 文件</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
-
-<span style="color:#ff79c6">package</span> testdata;
-<span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/proto;testdata&#34;</span>;
-
-<span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/api/api.proto&#34;</span>;
-
-<span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4">// +gen:term_name=vine
-</span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:contact_name=vine
-</span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:license_name=Apache2.0
-</span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
-</span><span style="color:#6272a4">// +gen:external_doc_desc=123
-</span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
-  <span style="color:#6272a4">// +gen:get=/api/v1/call
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-  <span style="color:#6272a4">// +gen:post=/api/v1/event
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
-  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldResponse</span> {
-  <span style="color:#8be9fd">int32</span> code <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#8be9fd">string</span> reply <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-
-
-</code></pre></div><h3 id="2安装-protoc-gen-vine">2.安装 protoc-gen-vine</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-vine
-</code></pre></div><h3 id="3生成-swagger-文档">3.生成 swagger 文档</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>:. proto/helloworld.proto
-</code></pre></div><p>执行完成后生成以下代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#6272a4">// Swagger OpenAPI 3.0 for Helloworld service
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NewHelloworldOpenAPI</span>() <span style="color:#ff79c6">*</span>registry.OpenAPI {
-    <span style="color:#6272a4">// ...
-</span><span style="color:#6272a4"></span>}
-</code></pre></div><h3 id="4验证">4.验证</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span>syntax <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;proto3&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">package</span> testdata;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">option</span> go_package <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/proto;testdata&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/proto/api/api.proto&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:openapi
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:term_name=vine
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:contact_name=vine
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:license_name=Apache2.0
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:external_doc_desc=123
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:get=/api/v1/call
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:post=/api/v1/event
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldResponse</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">int32</span> code <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">string</span> reply <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="2安装-protoc-gen-vine">2.安装 protoc-gen-vine</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/protoc-gen-vine
+</span></span></code></pre></div><h3 id="3生成-swagger-文档">3.生成 swagger 文档</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>:. proto/helloworld.proto
+</span></span></code></pre></div><p>执行完成后生成以下代码:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#6272a4">// Swagger OpenAPI 3.0 for Helloworld service
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NewHelloworldOpenAPI</span>() <span style="color:#ff79c6">*</span>registry.OpenAPI {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>}
+</span></span></code></pre></div><h3 id="4验证">4.验证</h3>
 <p>生成的 Openapi3.0 文档会自动注册到 <code>Registry</code> 组件，当启动 <code>vine api</code> 时添加 <code>--enable-openapi</code> 参数可以启动 OpenAPI3.0 功能:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine api <span style="color:#ff79c6">--</span>handler=rpc <span style="color:#ff79c6">--</span>enable<span style="color:#ff79c6">-</span>openapi
-</code></pre></div><p>启动用访问 url <code>http://127.0.0.1:8080/openapi-ui/</code> 效果如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>vine api <span style="color:#ff79c6">--</span>handler=rpc <span style="color:#ff79c6">--</span>enable<span style="color:#ff79c6">-</span>openapi
+</span></span></code></pre></div><p>启动用访问 url <code>http://127.0.0.1:8080/openapi-ui/</code> 效果如下:</p>
 <p><img src="2021-01-25-18-58-50.png" alt="swagger-openapi"></p>
 <p><em>Vine</em> 的 OpenAPI 支持 swagger 风格和 redoc 风格，切换到 redoc 则使用路径 <code>http://127.0.0.1:8080/openapi-ui/redoc</code>，效果如下：</p>
 <p><img src="2021-01-25-19-04-57.png" alt="redoc-openapi"></p>
 <h2 id="语法解析">语法解析</h2>
 <p><code>protoc-gen-vine</code> 通过解析 <code>protobuf</code> 中的注释来生成 OpenAPI3.0 文档。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4">// +gen:term_name=vine
-</span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:contact_name=vine
-</span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
-</span><span style="color:#6272a4">// +gen:license_name=Apache2.0
-</span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
-</span><span style="color:#6272a4">// +gen:external_doc_desc=123
-</span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
-  <span style="color:#6272a4">// +gen:get=/api/v1/call
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-  <span style="color:#6272a4">// +gen:post=/api/v1/event
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-}
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#6272a4">// +gen:openapi
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:term_name=vine
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:term_email=598223084@qq.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:contact_name=vine
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:license_name=Apache2.0
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:external_doc_desc=123
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">// +gen:external_doc_url=http://www.baidu.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:get=/api/v1/call
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:post=/api/v1/event
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
 <p>注: <code>protoc-gen-vine</code> 和 <code>protoc-gen-validator</code> 中存在大量重复注释，这样设计的原因是通过一套的注释规则直接生成更多的代码，较少非业务代码的编写。</p>
 </blockquote>
 <h3 id="语法规则">语法规则</h3>
@@ -1298,22 +1296,22 @@ if (!doNotTrack) {
 <li>external_doc_url: 扩展文档 url，和 external_doc_url 配合使用</li>
 <li>version: 文档版本，如 1.0.0</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:ignore
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
-  <span style="color:#6272a4">// +gen:openapi
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_name=vine
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_email=598223084@qq.com
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_name=vine
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_name=Apache2.0
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_desc=123
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_url=http://www.example.com
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd;font-style:italic">service</span> HelloWorld {
-
-  }
-}
-</code></pre></div><p><code>rpc</code> 支持的规则:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#6272a4">// +gen:ignore
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:openapi
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_name=vine
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:term_email=598223084@qq.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_name=vine
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:contact_email=598223084@qq.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_name=Apache2.0
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:license_url=https://www.apache.org/licenses/LICENSE-2.0
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_desc=123
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:external_doc_url=http://www.example.com
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd;font-style:italic">service</span> HelloWorld {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>rpc</code> 支持的规则:</p>
 <ul>
 <li>get | post | put | patch | delete（必填）: 生成对应的 http method，后面紧接路由信息，如 // +gen:get=/api/v1/call</li>
 <li>body: 指定 Request message 的名称，可以直接使用 <code>*</code></li>
@@ -1328,18 +1326,18 @@ if (!doNotTrack) {
 <ul>
 <li>required: 判断该字段是否为 nil。</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
-  <span style="color:#6272a4">// +gen:get=/api/v1/call
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-  <span style="color:#6272a4">// +gen:post=/api/v1/{name}/{id}
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
-</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
-}
-</code></pre></div><p><code>message</code> 字段通用的规则：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">service</span> Helloworld {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:get=/api/v1/call
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:summary=callllllllll
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:security=bearer, apiKeys, basic
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:result=[200]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Call(HelloWorldRequest) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:post=/api/v1/{name}/{id}
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:body=*
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">rpc</span> Mul(api.Event) <span style="color:#ff79c6">returns</span> (HelloWorldResponse) {};
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>message</code> 字段通用的规则：</p>
 <ul>
 <li>required: 指定字段为必填</li>
 <li>default: 指定字段的默认值</li>
@@ -1349,17 +1347,17 @@ if (!doNotTrack) {
 <li>ro: 字段为只读</li>
 <li>wo: 字段为只写，和 password 配合使用</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
-  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:example=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:ro
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:rw
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#6272a4">// +gen:enum=[1,2,3]
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-</code></pre></div><p><code>string</code> 类型支持的规则</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">HelloWorldRequest</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:example=&#34;hello&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:ro
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:rw
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:enum=[1,2,3]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>string</code> 类型支持的规则</p>
 <ul>
 <li>min_len: 指定字段的最小长度</li>
 <li>max_len: 指定字段的最大长度</li>
@@ -1377,29 +1375,29 @@ if (!doNotTrack) {
 <li>hostname: 主机名</li>
 <li>pattern: 正则表达式</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:in=[&#34;1&#34;, &#34;2&#34;, &#34;3&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_max=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:pattern=`\d+(\w+){3,5}`
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:password
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:email
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ip
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv6
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date-time
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:bytes
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:binary
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:hostname
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uuid
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uri
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:in=[&#34;1&#34;, &#34;2&#34;, &#34;3&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_max=4
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:pattern=`\d+(\w+){3,5}`
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:password
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:email
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ip
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv4
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv6
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:date-time
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:bytes
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:binary
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:hostname
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uuid
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uri
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
 <p>注: string pattern 最好单独一行，以免和其他规则冲突</p>
 </blockquote>
 <p>数字类型的支持，包含 int32, int64, fixed32, fix64, float, double</p>
@@ -1409,25 +1407,25 @@ if (!doNotTrack) {
 <li>gt: 指定字段大于指定值</li>
 <li>gte: 指定字段大于等于指定值</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">float</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-
-    <span style="color:#6272a4">// +gen:default=3.14
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">double</span> pi <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
-
-    <span style="color:#6272a4">// +gen:in=[1,2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
-
-    <span style="color:#6272a4">// +gen:ge=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">float</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:default=3.14
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">double</span> pi <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:in=[1,2,3]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[2,3]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:ge=3
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1551,7 +1549,7 @@ if (!doNotTrack) {
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1579,7 +1577,7 @@ if (!doNotTrack) {
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

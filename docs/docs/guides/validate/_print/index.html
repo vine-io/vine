@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/guides/validate/">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/guides/validate/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/guides/validate/index.xml">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
@@ -88,7 +88,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -147,88 +147,88 @@ This the multi-page printable view of this section.
 <p>服务运行中，经常需要和其他客户端进行数据交互，验证来自客户端的数据的合法性。但是这些代码编写起来枯燥且易错，<strong>vine</strong> 提供 <code>protoc-gen-validator</code> 工具来自动生成结构体 <code>Validate()</code> 方法，减少一部分代码的手动编写。</p>
 <h2 id="使用">使用</h2>
 <h3 id="1先编写-validatorproto-文件">1.先编写 validator.proto 文件</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Person</span> {
-  <span style="color:#6272a4">// +gen:min_len=4
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:max_len=10
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-
-  <span style="color:#6272a4">// +gen:required;gt=10;lt=100
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-
-  <span style="color:#6272a4">// +gen:required;min_bytes=3;max_bytes=4;
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">bytes</span> any <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
-
-  <span style="color:#6272a4">// +gen:email
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> email <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
-}
-</code></pre></div><h3 id="2安装-protoc-gen-validator">2.安装 protoc-gen-validator</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get github.com/vine-io/vine/cmd/protoc-gen-validator
-</code></pre></div><h3 id="3生成-validate-方法">3.生成 Validate() 方法</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:.  --validator_out<span style="color:#ff79c6">=</span>:. proto/validator.proto
-</code></pre></div><p>执行完成后生成以下代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">Valdiate</span>() <span style="color:#8be9fd">error</span> {
-    <span style="color:#ff79c6">return</span> m.<span style="color:#50fa7b">ValidateE</span>(<span style="color:#f1fa8c">&#34;&#34;</span>)
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">ValidateE</span>() <span style="color:#8be9fd">error</span> {
-	errs <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>([]<span style="color:#8be9fd">error</span>, <span style="color:#bd93f9">0</span>)
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">4</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;name&#39; length must less than &#39;4&#39;&#34;</span>))
-		}
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">10</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;name&#39; length must great than &#39;10&#39;&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">int64</span>(m.Age) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; is required&#34;</span>))
-	} <span style="color:#ff79c6">else</span> {
-		<span style="color:#ff79c6">if</span> !(m.Age &lt; <span style="color:#bd93f9">100</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; must less than &#39;100&#39;&#34;</span>))
-		}
-		<span style="color:#ff79c6">if</span> !(m.Age &gt; <span style="color:#bd93f9">10</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; must great than &#39;10&#39;&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; is required&#34;</span>))
-	} <span style="color:#ff79c6">else</span> {
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">3</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; length must less than &#39;3&#39;&#34;</span>))
-		}
-		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">4</span>) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; length must great than &#39;4&#39;&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Email) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
-		<span style="color:#ff79c6">if</span> !is.<span style="color:#50fa7b">Email</span>(m.Email) {
-			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;email&#39; is not a valid email&#34;</span>))
-		}
-	}
-	<span style="color:#ff79c6">return</span> is.<span style="color:#50fa7b">MargeErr</span>(errs<span style="color:#ff79c6">...</span>)
-}
-</code></pre></div><h3 id="4验证">4.验证</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
- 	p <span style="color:#ff79c6">:=</span> pb.Person{}
-	p.Age = <span style="color:#bd93f9">1</span>
-	p.Email = <span style="color:#f1fa8c">&#34;11&#34;</span>
- 	err <span style="color:#ff79c6">:=</span> p.<span style="color:#50fa7b">Validate</span>()
- 	log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%v\n&#34;</span>, err)
-}
-<span style="color:#6272a4">// output:  field &#39;age&#39; must great than &#39;10&#39;;field &#39;any&#39; is required;field &#39;email&#39; is not a valid email
-</span></code></pre></div><p>多个错误时，使用 <code>;</code> 隔开</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Person</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:min_len=4
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:max_len=10
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:required;gt=10;lt=100
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int32</span> age <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:required;min_bytes=3;max_bytes=4;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">bytes</span> any <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:email
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> email <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="2安装-protoc-gen-validator">2.安装 protoc-gen-validator</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/protoc-gen-validator
+</span></span></code></pre></div><h3 id="3生成-validate-方法">3.生成 Validate() 方法</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:.  --validator_out<span style="color:#ff79c6">=</span>:. proto/validator.proto
+</span></span></code></pre></div><p>执行完成后生成以下代码:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">Valdiate</span>() <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> m.<span style="color:#50fa7b">ValidateE</span>(<span style="color:#f1fa8c">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (m <span style="color:#ff79c6">*</span>Person) <span style="color:#50fa7b">ValidateE</span>() <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>	errs <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>([]<span style="color:#8be9fd">error</span>, <span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">4</span>) {
+</span></span><span style="display:flex;"><span>			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;name&#39; length must less than &#39;4&#39;&#34;</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Name) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">10</span>) {
+</span></span><span style="display:flex;"><span>			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;name&#39; length must great than &#39;10&#39;&#34;</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">int64</span>(m.Age) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; is required&#34;</span>))
+</span></span><span style="display:flex;"><span>	} <span style="color:#ff79c6">else</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> !(m.Age &lt; <span style="color:#bd93f9">100</span>) {
+</span></span><span style="display:flex;"><span>			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; must less than &#39;100&#39;&#34;</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> !(m.Age &gt; <span style="color:#bd93f9">10</span>) {
+</span></span><span style="display:flex;"><span>			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;age&#39; must great than &#39;10&#39;&#34;</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; is required&#34;</span>))
+</span></span><span style="display:flex;"><span>	} <span style="color:#ff79c6">else</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">3</span>) {
+</span></span><span style="display:flex;"><span>			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; length must less than &#39;3&#39;&#34;</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> !(<span style="color:#8be9fd;font-style:italic">len</span>(m.Any) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">4</span>) {
+</span></span><span style="display:flex;"><span>			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;any&#39; length must great than &#39;4&#39;&#34;</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(m.Email) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> !is.<span style="color:#50fa7b">Email</span>(m.Email) {
+</span></span><span style="display:flex;"><span>			errs = <span style="color:#8be9fd;font-style:italic">append</span>(errs, errors.<span style="color:#50fa7b">New</span>(<span style="color:#f1fa8c">&#34;field &#39;email&#39; is not a valid email&#34;</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> is.<span style="color:#50fa7b">MargeErr</span>(errs<span style="color:#ff79c6">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="4验证">4.验证</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span> 	p <span style="color:#ff79c6">:=</span> pb.Person{}
+</span></span><span style="display:flex;"><span>	p.Age = <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span>	p.Email = <span style="color:#f1fa8c">&#34;11&#34;</span>
+</span></span><span style="display:flex;"><span> 	err <span style="color:#ff79c6">:=</span> p.<span style="color:#50fa7b">Validate</span>()
+</span></span><span style="display:flex;"><span> 	log.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;%v\n&#34;</span>, err)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// output:  field &#39;age&#39; must great than &#39;10&#39;;field &#39;any&#39; is required;field &#39;email&#39; is not a valid email
+</span></span></span></code></pre></div><p>多个错误时，使用 <code>;</code> 隔开</p>
 <h2 id="语法解析">语法解析</h2>
 <p><code>protoc-gen-validator</code> 通过解析 <code>protobuf</code> 中的注释来生成 <code>Validate()</code> 规则。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:ignore
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Struct</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> field1 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-    
-    <span style="color:#6272a4">// +gen:required;email
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> field2 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-</code></pre></div><h3 id="语法规则">语法规则</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#6272a4">// +gen:ignore
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> field1 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required;email
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> field2 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="语法规则">语法规则</h3>
 <p>有效的注释有以下的规则:</p>
 <ul>
 <li>注释必须以 <code>+gen</code> 作为开头</li>
@@ -240,23 +240,23 @@ This the multi-page printable view of this section.
 <ul>
 <li>ignore: 忽略该 message ，不生成 <code>Validate()</code> 方法</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#6272a4">// +gen:ignore
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
-
-}
-</code></pre></div><p><code>message</code> 作为内嵌字段时支持的规则:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#6272a4">// +gen:ignore
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>message</code> 作为内嵌字段时支持的规则:</p>
 <ul>
 <li>required: 判断该字段是否为 nil。</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    Sub sub <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Sub</span> {
-
-}
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">P</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    Sub sub <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Sub</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
 <p>注: 在引用外部的 message 时，请确认 message 存在 Validate() 方法</p>
 </blockquote>
 <p><code>string</code> 类型支持的规则</p>
@@ -281,29 +281,29 @@ This the multi-page printable view of this section.
 <li>uri: 判断该字段是否为有效的 uri</li>
 <li>domain: 判断该字段是否为有效的域名</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:in=[&#34;1&#34;, &#34;2&#34;, &#34;3&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[&#34;d&#34;, &#34;s&#34;]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_max=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:prefix=&#34;http&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:suffix=&#34;.com&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:contains=&#34;www&#34;
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:pattern=`\d+(\w+){3,5}`
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:number
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ip
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv6
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:crontab
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uuid
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uri
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:domain
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:default=&#34;hello&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:in=[&#34;1&#34;, &#34;2&#34;, &#34;3&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[&#34;d&#34;, &#34;s&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_max=4
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:prefix=&#34;http&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:suffix=&#34;.com&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:contains=&#34;www&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:pattern=`\d+(\w+){3,5}`
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:number
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ip
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv4
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:ipv6
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:crontab
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uuid
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:uri
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:domain
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">string</span> m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
 <p>注: string pattern 最好单独一行，以免和其他规则冲突</p>
 </blockquote>
 <p>数字类型的支持，包含 int32, int64, fixed32, fix64, float, double</p>
@@ -317,104 +317,104 @@ This the multi-page printable view of this section.
 <li>gt: 指定字段大于指定值</li>
 <li>gte: 指定字段大于等于指定值</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">float</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-
-    <span style="color:#6272a4">// +gen:default=3.14
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">double</span> pi <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
-
-    <span style="color:#6272a4">// +gen:in=[1,2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[2,3]
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
-
-    <span style="color:#6272a4">// +gen:ge=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
-}
-</code></pre></div><p><code>bytes</code> 类型的支持:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">float</span> a <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:default=3.14
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">double</span> pi <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:in=[1,2,3]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:enum=[2,3]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:not_in=[4,5]
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int32</span> b <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:ge=3
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +ggen:gte=4
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lte=9
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:lt=10
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">int64</span> c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>bytes</code> 类型的支持:</p>
 <ul>
 <li>required: 判断字段的长度是否为0</li>
 <li>min_bytes: 判断字段的最小字节数是否大于给定值</li>
 <li>max_bytes: 判断字段的最大字节数是否小于给定值</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_bytes=10
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_bytes=1024
-</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">bytes</span> any <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><p>repeated 类型的支持：repeated 类型的字段在 golang 中会被解析成切片。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_bytes=10
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_bytes=1024
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#8be9fd">bytes</span> any <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>repeated 类型的支持：repeated 类型的字段在 golang 中会被解析成切片。</p>
 <ul>
 <li>required: 判断切片的长度是否为0</li>
 <li>min_len: 判断切片的最小长度是否大于给定值</li>
 <li>max_len: 判断切片的最大长度是否小于给定值</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
-    <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
-</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:max_len=5
-</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-}
-</code></pre></div><h3 id="内嵌-message">内嵌 message</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">S</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:min_len=3
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// +gen:max_len=5
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">repeated</span> <span style="color:#8be9fd">string</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="内嵌-message">内嵌 message</h3>
 <p><code>protoc-gen-validator</code> 支持解析内嵌 message, 使用 <code>+gen:inline</code> 可以将子 message 中的字段嵌入该 message。实例如下:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Meta</span> {
-  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int64</span> id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-
-<span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
-  <span style="color:#6272a4">// +gen:inline
-</span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:required
-</span><span style="color:#6272a4"></span>  Meta meta <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
-  <span style="color:#8be9fd">string</span> data <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
-}
-</code></pre></div><p>解析出来的内容如下:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf">
-func (m *Meta) Validate() error {
-	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
-}
-
-func (m *Meta) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
-	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
-	if len(m.Name) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sname&#39; is required&#34;</span>, prefix))
-	}
-	if <span style="color:#8be9fd">int64</span>(m.Id) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sid&#39; is required&#34;</span>, prefix))
-	}
-	return is.MargeErr(errs...)
-}
-
-func (m *Request) Validate() error {
-	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
-}
-
-func (m *Request) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
-	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
-	if len(m.Name) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sname&#39; is required&#34;</span>, prefix))
-	}
-	if <span style="color:#8be9fd">int64</span>(m.Id) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
-		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sid&#39; is required&#34;</span>, prefix))
-	}
-	return is.MargeErr(errs...)
-}
-
-func (m *Response) Validate() error {
-	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
-}
-
-func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
-	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
-	return is.MargeErr(errs...)
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Meta</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">string</span> name <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int64</span> id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">message</span> <span style="color:#50fa7b">Request</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#6272a4">// +gen:inline
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  <span style="color:#6272a4">// +gen:required
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>  Meta meta <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd">string</span> data <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>解析出来的内容如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (m *Meta) Validate() error {
+</span></span><span style="display:flex;"><span>	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (m *Meta) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
+</span></span><span style="display:flex;"><span>	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>	if len(m.Name) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sname&#39; is required&#34;</span>, prefix))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	if <span style="color:#8be9fd">int64</span>(m.Id) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sid&#39; is required&#34;</span>, prefix))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return is.MargeErr(errs...)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (m *Request) Validate() error {
+</span></span><span style="display:flex;"><span>	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (m *Request) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
+</span></span><span style="display:flex;"><span>	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>	if len(m.Name) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sname&#39; is required&#34;</span>, prefix))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	if <span style="color:#8be9fd">int64</span>(m.Id) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+</span></span><span style="display:flex;"><span>		errs <span style="color:#ff79c6">=</span> append(errs, fmt.Errorf(<span style="color:#f1fa8c">&#34;field &#39;%sid&#39; is required&#34;</span>, prefix))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return is.MargeErr(errs...)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (m *Response) Validate() error {
+</span></span><span style="display:flex;"><span>	return m.ValidateE(<span style="color:#f1fa8c">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) error {
+</span></span><span style="display:flex;"><span>	errs <span style="color:#ff79c6">:=</span> make([]error, <span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>	return is.MargeErr(errs...)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
 </div>
 </div>
 
@@ -461,7 +461,7 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -489,7 +489,7 @@ func (m *Response) ValidateE(prefix <span style="color:#8be9fd">string</span>) e
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

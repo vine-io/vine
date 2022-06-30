@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/component/broker/">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/component/broker/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/broker/index.xml">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -142,75 +142,75 @@ This the multi-page printable view of this section.
 <div class="content">
       <h2 id="概述">概述</h2>
 <p>微服务是一种事件驱动的体系结构模式，因此 <strong>Vine</strong> 使用消息代理接口构建异步消息的概念。它可为用户无缝地运行 protobuf 类型，并自动编码和解码消息。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Broker is an interface used for asynchronous messaging.
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Broker <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">Address</span>() <span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">Connect</span>() <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Disconnect</span>() <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Publish</span>(topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/vine-io/plugins/tree/main/broker">plugins</a> 替换实现。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Broker is an interface used for asynchronous messaging.
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Broker <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Options</span>() Options
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Address</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Connect</span>() <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Disconnect</span>() <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Publish</span>(topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>默认情况下，vine 实现点对点 http 代理，但可以通过 <a href="https://github.com/vine-io/plugins/tree/main/broker">plugins</a> 替换实现。</p>
 <h2 id="发布消息">发布消息</h2>
 <p>使用 topic 名称和服务客户端创建一个新的发布者</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
-</code></pre></div><p>发布 proto 消息</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">p.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>proto.Event{Name: <span style="color:#f1fa8c">&#34;event&#34;</span>})
-</code></pre></div><h2 id="订阅">订阅</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>p <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewEvent</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, service.<span style="color:#50fa7b">Client</span>())
+</span></span></code></pre></div><p>发布 proto 消息</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>p.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>proto.Event{Name: <span style="color:#f1fa8c">&#34;event&#34;</span>})
+</span></span></code></pre></div><h2 id="订阅">订阅</h2>
 <p>创建消息处理程序。它的签名应该是 <code>func(context.Context, v interface{}) error</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
-    fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;Got event %+v\n&#34;</span>, event)
-    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-}
-</code></pre></div><p>使用 topic 注册消息处理程序</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
-</code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/examples/tree/main/pubsub">example/pubsub</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">ProcessEvent</span>(ctx context.Context, event <span style="color:#ff79c6">*</span>proto.Event) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>    fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;Got event %+v\n&#34;</span>, event)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>使用 topic 注册消息处理程序</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>vine.<span style="color:#50fa7b">RegisterSubscriber</span>(<span style="color:#f1fa8c">&#34;events&#34;</span>, ProcessEvent)
+</span></span></code></pre></div><p>完整实例可以看 <a href="https://github.com/vine-io/examples/tree/main/pubsub">example/pubsub</a></p>
 <h2 id="单独使用-broker">单独使用 Broker</h2>
 <p><code>Broker</code> 也可以单独使用：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-	<span style="color:#f1fa8c">&#34;time&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/broker&#34;</span>
-	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/logger&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	topic <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;go.vine.topic.foo&#34;</span>
-
-	b <span style="color:#ff79c6">:=</span> broker.<span style="color:#50fa7b">NewBroker</span>()
-
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Init error: %v&#34;</span>, err)
-	}
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Connect</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Connect error: %v&#34;</span>, err)
-	}
-
-	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		<span style="color:#6272a4">// receive message from broker
-</span><span style="color:#6272a4"></span>		b.<span style="color:#50fa7b">Subscribe</span>(topic, <span style="color:#8be9fd;font-style:italic">func</span>(p broker.Event) <span style="color:#8be9fd">error</span> {
-			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[sub] received message:&#34;</span>, <span style="color:#8be9fd;font-style:italic">string</span>(p.<span style="color:#50fa7b">Message</span>().Body), <span style="color:#f1fa8c">&#34;header&#34;</span>, p.<span style="color:#50fa7b">Message</span>().Header)
-			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-		})
-	}()
-
-	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
-		<span style="color:#6272a4">// publish message to broker
-</span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
-	}()
-
-    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
-    
-    b.<span style="color:#50fa7b">Disconnect</span>()
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/broker&#34;</span>
+</span></span><span style="display:flex;"><span>	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/service/logger&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	topic <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;go.vine.topic.foo&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	b <span style="color:#ff79c6">:=</span> broker.<span style="color:#50fa7b">NewBroker</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Init error: %v&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> b.<span style="color:#50fa7b">Connect</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;Broker Connect error: %v&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#6272a4">// receive message from broker
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		b.<span style="color:#50fa7b">Subscribe</span>(topic, <span style="color:#8be9fd;font-style:italic">func</span>(p broker.Event) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>			fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;[sub] received message:&#34;</span>, <span style="color:#8be9fd;font-style:italic">string</span>(p.<span style="color:#50fa7b">Message</span>().Body), <span style="color:#f1fa8c">&#34;header&#34;</span>, p.<span style="color:#50fa7b">Message</span>().Header)
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#6272a4">// publish message to broker
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    b.<span style="color:#50fa7b">Disconnect</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
 </div>
 </div>
 
@@ -257,7 +257,7 @@ This the multi-page printable view of this section.
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -285,7 +285,7 @@ This the multi-page printable view of this section.
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

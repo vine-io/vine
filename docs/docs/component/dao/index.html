@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/dao/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/dao/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/component/dao/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1168,92 +1168,92 @@ if (!doNotTrack) {
 	
 	<h2 id="概述">概述</h2>
 <p>我们整合 <a href="https://gorm.io/">gorm</a>，并抽象出 <code>Dao</code> 作为数据库交互工具：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// Dialect DAO database dialect
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Dialect <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#50fa7b">NewTx</span>() <span style="color:#ff79c6">*</span>DB
-	<span style="color:#50fa7b">Migrator</span>() Migrator
-	<span style="color:#50fa7b">DataTypeOf</span>(<span style="color:#ff79c6">*</span>schema.Field) <span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">DefaultValueOf</span>(<span style="color:#ff79c6">*</span>schema.Field) clause.Expression
-	<span style="color:#50fa7b">BindVarTo</span>(writer clause.Writer, stmt <span style="color:#ff79c6">*</span>Statement, v <span style="color:#8be9fd;font-style:italic">interface</span>{})
-	<span style="color:#50fa7b">QuoteTo</span>(clause.Writer, <span style="color:#8be9fd">string</span>)
-	<span style="color:#50fa7b">Explain</span>(sql <span style="color:#8be9fd">string</span>, vars <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">JSONBuild</span>(column <span style="color:#8be9fd">string</span>) JSONQuery
-	<span style="color:#50fa7b">JSONDataType</span>() <span style="color:#8be9fd">string</span>
-	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><h2 id="使用">使用</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Dialect DAO database dialect
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">type</span> Dialect <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Options</span>() Options
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">NewTx</span>() <span style="color:#ff79c6">*</span>DB
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Migrator</span>() Migrator
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">DataTypeOf</span>(<span style="color:#ff79c6">*</span>schema.Field) <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">DefaultValueOf</span>(<span style="color:#ff79c6">*</span>schema.Field) clause.Expression
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">BindVarTo</span>(writer clause.Writer, stmt <span style="color:#ff79c6">*</span>Statement, v <span style="color:#8be9fd;font-style:italic">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">QuoteTo</span>(clause.Writer, <span style="color:#8be9fd">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Explain</span>(sql <span style="color:#8be9fd">string</span>, vars <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">JSONBuild</span>(column <span style="color:#8be9fd">string</span>) JSONQuery
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">JSONDataType</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="使用">使用</h2>
 <p><code>Dao</code> 的接口语法和 <a href="https://gorm.io/">gorm</a> 兼容</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-	<span style="color:#f1fa8c">&#34;log&#34;</span>
-	<span style="color:#f1fa8c">&#34;time&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/dao/mysql&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/dao&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/dao/logger&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">type</span> User <span style="color:#8be9fd;font-style:italic">struct</span> {
-	Id   <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`dao:&#34;column:id;autoIncrement;primaryKey&#34;`</span>
-	Name <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`dao:&#34;column:name&#34;`</span>
-	Age  <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`dao:&#34;column:age&#34;`</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	dns <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">`root:123456@tcp(192.168.3.111:3306)/vine?charset=utf8&amp;parseTime=True&amp;loc=Local`</span>
-	dialect <span style="color:#ff79c6">:=</span> mysql.<span style="color:#50fa7b">NewDialect</span>(dao.<span style="color:#50fa7b">DSN</span>(dns), dao.<span style="color:#50fa7b">Logger</span>(logger.<span style="color:#50fa7b">New</span>(logger.Options{
-		SlowThreshold: <span style="color:#bd93f9">200</span> <span style="color:#ff79c6">*</span> time.Millisecond,
-		LogLevel:      logger.Info,
-	})))
-    <span style="color:#6272a4">// 初始化
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> dialect.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-
-    <span style="color:#6272a4">// 创建一个新的会话
-</span><span style="color:#6272a4"></span>	db <span style="color:#ff79c6">:=</span> dialect.<span style="color:#50fa7b">NewTx</span>()
-
-    <span style="color:#6272a4">// 更新表结构
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">AutoMigrate</span>(<span style="color:#ff79c6">&amp;</span>User{}); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-
-	u <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>User{Name: <span style="color:#f1fa8c">&#34;Mimi&#34;</span>, Age: <span style="color:#bd93f9">11</span>}
-    <span style="color:#6272a4">// 插入一条记录
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Create</span>(u).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-
-	u1 <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>User{}
-    <span style="color:#6272a4">// 查询
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Find</span>(<span style="color:#ff79c6">&amp;</span>u1, <span style="color:#f1fa8c">&#34;name = ?&#34;</span>, <span style="color:#f1fa8c">&#34;Mimi&#34;</span>).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-
-	fmt.<span style="color:#50fa7b">Println</span>(u1)
-
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Where</span>(<span style="color:#f1fa8c">&#34;name = ?&#34;</span>, <span style="color:#f1fa8c">&#34;Mimi&#34;</span>).<span style="color:#50fa7b">First</span>(<span style="color:#ff79c6">&amp;</span>u1).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-
-	fmt.<span style="color:#50fa7b">Println</span>(u1)
-
-	u1.Name = <span style="color:#f1fa8c">&#34;Mimi_update&#34;</span>
-    <span style="color:#6272a4">// 更新一条记录
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Updates</span>(u1).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-
-    <span style="color:#6272a4">// 删除一条记录
-</span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Delete</span>(<span style="color:#ff79c6">&amp;</span>User{}, <span style="color:#f1fa8c">&#34;id = ?&#34;</span>, <span style="color:#bd93f9">1</span>).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatalln</span>(err)
-	}
-}
-</code></pre></div><p>更多 CURD 的使用方式可以参考<a href="https://gorm.io/docs/create.html">这里</a>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/dao/mysql&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/dao&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/dao/logger&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> User <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>	Id   <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`dao:&#34;column:id;autoIncrement;primaryKey&#34;`</span>
+</span></span><span style="display:flex;"><span>	Name <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`dao:&#34;column:name&#34;`</span>
+</span></span><span style="display:flex;"><span>	Age  <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`dao:&#34;column:age&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	dns <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">`root:123456@tcp(192.168.3.111:3306)/vine?charset=utf8&amp;parseTime=True&amp;loc=Local`</span>
+</span></span><span style="display:flex;"><span>	dialect <span style="color:#ff79c6">:=</span> mysql.<span style="color:#50fa7b">NewDialect</span>(dao.<span style="color:#50fa7b">DSN</span>(dns), dao.<span style="color:#50fa7b">Logger</span>(logger.<span style="color:#50fa7b">New</span>(logger.Options{
+</span></span><span style="display:flex;"><span>		SlowThreshold: <span style="color:#bd93f9">200</span> <span style="color:#ff79c6">*</span> time.Millisecond,
+</span></span><span style="display:flex;"><span>		LogLevel:      logger.Info,
+</span></span><span style="display:flex;"><span>	})))
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 初始化
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> dialect.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 创建一个新的会话
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	db <span style="color:#ff79c6">:=</span> dialect.<span style="color:#50fa7b">NewTx</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 更新表结构
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">AutoMigrate</span>(<span style="color:#ff79c6">&amp;</span>User{}); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	u <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>User{Name: <span style="color:#f1fa8c">&#34;Mimi&#34;</span>, Age: <span style="color:#bd93f9">11</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 插入一条记录
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Create</span>(u).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	u1 <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>User{}
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 查询
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Find</span>(<span style="color:#ff79c6">&amp;</span>u1, <span style="color:#f1fa8c">&#34;name = ?&#34;</span>, <span style="color:#f1fa8c">&#34;Mimi&#34;</span>).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(u1)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Where</span>(<span style="color:#f1fa8c">&#34;name = ?&#34;</span>, <span style="color:#f1fa8c">&#34;Mimi&#34;</span>).<span style="color:#50fa7b">First</span>(<span style="color:#ff79c6">&amp;</span>u1).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(u1)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	u1.Name = <span style="color:#f1fa8c">&#34;Mimi_update&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 更新一条记录
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Updates</span>(u1).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 删除一条记录
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> db.<span style="color:#50fa7b">Delete</span>(<span style="color:#ff79c6">&amp;</span>User{}, <span style="color:#f1fa8c">&#34;id = ?&#34;</span>, <span style="color:#bd93f9">1</span>).Error; err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>更多 CURD 的使用方式可以参考<a href="https://gorm.io/docs/create.html">这里</a>。</p>
 
         <div class="section-index">
     
@@ -1378,7 +1378,7 @@ if (!doNotTrack) {
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1406,7 +1406,7 @@ if (!doNotTrack) {
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

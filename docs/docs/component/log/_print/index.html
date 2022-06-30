@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/component/log/">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/component/log/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/log/index.xml">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -142,48 +142,48 @@ This the multi-page printable view of this section.
 <div class="content">
       <h2 id="概述">概述</h2>
 <p><code>Logger</code> 是 <strong>Vine</strong> 的日志模块，我们抽象一个一组通用的接口，用户可以根据自己的需要来构建自己的实现:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Logger <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#6272a4">// Init initialises options
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(options <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
-	<span style="color:#6272a4">// Options the Logger options
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
-	<span style="color:#6272a4">// Fields set fields to always be logged
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Fields</span>(fields <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}) Logger
-	<span style="color:#6272a4">// Log writes a log entry
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Log</span>(level Level, v <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{})
-	<span style="color:#6272a4">// Logf writes a formatted log entry
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Logf</span>(level Level, format <span style="color:#8be9fd">string</span>, v <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{})
-	<span style="color:#6272a4">// String returns the name of logger
-</span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><h2 id="使用">使用</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Logger <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Init initialises options
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Init</span>(options <span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Options the Logger options
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Fields set fields to always be logged
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Fields</span>(fields <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}) Logger
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Log writes a log entry
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Log</span>(level Level, v <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Logf writes a formatted log entry
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Logf</span>(level Level, format <span style="color:#8be9fd">string</span>, v <span style="color:#ff79c6">...</span><span style="color:#8be9fd;font-style:italic">interface</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// String returns the name of logger
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="使用">使用</h2>
 <p>这里介绍 <code>Logger</code> 的简单使用方式，我们在内部已经有自带的实现:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-    <span style="color:#6272a4">// 新 Logger
-</span><span style="color:#6272a4"></span>    l <span style="color:#ff79c6">:=</span> logger.<span style="color:#50fa7b">NewLogger</span>(<span style="color:#50fa7b">WithLevel</span>(TraceLevel))
-	h1 <span style="color:#ff79c6">:=</span> logger.<span style="color:#50fa7b">NewHelper</span>(l).<span style="color:#50fa7b">WithFields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key1&#34;</span>: <span style="color:#f1fa8c">&#34;val1&#34;</span>})
-	h1.<span style="color:#50fa7b">Trace</span>(<span style="color:#f1fa8c">&#34;trace_msg1&#34;</span>)
-	h1.<span style="color:#50fa7b">Log</span>(WarnLevel, <span style="color:#f1fa8c">&#34;warn_msg1&#34;</span>)
-
-	h2 <span style="color:#ff79c6">:=</span> logger.<span style="color:#50fa7b">NewHelper</span>(l).<span style="color:#50fa7b">WithFields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key2&#34;</span>: <span style="color:#f1fa8c">&#34;val2&#34;</span>})
-	h2.<span style="color:#50fa7b">Trace</span>(<span style="color:#f1fa8c">&#34;trace_msg2&#34;</span>)
-	h2.<span style="color:#50fa7b">Warn</span>(<span style="color:#f1fa8c">&#34;warn_msg2&#34;</span>)
-
-    <span style="color:#6272a4">// 设置 Fields
-</span><span style="color:#6272a4"></span>	l.<span style="color:#50fa7b">Fields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key3&#34;</span>: <span style="color:#f1fa8c">&#34;val4&#34;</span>}).<span style="color:#50fa7b">Log</span>(InfoLevel, <span style="color:#f1fa8c">&#34;test_msg&#34;</span>)
-
-    <span style="color:#6272a4">// 使用默认的 logger
-</span><span style="color:#6272a4"></span>	logger.<span style="color:#50fa7b">Fields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key1&#34;</span>: <span style="color:#f1fa8c">&#34;val1&#34;</span>})
-	logger.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;info&#34;</span>)
-}
-</code></pre></div><p>查看输出:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:10 <span style="color:#8be9fd;font-style:italic">key1</span><span style="color:#ff79c6">=</span>val1 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>trace trace_msg1
-2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:11 <span style="color:#8be9fd;font-style:italic">key1</span><span style="color:#ff79c6">=</span>val1 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>warn warn_msg1
-2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:14 <span style="color:#8be9fd;font-style:italic">key2</span><span style="color:#ff79c6">=</span>val2 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>trace trace_msg2
-2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:15 <span style="color:#8be9fd;font-style:italic">key2</span><span style="color:#ff79c6">=</span>val2 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>warn warn_msg2
-2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:17 <span style="color:#8be9fd;font-style:italic">key3</span><span style="color:#ff79c6">=</span>val4 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info test_msg
-2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:20 <span style="color:#8be9fd;font-style:italic">key1</span><span style="color:#ff79c6">=</span>val1 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info info
-</code></pre></div><p>默认的实现支持以下几种级别日志：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 新 Logger
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    l <span style="color:#ff79c6">:=</span> logger.<span style="color:#50fa7b">NewLogger</span>(<span style="color:#50fa7b">WithLevel</span>(TraceLevel))
+</span></span><span style="display:flex;"><span>	h1 <span style="color:#ff79c6">:=</span> logger.<span style="color:#50fa7b">NewHelper</span>(l).<span style="color:#50fa7b">WithFields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key1&#34;</span>: <span style="color:#f1fa8c">&#34;val1&#34;</span>})
+</span></span><span style="display:flex;"><span>	h1.<span style="color:#50fa7b">Trace</span>(<span style="color:#f1fa8c">&#34;trace_msg1&#34;</span>)
+</span></span><span style="display:flex;"><span>	h1.<span style="color:#50fa7b">Log</span>(WarnLevel, <span style="color:#f1fa8c">&#34;warn_msg1&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	h2 <span style="color:#ff79c6">:=</span> logger.<span style="color:#50fa7b">NewHelper</span>(l).<span style="color:#50fa7b">WithFields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key2&#34;</span>: <span style="color:#f1fa8c">&#34;val2&#34;</span>})
+</span></span><span style="display:flex;"><span>	h2.<span style="color:#50fa7b">Trace</span>(<span style="color:#f1fa8c">&#34;trace_msg2&#34;</span>)
+</span></span><span style="display:flex;"><span>	h2.<span style="color:#50fa7b">Warn</span>(<span style="color:#f1fa8c">&#34;warn_msg2&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 设置 Fields
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	l.<span style="color:#50fa7b">Fields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key3&#34;</span>: <span style="color:#f1fa8c">&#34;val4&#34;</span>}).<span style="color:#50fa7b">Log</span>(InfoLevel, <span style="color:#f1fa8c">&#34;test_msg&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 使用默认的 logger
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	logger.<span style="color:#50fa7b">Fields</span>(<span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd;font-style:italic">interface</span>{}{<span style="color:#f1fa8c">&#34;key1&#34;</span>: <span style="color:#f1fa8c">&#34;val1&#34;</span>})
+</span></span><span style="display:flex;"><span>	logger.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;info&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>查看输出:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:10 <span style="color:#8be9fd;font-style:italic">key1</span><span style="color:#ff79c6">=</span>val1 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>trace trace_msg1
+</span></span><span style="display:flex;"><span>2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:11 <span style="color:#8be9fd;font-style:italic">key1</span><span style="color:#ff79c6">=</span>val1 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>warn warn_msg1
+</span></span><span style="display:flex;"><span>2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:14 <span style="color:#8be9fd;font-style:italic">key2</span><span style="color:#ff79c6">=</span>val2 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>trace trace_msg2
+</span></span><span style="display:flex;"><span>2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:15 <span style="color:#8be9fd;font-style:italic">key2</span><span style="color:#ff79c6">=</span>val2 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>warn warn_msg2
+</span></span><span style="display:flex;"><span>2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:17 <span style="color:#8be9fd;font-style:italic">key3</span><span style="color:#ff79c6">=</span>val4 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info test_msg
+</span></span><span style="display:flex;"><span>2021-09-05 16:29:32 <span style="color:#8be9fd;font-style:italic">file</span><span style="color:#ff79c6">=</span>logger/logger_test.go:20 <span style="color:#8be9fd;font-style:italic">key1</span><span style="color:#ff79c6">=</span>val1 <span style="color:#8be9fd;font-style:italic">level</span><span style="color:#ff79c6">=</span>info info
+</span></span></code></pre></div><p>默认的实现支持以下几种级别日志：</p>
 <ul>
 <li>TRACE: 日志追踪</li>
 <li>DEBUG: 调试日志</li>
@@ -239,7 +239,7 @@ This the multi-page printable view of this section.
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -267,7 +267,7 @@ This the multi-page printable view of this section.
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

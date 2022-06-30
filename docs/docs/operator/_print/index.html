@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/operator/">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/operator/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/operator/index.xml">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -145,30 +145,30 @@ This the multi-page printable view of this section.
 <p><strong>Vine</strong> 中默认提供了用于构建程序的 Dockerfile 文件。用于构建服务镜像。</p>
 <h3 id="dockerfile">Dockerfile</h3>
 <p>编辑 <code>_output/Dockerfile</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#ff79c6">FROM</span><span style="color:#f1fa8c"> debian:stable-slim</span>
-<span style="color:#ff79c6">ADD</span> helloworld /helloworld
-
-<span style="color:#ff79c6">EXPOSE</span><span style="color:#f1fa8c"> 11500</span>
-
-<span style="color:#ff79c6">ENTRYPOINT</span> [ <span style="color:#f1fa8c">&#34;/helloworld&#34;</span>, <span style="color:#f1fa8c">&#34;--server-address=0.0.0.0:11500&#34;</span> ]
-</code></pre></div><h3 id="编译项目">编译项目</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vine build service --output<span style="color:#ff79c6">=</span>_output/helloworld 
-</code></pre></div><h3 id="构建镜像">构建镜像</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">cd</span> _output
-docker build -t helloworld .
-</code></pre></div><h3 id="启动服务">启动服务</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">docker run <span style="color:#ff79c6">--</span>rm <span style="color:#ff79c6">-</span>p <span style="color:#bd93f9">11500</span>:<span style="color:#bd93f9">11500</span> helloworl
-</code></pre></div><h2 id="gpm">gpm</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-dockerfile" data-lang="dockerfile"><span style="display:flex;"><span><span style="color:#ff79c6">FROM</span><span style="color:#f1fa8c"> debian:stable-slim</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">ADD</span> helloworld /helloworld
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">EXPOSE</span><span style="color:#f1fa8c"> 11500</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">ENTRYPOINT</span> [ <span style="color:#f1fa8c">&#34;/helloworld&#34;</span>, <span style="color:#f1fa8c">&#34;--server-address=0.0.0.0:11500&#34;</span> ]
+</span></span></code></pre></div><h3 id="编译项目">编译项目</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vine build service --output<span style="color:#ff79c6">=</span>_output/helloworld 
+</span></span></code></pre></div><h3 id="构建镜像">构建镜像</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> _output
+</span></span><span style="display:flex;"><span>docker build -t helloworld .
+</span></span></code></pre></div><h3 id="启动服务">启动服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>docker run <span style="color:#ff79c6">--</span>rm <span style="color:#ff79c6">-</span>p <span style="color:#bd93f9">11500</span>:<span style="color:#bd93f9">11500</span> helloworl
+</span></span></code></pre></div><h2 id="gpm">gpm</h2>
 <p><a href="https://github.com/vine-io/gpm">gpm</a> 是基于 <strong>Vine</strong> 开发的项目管理服务。合适于在没有 docker 环境的机器上管理 <strong>Vine</strong> 服务。</p>
 <h3 id="启动-gpm">启动 gpm</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">gpm start <span style="color:#ff79c6">-</span>A &#39;<span style="color:#ff79c6">--</span>server<span style="color:#ff79c6">-</span>address=<span style="color:#bd93f9">0.0.0.0</span>:<span style="color:#bd93f9">7700</span>&#39;
-</code></pre></div><h3 id="服务打包">服务打包</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpm tar --name helloworld.tar.gz --target main
-</code></pre></div><h3 id="安装服务">安装服务</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpm --host 192.168.3.111:7700 install --package helloworld.tar.gz --name helloworld --dir /opt/helloworld --bin /opt/helloworld/main --args <span style="color:#f1fa8c">&#39;--server-address=0.0.0.0:11500&#39;</span> --version v1.0.0
-</code></pre></div><h3 id="启动服务-1">启动服务</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gpm --host 192.168.3.111:7700 start --name helloworld
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>gpm start <span style="color:#ff79c6">-</span>A &#39;<span style="color:#ff79c6">--</span>server<span style="color:#ff79c6">-</span>address=<span style="color:#bd93f9">0.0.0.0</span>:<span style="color:#bd93f9">7700</span>&#39;
+</span></span></code></pre></div><h3 id="服务打包">服务打包</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpm tar --name helloworld.tar.gz --target main
+</span></span></code></pre></div><h3 id="安装服务">安装服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpm --host 192.168.3.111:7700 install --package helloworld.tar.gz --name helloworld --dir /opt/helloworld --bin /opt/helloworld/main --args <span style="color:#f1fa8c">&#39;--server-address=0.0.0.0:11500&#39;</span> --version v1.0.0
+</span></span></code></pre></div><h3 id="启动服务-1">启动服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gpm --host 192.168.3.111:7700 start --name helloworld
+</span></span></code></pre></div>
 </div>
 </div>
 
@@ -215,7 +215,7 @@ docker build -t helloworld .
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -243,7 +243,7 @@ docker build -t helloworld .
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

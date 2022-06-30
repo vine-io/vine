@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/codec/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/codec/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/component/codec/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1189,97 +1189,97 @@ if (!doNotTrack) {
 <li>bytes</li>
 <li>proto</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Codec <span style="color:#8be9fd;font-style:italic">interface</span> {
-	Reader
-	Writer
-	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">type</span> Reader <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">ReadHeader</span>(<span style="color:#ff79c6">*</span>Message, MessageType) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">ReadBody</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">type</span> Writer <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Write</span>(<span style="color:#ff79c6">*</span>Message, <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">type</span> Marshaler <span style="color:#8be9fd;font-style:italic">interface</span> {
-	<span style="color:#50fa7b">Marshal</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}) ([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd">error</span>)
-	<span style="color:#50fa7b">Unmarshal</span>([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
-	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
-}
-</code></pre></div><h2 id="具体实现">具体实现</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Codec <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	Reader
+</span></span><span style="display:flex;"><span>	Writer
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Close</span>() <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Reader <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">ReadHeader</span>(<span style="color:#ff79c6">*</span>Message, MessageType) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">ReadBody</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Writer <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Write</span>(<span style="color:#ff79c6">*</span>Message, <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Marshaler <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Marshal</span>(<span style="color:#8be9fd;font-style:italic">interface</span>{}) ([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Unmarshal</span>([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="具体实现">具体实现</h2>
 <p>只要用户提供了 <code>Marshal</code>, <code>Unmarshal</code> 和 <code>String</code> 方法即可实现 <code>Marshaler</code> 接口，以下提供一个完整的 <code>json</code> 版本代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
-<span style="color:#8be9fd;font-style:italic">var</span> jsonbMarshaler = <span style="color:#ff79c6">&amp;</span>mjsonpb.Marshaler{}
-
-<span style="color:#6272a4">// create buffer pool with 16 instances each preallocated with 256 bytes
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">var</span> bufferPool = bpool.<span style="color:#50fa7b">NewSizedBufferPool</span>(<span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">256</span>)
-
-<span style="color:#8be9fd;font-style:italic">type</span> Marshaler <span style="color:#8be9fd;font-style:italic">struct</span>{}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">Marshal</span>(v <span style="color:#8be9fd;font-style:italic">interface</span>{}) ([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd">error</span>) {
-	<span style="color:#ff79c6">if</span> pb, ok <span style="color:#ff79c6">:=</span> v.(proto.Message); ok {
-		buf <span style="color:#ff79c6">:=</span> bufferPool.<span style="color:#50fa7b">Get</span>()
-		<span style="color:#ff79c6">defer</span> bufferPool.<span style="color:#50fa7b">Put</span>(buf)
-		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> jsonbMarshaler.<span style="color:#50fa7b">Marshal</span>(buf, pb); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>, err
-		}
-		<span style="color:#ff79c6">return</span> buf.<span style="color:#50fa7b">Bytes</span>(), <span style="color:#ff79c6">nil</span>
-	}
-	<span style="color:#ff79c6">return</span> json.<span style="color:#50fa7b">Marshal</span>(v)
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">Unmarshal</span>(d []<span style="color:#8be9fd">byte</span>, v <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
-	<span style="color:#ff79c6">if</span> pb, ok <span style="color:#ff79c6">:=</span> v.(proto.Message); ok {
-		<span style="color:#ff79c6">return</span> mjsonpb.<span style="color:#50fa7b">Unmarshal</span>(bytes.<span style="color:#50fa7b">NewReader</span>(d), pb)
-	}
-	<span style="color:#ff79c6">return</span> json.<span style="color:#50fa7b">Unmarshal</span>(d, v)
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span> {
-	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;json&#34;</span>
-}
-</code></pre></div><h2 id="使用">使用</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> jsonbMarshaler = <span style="color:#ff79c6">&amp;</span>mjsonpb.Marshaler{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// create buffer pool with 16 instances each preallocated with 256 bytes
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">var</span> bufferPool = bpool.<span style="color:#50fa7b">NewSizedBufferPool</span>(<span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">256</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Marshaler <span style="color:#8be9fd;font-style:italic">struct</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">Marshal</span>(v <span style="color:#8be9fd;font-style:italic">interface</span>{}) ([]<span style="color:#8be9fd">byte</span>, <span style="color:#8be9fd">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> pb, ok <span style="color:#ff79c6">:=</span> v.(proto.Message); ok {
+</span></span><span style="display:flex;"><span>		buf <span style="color:#ff79c6">:=</span> bufferPool.<span style="color:#50fa7b">Get</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">defer</span> bufferPool.<span style="color:#50fa7b">Put</span>(buf)
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> jsonbMarshaler.<span style="color:#50fa7b">Marshal</span>(buf, pb); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>, err
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">return</span> buf.<span style="color:#50fa7b">Bytes</span>(), <span style="color:#ff79c6">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> json.<span style="color:#50fa7b">Marshal</span>(v)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">Unmarshal</span>(d []<span style="color:#8be9fd">byte</span>, v <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> pb, ok <span style="color:#ff79c6">:=</span> v.(proto.Message); ok {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">return</span> mjsonpb.<span style="color:#50fa7b">Unmarshal</span>(bytes.<span style="color:#50fa7b">NewReader</span>(d), pb)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> json.<span style="color:#50fa7b">Unmarshal</span>(d, v)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (j Marshaler) <span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;json&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="使用">使用</h2>
 <h3 id="注册">注册</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	encoding.<span style="color:#50fa7b">RegisterMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>, <span style="color:#ff79c6">&amp;</span>Marshaler{})
-}
-</code></pre></div><h3 id="获取">获取</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	m, ok <span style="color:#ff79c6">:=</span> encoding.<span style="color:#50fa7b">GetMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>)
-}
-</code></pre></div><h3 id="序列化和反序列化">序列化和反序列化</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/codec/encoding&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">type</span> Person <span style="color:#8be9fd;font-style:italic">struct</span> {
-	Name <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;name&#34;`</span>
-	Age  <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`json:&#34;age&#34;`</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	m, _ <span style="color:#ff79c6">:=</span> encoding.<span style="color:#50fa7b">GetMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>)
-	p <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>Person{
-		Name: <span style="color:#f1fa8c">&#34;Vine&#34;</span>,
-		Age:  <span style="color:#bd93f9">20</span>,
-	}
-
-	data, _ <span style="color:#ff79c6">:=</span> m.<span style="color:#50fa7b">Marshal</span>(p)
-	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#8be9fd;font-style:italic">string</span>(data))
-
-	p1 <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">new</span>(Person)
-	m.<span style="color:#50fa7b">Unmarshal</span>(data, <span style="color:#ff79c6">&amp;</span>p1)
-	fmt.<span style="color:#50fa7b">Println</span>(p1.Name)
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	encoding.<span style="color:#50fa7b">RegisterMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>, <span style="color:#ff79c6">&amp;</span>Marshaler{})
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="获取">获取</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	m, ok <span style="color:#ff79c6">:=</span> encoding.<span style="color:#50fa7b">GetMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="序列化和反序列化">序列化和反序列化</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/codec/encoding&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Person <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>	Name <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;name&#34;`</span>
+</span></span><span style="display:flex;"><span>	Age  <span style="color:#8be9fd">int32</span>  <span style="color:#f1fa8c">`json:&#34;age&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	m, _ <span style="color:#ff79c6">:=</span> encoding.<span style="color:#50fa7b">GetMarshaler</span>(<span style="color:#f1fa8c">&#34;json&#34;</span>)
+</span></span><span style="display:flex;"><span>	p <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&amp;</span>Person{
+</span></span><span style="display:flex;"><span>		Name: <span style="color:#f1fa8c">&#34;Vine&#34;</span>,
+</span></span><span style="display:flex;"><span>		Age:  <span style="color:#bd93f9">20</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	data, _ <span style="color:#ff79c6">:=</span> m.<span style="color:#50fa7b">Marshal</span>(p)
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#8be9fd;font-style:italic">string</span>(data))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	p1 <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">new</span>(Person)
+</span></span><span style="display:flex;"><span>	m.<span style="color:#50fa7b">Unmarshal</span>(data, <span style="color:#ff79c6">&amp;</span>p1)
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(p1.Name)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1403,7 +1403,7 @@ if (!doNotTrack) {
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1431,7 +1431,7 @@ if (!doNotTrack) {
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/component/wrapper/breaker/">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="canonical" type="text/html" href="https://vine-io.github.io/vine/docs/component/wrapper/breaker/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/wrapper/breaker/index.xml">
 <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -149,69 +149,69 @@ This the multi-page printable view of this section.
 <p><img src="2021-09-08-10-04-36.png" alt=""></p>
 <h2 id="使用">使用</h2>
 <p><strong>Vine</strong> 通过 wrapper 特性实现熔断器功能，在 <code>Client Call</code> 请求中添加熔断 wrapper。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-	<span style="color:#f1fa8c">&#34;os&#34;</span>
-	<span style="color:#f1fa8c">&#34;time&#34;</span>
-
-	<span style="color:#f1fa8c">&#34;github.com/sony/gobreaker&#34;</span>
-	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/examples/wrapper/pb&#34;</span>
-	bk <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/wrapper/breaker/gobreaker&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
-	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">type</span> hello <span style="color:#8be9fd;font-style:italic">struct</span>{}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (h hello) <span style="color:#50fa7b">Echo</span>(ctx context.Context, request <span style="color:#ff79c6">*</span>pb.Request, response <span style="color:#ff79c6">*</span>pb.Response) <span style="color:#8be9fd">error</span> {
-	response.Result = request.Name
-	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	bs <span style="color:#ff79c6">:=</span> gobreaker.Settings{
-		Name:          <span style="color:#f1fa8c">&#34;breaker&#34;</span>,
-		MaxRequests:   <span style="color:#bd93f9">10</span>,
-		Interval:      time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">10</span>,
-		Timeout:       time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">15</span>,
-		ReadyToTrip: <span style="color:#8be9fd;font-style:italic">func</span>(counts gobreaker.Counts) <span style="color:#8be9fd">bool</span> {
-			failureRatio <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">float64</span>(counts.TotalFailures) <span style="color:#ff79c6">/</span> <span style="color:#8be9fd;font-style:italic">float64</span>(counts.Requests)
-			<span style="color:#ff79c6">return</span> counts.Requests <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">&amp;&amp;</span> failureRatio <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0.6</span>
-		},
-		OnStateChange: <span style="color:#8be9fd;font-style:italic">func</span>(name <span style="color:#8be9fd">string</span>, from gobreaker.State, to gobreaker.State) {
-			log.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;%s %s =&gt; %s&#34;</span>, name, from.<span style="color:#50fa7b">String</span>(), to.<span style="color:#50fa7b">String</span>())
-		},
-	}
-	breaker <span style="color:#ff79c6">:=</span> bk.<span style="color:#50fa7b">NewCustomClientWrapper</span>(bs, bk.BreakService)
-
-	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;helloworld&#34;</span>),
-		vine.<span style="color:#50fa7b">WrapClient</span>(breaker),
-	)
-
-	s.<span style="color:#50fa7b">Init</span>()
-
-	pb.<span style="color:#50fa7b">RegisterHelloHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>hello{})
-
-	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		time.<span style="color:#50fa7b">Sleep</span>(time.Second)
-		cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewHelloService</span>(s.<span style="color:#50fa7b">Name</span>(), s.<span style="color:#50fa7b">Client</span>())
-		rsp, err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.Request{<span style="color:#f1fa8c">&#34;&#34;</span>})
-		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-			log.<span style="color:#50fa7b">Fatal</span>(err)
-		}
-		fmt.<span style="color:#50fa7b">Println</span>(rsp)
-		os.<span style="color:#50fa7b">Exit</span>(<span style="color:#bd93f9">0</span>)
-	}()
-
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatal</span>(err)
-	}
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/sony/gobreaker&#34;</span>
+</span></span><span style="display:flex;"><span>	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/examples/wrapper/pb&#34;</span>
+</span></span><span style="display:flex;"><span>	bk <span style="color:#f1fa8c">&#34;github.com/vine-io/plugins/wrapper/breaker/gobreaker&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+</span></span><span style="display:flex;"><span>	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> hello <span style="color:#8be9fd;font-style:italic">struct</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (h hello) <span style="color:#50fa7b">Echo</span>(ctx context.Context, request <span style="color:#ff79c6">*</span>pb.Request, response <span style="color:#ff79c6">*</span>pb.Response) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>	response.Result = request.Name
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	bs <span style="color:#ff79c6">:=</span> gobreaker.Settings{
+</span></span><span style="display:flex;"><span>		Name:          <span style="color:#f1fa8c">&#34;breaker&#34;</span>,
+</span></span><span style="display:flex;"><span>		MaxRequests:   <span style="color:#bd93f9">10</span>,
+</span></span><span style="display:flex;"><span>		Interval:      time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">10</span>,
+</span></span><span style="display:flex;"><span>		Timeout:       time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">15</span>,
+</span></span><span style="display:flex;"><span>		ReadyToTrip: <span style="color:#8be9fd;font-style:italic">func</span>(counts gobreaker.Counts) <span style="color:#8be9fd">bool</span> {
+</span></span><span style="display:flex;"><span>			failureRatio <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">float64</span>(counts.TotalFailures) <span style="color:#ff79c6">/</span> <span style="color:#8be9fd;font-style:italic">float64</span>(counts.Requests)
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">return</span> counts.Requests <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">&amp;&amp;</span> failureRatio <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0.6</span>
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>		OnStateChange: <span style="color:#8be9fd;font-style:italic">func</span>(name <span style="color:#8be9fd">string</span>, from gobreaker.State, to gobreaker.State) {
+</span></span><span style="display:flex;"><span>			log.<span style="color:#50fa7b">Info</span>(<span style="color:#f1fa8c">&#34;%s %s =&gt; %s&#34;</span>, name, from.<span style="color:#50fa7b">String</span>(), to.<span style="color:#50fa7b">String</span>())
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	breaker <span style="color:#ff79c6">:=</span> bk.<span style="color:#50fa7b">NewCustomClientWrapper</span>(bs, bk.BreakService)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+</span></span><span style="display:flex;"><span>		vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;helloworld&#34;</span>),
+</span></span><span style="display:flex;"><span>		vine.<span style="color:#50fa7b">WrapClient</span>(breaker),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.<span style="color:#50fa7b">Init</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pb.<span style="color:#50fa7b">RegisterHelloHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>hello{})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>		time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+</span></span><span style="display:flex;"><span>		cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewHelloService</span>(s.<span style="color:#50fa7b">Name</span>(), s.<span style="color:#50fa7b">Client</span>())
+</span></span><span style="display:flex;"><span>		rsp, err <span style="color:#ff79c6">:=</span> cc.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.Request{<span style="color:#f1fa8c">&#34;&#34;</span>})
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>			log.<span style="color:#50fa7b">Fatal</span>(err)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		fmt.<span style="color:#50fa7b">Println</span>(rsp)
+</span></span><span style="display:flex;"><span>		os.<span style="color:#50fa7b">Exit</span>(<span style="color:#bd93f9">0</span>)
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatal</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
 </div>
 </div>
 
@@ -258,7 +258,7 @@ This the multi-page printable view of this section.
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -286,7 +286,7 @@ This the multi-page printable view of this section.
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

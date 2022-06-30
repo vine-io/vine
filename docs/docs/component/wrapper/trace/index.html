@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/wrapper/trace/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/component/wrapper/trace/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/component/wrapper/trace/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1181,95 +1181,95 @@ if (!doNotTrack) {
 <p><strong>Vine</strong> 中通过 wrapper 实现链路追踪。</p>
 <h2 id="实例">实例</h2>
 <p>我们提供一个简单的代码实例，来说明链路追踪的工作方式:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#ff79c6">package</span> main
-
-<span style="color:#ff79c6">import</span> (
-	<span style="color:#f1fa8c">&#34;context&#34;</span>
-	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
-	<span style="color:#f1fa8c">&#34;time&#34;</span>
-
-	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/examples/wrapper/pb&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client/grpc&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server&#34;</span>
-	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/trace&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/trace/memory&#34;</span>
-	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/util/wrapper&#34;</span>
-)
-
-<span style="color:#8be9fd;font-style:italic">type</span> hello <span style="color:#8be9fd;font-style:italic">struct</span> {
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> (h hello) <span style="color:#50fa7b">Echo</span>(ctx context.Context, request <span style="color:#ff79c6">*</span>pb.Request, response <span style="color:#ff79c6">*</span>pb.Response) <span style="color:#8be9fd">error</span> {
-	ctx, span <span style="color:#ff79c6">:=</span> trace.DefaultTracer.<span style="color:#50fa7b">Start</span>(ctx, <span style="color:#f1fa8c">&#34;echo&#34;</span>)
-	<span style="color:#ff79c6">defer</span> trace.DefaultTracer.<span style="color:#50fa7b">Finish</span>(span)
-	
-	response.Result = request.Name
-	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-		vine.<span style="color:#50fa7b">WrapHandler</span>(<span style="color:#50fa7b">HandlerWrapper</span>()),
-	)
-
-	s.<span style="color:#50fa7b">Init</span>()
-
-	pb.<span style="color:#50fa7b">RegisterHelloHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>hello{})
-
-	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-		time.<span style="color:#50fa7b">Sleep</span>(time.Second)
-        <span style="color:#6272a4">// grpc 加载 trace wrapper
-</span><span style="color:#6272a4"></span>		cli <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewClient</span>(client.<span style="color:#50fa7b">WrapCall</span>(<span style="color:#50fa7b">CallWrapper</span>()))
-		cli = wrapper.<span style="color:#50fa7b">TraceCall</span>(s.<span style="color:#50fa7b">Name</span>(), memory.<span style="color:#50fa7b">NewTracer</span>(), cli)
-		cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewHelloService</span>(s.<span style="color:#50fa7b">Name</span>(), cli)
-		cc.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.Request{<span style="color:#f1fa8c">&#34;Client&#34;</span>})
-	}()
-
-	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
-		log.<span style="color:#50fa7b">Fatal</span>(err)
-	}
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">CallWrapper</span>() client.CallWrapper {
-	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn client.CallFunc) client.CallFunc {
-		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, node <span style="color:#ff79c6">*</span>registry.Node, req client.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}, opts client.CallOptions) <span style="color:#8be9fd">error</span> {
-			traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
-			<span style="color:#ff79c6">if</span> ok {
-				fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;call: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
-			}
-			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, node, req, rsp, opts)
-		}
-	}
-}
-
-<span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">HandlerWrapper</span>() server.HandlerWrapper {
-	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn server.HandlerFunc) server.HandlerFunc {
-		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, req server.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
-			traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
-			<span style="color:#ff79c6">if</span> ok {
-				fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;handle: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
-			}
-			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, req, rsp)
-		}
-	}
-}
-</code></pre></div><p>新建链路</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">ctx = trace.<span style="color:#50fa7b">ToContext</span>(ctx, uuid.<span style="color:#50fa7b">NewString</span>(), uuid.<span style="color:#50fa7b">NewString</span>())
-</code></pre></div><p>链路调用</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// 新建链路
-</span><span style="color:#6272a4"></span>ctx, span <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">Start</span>(ctx, <span style="color:#f1fa8c">&#34;echo&#34;</span>)
-<span style="color:#6272a4">// 停止 span
-</span><span style="color:#6272a4"></span><span style="color:#ff79c6">defer</span> trace.<span style="color:#50fa7b">Finish</span>(span)
-</code></pre></div><p>捕获链路</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
-<span style="color:#ff79c6">if</span> ok {
-	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;call: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pb <span style="color:#f1fa8c">&#34;github.com/vine-io/examples/wrapper/pb&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/client/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/registry&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server&#34;</span>
+</span></span><span style="display:flex;"><span>	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/trace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/trace/memory&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/util/wrapper&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> hello <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (h hello) <span style="color:#50fa7b">Echo</span>(ctx context.Context, request <span style="color:#ff79c6">*</span>pb.Request, response <span style="color:#ff79c6">*</span>pb.Response) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>	ctx, span <span style="color:#ff79c6">:=</span> trace.DefaultTracer.<span style="color:#50fa7b">Start</span>(ctx, <span style="color:#f1fa8c">&#34;echo&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">defer</span> trace.DefaultTracer.<span style="color:#50fa7b">Finish</span>(span)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	response.Result = request.Name
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+</span></span><span style="display:flex;"><span>		vine.<span style="color:#50fa7b">WrapHandler</span>(<span style="color:#50fa7b">HandlerWrapper</span>()),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.<span style="color:#50fa7b">Init</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	pb.<span style="color:#50fa7b">RegisterHelloHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>hello{})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>		time.<span style="color:#50fa7b">Sleep</span>(time.Second)
+</span></span><span style="display:flex;"><span>        <span style="color:#6272a4">// grpc 加载 trace wrapper
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		cli <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewClient</span>(client.<span style="color:#50fa7b">WrapCall</span>(<span style="color:#50fa7b">CallWrapper</span>()))
+</span></span><span style="display:flex;"><span>		cli = wrapper.<span style="color:#50fa7b">TraceCall</span>(s.<span style="color:#50fa7b">Name</span>(), memory.<span style="color:#50fa7b">NewTracer</span>(), cli)
+</span></span><span style="display:flex;"><span>		cc <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">NewHelloService</span>(s.<span style="color:#50fa7b">Name</span>(), cli)
+</span></span><span style="display:flex;"><span>		cc.<span style="color:#50fa7b">Echo</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#ff79c6">&amp;</span>pb.Request{<span style="color:#f1fa8c">&#34;Client&#34;</span>})
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Run</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatal</span>(err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">CallWrapper</span>() client.CallWrapper {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn client.CallFunc) client.CallFunc {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, node <span style="color:#ff79c6">*</span>registry.Node, req client.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}, opts client.CallOptions) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>			traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">if</span> ok {
+</span></span><span style="display:flex;"><span>				fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;call: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, node, req, rsp, opts)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">HandlerWrapper</span>() server.HandlerWrapper {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(fn server.HandlerFunc) server.HandlerFunc {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(ctx context.Context, req server.Request, rsp <span style="color:#8be9fd;font-style:italic">interface</span>{}) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>			traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">if</span> ok {
+</span></span><span style="display:flex;"><span>				fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;handle: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">return</span> <span style="color:#50fa7b">fn</span>(ctx, req, rsp)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>新建链路</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>ctx = trace.<span style="color:#50fa7b">ToContext</span>(ctx, uuid.<span style="color:#50fa7b">NewString</span>(), uuid.<span style="color:#50fa7b">NewString</span>())
+</span></span></code></pre></div><p>链路调用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// 新建链路
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>ctx, span <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">Start</span>(ctx, <span style="color:#f1fa8c">&#34;echo&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// 停止 span
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#ff79c6">defer</span> trace.<span style="color:#50fa7b">Finish</span>(span)
+</span></span></code></pre></div><p>捕获链路</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>traceID, parentID, ok <span style="color:#ff79c6">:=</span> trace.<span style="color:#50fa7b">FromContext</span>(ctx)
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">if</span> ok {
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Printf</span>(<span style="color:#f1fa8c">&#34;call: tarceID=%s parentID=%s\n&#34;</span>, traceID, parentID)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1393,7 +1393,7 @@ if (!doNotTrack) {
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1421,7 +1421,7 @@ if (!doNotTrack) {
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 

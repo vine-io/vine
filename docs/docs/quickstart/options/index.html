@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="generator" content="Hugo 0.87.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/quickstart/options/index.xml">
+<meta name="generator" content="Hugo 0.95.0" /><link rel="alternate" type="application/rss&#43;xml" href="https://vine-io.github.io/vine/docs/quickstart/options/index.xml">
 <link rel="alternate" type="text/html" href="https://vine-io.github.io/vine/docs/quickstart/options/_print/">
 <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
 
@@ -85,7 +85,7 @@ if (!doNotTrack) {
 				
 				
 				
-				<a  class="nav-link" href="https://github.com/vine-io/vine-example" target="_blank" ><span>实例</span></a>
+				<a  class="nav-link" href="https://github.com/vine-io/examples" target="_blank" ><span>实例</span></a>
 			</li>
 			
 			<li class="nav-item mr-4 mb-2 mb-lg-0">
@@ -1179,92 +1179,92 @@ if (!doNotTrack) {
 	<h2 id="概述">概述</h2>
 <p>创建新服务时，你可以选择传递其他参数，例如设置名称，版本，Broker，Registry 或者存储，以便与所有其他内部实现一起使用。
 选项通常定义如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Options <span style="color:#8be9fd;font-style:italic">struct</span> {
-    Name        <span style="color:#8be9fd">string</span>
-    Version     <span style="color:#8be9fd">string</span>
-    Broker      broker.Broker
-    Registry    registry.Registry
-}
-
-
-<span style="color:#8be9fd;font-style:italic">type</span> Option <span style="color:#8be9fd;font-style:italic">func</span>(<span style="color:#ff79c6">*</span>Options)
-
-<span style="color:#6272a4">// set the name
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Name</span>(n <span style="color:#8be9fd">string</span>) Option {
-    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
-        o.Name = n
-    }
-}
-
-<span style="color:#6272a4">// set the broker
-</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Broker</span>(b broker.Broker) Option {
-    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
-        o.Broker = b
-    }
-}
-</code></pre></div><p>然后这安装如下方式设置这些选项</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
-    vine.<span style="color:#50fa7b">Broker</span>(broker),
-)
-</code></pre></div><h2 id="服务-options">服务 options</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Options <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>    Name        <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>    Version     <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>    Broker      broker.Broker
+</span></span><span style="display:flex;"><span>    Registry    registry.Registry
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Option <span style="color:#8be9fd;font-style:italic">func</span>(<span style="color:#ff79c6">*</span>Options)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// set the name
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Name</span>(n <span style="color:#8be9fd">string</span>) Option {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
+</span></span><span style="display:flex;"><span>        o.Name = n
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// set the broker
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Broker</span>(b broker.Broker) Option {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>Options) {
+</span></span><span style="display:flex;"><span>        o.Broker = b
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>然后这安装如下方式设置这些选项</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+</span></span><span style="display:flex;"><span>    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
+</span></span><span style="display:flex;"><span>    vine.<span style="color:#50fa7b">Broker</span>(broker),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h2 id="服务-options">服务 options</h2>
 <p>在 <strong>Vine</strong> 中，我们有可以设置多种选项，包括用于身份验证，配置和存储等内容的基础包。你可以使用 <code>service.Options()</code> 来访问这些。</p>
 <p>auth、config、registry、cache 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 <code>service.Init()</code> 后生效。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4">## as an env vars</span>
-<span style="color:#8be9fd;font-style:italic">VINE_CACHE</span><span style="color:#ff79c6">=</span>file go run main.go
-
-<span style="color:#6272a4">## or as a flag</span>
-go run main.go --cache<span style="color:#ff79c6">=</span>file
-</code></pre></div><h2 id="使用-options">使用 options</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4">## as an env vars</span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">VINE_CACHE</span><span style="color:#ff79c6">=</span>file go run main.go
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">## or as a flag</span>
+</span></span><span style="display:flex;"><span>go run main.go --cache<span style="color:#ff79c6">=</span>file
+</span></span></code></pre></div><h2 id="使用-options">使用 options</h2>
 <p>在内部，可以通过选项访问存储：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
-    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
-)
-
-service.<span style="color:#50fa7b">Init</span>()
-
-store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Options</span>().Store
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
+</span></span><span style="display:flex;"><span>    vine.<span style="color:#50fa7b">Name</span>(<span style="color:#f1fa8c">&#34;foobar&#34;</span>),
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>service.<span style="color:#50fa7b">Init</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>store <span style="color:#ff79c6">:=</span> service.<span style="color:#50fa7b">Options</span>().Store
+</span></span></code></pre></div><blockquote>
 <p><strong>Vine</strong> 每个内部接口一般都有对应的选项，在插件中，额外的选项通常被保存在 <code>context.Context</code> 中。</p>
 </blockquote>
 <h2 id="自定义-options">自定义 options</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">custom <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">func</span>(s <span style="color:#8be9fd">string</span>) vine.Option {
-	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>vine.Options) {
-		o.Context = context.<span style="color:#50fa7b">WithValue</span>(o.Context, s, s)
-	}
-}
-	
-vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">custom</span>(<span style="color:#f1fa8c">&#34;value&#34;</span>))
-</code></pre></div><h2 id="所有-options">所有 options</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>custom <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">func</span>(s <span style="color:#8be9fd">string</span>) vine.Option {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">func</span>(o <span style="color:#ff79c6">*</span>vine.Options) {
+</span></span><span style="display:flex;"><span>		o.Context = context.<span style="color:#50fa7b">WithValue</span>(o.Context, s, s)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">custom</span>(<span style="color:#f1fa8c">&#34;value&#34;</span>))
+</span></span></code></pre></div><h2 id="所有-options">所有 options</h2>
 <p>vine 服务初始化是，支持以下 options</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">vine.<span style="color:#50fa7b">Name</span>(),            <span style="color:#6272a4">// 微服务名称
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Id</span>(),              <span style="color:#6272a4">// 微服务 uuid
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Version</span>(),         <span style="color:#6272a4">// 微服务版本
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Address</span>(),         <span style="color:#6272a4">// 微服务绑定地址
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Metadata</span>(),        <span style="color:#6272a4">// 微服务 metadata
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Server</span>(),          <span style="color:#6272a4">// 设置内部 Server 模块
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Client</span>(),          <span style="color:#6272a4">// 设置内部 Client 模块
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Selector</span>(),        <span style="color:#6272a4">// 设置 client selector 
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">HandleSignal</span>(),    <span style="color:#6272a4">// 是否处理系统信号
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Context</span>(),         <span style="color:#6272a4">// 设置 Context 
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Broker</span>(),          <span style="color:#6272a4">// 设置内部 broker 模块
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Registry</span>(),        <span style="color:#6272a4">// 设置内部 Registry 模块
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">RegisterTTL</span>(),     <span style="color:#6272a4">// 服务注册有效时间
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">RegisterInterval</span>(), <span style="color:#6272a4">// 服务注册间隔，必须小于 ttl
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Tracer</span>(),          <span style="color:#6272a4">// 设置 Trace 模块
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Dialect</span>(),         <span style="color:#6272a4">// 设置 Dialect 模块
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Cmd</span>(),             <span style="color:#6272a4">// 设置 Cmd 模块
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Action</span>(),          <span style="color:#6272a4">// 设置 Cmd Action 回调函数
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Flags</span>(),           <span style="color:#6272a4">// 添加 Cmd Flags 
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapHandler</span>(),     <span style="color:#6272a4">// 添加 Server 请求拦截器
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapClient</span>(),      <span style="color:#6272a4">// 添加 Client 请求拦截器
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapCall</span>(),        <span style="color:#6272a4">// 添加 Client Call 请求拦截器
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapSubscriber</span>(),  <span style="color:#6272a4">// 添加 Broker 拦截器
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">BeforeStart</span>(),     <span style="color:#6272a4">// 追加服务 Start 方法前的回调
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">BeforeStop</span>(),      <span style="color:#6272a4">// 追加服务 Stop 方法前的回调
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">AfterStart</span>(),      <span style="color:#6272a4">// 追加服务 Start 方法后的回调
-</span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">AfterStop</span>(),       <span style="color:#6272a4">// 追加服务 Stop 方法后的回调
-</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>vine.<span style="color:#50fa7b">Name</span>(),            <span style="color:#6272a4">// 微服务名称
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Id</span>(),              <span style="color:#6272a4">// 微服务 uuid
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Version</span>(),         <span style="color:#6272a4">// 微服务版本
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Address</span>(),         <span style="color:#6272a4">// 微服务绑定地址
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Metadata</span>(),        <span style="color:#6272a4">// 微服务 metadata
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Server</span>(),          <span style="color:#6272a4">// 设置内部 Server 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Client</span>(),          <span style="color:#6272a4">// 设置内部 Client 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Selector</span>(),        <span style="color:#6272a4">// 设置 client selector 
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">HandleSignal</span>(),    <span style="color:#6272a4">// 是否处理系统信号
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Context</span>(),         <span style="color:#6272a4">// 设置 Context 
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Broker</span>(),          <span style="color:#6272a4">// 设置内部 broker 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Registry</span>(),        <span style="color:#6272a4">// 设置内部 Registry 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">RegisterTTL</span>(),     <span style="color:#6272a4">// 服务注册有效时间
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">RegisterInterval</span>(), <span style="color:#6272a4">// 服务注册间隔，必须小于 ttl
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Tracer</span>(),          <span style="color:#6272a4">// 设置 Trace 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Dialect</span>(),         <span style="color:#6272a4">// 设置 Dialect 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Cmd</span>(),             <span style="color:#6272a4">// 设置 Cmd 模块
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Action</span>(),          <span style="color:#6272a4">// 设置 Cmd Action 回调函数
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Flags</span>(),           <span style="color:#6272a4">// 添加 Cmd Flags 
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapHandler</span>(),     <span style="color:#6272a4">// 添加 Server 请求拦截器
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapClient</span>(),      <span style="color:#6272a4">// 添加 Client 请求拦截器
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapCall</span>(),        <span style="color:#6272a4">// 添加 Client Call 请求拦截器
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapSubscriber</span>(),  <span style="color:#6272a4">// 添加 Broker 拦截器
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">BeforeStart</span>(),     <span style="color:#6272a4">// 追加服务 Start 方法前的回调
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">BeforeStop</span>(),      <span style="color:#6272a4">// 追加服务 Stop 方法前的回调
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">AfterStart</span>(),      <span style="color:#6272a4">// 追加服务 Start 方法后的回调
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">AfterStop</span>(),       <span style="color:#6272a4">// 追加服务 Stop 方法后的回调
+</span></span></span></code></pre></div>
         <div class="section-index">
     
     
@@ -1388,7 +1388,7 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2021 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
@@ -1416,7 +1416,7 @@ vine.<span style="color:#50fa7b">NewService</span>(<span style="color:#50fa7b">c
 
 
 
-<script src="/vine/js/main.min.4311a5d52861bb5e1fd9ee6ffb1f00a3fdc3459ab6bf80c384338786370e230b.js" integrity="sha256-QxGl1Shhu14f2e5v&#43;x8Ao/3DRZq2v4DDhDOHhjcOIws=" crossorigin="anonymous"></script>
+<script src="/vine/js/main.min.163d123d0686e32440643e7e6a262d74812afcf72ef040b4512877d807100e4e.js" integrity="sha256-Fj0SPQaG4yRAZD5&#43;aiYtdIEq/Pcu8EC0USh32AcQDk4=" crossorigin="anonymous"></script>
 
 
 
