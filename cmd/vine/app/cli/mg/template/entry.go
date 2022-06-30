@@ -175,7 +175,7 @@ import (
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
 
-	"{{.Dir}}/pkg/runtime"
+	"{{.Dir}}/pkg/internal"
 )
 
 var (

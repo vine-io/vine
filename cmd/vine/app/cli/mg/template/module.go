@@ -10,6 +10,6 @@ require (
 	github.com/vine-io/apimachinery {{.VineVersion}}
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.38.0
+replace google.golang.org/grpc => google.golang.org/grpc v1.47.0
 `
 )

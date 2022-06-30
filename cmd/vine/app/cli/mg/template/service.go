@@ -81,6 +81,7 @@ func (s *service) Register(svc server.Server) error {
 import (
 	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/core/server"
 	verrs "github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 
@@ -155,6 +156,7 @@ func (s *service) Register(svc server.Server) error {
 import (
 	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/core/server"
 	verrs "github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 
@@ -229,6 +231,7 @@ func (s *service) Register(svc server.Server) error {
 import (
 	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
+	"github.com/vine-io/vine/core/server"
 	verrs "github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 
