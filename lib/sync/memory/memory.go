@@ -83,13 +83,15 @@ func (m *memorySync) Leader(name string, opts ...sync.LeaderOption) (sync.Leader
 			})
 
 			m.leaderMtx.Lock()
+			close(m.leaderStore[id].status)
 			delete(m.leaderStore, options.Id)
 			m.leaderMtx.Unlock()
 
 			return nil
 		},
 		// TODO: signal when Unlock is called
-		status: make(chan bool, 1),
+		observe: make(chan sync.ObserveResult, 3),
+		status:  make(chan bool, 1),
 	}
 
 	m.leaderMtx.Lock()
@@ -104,6 +106,12 @@ func (m *memorySync) Leader(name string, opts ...sync.LeaderOption) (sync.Leader
 	m.leaderMtx.Lock()
 	leader.role = sync.Primary
 	m.leaderStore[leader.id] = leader
+	m.leaderMtx.Unlock()
+
+	m.leaderMtx.Lock()
+	for _, l := range m.leaderStore {
+		l.observe <- sync.ObserveResult{Namespace: options.Namespace, Id: options.Id}
+	}
 	m.leaderMtx.Unlock()
 
 	// return the leader
@@ -254,13 +262,14 @@ func (m *memorySync) String() string {
 }
 
 type memoryLeader struct {
-	opts   sync.LeaderOptions
-	name   string
-	ns     string
-	id     string
-	role   sync.Role
-	resign func(id string) error
-	status chan bool
+	opts    sync.LeaderOptions
+	name    string
+	ns      string
+	id      string
+	role    sync.Role
+	resign  func(id string) error
+	observe chan sync.ObserveResult
+	status  chan bool
 }
 
 func (m *memoryLeader) Id() string {
@@ -268,7 +277,11 @@ func (m *memoryLeader) Id() string {
 }
 
 func (m *memoryLeader) Resign() error {
-	return m.resign(m.name)
+	return m.resign(m.id)
+}
+
+func (m *memoryLeader) Observe() chan sync.ObserveResult {
+	return m.observe
 }
 
 func (m *memoryLeader) Status() chan bool {

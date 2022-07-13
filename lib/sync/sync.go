@@ -63,12 +63,19 @@ type Member struct {
 	Role      Role   `json:"role"`
 }
 
+type ObserveResult struct {
+	Namespace string `json:"namespace"`
+	Id        string `json:"id"`
+}
+
 // Leader provides leadership election
 type Leader interface {
 	// Id leader node
 	Id() string
 	// Resign resigns leadership
 	Resign() error
+	// Observe watch leadership event
+	Observe() chan ObserveResult
 	// Status returns when leadership is lost
 	Status() chan bool
 }
