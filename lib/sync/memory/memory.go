@@ -78,6 +78,7 @@ func (m *memorySync) Leader(name string, opts ...sync.LeaderOption) (sync.Leader
 	}
 
 	leader := &memoryLeader{
+		s:    m,
 		opts: options,
 		name: name,
 		ns:   options.Namespace,
@@ -318,6 +319,7 @@ func (m *memorySync) String() string {
 }
 
 type memoryLeader struct {
+	s       *memorySync
 	opts    sync.LeaderOptions
 	name    string
 	ns      string
@@ -338,6 +340,23 @@ func (m *memoryLeader) Resign() error {
 
 func (m *memoryLeader) Observe() chan sync.ObserveResult {
 	return m.observe
+}
+
+func (m *memoryLeader) Primary() (*sync.Member, error) {
+	var member *sync.Member
+	m.s.mtx.RLock()
+	for _, leader := range m.s.leaderStore {
+		if leader.role == sync.Primary {
+			member = &sync.Member{
+				Leader:    leader.name,
+				Id:        leader.id,
+				Namespace: leader.ns,
+				Role:      leader.role,
+			}
+		}
+	}
+	m.s.mtx.RUnlock()
+	return member, nil
 }
 
 func (m *memoryLeader) Status() chan bool {

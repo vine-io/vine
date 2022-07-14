@@ -78,6 +78,8 @@ type Leader interface {
 	Resign() error
 	// Observe watch leadership event
 	Observe() chan ObserveResult
+	// Primary get the info of primary role
+	Primary() (*Member, error)
 	// Status returns when leadership is lost
 	Status() chan bool
 }
