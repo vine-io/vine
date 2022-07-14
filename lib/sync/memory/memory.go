@@ -24,12 +24,15 @@
 package memory
 
 import (
+	"errors"
 	gosync "sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/vine-io/vine/lib/sync"
 )
+
+var sendEventTime = 10 * time.Millisecond
 
 type memorySync struct {
 	options sync.Options
@@ -39,6 +42,9 @@ type memorySync struct {
 
 	mtx   gosync.RWMutex
 	locks map[string]*memoryLock
+
+	chMtx    gosync.RWMutex
+	watchers map[string]map[string]*memoryElectWatcher
 }
 
 type memoryLock struct {
@@ -118,6 +124,29 @@ func (m *memorySync) Leader(name string, opts ...sync.LeaderOption) (sync.Leader
 	return leader, nil
 }
 
+func (m *memorySync) sendEvent(ns string, r *sync.Member) {
+	m.leaderMtx.RLock()
+	watchers := make([]*memoryElectWatcher, 0, len(m.watchers[ns]))
+	for _, w := range m.watchers[ns] {
+		watchers = append(watchers, w)
+	}
+	m.leaderMtx.RUnlock()
+
+	for _, w := range watchers {
+		select {
+		case <-w.exit:
+			m.leaderMtx.Lock()
+			delete(m.watchers[ns], w.wo.Id)
+			m.leaderMtx.Unlock()
+		default:
+			select {
+			case w.res <- r:
+			case <-time.After(sendEventTime):
+			}
+		}
+	}
+}
+
 func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member, error) {
 	var options sync.ListMembersOptions
 	for _, opt := range opts {
@@ -139,6 +168,33 @@ func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member
 	}
 
 	return members, nil
+}
+
+func (m *memorySync) WatchElect(opts ...sync.WatchElectOption) (sync.ElectWatcher, error) {
+	var wo sync.WatchElectOptions
+	for _, o := range opts {
+		o(&wo)
+	}
+
+	if wo.Id == "" {
+		wo.Id = uuid.New().String()
+	}
+
+	w := &memoryElectWatcher{
+		wo:   wo,
+		res:  make(chan *sync.Member, 1),
+		exit: make(chan struct{}, 1),
+	}
+
+	m.leaderMtx.Lock()
+	nsWatchers, ok := m.watchers[wo.Namespace]
+	if !ok {
+		m.watchers[wo.Namespace] = map[string]*memoryElectWatcher{}
+		nsWatchers = m.watchers[wo.Namespace]
+	}
+	nsWatchers[wo.Id] = w
+	m.leaderMtx.Unlock()
+	return w, nil
 }
 
 func (m *memorySync) Lock(id string, opts ...sync.LockOption) error {
@@ -288,6 +344,32 @@ func (m *memoryLeader) Status() chan bool {
 	return m.status
 }
 
+type memoryElectWatcher struct {
+	wo   sync.WatchElectOptions
+	res  chan *sync.Member
+	exit chan struct{}
+}
+
+func (m *memoryElectWatcher) Next() (*sync.Member, error) {
+	for {
+		select {
+		case r := <-m.res:
+			return r, nil
+		case <-m.exit:
+			return nil, errors.New("watcher closed")
+		}
+	}
+}
+
+func (m *memoryElectWatcher) Close() {
+	select {
+	case <-m.exit:
+		return
+	default:
+		close(m.exit)
+	}
+}
+
 func NewSync(opts ...sync.Option) sync.Sync {
 	var options sync.Options
 	for _, o := range opts {
@@ -298,5 +380,8 @@ func NewSync(opts ...sync.Option) sync.Sync {
 		options:     options,
 		leaderStore: map[string]*memoryLeader{},
 		locks:       make(map[string]*memoryLock),
+		mtx:         gosync.RWMutex{},
+		leaderMtx:   gosync.RWMutex{},
+		watchers:    map[string]map[string]*memoryElectWatcher{},
 	}
 }

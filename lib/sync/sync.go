@@ -48,6 +48,8 @@ type Sync interface {
 	Leader(name string, opts ...LeaderOption) (Leader, error)
 	// ListMembers get all election member
 	ListMembers(opts ...ListMembersOption) ([]*Member, error)
+	// WatchElect watch leader event
+	WatchElect(opts ...WatchElectOption) (ElectWatcher, error)
 	// Lock acquires a lock
 	Lock(id string, opts ...LockOption) error
 	// Unlock releases a lock
@@ -78,4 +80,11 @@ type Leader interface {
 	Observe() chan ObserveResult
 	// Status returns when leadership is lost
 	Status() chan bool
+}
+
+// ElectWatcher watch election event
+type ElectWatcher interface {
+	// Next is a blocking call
+	Next() (*Member, error)
+	Close()
 }

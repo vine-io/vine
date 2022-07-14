@@ -89,6 +89,27 @@ func MemberNS(ns string) ListMembersOption {
 	}
 }
 
+type WatchElectOptions struct {
+	Namespace string
+	Id        string
+}
+
+type WatchElectOption func(o *WatchElectOptions)
+
+// WatchNS sets the watch elector namespace
+func WatchNS(ns string) WatchElectOption {
+	return func(o *WatchElectOptions) {
+		o.Namespace = ns
+	}
+}
+
+// WatchId sets the watch elector id
+func WatchId(id string) WatchElectOption {
+	return func(o *WatchElectOptions) {
+		o.Id = id
+	}
+}
+
 type LockOptions struct {
 	TTL  time.Duration
 	Wait time.Duration
