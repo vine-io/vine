@@ -24,6 +24,7 @@
 package memory
 
 import (
+	"context"
 	"errors"
 	"path/filepath"
 	"sort"
@@ -182,7 +183,7 @@ func (m *memoryCache) Options() cache.Options {
 	return m.options
 }
 
-func (m *memoryCache) Get(key string, opts ...cache.GetOption) ([]*cache.Record, error) {
+func (m *memoryCache) Get(ctx context.Context, key string, opts ...cache.GetOption) ([]*cache.Record, error) {
 	readOpts := cache.GetOptions{}
 	for _, o := range opts {
 		o(&readOpts)
@@ -224,7 +225,7 @@ func (m *memoryCache) Get(key string, opts ...cache.GetOption) ([]*cache.Record,
 	return results, nil
 }
 
-func (m *memoryCache) Put(r *cache.Record, opts ...cache.PutOption) error {
+func (m *memoryCache) Put(ctx context.Context, r *cache.Record, opts ...cache.PutOption) error {
 	writeOpts := cache.PutOptions{}
 	for _, o := range opts {
 		o(&writeOpts)
@@ -262,7 +263,7 @@ func (m *memoryCache) Put(r *cache.Record, opts ...cache.PutOption) error {
 	return nil
 }
 
-func (m *memoryCache) Del(key string, opts ...cache.DelOption) error {
+func (m *memoryCache) Del(ctx context.Context, key string, opts ...cache.DelOption) error {
 	deleteOptions := cache.DelOptions{}
 	for _, o := range opts {
 		o(&deleteOptions)
@@ -273,7 +274,7 @@ func (m *memoryCache) Del(key string, opts ...cache.DelOption) error {
 	return nil
 }
 
-func (m *memoryCache) List(opts ...cache.ListOption) ([]string, error) {
+func (m *memoryCache) List(ctx context.Context, opts ...cache.ListOption) ([]string, error) {
 	listOptions := cache.ListOptions{}
 
 	for _, o := range opts {

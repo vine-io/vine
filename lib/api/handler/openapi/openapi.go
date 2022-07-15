@@ -69,7 +69,7 @@ func redocHandler(ctx *gin.Context) {
 }
 
 func openAPIJOSNHandler(ctx *gin.Context) {
-	services, err := registry.ListServices()
+	services, err := registry.ListServices(ctx)
 	if err != nil {
 		ctx.JSON(500, err.Error())
 		return
@@ -79,14 +79,14 @@ func openAPIJOSNHandler(ctx *gin.Context) {
 }
 
 func openAPIServiceHandler(ctx *gin.Context) {
-	services, err := registry.ListServices()
+	services, err := registry.ListServices(ctx)
 	if err != nil {
 		ctx.JSON(500, err.Error())
 		return
 	}
 	out := make([]*registry.Service, 0)
 	for _, item := range services {
-		list, _ := registry.GetService(item.Name)
+		list, _ := registry.GetService(ctx, item.Name)
 		out = append(out, list...)
 	}
 	ctx.JSON(200, out)

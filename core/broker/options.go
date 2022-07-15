@@ -48,9 +48,7 @@ type Options struct {
 }
 
 type PublishOptions struct {
-	// Other options for implementations of the interface
-	// can be stored in a context
-	Context context.Context
+	Queue string
 }
 
 type SubscribeOptions struct {
@@ -71,13 +69,6 @@ type SubscribeOptions struct {
 type Option func(*Options)
 
 type PublishOption func(*PublishOptions)
-
-// PublishContext set context
-func PublishContext(ctx context.Context) PublishOption {
-	return func(o *PublishOptions) {
-		o.Context = ctx
-	}
-}
 
 type SubscribeOption func(*SubscribeOptions)
 
@@ -121,6 +112,13 @@ func DisableAutoAck() SubscribeOption {
 func ErrHandler(h Handler) Option {
 	return func(o *Options) {
 		o.ErrorHandler = h
+	}
+}
+
+// WithQueue sets the name of the queue to share messages on
+func WithQueue(name string) PublishOption {
+	return func(o *PublishOptions) {
+		o.Queue = name
 	}
 }
 

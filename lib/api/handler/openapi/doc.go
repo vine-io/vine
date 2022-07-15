@@ -1,6 +1,7 @@
 package openapi
 
 import (
+	"context"
 	"strings"
 	"sync"
 
@@ -41,7 +42,7 @@ type APIDoc struct {
 
 func (ad *APIDoc) Init(services ...*registry.Service) {
 	for _, item := range services {
-		list, err := registry.GetService(item.Name)
+		list, err := registry.GetService(context.TODO(), item.Name)
 		if err != nil {
 			continue
 		}

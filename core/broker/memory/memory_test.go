@@ -23,6 +23,7 @@
 package memory
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -36,6 +37,7 @@ func TestMemoryBroker(t *testing.T) {
 		t.Fatalf("Unexpected connect error %v", err)
 	}
 
+	ctx := context.TODO()
 	topic := "test"
 	count := 10
 
@@ -57,7 +59,7 @@ func TestMemoryBroker(t *testing.T) {
 			Body: []byte(`hello world`),
 		}
 
-		if err := b.Publish(topic, message); err != nil {
+		if err := b.Publish(ctx, topic, message); err != nil {
 			t.Fatalf("Unexpected error publishing %d", i)
 		}
 	}

@@ -23,6 +23,7 @@
 package selector
 
 import (
+	"context"
 	"time"
 
 	"github.com/vine-io/vine/core/registry"
@@ -72,7 +73,7 @@ func (c *registrySelector) Select(service string, opts ...SelectOption) (Next, e
 	// get the service
 	// try the cache first
 	// if that fails go directly to the registry
-	services, err := c.rc.GetService(service)
+	services, err := c.rc.GetService(context.TODO(), service)
 	if err != nil {
 		if err == registry.ErrNotFound {
 			return nil, ErrNotFound

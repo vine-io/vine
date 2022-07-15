@@ -23,6 +23,7 @@
 package memory
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -68,15 +69,16 @@ func basictest(s cache.Cache, t *testing.T) {
 	if len(os.Getenv("IN_TRAVIS_CI")) == 0 {
 		t.Logf("Testing store %s, with options %# v\n", s.String(), pretty.Formatter(s.Options()))
 	}
+	ctx := context.TODO()
 	// Get and Put an expiring Record
-	if err := s.Put(&cache.Record{
+	if err := s.Put(ctx, &cache.Record{
 		Key:    "Hello",
 		Value:  []byte("World"),
 		Expiry: time.Millisecond * 100,
 	}); err != nil {
 		t.Error(err)
 	}
-	if r, err := s.Get("Hello"); err != nil {
+	if r, err := s.Get(ctx, "Hello"); err != nil {
 		t.Error(err)
 	} else {
 		if len(r) != 1 {
@@ -90,7 +92,7 @@ func basictest(s cache.Cache, t *testing.T) {
 		}
 	}
 	time.Sleep(time.Millisecond * 200)
-	if _, err := s.Get("Hello"); err != cache.ErrNotFound {
+	if _, err := s.Get(ctx, "Hello"); err != cache.ErrNotFound {
 		t.Errorf("Expected %# v, got %# v", cache.ErrNotFound, err)
 	}
 
@@ -112,11 +114,11 @@ func basictest(s cache.Cache, t *testing.T) {
 		},
 	}
 	for _, r := range records {
-		if err := s.Put(r); err != nil {
+		if err := s.Put(ctx, r); err != nil {
 			t.Errorf("Couldn't write k: %s, v: %# v (%s)", r.Key, pretty.Formatter(r.Value), err)
 		}
 	}
-	if results, err := s.Get("foo", cache.GetPrefix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetPrefix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 3 {
@@ -127,7 +129,7 @@ func basictest(s cache.Cache, t *testing.T) {
 		}
 	}
 	time.Sleep(time.Millisecond * 100)
-	if results, err := s.Get("foo", cache.GetPrefix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetPrefix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 2 {
@@ -138,7 +140,7 @@ func basictest(s cache.Cache, t *testing.T) {
 		}
 	}
 	time.Sleep(time.Millisecond * 100)
-	if results, err := s.Get("foo", cache.GetPrefix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetPrefix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 1 {
@@ -148,10 +150,10 @@ func basictest(s cache.Cache, t *testing.T) {
 			t.Logf("Prefix test: %# v\n", pretty.Formatter(results))
 		}
 	}
-	if err := s.Del("foo", func(d *cache.DelOptions) {}); err != nil {
+	if err := s.Del(ctx, "foo", func(d *cache.DelOptions) {}); err != nil {
 		t.Errorf("Del failed (%v)", err)
 	}
-	if results, err := s.Get("foo", cache.GetPrefix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetPrefix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 0 {
@@ -177,11 +179,11 @@ func basictest(s cache.Cache, t *testing.T) {
 		},
 	}
 	for _, r := range records {
-		if err := s.Put(r); err != nil {
+		if err := s.Put(ctx, r); err != nil {
 			t.Errorf("Couldn't write k: %s, v: %# v (%s)", r.Key, pretty.Formatter(r.Value), err)
 		}
 	}
-	if results, err := s.Get("foo", cache.GetSuffix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetSuffix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 3 {
@@ -192,7 +194,7 @@ func basictest(s cache.Cache, t *testing.T) {
 		}
 	}
 	time.Sleep(time.Millisecond * 100)
-	if results, err := s.Get("foo", cache.GetSuffix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetSuffix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 2 {
@@ -203,7 +205,7 @@ func basictest(s cache.Cache, t *testing.T) {
 		}
 	}
 	time.Sleep(time.Millisecond * 100)
-	if results, err := s.Get("foo", cache.GetSuffix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetSuffix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 1 {
@@ -213,10 +215,10 @@ func basictest(s cache.Cache, t *testing.T) {
 			t.Logf("Prefix test: %# v\n", pretty.Formatter(results))
 		}
 	}
-	if err := s.Del("foo"); err != nil {
+	if err := s.Del(ctx, "foo"); err != nil {
 		t.Errorf("Del failed (%v)", err)
 	}
-	if results, err := s.Get("foo", cache.GetSuffix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetSuffix()); err != nil {
 		t.Errorf("Couldn't read all \"foo\" keys, got %# v (%s)", pretty.Formatter(results), err)
 	} else {
 		if len(results) != 0 {
@@ -225,26 +227,26 @@ func basictest(s cache.Cache, t *testing.T) {
 	}
 
 	// Test Prefix, Suffix and PutOptions
-	if err := s.Put(&cache.Record{
+	if err := s.Put(ctx, &cache.Record{
 		Key:   "foofoobarbar",
 		Value: []byte("something"),
 	}, cache.PutTTL(time.Millisecond*100)); err != nil {
 		t.Error(err)
 	}
-	if err := s.Put(&cache.Record{
+	if err := s.Put(ctx, &cache.Record{
 		Key:   "foofoo",
 		Value: []byte("something"),
 	}, cache.PutExpiry(time.Now().Add(time.Millisecond*100))); err != nil {
 		t.Error(err)
 	}
-	if err := s.Put(&cache.Record{
+	if err := s.Put(ctx, &cache.Record{
 		Key:   "barbar",
 		Value: []byte("something"),
 		// TTL has higher precedence than expiry
 	}, cache.PutExpiry(time.Now().Add(time.Hour)), cache.PutTTL(time.Millisecond*100)); err != nil {
 		t.Error(err)
 	}
-	if results, err := s.Get("foo", cache.GetPrefix(), cache.GetSuffix()); err != nil {
+	if results, err := s.Get(ctx, "foo", cache.GetPrefix(), cache.GetSuffix()); err != nil {
 		t.Error(err)
 	} else {
 		if len(results) != 1 {
@@ -252,17 +254,17 @@ func basictest(s cache.Cache, t *testing.T) {
 		}
 	}
 	time.Sleep(time.Millisecond * 100)
-	if results, err := s.List(); err != nil {
+	if results, err := s.List(ctx); err != nil {
 		t.Errorf("List failed: %s", err)
 	} else {
 		if len(results) != 0 {
 			t.Error("Expiry options were not effective")
 		}
 	}
-	s.Put(&cache.Record{Key: "a", Value: []byte("a")})
-	s.Put(&cache.Record{Key: "aa", Value: []byte("aa")})
-	s.Put(&cache.Record{Key: "aaa", Value: []byte("aaa")})
-	if results, err := s.Get("b", cache.GetPrefix()); err != nil {
+	s.Put(ctx, &cache.Record{Key: "a", Value: []byte("a")})
+	s.Put(ctx, &cache.Record{Key: "aa", Value: []byte("aa")})
+	s.Put(ctx, &cache.Record{Key: "aaa", Value: []byte("aaa")})
+	if results, err := s.Get(ctx, "b", cache.GetPrefix()); err != nil {
 		t.Error(err)
 	} else {
 		if len(results) != 0 {
@@ -272,12 +274,12 @@ func basictest(s cache.Cache, t *testing.T) {
 
 	s.Close() // reset the store
 	for i := 0; i < 10; i++ {
-		s.Put(&cache.Record{
+		s.Put(ctx, &cache.Record{
 			Key:   fmt.Sprintf("a%d", i),
 			Value: []byte{},
 		})
 	}
-	if results, err := s.Get("a", cache.GetLimit(5), cache.GetPrefix()); err != nil {
+	if results, err := s.Get(ctx, "a", cache.GetLimit(5), cache.GetPrefix()); err != nil {
 		t.Error(err)
 	} else {
 		if len(results) != 5 {
@@ -290,7 +292,7 @@ func basictest(s cache.Cache, t *testing.T) {
 			t.Fatalf("Expected a4, got %s", results[4].Key)
 		}
 	}
-	if results, err := s.Get("a", cache.GetLimit(30), cache.GetOffset(5), cache.GetPrefix()); err != nil {
+	if results, err := s.Get(ctx, "a", cache.GetLimit(30), cache.GetOffset(5), cache.GetPrefix()); err != nil {
 		t.Error(err)
 	} else {
 		if len(results) != 5 {

@@ -201,7 +201,7 @@ func (h *httpSubscriber) Topic() string {
 }
 
 func (h *httpSubscriber) Unsubscribe() error {
-	return h.hb.unsubscribe(h)
+	return h.hb.unsubscribe(context.TODO(), h)
 }
 
 func (h *httpBroker) saveMessage(topic string, msg []byte) {
@@ -251,7 +251,7 @@ func (h *httpBroker) subscribe(s *httpSubscriber) error {
 	h.Lock()
 	defer h.Unlock()
 
-	if err := h.r.Register(s.svc, registry.RegisterTTL(registerTTL)); err != nil {
+	if err := h.r.Register(context.TODO(), s.svc, registry.RegisterTTL(registerTTL)); err != nil {
 		return err
 	}
 
@@ -259,7 +259,7 @@ func (h *httpBroker) subscribe(s *httpSubscriber) error {
 	return nil
 }
 
-func (h *httpBroker) unsubscribe(s *httpSubscriber) error {
+func (h *httpBroker) unsubscribe(ctx context.Context, s *httpSubscriber) error {
 	h.Lock()
 	defer h.Unlock()
 
@@ -270,7 +270,7 @@ func (h *httpBroker) unsubscribe(s *httpSubscriber) error {
 	for _, sub := range h.subscribers[s.topic] {
 		// deregister and skip forward
 		if sub == s {
-			_ = h.r.Deregister(sub.svc)
+			_ = h.r.Deregister(ctx, sub.svc)
 			continue
 		}
 		// keep subscriber
@@ -294,7 +294,7 @@ func (h *httpBroker) run(l net.Listener) {
 			h.RLock()
 			for _, subs := range h.subscribers {
 				for _, sub := range subs {
-					_ = h.r.Register(sub.svc, registry.RegisterTTL(registerTTL))
+					_ = h.r.Register(context.TODO(), sub.svc, registry.RegisterTTL(registerTTL))
 				}
 			}
 			h.RUnlock()
@@ -305,7 +305,7 @@ func (h *httpBroker) run(l net.Listener) {
 			h.RLock()
 			for _, subs := range h.subscribers {
 				for _, sub := range subs {
-					_ = h.r.Deregister(sub.svc)
+					_ = h.r.Deregister(context.TODO(), sub.svc)
 				}
 			}
 			h.RUnlock()
@@ -533,7 +533,7 @@ func (h *httpBroker) Options() broker.Options {
 	return h.opts
 }
 
-func (h *httpBroker) Publish(topic string, msg *broker.Message, opts ...broker.PublishOption) error {
+func (h *httpBroker) Publish(ctx context.Context, topic string, msg *broker.Message, opts ...broker.PublishOption) error {
 	// create the message first
 	m := &broker.Message{
 		Header: make(map[string]string),
@@ -557,7 +557,7 @@ func (h *httpBroker) Publish(topic string, msg *broker.Message, opts ...broker.P
 
 	// now attempt to get the service
 	h.RLock()
-	s, err := h.r.GetService(serviceName)
+	s, err := h.r.GetService(ctx, serviceName)
 	if err != nil {
 		h.RUnlock()
 		return err

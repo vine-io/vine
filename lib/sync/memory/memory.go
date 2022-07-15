@@ -24,6 +24,7 @@
 package memory
 
 import (
+	"context"
 	"errors"
 	gosync "sync"
 	"time"
@@ -66,7 +67,7 @@ func (m *memorySync) Options() sync.Options {
 	return m.options
 }
 
-func (m *memorySync) Leader(name string, opts ...sync.LeaderOption) (sync.Leader, error) {
+func (m *memorySync) Leader(ctx context.Context, name string, opts ...sync.LeaderOption) (sync.Leader, error) {
 	var once gosync.Once
 	var options sync.LeaderOptions
 	for _, o := range opts {
@@ -86,7 +87,7 @@ func (m *memorySync) Leader(name string, opts ...sync.LeaderOption) (sync.Leader
 		role: sync.Follow,
 		resign: func(id string) error {
 			once.Do(func() {
-				m.Unlock(id)
+				m.Unlock(context.TODO(), id)
 			})
 
 			m.leaderMtx.Lock()
@@ -148,7 +149,7 @@ func (m *memorySync) sendEvent(ns string, r *sync.Member) {
 	}
 }
 
-func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member, error) {
+func (m *memorySync) ListMembers(ctx context.Context, opts ...sync.ListMembersOption) ([]*sync.Member, error) {
 	var options sync.ListMembersOptions
 	for _, opt := range opts {
 		opt(&options)
@@ -171,7 +172,7 @@ func (m *memorySync) ListMembers(opts ...sync.ListMembersOption) ([]*sync.Member
 	return members, nil
 }
 
-func (m *memorySync) WatchElect(opts ...sync.WatchElectOption) (sync.ElectWatcher, error) {
+func (m *memorySync) WatchElect(ctx context.Context, opts ...sync.WatchElectOption) (sync.ElectWatcher, error) {
 	var wo sync.WatchElectOptions
 	for _, o := range opts {
 		o(&wo)
@@ -198,7 +199,7 @@ func (m *memorySync) WatchElect(opts ...sync.WatchElectOption) (sync.ElectWatche
 	return w, nil
 }
 
-func (m *memorySync) Lock(id string, opts ...sync.LockOption) error {
+func (m *memorySync) Lock(ctx context.Context, id string, opts ...sync.LockOption) error {
 	return m.lock(id, false, opts...)
 }
 
@@ -244,7 +245,7 @@ func (m *memorySync) lock(id string, isLeader bool, opts ...sync.LockOption) err
 		// set a timer for the leftover ttl
 		if live > lk.ttl {
 			// release the lock if it expired
-			_ = m.Unlock(id)
+			_ = m.Unlock(context.TODO(), id)
 		} else {
 			ttl = time.After(live)
 		}
@@ -278,7 +279,7 @@ lockLoop:
 			break lockLoop
 		case <-ttl:
 			// ttl exceeded
-			_ = m.Unlock(id)
+			_ = m.Unlock(context.TODO(), id)
 			// TODO: check the ttl again above
 			ttl = nil
 			// try acquire
@@ -291,7 +292,7 @@ lockLoop:
 	return nil
 }
 
-func (m *memorySync) Unlock(id string) error {
+func (m *memorySync) Unlock(ctx context.Context, id string) error {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
 

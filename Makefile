@@ -95,6 +95,7 @@ build-linux-tool:
 install:
 	go get github.com/rakyll/statik
 	go get github.com/gogo/protobuf
+	go get github.com/vine-io/vine/cmd/vine
 	go get github.com/vine-io/vine/cmd/protoc-gen-gogo
 	go get github.com/vine-io/vine/cmd/protoc-gen-vine
 	go get github.com/vine-io/vine/cmd/protoc-gen-validator

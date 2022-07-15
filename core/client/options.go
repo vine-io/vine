@@ -93,9 +93,6 @@ type CallOptions struct {
 type PublishOptions struct {
 	// Exchange is the routing exchange for the message
 	Exchange string
-	// Other options for implementations of the interface
-	// can be stored in a context
-	Context context.Context
 }
 
 type MessageOptions struct {
@@ -269,13 +266,6 @@ func DialTimeout(d time.Duration) Option {
 func WithExchange(e string) PublishOption {
 	return func(o *PublishOptions) {
 		o.Exchange = e
-	}
-}
-
-// PublishContext sets the context in publish options
-func PublishContext(ctx context.Context) PublishOption {
-	return func(o *PublishOptions) {
-		o.Context = ctx
 	}
 }
 

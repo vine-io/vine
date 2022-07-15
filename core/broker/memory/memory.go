@@ -97,7 +97,7 @@ func (m *memoryBroker) Init(opts ...broker.Option) error {
 	return nil
 }
 
-func (m *memoryBroker) Publish(topic string, msg *broker.Message, opts ...broker.PublishOption) error {
+func (m *memoryBroker) Publish(ctx context.Context, topic string, msg *broker.Message, opts ...broker.PublishOption) error {
 	m.RLock()
 	if !m.connected {
 		m.RUnlock()

@@ -23,6 +23,7 @@
 package http
 
 import (
+	"context"
 	"sync"
 	"testing"
 	"time"
@@ -101,6 +102,7 @@ func sub(be *testing.B, c int) {
 		Body: []byte(`{"message": "Hello World"}`),
 	}
 
+	ctx := context.TODO()
 	var subs []broker.Subscriber
 	done := make(chan bool, c)
 
@@ -123,7 +125,7 @@ func sub(be *testing.B, c int) {
 
 	for i := 0; i < be.N; i++ {
 		be.StartTimer()
-		if err := b.Publish(topic, msg); err != nil {
+		if err := b.Publish(ctx, topic, msg); err != nil {
 			be.Fatalf("Unexpected publish error: %v", err)
 		}
 		<-done
@@ -160,6 +162,7 @@ func pub(be *testing.B, c int) {
 		Body: []byte(`{"message": "Hello World"}`),
 	}
 
+	ctx := context.TODO()
 	done := make(chan bool, c*4)
 
 	sub, err := b.Subscribe(topic, func(p broker.Event) error {
@@ -181,7 +184,7 @@ func pub(be *testing.B, c int) {
 	for i := 0; i < c; i++ {
 		go func() {
 			for range ch {
-				if err := b.Publish(topic, msg); err != nil {
+				if err := b.Publish(ctx, topic, msg); err != nil {
 					be.Fatalf("Unexpected publish error: %v", err)
 				}
 				select {
@@ -228,6 +231,7 @@ func TestBroker(t *testing.T) {
 		Body: []byte(`{"message": "Hello World"}`),
 	}
 
+	ctx := context.TODO()
 	done := make(chan bool)
 
 	sub, err := b.Subscribe("test", func(p broker.Event) error {
@@ -244,7 +248,7 @@ func TestBroker(t *testing.T) {
 		t.Fatalf("Unexpected subscribe error: %v", err)
 	}
 
-	if err := b.Publish("test", msg); err != nil {
+	if err := b.Publish(ctx, "test", msg); err != nil {
 		t.Fatalf("Unexpected publish error: %v", err)
 	}
 
@@ -275,6 +279,7 @@ func TestConcurrentSubBroker(t *testing.T) {
 		Body: []byte(`{"message": "Hello World"}`),
 	}
 
+	ctx := context.TODO()
 	var subs []broker.Subscriber
 	var wg sync.WaitGroup
 
@@ -298,7 +303,7 @@ func TestConcurrentSubBroker(t *testing.T) {
 		subs = append(subs, sub)
 	}
 
-	if err := b.Publish("test", msg); err != nil {
+	if err := b.Publish(ctx, "test", msg); err != nil {
 		t.Fatalf("Unexpected publish error: %v", err)
 	}
 
@@ -332,6 +337,7 @@ func TestConcurrentPubBroker(t *testing.T) {
 		Body: []byte(`{"message": "Hello World"}`),
 	}
 
+	ctx := context.TODO()
 	var wg sync.WaitGroup
 
 	sub, err := b.Subscribe("test", func(p broker.Event) error {
@@ -352,7 +358,7 @@ func TestConcurrentPubBroker(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 
-		if err := b.Publish("test", msg); err != nil {
+		if err := b.Publish(ctx, "test", msg); err != nil {
 			t.Fatalf("Unexpected publish error: %v", err)
 		}
 	}

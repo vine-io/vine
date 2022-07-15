@@ -164,7 +164,7 @@ func (m *Registry) Options() registry.Options {
 	return m.options
 }
 
-func (m *Registry) Register(s *registry.Service, opts ...registry.RegisterOption) error {
+func (m *Registry) Register(ctx context.Context, s *registry.Service, opts ...registry.RegisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -222,7 +222,7 @@ func (m *Registry) Register(s *registry.Service, opts ...registry.RegisterOption
 	return nil
 }
 
-func (m *Registry) Deregister(s *registry.Service, opts ...registry.DeregisterOption) error {
+func (m *Registry) Deregister(ctx context.Context, s *registry.Service, opts ...registry.DeregisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -249,7 +249,7 @@ func (m *Registry) Deregister(s *registry.Service, opts ...registry.DeregisterOp
 	return nil
 }
 
-func (m *Registry) GetService(name string, opts ...registry.GetOption) ([]*registry.Service, error) {
+func (m *Registry) GetService(ctx context.Context, name string, opts ...registry.GetOption) ([]*registry.Service, error) {
 	m.RLock()
 	defer m.RUnlock()
 
@@ -268,7 +268,7 @@ func (m *Registry) GetService(name string, opts ...registry.GetOption) ([]*regis
 	return services, nil
 }
 
-func (m *Registry) ListServices(opts ...registry.ListOption) ([]*registry.Service, error) {
+func (m *Registry) ListServices(ctx context.Context, opts ...registry.ListOption) ([]*registry.Service, error) {
 	m.RLock()
 	defer m.RUnlock()
 
@@ -282,7 +282,7 @@ func (m *Registry) ListServices(opts ...registry.ListOption) ([]*registry.Servic
 	return services, nil
 }
 
-func (m *Registry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
+func (m *Registry) Watch(ctx context.Context, opts ...registry.WatchOption) (registry.Watcher, error) {
 	var wo registry.WatchOptions
 	for _, o := range opts {
 		o(&wo)

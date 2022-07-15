@@ -189,7 +189,7 @@ func (m *mdnsRegistry) Options() registry.Options {
 	return m.opts
 }
 
-func (m *mdnsRegistry) Register(service *registry.Service, opts ...registry.RegisterOption) error {
+func (m *mdnsRegistry) Register(ctx context.Context, service *registry.Service, opts ...registry.RegisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -295,7 +295,7 @@ func (m *mdnsRegistry) Register(service *registry.Service, opts ...registry.Regi
 	return gerr
 }
 
-func (m *mdnsRegistry) Deregister(service *registry.Service, opts ...registry.DeregisterOption) error {
+func (m *mdnsRegistry) Deregister(ctx context.Context, service *registry.Service, opts ...registry.DeregisterOption) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -330,7 +330,7 @@ func (m *mdnsRegistry) Deregister(service *registry.Service, opts ...registry.De
 	return nil
 }
 
-func (m *mdnsRegistry) GetService(service string, opts ...registry.GetOption) ([]*registry.Service, error) {
+func (m *mdnsRegistry) GetService(ctx context.Context, service string, opts ...registry.GetOption) ([]*registry.Service, error) {
 	serviceMap := make(map[string]*registry.Service)
 	entries := make(chan *mdns.ServiceEntry, 10)
 	done := make(chan bool)
@@ -423,7 +423,7 @@ func (m *mdnsRegistry) GetService(service string, opts ...registry.GetOption) ([
 	return services, nil
 }
 
-func (m *mdnsRegistry) ListServices(opts ...registry.ListOption) ([]*registry.Service, error) {
+func (m *mdnsRegistry) ListServices(ctx context.Context, opts ...registry.ListOption) ([]*registry.Service, error) {
 	serviceMap := make(map[string]bool)
 	entries := make(chan *mdns.ServiceEntry, 10)
 	done := make(chan bool)
@@ -475,7 +475,7 @@ func (m *mdnsRegistry) ListServices(opts ...registry.ListOption) ([]*registry.Se
 	return services, nil
 }
 
-func (m *mdnsRegistry) Watch(opts ...registry.WatchOption) (registry.Watcher, error) {
+func (m *mdnsRegistry) Watch(ctx context.Context, opts ...registry.WatchOption) (registry.Watcher, error) {
 	var wo registry.WatchOptions
 	for _, o := range opts {
 		o(&wo)

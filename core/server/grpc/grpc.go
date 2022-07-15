@@ -658,7 +658,7 @@ func (g *grpcServer) Register() error {
 			// set the ttl
 			rOpts := []registry.RegisterOption{registry.RegisterTTL(config.RegisterTTL)}
 			// attempt to register
-			if err := config.Registry.Register(service, rOpts...); err != nil {
+			if err := config.Registry.Register(context.TODO(), service, rOpts...); err != nil {
 				// set the error
 				regErr = err
 				// backoff then retry
@@ -866,7 +866,7 @@ func (g *grpcServer) Deregister() error {
 	}
 
 	log.Infof("Deregistering node: %s", node.Id)
-	if err = config.Registry.Deregister(svc); err != nil {
+	if err = config.Registry.Deregister(context.TODO(), svc); err != nil {
 		return err
 	}
 

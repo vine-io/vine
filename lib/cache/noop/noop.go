@@ -23,6 +23,8 @@
 package noop
 
 import (
+	"context"
+
 	"github.com/vine-io/vine/lib/cache"
 )
 
@@ -40,19 +42,19 @@ func (n *noopCache) String() string {
 	return "noop"
 }
 
-func (n *noopCache) Get(key string, opts ...cache.GetOption) ([]*cache.Record, error) {
+func (n *noopCache) Get(ctx context.Context, key string, opts ...cache.GetOption) ([]*cache.Record, error) {
 	return []*cache.Record{}, nil
 }
 
-func (n *noopCache) Put(r *cache.Record, opts ...cache.PutOption) error {
+func (n *noopCache) Put(ctx context.Context, r *cache.Record, opts ...cache.PutOption) error {
 	return nil
 }
 
-func (n *noopCache) Del(key string, opts ...cache.DelOption) error {
+func (n *noopCache) Del(ctx context.Context, key string, opts ...cache.DelOption) error {
 	return nil
 }
 
-func (n *noopCache) List(opts ...cache.ListOption) ([]string, error) {
+func (n *noopCache) List(ctx context.Context, opts ...cache.ListOption) ([]string, error) {
 	return []string{}, nil
 }
 

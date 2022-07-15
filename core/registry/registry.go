@@ -23,6 +23,7 @@
 package registry
 
 import (
+	"context"
 	"errors"
 )
 
@@ -41,37 +42,37 @@ var (
 type Registry interface {
 	Init(...Option) error
 	Options() Options
-	Register(*Service, ...RegisterOption) error
-	Deregister(*Service, ...DeregisterOption) error
-	GetService(string, ...GetOption) ([]*Service, error)
-	ListServices(...ListOption) ([]*Service, error)
-	Watch(...WatchOption) (Watcher, error)
+	Register(context.Context, *Service, ...RegisterOption) error
+	Deregister(context.Context, *Service, ...DeregisterOption) error
+	GetService(context.Context, string, ...GetOption) ([]*Service, error)
+	ListServices(context.Context, ...ListOption) ([]*Service, error)
+	Watch(context.Context, ...WatchOption) (Watcher, error)
 	String() string
 }
 
 // Register a service node. Additionally supply options such as TTL.
-func Register(s *Service, opts ...RegisterOption) error {
-	return DefaultRegistry.Register(s, opts...)
+func Register(ctx context.Context, s *Service, opts ...RegisterOption) error {
+	return DefaultRegistry.Register(ctx, s, opts...)
 }
 
 // Deregister a service node
-func Deregister(s *Service) error {
-	return DefaultRegistry.Deregister(s)
+func Deregister(ctx context.Context, s *Service) error {
+	return DefaultRegistry.Deregister(ctx, s)
 }
 
 // GetService retrieve a service. A slice is returned since we separate Name/Version.
-func GetService(name string) ([]*Service, error) {
-	return DefaultRegistry.GetService(name)
+func GetService(ctx context.Context, name string) ([]*Service, error) {
+	return DefaultRegistry.GetService(ctx, name)
 }
 
 // ListServices list the services. Only returns service names
-func ListServices() ([]*Service, error) {
-	return DefaultRegistry.ListServices()
+func ListServices(ctx context.Context) ([]*Service, error) {
+	return DefaultRegistry.ListServices(ctx)
 }
 
 // Watch returns a watcher which allows you to track updates to the registry.
-func Watch(opts ...WatchOption) (Watcher, error) {
-	return DefaultRegistry.Watch(opts...)
+func Watch(ctx context.Context, opts ...WatchOption) (Watcher, error) {
+	return DefaultRegistry.Watch(ctx, opts...)
 }
 
 func String() string {

@@ -23,6 +23,7 @@
 package mdns
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
@@ -36,6 +37,7 @@ func TestMDNS(t *testing.T) {
 		t.Skip()
 	}
 
+	ctx := context.TODO()
 	testData := []*registry.Service{
 		{
 			Name:    "test1",
@@ -91,12 +93,12 @@ func TestMDNS(t *testing.T) {
 
 	for _, service := range testData {
 		// register service
-		if err := r.Register(service); err != nil {
+		if err := r.Register(ctx, service); err != nil {
 			t.Fatal(err)
 		}
 
 		// get registered service
-		s, err := r.GetService(service.Name)
+		s, err := r.GetService(ctx, service.Name)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -128,7 +130,7 @@ func TestMDNS(t *testing.T) {
 		}
 	}
 
-	services, err := r.ListServices()
+	services, err := r.ListServices(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -146,14 +148,14 @@ func TestMDNS(t *testing.T) {
 		}
 
 		// deregister
-		if err := r.Deregister(service); err != nil {
+		if err := r.Deregister(ctx, service); err != nil {
 			t.Fatal(err)
 		}
 
 		time.Sleep(time.Millisecond * 5)
 
 		// check its gone
-		s, _ := r.GetService(service.Name)
+		s, _ := r.GetService(ctx, service.Name)
 		if len(s) > 0 {
 			t.Fatalf("Expected nothing got %+v", s[0])
 		}
@@ -308,7 +310,8 @@ func TestWatcher(t *testing.T) {
 	// new registry
 	r := NewRegistry(opts...)
 
-	w, err := r.Watch()
+	ctx := context.TODO()
+	w, err := r.Watch(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -316,7 +319,7 @@ func TestWatcher(t *testing.T) {
 
 	for _, service := range testData {
 		// register service
-		if err := r.Register(service); err != nil {
+		if err := r.Register(ctx, service); err != nil {
 			t.Fatal(err)
 		}
 
@@ -339,7 +342,7 @@ func TestWatcher(t *testing.T) {
 		}
 
 		// deregister
-		if err := r.Deregister(service); err != nil {
+		if err := r.Deregister(ctx, service); err != nil {
 			t.Fatal(err)
 		}
 

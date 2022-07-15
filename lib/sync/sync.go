@@ -24,6 +24,7 @@
 package sync
 
 import (
+	"context"
 	"errors"
 )
 
@@ -45,15 +46,15 @@ type Sync interface {
 	// Options Return the options
 	Options() Options
 	// Leader Elect a leader
-	Leader(name string, opts ...LeaderOption) (Leader, error)
+	Leader(ctx context.Context, name string, opts ...LeaderOption) (Leader, error)
 	// ListMembers get all election member
-	ListMembers(opts ...ListMembersOption) ([]*Member, error)
+	ListMembers(ctx context.Context, opts ...ListMembersOption) ([]*Member, error)
 	// WatchElect watch leader event
-	WatchElect(opts ...WatchElectOption) (ElectWatcher, error)
+	WatchElect(ctx context.Context, opts ...WatchElectOption) (ElectWatcher, error)
 	// Lock acquires a lock
-	Lock(id string, opts ...LockOption) error
+	Lock(ctx context.Context, id string, opts ...LockOption) error
 	// Unlock releases a lock
-	Unlock(id string) error
+	Unlock(ctx context.Context, id string) error
 	// String Sync implementation
 	String() string
 }

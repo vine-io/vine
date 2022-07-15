@@ -23,6 +23,8 @@
 // Package broker is an interface used for asynchronous messaging
 package broker
 
+import "context"
+
 // Broker is an interface used for asynchronous messaging.
 type Broker interface {
 	Init(...Option) error
@@ -30,7 +32,7 @@ type Broker interface {
 	Address() string
 	Connect() error
 	Disconnect() error
-	Publish(topic string, m *Message, opts ...PublishOption) error
+	Publish(ctx context.Context, topic string, m *Message, opts ...PublishOption) error
 	Subscribe(topic string, h Handler, opts ...SubscribeOption) (Subscriber, error)
 	String() string
 }
@@ -76,8 +78,8 @@ func Disconnect() error {
 	return DefaultBroker.Disconnect()
 }
 
-func Publish(topic string, msg *Message, opts ...PublishOption) error {
-	return DefaultBroker.Publish(topic, msg, opts...)
+func Publish(ctx context.Context, topic string, msg *Message, opts ...PublishOption) error {
+	return DefaultBroker.Publish(ctx, topic, msg, opts...)
 }
 
 func Subscribe(topic string, handler Handler, opts ...SubscribeOption) (Subscriber, error) {

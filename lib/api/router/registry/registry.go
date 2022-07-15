@@ -24,6 +24,7 @@
 package registry
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -75,8 +76,9 @@ func (r *registryRouter) isClosed() bool {
 func (r *registryRouter) refresh() {
 	var attempts int
 
+	ctx := context.TODO()
 	for {
-		services, err := r.opts.Registry.ListServices()
+		services, err := r.opts.Registry.ListServices(ctx)
 		if err != nil {
 			attempts++
 			logger.Errorf("unable to list services: %v", err)
@@ -88,7 +90,7 @@ func (r *registryRouter) refresh() {
 
 		// for each service, get service and store endpoints
 		for _, s := range services {
-			service, err := r.rc.GetService(s.Name)
+			service, err := r.rc.GetService(ctx, s.Name)
 			if err != nil {
 				logger.Errorf("unable to get service: %v", err)
 				continue
@@ -114,7 +116,7 @@ func (r *registryRouter) process(res *registry.Result) {
 	}
 
 	// get entry from cache
-	service, err := r.rc.GetService(res.Service.Name)
+	service, err := r.rc.GetService(context.TODO(), res.Service.Name)
 	if err != nil {
 		logger.Errorf("unable to get service '%s': %v", res.Service.Name, err)
 		return
@@ -239,7 +241,7 @@ func (r *registryRouter) watch() {
 		}
 
 		// watch for changes
-		w, err := r.opts.Registry.Watch()
+		w, err := r.opts.Registry.Watch(context.TODO())
 		if err != nil {
 			attempts++
 			logger.Errorf("error watching endpoints: %+v", err)
@@ -426,8 +428,9 @@ func (r *registryRouter) Route(req *http.Request) (*api.Service, error) {
 	// service name
 	name := rp.Name
 
+	ctx := req.Context()
 	// get service
-	services, err := r.rc.GetService(name)
+	services, err := r.rc.GetService(ctx, name)
 	if err != nil {
 		return nil, err
 	}

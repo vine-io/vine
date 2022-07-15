@@ -23,6 +23,7 @@
 package memory
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -101,8 +102,9 @@ var (
 func TestMemoryRegistry(t *testing.T) {
 	m := NewRegistry()
 
+	ctx := context.TODO()
 	fn := func(k string, v []*registry.Service) {
-		services, err := m.GetService(k)
+		services, err := m.GetService(ctx, k)
 		if err != nil {
 			t.Errorf("Unexpected error getting service %s: %v", k, err)
 		}
@@ -129,12 +131,12 @@ func TestMemoryRegistry(t *testing.T) {
 	for _, v := range testData {
 		serviceCount := 0
 		for _, service := range v {
-			if err := m.Register(service); err != nil {
+			if err := m.Register(ctx, service); err != nil {
 				t.Errorf("Unexpected register error: %v", err)
 			}
 			serviceCount++
 			// after the service has been registered we should be able to query it
-			services, err := m.GetService(service.Name)
+			services, err := m.GetService(ctx, service.Name)
 			if err != nil {
 				t.Errorf("Unexpected error getting service %s: %v", service.Name, err)
 			}
@@ -149,7 +151,7 @@ func TestMemoryRegistry(t *testing.T) {
 		fn(k, v)
 	}
 
-	services, err := m.ListServices()
+	services, err := m.ListServices(ctx)
 	if err != nil {
 		t.Errorf("Unexpected error when listing services: %v", err)
 	}
@@ -168,7 +170,7 @@ func TestMemoryRegistry(t *testing.T) {
 	// deregister
 	for _, v := range testData {
 		for _, service := range v {
-			if err := m.Deregister(service); err != nil {
+			if err := m.Deregister(ctx, service); err != nil {
 				t.Errorf("Unexpected deregister error: %v", err)
 			}
 		}
@@ -177,7 +179,7 @@ func TestMemoryRegistry(t *testing.T) {
 	// after all the service nodes have been deregistered we should not get any results
 	for _, v := range testData {
 		for _, service := range v {
-			services, err := m.GetService(service.Name)
+			services, err := m.GetService(ctx, service.Name)
 			if err != registry.ErrNotFound {
 				t.Errorf("Expected error: %v, got: %v", registry.ErrNotFound, err)
 			}
@@ -191,9 +193,10 @@ func TestMemoryRegistry(t *testing.T) {
 func TestMemoryRegisterTTL(t *testing.T) {
 	m := NewRegistry()
 
+	ctx := context.TODO()
 	for _, v := range testData {
 		for _, service := range v {
-			if err := m.Register(service, registry.RegisterTTL(time.Millisecond)); err != nil {
+			if err := m.Register(ctx, service, registry.RegisterTTL(time.Millisecond)); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -202,7 +205,7 @@ func TestMemoryRegisterTTL(t *testing.T) {
 	time.Sleep(ttlPruneTime * 2)
 
 	for name := range testData {
-		svcs, err := m.GetService(name)
+		svcs, err := m.GetService(ctx, name)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -219,10 +222,11 @@ func TestMemoryRegisterTTLConcurrent(t *testing.T) {
 	concurrency := 1000
 	waitTime := ttlPruneTime * 2
 	m := NewRegistry()
+	ctx := context.TODO()
 
 	for _, v := range testData {
 		for _, service := range v {
-			if err := m.Register(service, registry.RegisterTTL(waitTime/2)); err != nil {
+			if err := m.Register(ctx, service, registry.RegisterTTL(waitTime/2)); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -239,7 +243,7 @@ func TestMemoryRegisterTTLConcurrent(t *testing.T) {
 		go func() {
 			<-syncChan
 			for name := range testData {
-				svcs, err := m.GetService(name)
+				svcs, err := m.GetService(ctx, name)
 				if err != nil {
 					errChan <- err
 					return

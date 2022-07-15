@@ -24,6 +24,7 @@
 package cache
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -42,13 +43,13 @@ type Cache interface {
 	// Options allows you to view the current options.
 	Options() Options
 	// Get takes a single key name and optional GetOptions. It returns matching []*Record or an error.
-	Get(key string, opts ...GetOption) ([]*Record, error)
+	Get(ctx context.Context, key string, opts ...GetOption) ([]*Record, error)
 	// Put writes a record to the cache, and returns an error if the record was not written.
-	Put(r *Record, opts ...PutOption) error
+	Put(ctx context.Context, r *Record, opts ...PutOption) error
 	// Del removes the record with the corresponding key from the cache.
-	Del(key string, opts ...DelOption) error
+	Del(ctx context.Context, key string, opts ...DelOption) error
 	// List returns any keys that match, or an empty list with no error if none matched.
-	List(opts ...ListOption) ([]string, error)
+	List(ctx context.Context, opts ...ListOption) ([]string, error)
 	// Close the cache
 	Close() error
 	// String returns the name of the implementation.
@@ -68,21 +69,21 @@ type Record struct {
 }
 
 // Get takes a single key to DefaultCache
-func Get(key string, opts ...GetOption) ([]*Record, error) {
-	return DefaultCache.Get(key, opts...)
+func Get(ctx context.Context, key string, opts ...GetOption) ([]*Record, error) {
+	return DefaultCache.Get(ctx, key, opts...)
 }
 
 // Put writes a record to the DefaultCache,
-func Put(r *Record, opts ...PutOption) error {
-	return DefaultCache.Put(r, opts...)
+func Put(ctx context.Context, r *Record, opts ...PutOption) error {
+	return DefaultCache.Put(ctx, r, opts...)
 }
 
 // Del removes the record with the corresponding key from the DefaultCache.
-func Del(key string, opts ...DelOption) error {
-	return DefaultCache.Del(key, opts...)
+func Del(ctx context.Context, key string, opts ...DelOption) error {
+	return DefaultCache.Del(ctx, key, opts...)
 }
 
 // List returns any keys from the DefaultCache
-func List(opts ...ListOption) ([]string, error) {
-	return DefaultCache.List(opts...)
+func List(ctx context.Context, opts ...ListOption) ([]string, error) {
+	return DefaultCache.List(ctx, opts...)
 }
