@@ -25,6 +25,7 @@ package build
 import (
 	"fmt"
 	"go/build"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -93,6 +94,12 @@ func runProto(ctx *cli.Context) {
 		}
 	}
 
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("get pwd: %v\n", err)
+		return
+	}
+	paths = append(paths, filepath.Join(pwd, "vendor"))
 	if name != "" {
 		var pb *tool.Proto
 		for _, p := range cfg.Proto {
