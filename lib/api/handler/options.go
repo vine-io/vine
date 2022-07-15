@@ -25,6 +25,7 @@ package handler
 import (
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/grpc"
+	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/lib/api/router"
 )
 
@@ -37,6 +38,7 @@ type Options struct {
 	Namespace   string
 	Router      router.Router
 	Client      client.Client
+	Strategy    selector.Strategy
 }
 
 type Option func(o *Options)
@@ -88,5 +90,12 @@ func WithClient(c client.Client) Option {
 func WithMaxRecvSize(size int64) Option {
 	return func(o *Options) {
 		o.MaxRecvSize = size
+	}
+}
+
+// WithSelectStrategy specifies client selector strategy
+func WithSelectStrategy(strategy selector.Strategy) Option {
+	return func(o *Options) {
+		o.Strategy = strategy
 	}
 }

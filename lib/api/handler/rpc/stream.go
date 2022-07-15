@@ -43,7 +43,7 @@ import (
 )
 
 // serveWebSocket will stream rpc back over websockets assuming json
-func serveWebSocket(ctx *gin.Context, service *api.Service, c client.Client) {
+func serveWebSocket(ctx *gin.Context, service *api.Service, c client.Client, so selector.SelectOption) {
 	var op int
 
 	ct := ctx.GetHeader("Content-Type")
@@ -122,7 +122,6 @@ func serveWebSocket(ctx *gin.Context, service *api.Service, c client.Client) {
 		client.StreamingRequest(),
 	)
 
-	so := selector.WithStrategy(strategy(service.Services))
 	// create a new stream
 	stream, err := c.Stream(ctx, req, client.WithSelectOption(so))
 	if err != nil {
@@ -252,7 +251,7 @@ func isWebSocket(c *gin.Context) bool {
 	return false
 }
 
-func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client) {
+func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client, so selector.SelectOption) {
 	if service.Endpoint.Stream != api.Client {
 		writeError(ctx, fmt.Errorf("server endpoint must be gRPC client stream"))
 		return
@@ -303,7 +302,6 @@ func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client) {
 		client.StreamingRequest(),
 	)
 
-	so := selector.WithStrategy(strategy(service.Services))
 	// create a new stream
 	stream, err := c.Stream(ctx, req, client.WithSelectOption(so))
 	if err != nil {
@@ -400,7 +398,7 @@ func isMultipart(c *gin.Context) bool {
 	return strings.Contains(c.ContentType(), "multipart/form-data")
 }
 
-func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client) {
+func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client, so selector.SelectOption) {
 	vals := make(map[string]string)
 	for key, values := range ctx.Request.URL.Query() {
 		vv, ok := vals[key]
@@ -442,7 +440,6 @@ func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client) {
 		client.StreamingRequest(),
 	)
 
-	so := selector.WithStrategy(strategy(service.Services))
 	// create a new stream
 	stream, err := c.Stream(ctx, req, client.WithSelectOption(so))
 	if err != nil {

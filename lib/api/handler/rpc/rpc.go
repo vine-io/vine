@@ -167,13 +167,20 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 	// vine client
 	cc := h.opts.Client
 
+	// create strategy
+	gy := h.opts.Strategy
+	if gy == nil {
+		gy = strategy(service.Services)
+	}
+	so := selector.WithStrategy(gy)
+
 	if isMultipart(c) {
-		multipartHandler(c, service, cc)
+		multipartHandler(c, service, cc, so)
 		return
 	}
 
 	if isDownLoadLink(service) {
-		downLoadHandler(c, service, cc)
+		downLoadHandler(c, service, cc, so)
 		return
 	}
 
@@ -182,12 +189,9 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 		// drop older context as it can have timeouts and create new
 		//		md, _ := metadata.FromContext(cx)
 		// serveWebSocket(context.TODO(), w, r, service, c)
-		serveWebSocket(c, service, cc)
+		serveWebSocket(c, service, cc, so)
 		return
 	}
-
-	// create strategy
-	so := selector.WithStrategy(strategy(service.Services))
 
 	// walk the standard call path
 	// get payload
