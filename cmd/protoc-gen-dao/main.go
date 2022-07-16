@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 // protoc-gen-dao is a plugin for the Google protocol buffer compiler to generate
-// Go code. Run it bu building this program and putting it in your path with
+// Go code. Run it building this program and putting it in your path with
 // the name
 //		protoc-gen-dao
 // That word 'validator' at the end becomes part of the option string set for the
