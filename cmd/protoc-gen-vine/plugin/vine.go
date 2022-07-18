@@ -40,13 +40,14 @@ type vine struct {
 	schemas  *LinkComponents
 	m        sync.Map
 
-	vinePkg    generator.Single
-	apiPbPkg   generator.Single
-	apiPkg     generator.Single
-	openApiPkg generator.Single
-	contextPkg generator.Single
-	clientPkg  generator.Single
-	serverPkg  generator.Single
+	vinePkg      generator.Single
+	apiPbPkg     generator.Single
+	apiPkg       generator.Single
+	openApiPkg   generator.Single
+	openApiPbPkg generator.Single
+	contextPkg   generator.Single
+	clientPkg    generator.Single
+	serverPkg    generator.Single
 }
 
 func New() *vine {
@@ -90,7 +91,8 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	g.contextPkg = g.NewImport("context", "context")
 	g.vinePkg = g.NewImport("github.com/vine-io/vine", "vine")
 	g.apiPbPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
-	g.openApiPkg = g.NewImport("github.com/vine-io/vine/lib/api/handler/openapi/proto", "openapi")
+	g.openApiPkg = g.NewImport("github.com/vine-io/vine/lib/api/handler/openapi", "openapi")
+	g.openApiPbPkg = g.NewImport("github.com/vine-io/vine/lib/api/handler/openapi/proto", "openapipb")
 	g.apiPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
 	g.clientPkg = g.NewImport("github.com/vine-io/vine/core/client", "client")
 	g.serverPkg = g.NewImport("github.com/vine-io/vine/core/server", "server")
@@ -146,8 +148,8 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	svcTags := g.extractTags(service.Comments)
 	if _, ok := svcTags[_openapi]; ok {
 		g.P("// Swagger OpenAPI 3.0 for ", servName, " service")
-		g.P("func New", servName, "OpenAPI () *", g.openApiPkg.Use(), ".OpenAPI {")
-		g.P("return &", g.openApiPkg.Use(), ".OpenAPI{")
+		g.P("func New", servName, "OpenAPI () *", g.openApiPbPkg.Use(), ".OpenAPI {")
+		g.P("return &", g.openApiPbPkg.Use(), ".OpenAPI{")
 		g.generateOpenAPI(service, svcTags)
 		g.P("}")
 		g.P("}")
@@ -243,7 +245,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 		g.generateEndpoint(servName, method, true)
 	}
 	if _, ok := svcTags[_openapi]; ok {
-		g.P(fmt.Sprintf(`%s.RegisterOpenAPIDoc(New%sOpenAPO())`, g.openApiPkg.Use(), servName))
+		g.P(fmt.Sprintf(`%s.RegisterOpenAPIDoc(New%sOpenAPI())`, g.openApiPkg.Use(), servName))
 	}
 	g.P("return s.Handle(s.NewHandler(&", servName, "{h}, opts...))")
 	g.P("}")

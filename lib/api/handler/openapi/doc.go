@@ -70,7 +70,7 @@ func (ad *APIDoc) Init(services ...*registry.Service) {
 
 		for _, i := range list {
 			rsp, err := pb.NewOpenAPIService(i.Name, client.DefaultClient).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
-			if err != nil && len(rsp.Apis) == 0 {
+			if err != nil || len(rsp.Apis) == 0 {
 				continue
 			}
 			for _, api := range rsp.Apis {

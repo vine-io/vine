@@ -7,6 +7,7 @@ import (
 	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 
@@ -72,6 +73,9 @@ func (s *service) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_P
 }
 
 func (s *service) Register(svc server.Server) error {
+	if err := openapi.RegisterOpenAPIHandler(svc); err != nil {
+		return err
+	}
 	return pb.Register{{title .Name}}ServiceHandler(svc, s)
 }
 `
@@ -82,6 +86,7 @@ import (
 	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 
@@ -147,6 +152,9 @@ func (s *service) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_P
 }
 
 func (s *service) Register(svc server.Server) error {
+	if err := openapi.RegisterOpenAPIHandler(svc); err != nil {
+		return err
+	}
 	return pb.Register{{title .Name}}ServiceHandler(svc, s)
 }
 `
@@ -157,6 +165,7 @@ import (
 	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 
@@ -222,6 +231,9 @@ func (s *service) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_P
 }
 
 func (s *service) Register(svc server.Server) error {
+	if err := openapi.RegisterOpenAPIHandler(svc); err != nil {
+		return err
+	}
 	return pb.Register{{title .Name}}ServiceHandler(svc, s)
 }
 `
@@ -232,6 +244,7 @@ import (
 	"github.com/vine-io/apimachinery/inject"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 
@@ -297,6 +310,9 @@ func (s *service) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_P
 }
 
 func (s *service) Register(svc server.Server) error {
+	if err := openapi.RegisterOpenAPIHandler(svc); err != nil {
+		return err
+	}
 	return pb.Register{{title .Name}}ServiceHandler(svc, s)
 }
 `
