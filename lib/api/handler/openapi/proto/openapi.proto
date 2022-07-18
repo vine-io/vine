@@ -4,6 +4,16 @@ package openapi;
 
 option go_package = "github.com/vine-io/vine/lib/api/handler/openapi/proto;openapi";
 
+service OpenAPIService {
+    rpc GetOpenAPIDoc (GetOpenAPIDocRequest) returns (GetOpenAPIDocResponse);
+}
+
+message GetOpenAPIDocRequest {}
+
+message GetOpenAPIDocResponse {
+    repeated OpenAPI apis = 1;
+}
+
 message OpenAPI {
     string openapi = 1;
     OpenAPIInfo info = 2;

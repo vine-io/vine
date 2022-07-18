@@ -53,7 +53,6 @@ type mdnsTxt struct {
 	node      []*registry.Node
 	Endpoints []*registry.Endpoint
 	Metadata  map[string]string
-	Apis      []*registry.OpenAPI
 }
 
 type mdnsEntry struct {
@@ -246,7 +245,6 @@ func (m *mdnsRegistry) Register(ctx context.Context, service *registry.Service, 
 			Endpoints: service.Endpoints,
 			node:      service.Nodes,
 			Metadata:  node.Metadata,
-			Apis:      service.Apis,
 		})
 
 		if err != nil {
@@ -377,7 +375,6 @@ func (m *mdnsRegistry) GetService(ctx context.Context, service string, opts ...r
 						Metadata:  txt.Metadata,
 						Nodes:     txt.node,
 						Endpoints: txt.Endpoints,
-						Apis:      txt.Apis,
 					}
 				}
 				addr := ""

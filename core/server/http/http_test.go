@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -38,7 +39,7 @@ func TestHTTPServer(t *testing.T) {
 	}
 
 	// lookup server
-	service, err := reg.GetService(server.DefaultName)
+	service, err := reg.GetService(context.TODO(), server.DefaultName)
 	if err != nil {
 		t.Fatal(err)
 	}

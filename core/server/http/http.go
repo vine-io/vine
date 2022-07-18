@@ -23,6 +23,7 @@
 package http
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -190,7 +191,7 @@ func (h *httpServer) Register() error {
 		log.Infof("Registering node: %s", opts.Name+"-"+opts.Id)
 	})
 
-	if err := opts.Registry.Register(service, rOpts...); err != nil {
+	if err := opts.Registry.Register(context.TODO(), service, rOpts...); err != nil {
 		return err
 	}
 
@@ -230,7 +231,7 @@ func (h *httpServer) Deregister() error {
 	log.Infof("Deregistering node: %s", opts.Name+"-"+opts.Id)
 
 	service := serviceDef(opts)
-	if err := opts.Registry.Deregister(service); err != nil {
+	if err := opts.Registry.Deregister(context.TODO(), service); err != nil {
 		return err
 	}
 
@@ -259,7 +260,7 @@ func (h *httpServer) Start() error {
 	h.Unlock()
 
 	var (
-		ln net.Listener
+		ln  net.Listener
 		err error
 	)
 
@@ -320,7 +321,6 @@ func (h *httpServer) Start() error {
 				break Loop
 			}
 		}
-
 
 		// deregister
 		_ = h.Deregister()

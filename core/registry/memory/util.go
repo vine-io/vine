@@ -54,7 +54,6 @@ func serviceToRecord(s *registry.Service, ttl time.Duration) *record {
 		Metadata:  metadata,
 		Nodes:     nodes,
 		Endpoints: endpoints,
-		Apis:      s.Apis,
 	}
 }
 
@@ -110,6 +109,5 @@ func recordToService(r *record) *registry.Service {
 		Metadata:  metadata,
 		Endpoints: endpoints,
 		Nodes:     nodes,
-		Apis:      r.Apis,
 	}
 }

@@ -752,10 +752,8 @@ func (g *grpcServer) Register() error {
 	})
 
 	endpoints := make([]*registry.Endpoint, 0, len(handlerList)+len(subscriberList))
-	apis := make([]*registry.OpenAPI, 0, len(handlerList))
 	for _, h := range handlerList {
 		endpoints = append(endpoints, g.handlers[h].Endpoints()...)
-		apis = append(apis, g.handlers[h].Options().OpenAPI)
 	}
 	for _, e := range subscriberList {
 		endpoints = append(endpoints, e.Endpoints()...)
@@ -767,7 +765,6 @@ func (g *grpcServer) Register() error {
 		Version:   config.Version,
 		Nodes:     []*registry.Node{node},
 		Endpoints: endpoints,
-		Apis:      apis,
 	}
 
 	g.RLock()

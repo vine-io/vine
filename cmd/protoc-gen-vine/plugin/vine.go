@@ -90,7 +90,7 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	g.contextPkg = g.NewImport("context", "context")
 	g.vinePkg = g.NewImport("github.com/vine-io/vine", "vine")
 	g.apiPbPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
-	g.openApiPkg = g.NewImport("github.com/vine-io/vine/core/registry", "registry")
+	g.openApiPkg = g.NewImport("github.com/vine-io/vine/lib/api/handler/openapi/proto", "openapi")
 	g.apiPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
 	g.clientPkg = g.NewImport("github.com/vine-io/vine/core/client", "client")
 	g.serverPkg = g.NewImport("github.com/vine-io/vine/core/server", "server")
@@ -243,7 +243,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 		g.generateEndpoint(servName, method, true)
 	}
 	if _, ok := svcTags[_openapi]; ok {
-		g.P("opts = append(opts, server.OpenAPIHandler(New", servName, "OpenAPI()))")
+		g.P(fmt.Sprintf(`%s.RegisterOpenAPIDoc(New%sOpenAPO())`, g.openApiPkg.Use(), servName))
 	}
 	g.P("return s.Handle(s.NewHandler(&", servName, "{h}, opts...))")
 	g.P("}")
