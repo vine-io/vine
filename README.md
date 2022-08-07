@@ -40,3 +40,8 @@ Vine 遵守 Apache 2.0 开源许可.
 
 ## 文档
 关于 `vine` 的文档可以参考 [vine 文档](https://vine-io.github.io/vine/)
+
+## 支持
+感谢 JetBrain 提供的支持
+
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="https://www.jetbrains.com" style="width:30%;height:30%;" />
