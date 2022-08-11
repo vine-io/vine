@@ -15,6 +15,12 @@ all: build
 vendor:
 	go mod vendor
 
+test-coverage:
+	go test ./... -bench=. -coverage
+
+lint:
+	golint .
+
 release:
 ifeq "$(TAG)" ""
 	@echo "missing tag"
