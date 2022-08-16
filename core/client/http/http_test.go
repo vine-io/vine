@@ -67,7 +67,7 @@ func TestHTTPClient(t *testing.T) {
 	})
 	go http.Serve(l, mux)
 
-	if err := r.Register(&registry.Service{
+	if err := r.Register(context.TODO(), &registry.Service{
 		Name: "test.service",
 		Nodes: []*registry.Node{
 			{
@@ -230,7 +230,7 @@ func TestHTTPClientStream(t *testing.T) {
 	})
 	go http.Serve(l, mux)
 
-	if err := r.Register(&registry.Service{
+	if err := r.Register(context.TODO(), &registry.Service{
 		Name: "test.service",
 		Nodes: []*registry.Node{
 			{

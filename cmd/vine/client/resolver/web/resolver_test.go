@@ -23,6 +23,7 @@
 package web
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"testing"
@@ -74,7 +75,7 @@ func TestWebResolver(t *testing.T) {
 				},
 			}
 
-			r.Register(v)
+			r.Register(context.TODO(), v)
 
 			u, err := url.Parse("https://" + service.Host + service.Path)
 			if err != nil {
@@ -88,7 +89,7 @@ func TestWebResolver(t *testing.T) {
 				t.Fatalf("Failed to resolve %v", service.Host)
 			}
 
-			r.Deregister(v)
+			r.Deregister(context.TODO(), v)
 		})
 	}
 

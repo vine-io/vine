@@ -23,6 +23,7 @@
 package web
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"
@@ -90,7 +91,7 @@ func TestService(t *testing.T) {
 
 	eventually(func() bool {
 		var err error
-		s, err = reg.GetService("go.vine.web.test")
+		s, err = reg.GetService(context.TODO(), "go.vine.web.test")
 		return err == nil
 	}, t.Fatal)
 
@@ -161,7 +162,7 @@ func TestService(t *testing.T) {
 	}
 
 	eventually(func() bool {
-		_, err := reg.GetService("go.vine.web.test")
+		_, err := reg.GetService(context.TODO(), "go.vine.web.test")
 		return err == registry.ErrNotFound
 	}, t.Error)
 
@@ -282,7 +283,7 @@ func TestTLS(t *testing.T) {
 
 	eventually(func() bool {
 		var err error
-		s, err = reg.GetService("go.vine.web.test")
+		s, err = reg.GetService(context.TODO(), "go.vine.web.test")
 		return err == nil
 	}, t.Fatal)
 

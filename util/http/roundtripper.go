@@ -36,7 +36,7 @@ type roundTripper struct {
 }
 
 func (r *roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	s, err := r.opts.Registry.GetService(req.URL.Host)
+	s, err := r.opts.Registry.GetService(req.Context(), req.URL.Host)
 	if err != nil {
 		return nil, err
 	}

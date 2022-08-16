@@ -23,6 +23,7 @@
 package http
 
 import (
+	"context"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -57,8 +58,9 @@ func testHttp(t *testing.T, path, service, ns string) {
 		},
 	}
 
-	r.Register(s)
-	defer r.Deregister(s)
+	ctx := context.Background()
+	r.Register(ctx, s)
+	defer r.Deregister(ctx, s)
 
 	// setup the test handler
 	m := http.NewServeMux()
@@ -88,8 +90,8 @@ func testHttp(t *testing.T, path, service, ns string) {
 	p := NewHandler(handler.WithRouter(rt))
 
 	// execute the handler
-	ctx := gin.Context{}
-	p.Handle(&ctx)
+	c, _ := gin.CreateTestContext(w)
+	p.Handle(c)
 
 	if w.Code != 200 {
 		t.Fatalf("Expected 200 response got %d %s", w.Code, w.Body.String())

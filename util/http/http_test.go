@@ -23,6 +23,7 @@
 package http
 
 import (
+	"context"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -51,7 +52,7 @@ func TestRoundTripper(t *testing.T) {
 
 	go http.Serve(l, nil)
 
-	m.Register(&registry.Service{
+	m.Register(context.TODO(), &registry.Service{
 		Name: "example.com",
 		Nodes: []*registry.Node{
 			{

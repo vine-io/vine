@@ -49,7 +49,7 @@ func testFunc() {
 
 	s := vine.NewService(
 		vine.Name("test"),
-		vine.Context(ctx),
+		vine.PutContext(ctx),
 		vine.HandleSignal(false),
 		vine.Flags(
 			&cli.StringFlag{

@@ -166,7 +166,7 @@ func (s *service) register() error {
 	// try three times if necessary
 	for i := 0; i < 3; i++ {
 		// attempt to register
-		if err := r.Register(s.svc, registry.RegisterTTL(s.opts.RegisterTTL)); err != nil {
+		if err := r.Register(s.opts.Context, s.svc, registry.RegisterTTL(s.opts.RegisterTTL)); err != nil {
 			// set the error
 			regErr = err
 			// backoff then retry
@@ -194,7 +194,7 @@ func (s *service) deregister() error {
 	if s.opts.Registry != nil {
 		r = s.opts.Registry
 	}
-	return r.Deregister(s.svc)
+	return r.Deregister(s.opts.Context, s.svc)
 }
 
 func (s *service) start() error {

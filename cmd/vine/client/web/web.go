@@ -262,7 +262,7 @@ func (s *service) indexHandler(c *gin.Context) {
 		return
 	}
 
-	services, err := s.registry.ListServices(registry.ListContext(c))
+	services, err := s.registry.ListServices(c)
 	if err != nil {
 		log.Errorf("Error listing services: %v", err)
 	}

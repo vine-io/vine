@@ -440,9 +440,7 @@ func (h *httpClient) Stream(ctx context.Context, req client.Request, opts ...cli
 }
 
 func (h *httpClient) Publish(ctx context.Context, p client.Message, opts ...client.PublishOption) error {
-	options := client.PublishOptions{
-		Context: context.Background(),
-	}
+	options := client.PublishOptions{}
 	for _, o := range opts {
 		o(&options)
 	}
@@ -488,7 +486,7 @@ func (h *httpClient) Publish(ctx context.Context, p client.Message, opts ...clie
 		topic = options.Exchange
 	}
 
-	return h.opts.Broker.Publish(topic, &broker.Message{
+	return h.opts.Broker.Publish(context.TODO(), topic, &broker.Message{
 		Header: md,
 		Body:   body,
 	})
