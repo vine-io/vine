@@ -37,7 +37,7 @@ func init() {
 }
 
 type {{title .Name}} interface {
-	Init() error
+	Init(ctx context.Context) error
 	Call(ctx context.Context, name string) (string, error)
 	Stream()
 	PingPong()
@@ -49,7 +49,7 @@ type {{.Name}} struct {
 	vine.Service ` + "`inject:\"\"`" + `
 }
 
-func (s *{{.Name}}) Init() error {
+func (s *{{.Name}}) Init(ctx context.Context) error {
 	return nil
 }
 
@@ -84,7 +84,7 @@ func init() {
 }
 
 type {{title .Name}} interface {
-	Init() error
+	Init(ctx context.Context) error
 	Call(ctx context.Context, name string) (string, error)
 	Stream()
 	PingPong()
@@ -96,7 +96,7 @@ type {{.Name}} struct {
 	vine.Service ` + "`inject:\"\"`" + `
 }
 
-func (s *{{.Name}}) Init() error {
+func (s *{{.Name}}) Init(ctx context.Context) error {
 	return nil
 }
 
