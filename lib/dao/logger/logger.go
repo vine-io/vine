@@ -68,8 +68,8 @@ var (
 
 func New(opt Options) Interface {
 	return &logger{
-		Helper:       log.NewHelper(log.DefaultLogger),
-		Options:      opt,
+		Helper:  log.NewHelper(log.DefaultLogger),
+		Options: opt,
 	}
 }
 
@@ -108,7 +108,7 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 	if l.LogLevel > Silent {
 		elapsed := time.Since(begin)
 		sql, rows := fc()
-		fields["elapsed"] = float64(elapsed.Nanoseconds())/1e6
+		fields["elapsed"] = float64(elapsed.Nanoseconds()) / 1e6
 		switch {
 		case err != nil && l.LogLevel >= Error:
 			if rows == -1 {
@@ -116,7 +116,7 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 			} else {
 				fields["rows"] = rows
 			}
-			l.Fields(fields).Log(log.ErrorLevel, sql)
+			l.Fields(fields).Log(log.ErrorLevel, "\n"+sql)
 			l.Helper.Error(err)
 		case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= Warn:
 			slowLog := fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold)
@@ -125,7 +125,7 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 			} else {
 				fields["rows"] = rows
 			}
-			l.Fields(fields).Log(log.WarnLevel, sql)
+			l.Fields(fields).Log(log.WarnLevel, "\n"+sql)
 			l.Helper.Warn(slowLog)
 		case l.LogLevel == Info:
 			if rows == -1 {
@@ -133,7 +133,7 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 			} else {
 				fields["rows"] = rows
 			}
-			l.Fields(fields).Log(log.InfoLevel, sql)
+			l.Fields(fields).Log(log.InfoLevel, "\n"+sql)
 		}
 	}
 }

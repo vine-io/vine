@@ -121,6 +121,7 @@ func TestExplainSQL(t *testing.T) {
 	}
 
 	for idx, r := range results {
+		t.Log(r)
 		if result := logger.ExplainSQL(r.SQL, r.NumericRegexp, `"`, r.Vars...); result != r.Result {
 			t.Errorf("Explain SQL #%v expects %v, but got %v", idx, r.Result, result)
 		}
