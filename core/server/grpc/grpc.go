@@ -185,20 +185,22 @@ func (g *grpcServer) getCredentials() credentials.TransportCredentials {
 				log.Fatalf("tls.LoadX509KeyPair err: %v", err)
 			}
 
-			certPool := x509.NewCertPool()
-			ca, err := ioutil.ReadFile(v.CaFile)
-			if err != nil {
-				log.Fatalf("ioutil.ReadFile err: %v", err)
-			}
-
-			if ok := certPool.AppendCertsFromPEM(ca); !ok {
-				log.Fatalf("certPool.AppendCertsFromPEM err")
-			}
-
 			TLS := &tls.Config{
 				Certificates: []tls.Certificate{cert},
-				ClientAuth:   tls.RequireAndVerifyClientCert,
-				ClientCAs:    certPool,
+			}
+
+			if v.CaFile != "" {
+				certPool := x509.NewCertPool()
+				ca, err := ioutil.ReadFile(v.CaFile)
+				if err != nil {
+					log.Fatalf("ioutil.ReadFile err: %v", err)
+				}
+
+				if ok := certPool.AppendCertsFromPEM(ca); !ok {
+					log.Fatalf("certPool.AppendCertsFromPEM err")
+				}
+				TLS.ClientAuth = tls.RequireAndVerifyClientCert
+				TLS.ClientCAs = certPool
 			}
 
 			return credentials.NewTLS(TLS)
