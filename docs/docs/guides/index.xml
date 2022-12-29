@@ -495,7 +495,7 @@
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;protoc -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src -I&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;$GOPATH&lt;/span&gt;/src/github.com/gogo/googleapis --gogofaster_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;plugins&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;grpc:. --vine_out&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;:. proto/helloworld.proto
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;执行完成后生成以下代码:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;// Swagger OpenAPI 3.0 for Helloworld service
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NewHelloworldOpenAPI&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;registry.OpenAPI {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NewHelloworldOpenAPI&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;openapipb.OpenAPI {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// ...
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;4验证&#34;&gt;4.验证&lt;/h3&gt;
@@ -531,7 +531,7 @@
 &lt;p&gt;注: &lt;code&gt;protoc-gen-vine&lt;/code&gt; 和 &lt;code&gt;protoc-gen-validator&lt;/code&gt; 中存在大量重复注释，这样设计的原因是通过一套的注释规则直接生成更多的代码，较少非业务代码的编写。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;语法规则&#34;&gt;语法规则&lt;/h3&gt;
-&lt;p&gt;有效的注释有以下的规则:&lt;/p&gt;
+&lt;p&gt;有效的注释有以下的规则:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;注释必须以 &lt;code&gt;+gen&lt;/code&gt; 作为开头&lt;/li&gt;
 &lt;li&gt;注释的内容必须紧贴对应的字段，中间不能有空行&lt;/li&gt;

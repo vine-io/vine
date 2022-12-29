@@ -1126,6 +1126,7 @@ if (!doNotTrack) {
     <li><a href="#启动-api-服务">启动 api 服务</a></li>
     <li><a href="#创建网关">创建网关</a></li>
     <li><a href="#测试">测试</a></li>
+    <li><a href="#同时支持-grpc-和-http">同时支持 grpc 和 http</a></li>
   </ul>
 </nav>
 
@@ -1191,6 +1192,99 @@ if (!doNotTrack) {
 <h2 id="测试">测试</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -X POST <span style="color:#f1fa8c">&#34;http://127.0.0.1:8080/helloworld/v1/helloworld/Call&#34;</span> -H  <span style="color:#f1fa8c">&#34;accept: application/json&#34;</span> -H  <span style="color:#f1fa8c">&#34;Content-Type: application/json&#34;</span> -d <span style="color:#f1fa8c">&#34;{\&#34;name\&#34;:\&#34;hello\&#34;}&#34;</span>
 </span></span><span style="display:flex;"><span>&gt; <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;reply: hello&#34;</span><span style="color:#ff79c6">}</span>
+</span></span></code></pre></div><h2 id="同时支持-grpc-和-http">同时支持 grpc 和 http</h2>
+<p>vine 支持在同一个端口下同时提供 gRPC 和 http 服务。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;net/http/pprof&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/prometheus/client_golang/prometheus/promhttp&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+</span></span><span style="display:flex;"><span>	grpcServer <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/core/server/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	ahandler <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/handler&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/handler/openapi&#34;</span>
+</span></span><span style="display:flex;"><span>	arpc <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/handler/rpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/resolver&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/resolver/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/router&#34;</span>
+</span></span><span style="display:flex;"><span>	regRouter <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/router/registry&#34;</span>
+</span></span><span style="display:flex;"><span>	log <span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/logger&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/testdata/proto/rpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/util/namespace&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> EchoRpc <span style="color:#8be9fd;font-style:italic">struct</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> (e EchoRpc) <span style="color:#50fa7b">Echo</span>(ctx <span style="color:#ff79c6">*</span>vine.Context, request <span style="color:#ff79c6">*</span>rpc.EchoRequest, response <span style="color:#ff79c6">*</span>rpc.EchoResponse) <span style="color:#8be9fd">error</span> {
+</span></span><span style="display:flex;"><span>	response.Msg = request.Msg
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> _ rpc.EchoRpcHandler = (<span style="color:#ff79c6">*</span>EchoRpc)(<span style="color:#ff79c6">nil</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	app <span style="color:#ff79c6">:=</span> gin.<span style="color:#50fa7b">New</span>()
+</span></span><span style="display:flex;"><span>	app.<span style="color:#50fa7b">Use</span>(gin.<span style="color:#50fa7b">Recovery</span>())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	app.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/metrics&#34;</span>, gin.<span style="color:#50fa7b">WrapH</span>(promhttp.<span style="color:#50fa7b">Handler</span>()))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	DefaultPrefix <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;/debug/pprof&#34;</span>
+</span></span><span style="display:flex;"><span>	prefixRouter <span style="color:#ff79c6">:=</span> app.<span style="color:#50fa7b">Group</span>(DefaultPrefix)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/&#34;</span>, gin.<span style="color:#50fa7b">WrapF</span>(pprof.Index))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/cmdline&#34;</span>, gin.<span style="color:#50fa7b">WrapF</span>(pprof.Cmdline))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/profile&#34;</span>, gin.<span style="color:#50fa7b">WrapF</span>(pprof.Profile))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">POST</span>(<span style="color:#f1fa8c">&#34;/symbol&#34;</span>, gin.<span style="color:#50fa7b">WrapF</span>(pprof.Symbol))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/symbol&#34;</span>, gin.<span style="color:#50fa7b">WrapF</span>(pprof.Symbol))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/trace&#34;</span>, gin.<span style="color:#50fa7b">WrapF</span>(pprof.Trace))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/allocs&#34;</span>, gin.<span style="color:#50fa7b">WrapH</span>(pprof.<span style="color:#50fa7b">Handler</span>(<span style="color:#f1fa8c">&#34;allocs&#34;</span>)))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/block&#34;</span>, gin.<span style="color:#50fa7b">WrapH</span>(pprof.<span style="color:#50fa7b">Handler</span>(<span style="color:#f1fa8c">&#34;block&#34;</span>)))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/goroutine&#34;</span>, gin.<span style="color:#50fa7b">WrapH</span>(pprof.<span style="color:#50fa7b">Handler</span>(<span style="color:#f1fa8c">&#34;goroutine&#34;</span>)))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/heap&#34;</span>, gin.<span style="color:#50fa7b">WrapH</span>(pprof.<span style="color:#50fa7b">Handler</span>(<span style="color:#f1fa8c">&#34;heap&#34;</span>)))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/mutex&#34;</span>, gin.<span style="color:#50fa7b">WrapH</span>(pprof.<span style="color:#50fa7b">Handler</span>(<span style="color:#f1fa8c">&#34;mutex&#34;</span>)))
+</span></span><span style="display:flex;"><span>		prefixRouter.<span style="color:#50fa7b">GET</span>(<span style="color:#f1fa8c">&#34;/threadcreate&#34;</span>, gin.<span style="color:#50fa7b">WrapH</span>(pprof.<span style="color:#50fa7b">Handler</span>(<span style="color:#f1fa8c">&#34;threadcreate&#34;</span>)))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(vine.<span style="color:#50fa7b">Address</span>(<span style="color:#f1fa8c">&#34;:8090&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	openapi.<span style="color:#50fa7b">RegisterOpenAPI</span>(app)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	Type, Namespace <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;api&#34;</span>, <span style="color:#f1fa8c">&#34;go.vine&#34;</span>
+</span></span><span style="display:flex;"><span>	HandlerType <span style="color:#ff79c6">:=</span> <span style="color:#f1fa8c">&#34;rpc&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// create the namespace resolver
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	nsResolver <span style="color:#ff79c6">:=</span> namespace.<span style="color:#50fa7b">NewResolver</span>(Type, Namespace)
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// resolver options
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	rops <span style="color:#ff79c6">:=</span> []resolver.Option{
+</span></span><span style="display:flex;"><span>		resolver.<span style="color:#50fa7b">WithNamespace</span>(nsResolver.ResolveWithType),
+</span></span><span style="display:flex;"><span>		resolver.<span style="color:#50fa7b">WithHandler</span>(HandlerType),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	log.<span style="color:#50fa7b">Infof</span>(<span style="color:#f1fa8c">&#34;Registering API RPC Handler at %s&#34;</span>, <span style="color:#f1fa8c">&#34;/&#34;</span>)
+</span></span><span style="display:flex;"><span>	rr <span style="color:#ff79c6">:=</span> grpc.<span style="color:#50fa7b">NewResolver</span>(rops<span style="color:#ff79c6">...</span>)
+</span></span><span style="display:flex;"><span>	rt <span style="color:#ff79c6">:=</span> regRouter.<span style="color:#50fa7b">NewRouter</span>(
+</span></span><span style="display:flex;"><span>		router.<span style="color:#50fa7b">WithHandler</span>(arpc.Handler),
+</span></span><span style="display:flex;"><span>		router.<span style="color:#50fa7b">WithResolver</span>(rr),
+</span></span><span style="display:flex;"><span>		router.<span style="color:#50fa7b">WithRegistry</span>(s.<span style="color:#50fa7b">Options</span>().Registry),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	rp <span style="color:#ff79c6">:=</span> arpc.<span style="color:#50fa7b">NewHandler</span>(
+</span></span><span style="display:flex;"><span>		ahandler.<span style="color:#50fa7b">WithNamespace</span>(Namespace),
+</span></span><span style="display:flex;"><span>		ahandler.<span style="color:#50fa7b">WithRouter</span>(rt),
+</span></span><span style="display:flex;"><span>		ahandler.<span style="color:#50fa7b">WithClient</span>(s.<span style="color:#50fa7b">Client</span>()),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	app.<span style="color:#50fa7b">Use</span>(rp.Handle)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.<span style="color:#50fa7b">Server</span>().<span style="color:#50fa7b">Init</span>(grpcServer.<span style="color:#50fa7b">HttpHandler</span>(app))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.<span style="color:#50fa7b">Init</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	rpc.<span style="color:#50fa7b">RegisterEchoRpcHandler</span>(s.<span style="color:#50fa7b">Server</span>(), <span style="color:#8be9fd;font-style:italic">new</span>(EchoRpc))
+</span></span><span style="display:flex;"><span>	openapi.<span style="color:#50fa7b">RegisterOpenAPIHandler</span>(s.<span style="color:#50fa7b">Server</span>())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	s.<span style="color:#50fa7b">Run</span>()
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div>
         <div class="section-index">
     

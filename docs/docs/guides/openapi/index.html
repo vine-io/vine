@@ -1238,7 +1238,7 @@ if (!doNotTrack) {
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/github.com/gogo/googleapis --gogofaster_out<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">plugins</span><span style="color:#ff79c6">=</span>grpc:. --vine_out<span style="color:#ff79c6">=</span>:. proto/helloworld.proto
 </span></span></code></pre></div><p>执行完成后生成以下代码:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#6272a4">// Swagger OpenAPI 3.0 for Helloworld service
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NewHelloworldOpenAPI</span>() <span style="color:#ff79c6">*</span>registry.OpenAPI {
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">NewHelloworldOpenAPI</span>() <span style="color:#ff79c6">*</span>openapipb.OpenAPI {
 </span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// ...
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>}
 </span></span></code></pre></div><h3 id="4验证">4.验证</h3>
@@ -1274,7 +1274,7 @@ if (!doNotTrack) {
 <p>注: <code>protoc-gen-vine</code> 和 <code>protoc-gen-validator</code> 中存在大量重复注释，这样设计的原因是通过一套的注释规则直接生成更多的代码，较少非业务代码的编写。</p>
 </blockquote>
 <h3 id="语法规则">语法规则</h3>
-<p>有效的注释有以下的规则:</p>
+<p>有效的注释有以下的规则:</p>
 <ul>
 <li>注释必须以 <code>+gen</code> 作为开头</li>
 <li>注释的内容必须紧贴对应的字段，中间不能有空行</li>
