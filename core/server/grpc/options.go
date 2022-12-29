@@ -26,6 +26,7 @@ import (
 	"context"
 	"crypto/tls"
 	"net"
+	"net/http"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
@@ -39,12 +40,7 @@ type netListener struct{}
 type maxMsgSizeKey struct{}
 type maxConnKey struct{}
 type tlsAuth struct{}
-
-type Grpc2Http struct {
-	CertFile string
-	KeyFile  string
-	CaFile   string
-}
+type grpcWithHttp struct{}
 
 // Codec gRPC Codec to be used to encode/decode requests for a given content type
 func Codec(contentType string, c encoding.Codec) server.Option {
@@ -66,9 +62,9 @@ func AuthTLS(t *tls.Config) server.Option {
 	return setServerOption(tlsAuth{}, t)
 }
 
-// GrpcToHttp specifies http and grpc service
-func GrpcToHttp(t *Grpc2Http) server.Option {
-	return setServerOption(Grpc2Http{}, t)
+// HttpHandler specifies http and grpc service
+func HttpHandler(hh http.Handler) server.Option {
+	return setServerOption(grpcWithHttp{}, hh)
 }
 
 // MaxConn specifies maximum number of max simultaneous connections to server

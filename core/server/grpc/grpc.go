@@ -25,12 +25,9 @@ package grpc
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
-	"net/http/pprof"
 	"reflect"
 	"runtime/debug"
 	"sort"
@@ -40,12 +37,14 @@ import (
 	"time"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/vine-io/vine/lib/errors"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"golang.org/x/net/netutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
@@ -178,32 +177,8 @@ func (g *grpcServer) getCredentials() credentials.TransportCredentials {
 	if g.opts.Context != nil {
 		if v, ok := g.opts.Context.Value(tlsAuth{}).(*tls.Config); ok && v != nil {
 			return credentials.NewTLS(v)
-		}
-		if v, ok := g.opts.Context.Value(Grpc2Http{}).(*Grpc2Http); ok && v != nil {
-			cert, err := tls.LoadX509KeyPair(v.CertFile, v.KeyFile)
-			if err != nil {
-				log.Fatalf("tls.LoadX509KeyPair err: %v", err)
-			}
-
-			TLS := &tls.Config{
-				Certificates: []tls.Certificate{cert},
-			}
-
-			if v.CaFile != "" {
-				certPool := x509.NewCertPool()
-				ca, err := ioutil.ReadFile(v.CaFile)
-				if err != nil {
-					log.Fatalf("ioutil.ReadFile err: %v", err)
-				}
-
-				if ok := certPool.AppendCertsFromPEM(ca); !ok {
-					log.Fatalf("certPool.AppendCertsFromPEM err")
-				}
-				TLS.ClientAuth = tls.RequireAndVerifyClientCert
-				TLS.ClientCAs = certPool
-			}
-
-			return credentials.NewTLS(TLS)
+		} else {
+			return insecure.NewCredentials()
 		}
 	}
 	return nil
@@ -957,39 +932,20 @@ func (g *grpcServer) Start() error {
 
 	// vine: go ts.Accept(s.accept)
 	go func() {
-		if v := g.Options().Context.Value(Grpc2Http{}); v != nil {
-			gh := v.(*Grpc2Http)
 
-			mux := http.NewServeMux()
-			mux.Handle("/metrics", promhttp.Handler())
-			mux.HandleFunc("/debug/pprof/", pprof.Index)
-			mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-			mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
-			mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
-			mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+		var hlr http.Handler = g.svc
+		if v, ok := g.opts.Context.Value(grpcWithHttp{}).(http.Handler); ok {
+			log.Infof("discovery http handler")
+			hlr = grpcHandlerFunc(g.svc, v)
+		}
 
-			h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
-					g.svc.ServeHTTP(w, r)
-					return
-				}
+		serve := http.Server{
+			Addr:    g.opts.Address,
+			Handler: hlr,
+		}
 
-				mux.ServeHTTP(w, r)
-				return
-			})
-
-			s := http.Server{
-				Handler: h,
-			}
-
-			if err := s.ServeTLS(ts, gh.CertFile, gh.KeyFile); err != nil {
-				log.Errorf("gRPC Server start error: %v", err)
-			}
-
-		} else {
-			if err := g.svc.Serve(ts); err != nil {
-				log.Errorf("gRPC Server start error: %v", err)
-			}
+		if err := serve.Serve(ts); err != nil {
+			log.Errorf("gRPC Server start error: %v", err)
 		}
 	}()
 
@@ -1058,6 +1014,18 @@ func (g *grpcServer) Start() error {
 	g.Unlock()
 
 	return nil
+}
+
+// grpcHandlerFunc 将 gRPC 请求和 HTTP 请求分别调用不同的 handler 处理
+func grpcHandlerFunc(gh *grpc.Server, hh http.Handler) http.Handler {
+	h2s := &http2.Server{}
+	return h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
+			gh.ServeHTTP(w, r)
+		} else {
+			hh.ServeHTTP(w, r)
+		}
+	}), h2s)
 }
 
 func (g *grpcServer) Stop() error {
