@@ -160,19 +160,18 @@ func runSRV(ctx *cli.Context) {
 			},
 		)
 		// create service config
-		srvTpl := t2.ClusterINF
+		srvTpl := t2.ClusterServer
 		if withAPI {
-			srvTpl = t2.ClusterINFWithAPI
+			srvTpl = t2.ClusterServerWithAPI
 		}
 		c.Files = []file{
 			{"cmd/" + name + "/main.go", t2.ClusterCMD},
-			{"pkg/version/version.go", t2.Version},
+			{"pkg/internal/storage/storage.go", t2.StorageHandler},
+			{"pkg/internal/version/version.go", t2.Version},
 			{"pkg/" + name + "/app.go", t2.ClusterEntry},
 			{"pkg/" + name + "/builtin.go", t2.ClusterBuiltin},
-			{"pkg/" + name + "/service/" + name + ".go", srvTpl},
-			{"pkg/" + name + "/biz/" + name + ".go", t2.ClusterBiz},
-			{"pkg/" + name + "/infra/storage/storage.go", t2.StorageHandler},
-			{"pkg/" + name + "/infra/cache/cache.go", t2.CacheHandler},
+			{"pkg/" + name + "/server/" + name + ".go", srvTpl},
+			{"pkg/" + name + "/service/" + name + ".go", t2.ClusterService},
 			{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
 			{"deploy/config/" + name + ".ini", t2.ConfSRV},
 			{"deploy/systemd/" + name + ".service", t2.SystemedSRV},
@@ -206,19 +205,18 @@ func runSRV(ctx *cli.Context) {
 			},
 		)
 		// create service config
-		srvTpl := t2.SingleINF
+		srvTpl := t2.SingleServer
 		if withAPI {
-			srvTpl = t2.SingleINFWithAPI
+			srvTpl = t2.SingleServerWithAPI
 		}
 		c.Files = []file{
 			{"cmd/main.go", t2.SingleCMD},
-			{"pkg/version/version.go", t2.Version},
+			{"pkg/internal/storage/storage.go", t2.StorageHandler},
+			{"pkg/internal/version/version.go", t2.Version},
 			{"pkg/app.go", t2.SingleEntry},
 			{"pkg/builtin.go", t2.SimpleBuiltin},
-			{"pkg/service/" + name + ".go", srvTpl},
-			{"pkg/biz/" + name + ".go", t2.SingleBiz},
-			{"pkg/infra/storage/storage.go", t2.StorageHandler},
-			{"pkg/infra/cache/cache.go", t2.CacheHandler},
+			{"pkg/server/" + name + ".go", srvTpl},
+			{"pkg/service/" + name + ".go", t2.SingleService},
 			{"deploy/Dockerfile", t2.DockerSRV},
 			{"deploy/" + name + ".ini", t2.ConfSRV},
 			{"deploy/" + name + ".service", t2.SystemedSRV},

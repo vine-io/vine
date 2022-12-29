@@ -140,7 +140,7 @@ This the multi-page printable view of this section.
 
 
 <div class="content">
-      <p><strong>Vine</strong> 提供命令行工具创建项目，其中包括了开发过程中需要的工具链和部署内容。符合 DDD 设计规范。</p>
+      <p><strong>Vine</strong> 提供命令行工具创建项目，其中包括了开发过程中需要的工具链和部署内容。</p>
 <h2 id="单服务">单服务</h2>
 <p>单服务目录结构使用以下命令创建:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir <span style="color:#8be9fd;font-style:italic">$PATH</span>/src/foo
@@ -149,7 +149,7 @@ This the multi-page printable view of this section.
 </span></span></code></pre></div><p>生成目录结构:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>├── Makefile
 </span></span><span style="display:flex;"><span>├── README.md
-</span></span><span style="display:flex;"><span>├── api  // ------ 维护 grpc 接口，和 domain 层中领域模型
+</span></span><span style="display:flex;"><span>├── api  // ------ 维护 grpc 接口
 </span></span><span style="display:flex;"><span>│   └── service
 </span></span><span style="display:flex;"><span>│       └── foo
 </span></span><span style="display:flex;"><span>│           └── v1
@@ -167,14 +167,12 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span>├── go.sum
 </span></span><span style="display:flex;"><span>├── pkg  // 服务内部代码
 </span></span><span style="display:flex;"><span>│   ├── app.go  // -------- 构造和组合各层代码，提供给 cmd/main.go
-</span></span><span style="display:flex;"><span>│   ├── biz  // ---------- DDD 的 domain 层，维护业务代码
+</span></span><span style="display:flex;"><span>│   ├── service  // ---------- 业务层，维护业务代码
 </span></span><span style="display:flex;"><span>│   │   └── foo.go
-</span></span><span style="display:flex;"><span>│   ├── infra  // --------- DDD 的 infrastructure 层，底层通用代码
-</span></span><span style="display:flex;"><span>│   │   ├── cache  // -------- 缓存相关
-</span></span><span style="display:flex;"><span>│   │   │   └── cache.go
+</span></span><span style="display:flex;"><span>│   ├── internal  // --------- 内部层，底层通用代码
 </span></span><span style="display:flex;"><span>│   │   └── storage  // ------- 数据库 storage，数据交互
 </span></span><span style="display:flex;"><span>│   │       └── storage.go
-</span></span><span style="display:flex;"><span>│   ├── service   // ---------- DDD 的 interfaces 层，提供对外的 gRPC 接口 
+</span></span><span style="display:flex;"><span>│   ├── server   // ---------- 接口层，提供对外的 gRPC 接口 
 </span></span><span style="display:flex;"><span>│   │   └── foo.go
 </span></span><span style="display:flex;"><span>│   └── internal
 </span></span><span style="display:flex;"><span>└── vine.toml   // -------- vine 项目的描述文件
@@ -208,16 +206,13 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span>├── pkg   
 </span></span><span style="display:flex;"><span>│   ├── helloworld // -------- 多服务是，pkg 每个目录代码一个服务
 </span></span><span style="display:flex;"><span>│   │   ├── app.go
-</span></span><span style="display:flex;"><span>│   │   ├── biz
+</span></span><span style="display:flex;"><span>│   │   ├── service
 </span></span><span style="display:flex;"><span>│   │   │   └── helloworld.go
-</span></span><span style="display:flex;"><span>│   │   ├── infra
-</span></span><span style="display:flex;"><span>│   │   │   ├── cache
-</span></span><span style="display:flex;"><span>│   │   │   │   └── cache.go
+</span></span><span style="display:flex;"><span>│   │   ├── internal
 </span></span><span style="display:flex;"><span>│   │   │   └── storage
 </span></span><span style="display:flex;"><span>│   │   │       └── storage.go
-</span></span><span style="display:flex;"><span>│   │   └── service
+</span></span><span style="display:flex;"><span>│   │   └── server
 </span></span><span style="display:flex;"><span>│   │       └── helloworld.go
-</span></span><span style="display:flex;"><span>│   └── internal  // ------ 多个服务间的通用代码
 </span></span><span style="display:flex;"><span>└── vine.toml
 </span></span></code></pre></div><h2 id="vinetoml">vine.toml</h2>
 <p><code>vine.toml</code> 是 <strong>Vine</strong> 项目的描述文件，当一个目录底下存在该文件时，会被识别为 <strong>Vine</strong> 项目。</p>

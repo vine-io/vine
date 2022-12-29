@@ -33,7 +33,9 @@ func init() {
 	factory := storage.NewStorageFactory()
 
 	_ = factory
-	// err = XXX.AddToFactory(factory)
+	// if err := XXX.AddToFactory(factory); err != nil {
+    //     panic(err)
+    // }
 }
 `
 

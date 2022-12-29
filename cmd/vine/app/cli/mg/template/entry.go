@@ -31,7 +31,7 @@ import (
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/version"
+	"{{.Dir}}/pkg/internal/version"
 )
 
 func Run() {
@@ -66,7 +66,7 @@ func Run() {
 		}
 
 		if impl, ok := o.Value.(server.BizImpl); ok {
-			if err = impl.Init(); err != nil {
+			if err = impl.Init(srv.Options().Context); err != nil {
 				log.Fatalf("biz init: %v", o.Name, err)
 			}
 
@@ -97,7 +97,7 @@ import (
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
 
-	"{{.Dir}}/pkg/version"
+	"{{.Dir}}/pkg/internal/version"
 )
 
 func Run() {
@@ -132,7 +132,7 @@ func Run() {
 		}
 
 		if impl, ok := o.Value.(server.BizImpl); ok {
-			if err = impl.Init(); err != nil {
+			if err = impl.Init(srv.Options().Context); err != nil {
 				log.Fatalf("biz init: %v", o.Name, err)
 			}
 
@@ -175,7 +175,7 @@ import (
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
 
-	"{{.Dir}}/pkg/internal"
+	"{{.Dir}}/pkg/internal/version"
 )
 
 var (
@@ -215,12 +215,12 @@ func Run() {
 
 	// initialise service
 	svc := vine.NewService(
-		vine.Name(runtime.{{title .Name}}Name),
-		vine.Id(runtime.{{title .Name}}Id),
+		vine.Name(version.{{title .Name}}Name),
+		vine.Id(version.{{title .Name}}Id),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"api-address": Address,
-			"namespace": runtime.Namespace,
+			"namespace": version.Namespace,
 		}),
 		vine.Flags(flags...),
 		vine.Action(func(ctx *cli.Context) error {
@@ -254,7 +254,7 @@ func Run() {
 	}
 
 	// create the namespace resolver
-	nsResolver := namespace.NewResolver(Type, runtime.Namespace)
+	nsResolver := namespace.NewResolver(Type, version.Namespace)
 	// resolver options
 	ropts := []resolver.Option{
 		resolver.WithNamespace(nsResolver.ResolveWithType),
@@ -269,7 +269,7 @@ func Run() {
 		router.WithRegistry(svc.Options().Registry),
 	)
 	rp := arpc.NewHandler(
-		ahandler.WithNamespace(runtime.Namespace),
+		ahandler.WithNamespace(version.Namespace),
 		ahandler.WithRouter(rt),
 		ahandler.WithClient(svc.Client()),
 	)
