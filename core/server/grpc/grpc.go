@@ -935,7 +935,7 @@ func (g *grpcServer) Start() error {
 
 		var hlr http.Handler = g.svc
 		if v, ok := g.opts.Context.Value(grpcWithHttp{}).(http.Handler); ok {
-			log.Infof("discovery http handler")
+			log.Debugf("gRPC Server start with http")
 			hlr = grpcHandlerFunc(g.svc, v)
 		}
 
