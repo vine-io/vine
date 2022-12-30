@@ -8,6 +8,7 @@ import (
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/registry"
 	pb "github.com/vine-io/vine/lib/api/handler/openapi/proto"
+	log "github.com/vine-io/vine/lib/logger"
 	maddr "github.com/vine-io/vine/util/addr"
 )
 
@@ -68,9 +69,13 @@ func (ad *APIDoc) Init(services ...*registry.Service) {
 			}
 		}
 
+		c := client.DefaultClient
 		for _, i := range list {
-			rsp, err := pb.NewOpenAPIService(i.Name, client.DefaultClient).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
-			if err != nil || len(rsp.Apis) == 0 {
+			rsp, e := pb.NewOpenAPIService(i.Name, c).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
+			if e != nil {
+				log.Warnf("get %s openapi: %v", i.Name, err)
+			}
+			if e != nil || len(rsp.Apis) == 0 {
 				continue
 			}
 			for _, api := range rsp.Apis {
