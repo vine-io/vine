@@ -101,6 +101,7 @@ func Broker(b broker.Broker) Option {
 	}
 }
 
+// Cmd to be use for service
 func Cmd(c cmd.Cmd) Option {
 	return func(o *Options) {
 		o.Cmd = c
@@ -200,8 +201,8 @@ func Name(n string) Option {
 	}
 }
 
-// Id of the service
-func Id(id string) Option {
+// ID of the service
+func ID(id string) Option {
 	return func(o *Options) {
 		_ = o.Server.Init(server.Id(id))
 	}

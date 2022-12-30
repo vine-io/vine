@@ -53,6 +53,7 @@ type Context struct {
 	Scheduler gscheduler.Scheduler
 }
 
+// InitContext context.Context => *vine.Context
 func InitContext(ctx context.Context) *Context {
 	return &Context{
 		Context:   ctx,

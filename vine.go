@@ -58,6 +58,7 @@ type Event interface {
 	Publish(ctx context.Context, msg interface{}, opts ...client.PublishOption) error
 }
 
+// Option for vine
 type Option func(*Options)
 
 // NewService creates and returns a new Service based on the packages within.
