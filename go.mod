@@ -32,8 +32,8 @@ require (
 	github.com/vine-io/cli v1.3.0
 	github.com/vine-io/gscheduler v0.3.0
 	github.com/xlab/treeprint v1.0.0
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
-	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	golang.org/x/net v0.4.0
 	google.golang.org/grpc v1.47.0
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify.v1 v1.4.7
