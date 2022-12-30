@@ -84,7 +84,7 @@ func Run() {
 	SimpleBuiltin = `package pkg
 
 import (
-	_ "{{.Dir}}/pkg/biz"
+	_ "{{.Dir}}/pkg/server"
 	_ "{{.Dir}}/pkg/service"
 )
 `
@@ -150,7 +150,7 @@ func Run() {
 	ClusterBuiltin = `package {{.Name}}
 
 import (
-	_ "{{.Dir}}/pkg/{{.Name}}/biz"
+	_ "{{.Dir}}/pkg/{{.Name}}/server"
 	_ "{{.Dir}}/pkg/{{.Name}}/service"
 )
 `
