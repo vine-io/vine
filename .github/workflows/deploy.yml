@@ -21,4 +21,4 @@ jobs:
 
       - name: Lint Go Code
         run: |
-          make release
+          make lint
