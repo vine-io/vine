@@ -22,9 +22,7 @@ jobs:
       - name: Lint Go Code
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
-          go get -u golang.org/x/lint/golint
-          go mod tidy && go mod vendor
-          go install golang.org/x/lint/golint
+          go install golang.org/x/lint/golint@latest
           make lint
 
 #  test:
