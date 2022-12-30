@@ -19,7 +19,7 @@ test-coverage:
 	go test ./... -bench=. -coverage
 
 lint:
-	golint .
+	golint -set_exit_status ./..
 
 release:
 ifeq "$(TAG)" ""
