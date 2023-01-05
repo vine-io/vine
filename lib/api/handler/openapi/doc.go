@@ -73,7 +73,7 @@ func (ad *APIDoc) Init(services ...*registry.Service) {
 		for _, i := range list {
 			rsp, e := pb.NewOpenAPIService(i.Name, c).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
 			if e != nil {
-				log.Warnf("get %s openapi: %v", i.Name, err)
+				log.Warnf("get %s openapi: %v", i.Name, e)
 			}
 			if e != nil || len(rsp.Apis) == 0 {
 				continue
