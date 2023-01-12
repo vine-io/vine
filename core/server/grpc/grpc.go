@@ -933,20 +933,20 @@ func (g *grpcServer) Start() error {
 	// vine: go ts.Accept(s.accept)
 	go func() {
 
-		var hlr http.Handler = g.svc
+		hlr := grpcHandlerFunc(g.svc, http.NewServeMux())
 		if v, ok := g.opts.Context.Value(grpcWithHttp{}).(http.Handler); ok {
 			log.Debugf("gRPC Server start with http")
 			hlr = grpcHandlerFunc(g.svc, v)
 		}
 
-		serve := http.Server{
-			Addr:    g.opts.Address,
+		serve := &http.Server{
 			Handler: hlr,
 		}
 
 		if err := serve.Serve(ts); err != nil {
 			log.Errorf("gRPC Server start error: %v", err)
 		}
+
 	}()
 
 	go func() {
