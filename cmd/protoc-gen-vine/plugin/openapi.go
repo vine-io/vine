@@ -299,7 +299,7 @@ func (g *vine) generateParameters(svcName string, msg *generator.MessageDescript
 		fields = append(fields, field.Proto.GetJsonName())
 	}
 
-	if method != _get {
+	if method != _get && method != _delete {
 		return
 	}
 
