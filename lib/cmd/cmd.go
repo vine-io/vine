@@ -27,6 +27,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 
@@ -221,8 +222,8 @@ var (
 	}
 
 	DefaultBrokers = map[string]func(...broker.Option) broker.Broker{
-		"memory":  memory.NewBroker,
-		"http":    brokerHttp.NewBroker,
+		"memory": memory.NewBroker,
+		"http":   brokerHttp.NewBroker,
 	}
 
 	DefaultClients = map[string]func(...client.Option) client.Client{
@@ -230,8 +231,8 @@ var (
 	}
 
 	DefaultRegistries = map[string]func(...registry.Option) registry.Registry{
-		"mdns":    mdns.NewRegistry,
-		"memory":  regMemory.NewRegistry,
+		"mdns":   mdns.NewRegistry,
+		"memory": regMemory.NewRegistry,
 	}
 
 	DefaultSelectors = map[string]func(...selector.Option) selector.Selector{
@@ -338,8 +339,8 @@ func (c *cmd) Init(opts ...Option) error {
 	}
 	c.opts.app.HideVersion = len(c.opts.Version) == 0
 	c.opts.app.Usage = c.opts.Description
-	c.opts.app.RunAndExitOnError()
-	return nil
+
+	return c.opts.app.Run(os.Args)
 }
 
 func (c *cmd) Options() Options {
