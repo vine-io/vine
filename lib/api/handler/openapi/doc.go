@@ -2,6 +2,7 @@ package openapi
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"sync"
 
@@ -161,6 +162,9 @@ func (ad *APIDoc) Out() *pb.OpenAPI {
 	for _, tag := range ad.Doc.Tags {
 		out.Tags = append(out.Tags, tag)
 	}
+	sort.Slice(out.Tags, func(i, j int) bool {
+		return out.Tags[i].Name < out.Tags[j].Name
+	})
 	for name, path := range ad.Doc.Paths {
 		out.Paths[name] = path
 	}
