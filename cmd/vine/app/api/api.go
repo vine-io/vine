@@ -137,7 +137,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 
 	if ctx.Bool("enable-openapi") {
-		openapi.RegisterOpenAPI(app)
+		openapi.RegisterOpenAPI(svc.Client(), svc.Options().Registry, app)
 	}
 
 	app.GET(APIPath, func(c *gin.Context) {
