@@ -14,40 +14,45 @@ import (
 )
 
 var once = sync.Once{}
-var doc = &APIDoc{}
+var doc = &docStore{}
 
 func init() {
+
+	oa := &pb.OpenAPI{
+		Openapi: "3.0.1",
+		Info: &pb.OpenAPIInfo{
+			Title:       "Vine Document",
+			Description: "OpenAPI3.0",
+			Version:     "latest",
+		},
+		Servers: []*pb.OpenAPIServer{},
+		Tags:    []*pb.OpenAPITag{},
+		Paths:   map[string]*pb.OpenAPIPath{},
+		Components: &pb.OpenAPIComponents{
+			SecuritySchemes: &pb.SecuritySchemes{},
+			Schemas:         map[string]*pb.Model{},
+		},
+	}
+
 	once.Do(func() {
-		doc = &APIDoc{
-			Doc: &pb.OpenAPI{
-				Openapi: "3.0.1",
-				Info: &pb.OpenAPIInfo{
-					Title:       "Vine Document",
-					Description: "OpenAPI3.0",
-					Version:     "latest",
-				},
-				Servers: []*pb.OpenAPIServer{},
-				Tags:    []*pb.OpenAPITag{},
-				Paths:   map[string]*pb.OpenAPIPath{},
-				Components: &pb.OpenAPIComponents{
-					SecuritySchemes: &pb.SecuritySchemes{},
-					Schemas:         map[string]*pb.Model{},
-				},
-			},
-		}
+		doc = newDocStore(oa)
 	})
 }
 
-type APIDoc struct {
+type docStore struct {
 	sync.RWMutex
 
 	Doc *pb.OpenAPI
 }
 
-func (ad *APIDoc) Init(services ...*registry.Service) {
+func newDocStore(api *pb.OpenAPI) *docStore {
+	return &docStore{Doc: api}
+}
+
+func (s *docStore) discovery(co client.Client, reg registry.Registry, services []*registry.Service) {
 	ctx := context.TODO()
 	for _, item := range services {
-		list, err := registry.GetService(ctx, item.Name)
+		list, err := reg.GetService(ctx, item.Name)
 		if err != nil {
 			continue
 		}
@@ -65,14 +70,13 @@ func (ad *APIDoc) Init(services ...*registry.Service) {
 					if !strings.HasPrefix(url, "http://") || !strings.HasPrefix(url, "https://") {
 						url = "http://" + url
 					}
-					ad.AddServer(url, item.Name)
+					s.AddServer(url, item.Name)
 				}
 			}
 		}
 
-		c := client.DefaultClient
 		for _, i := range list {
-			rsp, e := pb.NewOpenAPIService(i.Name, c).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
+			rsp, e := pb.NewOpenAPIService(i.Name, co).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
 			if e != nil {
 				log.Warnf("get %s openapi: %v", i.Name, e)
 			}
@@ -83,60 +87,60 @@ func (ad *APIDoc) Init(services ...*registry.Service) {
 				if api == nil || api.Components.SecuritySchemes == nil {
 					continue
 				}
-				ad.AddEndpoint(api)
+				s.AddEndpoint(api)
 			}
 		}
 	}
 }
 
-func (ad *APIDoc) AddServer(url, desc string) {
-	ad.Lock()
-	defer ad.Unlock()
+func (s *docStore) AddServer(url, desc string) {
+	s.Lock()
+	defer s.Unlock()
 
-	ad.Doc.Servers = append(ad.Doc.Servers, &pb.OpenAPIServer{
+	s.Doc.Servers = append(s.Doc.Servers, &pb.OpenAPIServer{
 		Url:         url,
 		Description: desc,
 	})
 }
 
-func (ad *APIDoc) AddEndpoint(api *pb.OpenAPI) {
+func (s *docStore) AddEndpoint(api *pb.OpenAPI) {
 	tags := map[string]*pb.OpenAPITag{}
-	ad.RLock()
-	for _, tag := range ad.Doc.Tags {
+	s.RLock()
+	for _, tag := range s.Doc.Tags {
 		tags[tag.Name] = tag
 	}
-	ad.RUnlock()
+	s.RUnlock()
 
-	ad.Lock()
-	defer ad.Unlock()
+	s.Lock()
+	defer s.Unlock()
 
 	for _, tag := range api.Tags {
 		if _, ok := tags[tag.Name]; !ok {
 			tags[tag.Name] = tag
 		}
 	}
-	ad.Doc.Tags = []*pb.OpenAPITag{}
+	s.Doc.Tags = []*pb.OpenAPITag{}
 	for _, tag := range tags {
-		ad.Doc.Tags = append(ad.Doc.Tags, tag)
+		s.Doc.Tags = append(s.Doc.Tags, tag)
 	}
 	for name, path := range api.Paths {
-		ad.Doc.Paths[name] = path
+		s.Doc.Paths[name] = path
 	}
 	for name, schema := range api.Components.Schemas {
-		ad.Doc.Components.Schemas[name] = schema
+		s.Doc.Components.Schemas[name] = schema
 	}
 	if api.Components.SecuritySchemes.Basic != nil {
-		ad.Doc.Components.SecuritySchemes.Basic = api.Components.SecuritySchemes.Basic
+		s.Doc.Components.SecuritySchemes.Basic = api.Components.SecuritySchemes.Basic
 	}
 	if api.Components.SecuritySchemes.Bearer != nil {
-		ad.Doc.Components.SecuritySchemes.Bearer = api.Components.SecuritySchemes.Bearer
+		s.Doc.Components.SecuritySchemes.Bearer = api.Components.SecuritySchemes.Bearer
 	}
 	if api.Components.SecuritySchemes.ApiKeys != nil {
-		ad.Doc.Components.SecuritySchemes.ApiKeys = api.Components.SecuritySchemes.ApiKeys
+		s.Doc.Components.SecuritySchemes.ApiKeys = api.Components.SecuritySchemes.ApiKeys
 	}
 }
 
-func (ad *APIDoc) Out() *pb.OpenAPI {
+func (s *docStore) output() *pb.OpenAPI {
 	out := &pb.OpenAPI{
 		Openapi: "3.0.1",
 		Info: &pb.OpenAPIInfo{
@@ -152,35 +156,35 @@ func (ad *APIDoc) Out() *pb.OpenAPI {
 			Schemas:         map[string]*pb.Model{},
 		},
 	}
-	if ad.Doc == nil {
+	if s.Doc == nil {
 		return out
 	}
 
-	for _, server := range ad.Doc.Servers {
+	for _, server := range s.Doc.Servers {
 		out.Servers = append(out.Servers, server)
 	}
-	for _, tag := range ad.Doc.Tags {
+	for _, tag := range s.Doc.Tags {
 		out.Tags = append(out.Tags, tag)
 	}
 	sort.Slice(out.Tags, func(i, j int) bool {
 		return out.Tags[i].Name < out.Tags[j].Name
 	})
-	for name, path := range ad.Doc.Paths {
+	for name, path := range s.Doc.Paths {
 		out.Paths[name] = path
 	}
-	if ad.Doc.Components.SecuritySchemes.Basic != nil {
+	if s.Doc.Components.SecuritySchemes.Basic != nil {
 		out.Components.SecuritySchemes.Basic = new(pb.BasicSecurity)
-		*out.Components.SecuritySchemes.Basic = *ad.Doc.Components.SecuritySchemes.Basic
+		*out.Components.SecuritySchemes.Basic = *s.Doc.Components.SecuritySchemes.Basic
 	}
-	if ad.Doc.Components.SecuritySchemes.ApiKeys != nil {
+	if s.Doc.Components.SecuritySchemes.ApiKeys != nil {
 		out.Components.SecuritySchemes.ApiKeys = new(pb.APIKeysSecurity)
-		*out.Components.SecuritySchemes.ApiKeys = *ad.Doc.Components.SecuritySchemes.ApiKeys
+		*out.Components.SecuritySchemes.ApiKeys = *s.Doc.Components.SecuritySchemes.ApiKeys
 	}
-	if ad.Doc.Components.SecuritySchemes.Bearer != nil {
+	if s.Doc.Components.SecuritySchemes.Bearer != nil {
 		out.Components.SecuritySchemes.Bearer = new(pb.BearerSecurity)
-		*out.Components.SecuritySchemes.Bearer = *ad.Doc.Components.SecuritySchemes.Bearer
+		*out.Components.SecuritySchemes.Bearer = *s.Doc.Components.SecuritySchemes.Bearer
 	}
-	for name, model := range ad.Doc.Components.Schemas {
+	for name, model := range s.Doc.Components.Schemas {
 		out.Components.Schemas[name] = model
 	}
 
