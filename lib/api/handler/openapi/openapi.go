@@ -31,65 +31,78 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rakyll/statik/fs"
+	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/registry"
 	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
 	log "github.com/vine-io/vine/lib/logger"
 )
 
-var DefaultPrefix = "/openapi-ui/"
+var (
+	DefaultPrefix = "/openapi-ui/"
+)
 
-func RegisterOpenAPI(router *gin.Engine) {
+func RegisterOpenAPI(co client.Client, reg registry.Registry, router *gin.Engine) {
 	mime.AddExtensionType(".svg", "image/svg+xml")
 	statikFs, err := fs.New()
 	if err != nil {
 		log.Fatalf("Starting OpenAPI: %v", err)
 	}
-	router.GET(DefaultPrefix, swaggerHandler)
-	router.GET(path.Join(DefaultPrefix, "redoc"), redocHandler)
+
 	router.StaticFS(filepath.Join(DefaultPrefix, "static/"), statikFs)
-	router.GET("/openapi.json", openAPIJOSNHandler)
-	router.GET("/services", openAPIServiceHandler)
+
+	router.GET(DefaultPrefix, swagger())
+	router.GET(path.Join(DefaultPrefix, "redoc"), redoc())
+	router.GET("/openapi.json", openAPIJOSN(co, reg))
+	router.GET("/services", openAPIService(reg))
 	log.Infof("Starting OpenAPI at %v", DefaultPrefix)
 }
 
-func swaggerHandler(ctx *gin.Context) {
-	if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
-		ctx.Request.Header.Set("Content-Type", ct)
-		return
+func swagger() func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
+			ctx.Request.Header.Set("Content-Type", ct)
+			return
+		}
+		render(ctx, swaggerTmpl, nil)
 	}
-	render(ctx, swaggerTmpl, nil)
 }
 
-func redocHandler(ctx *gin.Context) {
-	if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
-		ctx.Request.Header.Set("Content-Type", ct)
-		return
+func redoc() func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		if ct := ctx.GetHeader("Content-Type"); ct == "application/json" {
+			ctx.Request.Header.Set("Content-Type", ct)
+			return
+		}
+		render(ctx, redocTmpl, nil)
 	}
-	render(ctx, redocTmpl, nil)
 }
 
-func openAPIJOSNHandler(ctx *gin.Context) {
-	services, err := registry.ListServices(ctx)
-	if err != nil {
-		ctx.JSON(500, err.Error())
-		return
+func openAPIJOSN(co client.Client, reg registry.Registry) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		services, err := reg.ListServices(ctx)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		doc.discovery(co, reg, services)
+		ctx.JSON(200, doc.output())
 	}
-	doc.Init(services...)
-	ctx.JSON(200, doc.Out())
 }
 
-func openAPIServiceHandler(ctx *gin.Context) {
-	services, err := registry.ListServices(ctx)
-	if err != nil {
-		ctx.JSON(500, err.Error())
-		return
+func openAPIService(reg registry.Registry) func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		services, err := reg.ListServices(ctx)
+		if err != nil {
+			ctx.JSON(500, err.Error())
+			return
+		}
+		out := make([]*registry.Service, 0)
+		for _, item := range services {
+			list, _ := reg.GetService(ctx, item.Name)
+			out = append(out, list...)
+		}
+		ctx.JSON(200, out)
 	}
-	out := make([]*registry.Service, 0)
-	for _, item := range services {
-		list, _ := registry.GetService(ctx, item.Name)
-		out = append(out, list...)
-	}
-	ctx.JSON(200, out)
 }
 
 func render(ctx *gin.Context, tmpl string, data interface{}) {
