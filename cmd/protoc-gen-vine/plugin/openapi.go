@@ -213,11 +213,10 @@ func (g *vine) generateMethodOpenAPI(svc *generator.ServiceDescriptor, methods [
 				Proto:   msg,
 			})
 
-			if len(pathParams) > 0 || meth == _get {
-				g.P(fmt.Sprintf("Parameters: []*%s.PathParameters{", g.openApiPbPkg.Use()))
-				g.generateParameters(svcName, msg, pathParams, meth)
-				g.P("},")
-			}
+			g.P(fmt.Sprintf("Parameters: []*%s.PathParameters{", g.openApiPbPkg.Use()))
+			g.generateParameters(svcName, msg, pathParams, meth)
+			g.P("},")
+
 			if meth != _get && meth != _delete {
 				g.P(fmt.Sprintf("RequestBody: &%s.PathRequestBody{", g.openApiPbPkg.Use()))
 				desc := extractDesc(msg.Comments)
