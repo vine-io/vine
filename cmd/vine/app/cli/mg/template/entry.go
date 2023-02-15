@@ -40,7 +40,7 @@ func Run() {
 	srv := vine.NewService()
 	opts := []vine.Option{
 		vine.Name(version.{{title .Name}}Name),
-		vine.Id(version.{{title .Name}}Id),
+		vine.ID(version.{{title .Name}}Id),
 		vine.Version(version.GetVersion()),
 		vine.Metadata(map[string]string{
 			"namespace": version.Namespace,
@@ -216,7 +216,7 @@ func Run() {
 	// initialise service
 	svc := vine.NewService(
 		vine.Name(version.{{title .Name}}Name),
-		vine.Id(version.{{title .Name}}Id),
+		vine.ID(version.{{title .Name}}Id),
 		vine.Version(runtime.GetVersion()),
 		vine.Metadata(map[string]string{
 			"api-address": Address,
