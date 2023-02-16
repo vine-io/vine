@@ -23,7 +23,7 @@
 package grpc
 
 import (
-	b "bytes"
+	gbytes "bytes"
 	"strings"
 
 	"github.com/gogo/protobuf/proto"
@@ -44,7 +44,7 @@ type wrapCodec struct{ encoding.Codec }
 
 var jsonpbMarshaler = &jsonpb.Marshaler{
 	EnumsAsInts:  false,
-	EmitDefaults: false,
+	EmitDefaults: true,
 	OrigName:     true,
 }
 
@@ -119,7 +119,7 @@ func (jsonCodec) Unmarshal(data []byte, v interface{}) error {
 		return nil
 	}
 	if pb, ok := v.(proto.Message); ok {
-		return jsonpb.Unmarshal(b.NewReader(data), pb)
+		return jsonpb.Unmarshal(gbytes.NewReader(data), pb)
 	}
 	return json.Unmarshal(data, v)
 }
