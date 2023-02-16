@@ -113,10 +113,12 @@ func newTransport(config *tls.Config) *http.Transport {
 
 	t := &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
-		DialContext: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-		}).DialContext,
+		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			return (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+			}).DialContext(ctx, network, addr)
+		},
 		TLSHandshakeTimeout: 10 * time.Second,
 		DialTLSContext:      dialTLS,
 	}
