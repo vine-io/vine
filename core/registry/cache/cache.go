@@ -153,7 +153,7 @@ func (c *cache) get(ctx context.Context, service string) ([]*registry.Service, e
 	// get does the actual request for a service and cache it
 	get := func(service string, cached []*registry.Service) ([]*registry.Service, error) {
 		// ask the registry
-		services, err := c.Registry.GetService(ctx, service)
+		svcs, err := c.Registry.GetService(ctx, service)
 		if err != nil {
 			// check the cache
 			if len(cached) > 0 {
@@ -168,16 +168,16 @@ func (c *cache) get(ctx context.Context, service string) ([]*registry.Service, e
 		}
 
 		// reset the status
-		if err := c.getStatus(); err != nil {
+		if err = c.getStatus(); err != nil {
 			c.setStatus(nil)
 		}
 
 		// cache results
 		c.Lock()
-		c.set(service, services)
+		c.set(service, svcs)
 		c.Unlock()
 
-		return services, nil
+		return svcs, nil
 	}
 
 	// watch service if not watched
