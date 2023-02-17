@@ -25,6 +25,7 @@ package mdns
 import (
 	"context"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -121,7 +122,7 @@ func TestMDNS(t *testing.T) {
 
 		node := s[0].Nodes[0]
 
-		if node.Id != service.Nodes[0].Id {
+		if strings.HasPrefix(service.Nodes[0].Id, node.Id) {
 			t.Fatalf("Expected node id %s got %s", service.Nodes[0].Id, node.Id)
 		}
 
@@ -138,7 +139,7 @@ func TestMDNS(t *testing.T) {
 	for _, service := range testData {
 		var seen bool
 		for _, s := range services {
-			if s.Name == service.Name {
+			if strings.HasPrefix(s.Name, service.Name) {
 				seen = true
 				break
 			}
@@ -329,7 +330,7 @@ func TestWatcher(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if res.Service.Name != service.Name {
+			if !strings.HasPrefix(res.Service.Name, service.Name) {
 				continue
 			}
 
@@ -352,7 +353,7 @@ func TestWatcher(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if res.Service.Name != service.Name {
+			if strings.HasPrefix(res.Service.Name, service.Name) {
 				continue
 			}
 

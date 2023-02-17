@@ -25,15 +25,14 @@ package cli
 import (
 	"context"
 
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/lib/config/source"
 )
 
 type contextKey struct{}
 
 // Context sets the cli context
-func Context(c *cli.Context) source.Option {
+func Context(c *cobra.Command) source.Option {
 	return func(o *source.Options) {
 		if o.Context == nil {
 			o.Context = context.Background()

@@ -63,12 +63,18 @@ import (
 var (
 	// DefaultMaxMsgSize define maximum message size that server can send
 	// or receive. Default value is 100MB.
-	DefaultMaxMsgSize = 1024 * 1024 * 100
+	DefaultMaxMsgSize  = 1024 * 1024 * 100
+	DefaultContentType = "application/grpc"
 )
 
-const (
-	defaultContentType = "application/grpc"
-)
+func init() {
+	encoding.RegisterCodec(wrapCodec{jsonCodec{}})
+	encoding.RegisterCodec(wrapCodec{protoCodec{}})
+	encoding.RegisterCodec(wrapCodec{bytesCodec{}})
+
+	server.Flag.Int("server-grpc-maxMsgSize", DefaultMaxMsgSize, "Sets maximum message size that server can send receive")
+	server.Flag.String("server-grpc-contentType", DefaultContentType, "Sets the content type for grpc protocol")
+}
 
 type grpcServer struct {
 	rpc  *rServer
@@ -87,12 +93,6 @@ type grpcServer struct {
 
 	// registry service instance
 	rsvc *registry.Service
-}
-
-func init() {
-	encoding.RegisterCodec(wrapCodec{jsonCodec{}})
-	encoding.RegisterCodec(wrapCodec{protoCodec{}})
-	encoding.RegisterCodec(wrapCodec{bytesCodec{}})
 }
 
 func newGRPCServer(opts ...server.Option) server.Server {
@@ -240,7 +240,7 @@ func (g *grpcServer) handler(svc interface{}, stream grpc.ServerStream) error {
 	to, _ := md.Get("timeout")
 
 	// get content type
-	ct := defaultContentType
+	ct := DefaultContentType
 
 	if ctype, ok := md.Get("x-content-type"); ok {
 		ct = ctype
@@ -753,7 +753,7 @@ func (g *grpcServer) Register() error {
 	}
 
 	// register the service
-	if err := regFunc(svc); err != nil {
+	if err = regFunc(svc); err != nil {
 		return err
 	}
 

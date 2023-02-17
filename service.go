@@ -79,22 +79,24 @@ func (s *service) Init(opts ...Option) {
 	}
 
 	s.once.Do(func() {
-		if s.opts.Cmd != nil {
-			// set cmd name
-			if len(s.opts.Cmd.App().Name) == 0 {
-				s.opts.Cmd.App().Name = s.Server().Options().Name
-			}
 
+		options := []cmd.Option{
+			cmd.Broker(&s.opts.Broker),
+			cmd.Registry(&s.opts.Registry),
+			cmd.Client(&s.opts.Client),
+			cmd.Config(&s.opts.Config),
+			cmd.Server(&s.opts.Server),
+			cmd.Cache(&s.opts.Cache),
+			cmd.Dialect(&s.opts.Dialect),
+		}
+
+		if len(s.opts.Cmd.Options().Name) == 0 {
+			options = append(options, cmd.Name(s.opts.Server.Options().Name))
+		}
+
+		if s.opts.Cmd != nil {
 			// Initialise the command flags, overriding new service
-			if err := s.opts.Cmd.Init(
-				cmd.Broker(&s.opts.Broker),
-				cmd.Registry(&s.opts.Registry),
-				cmd.Client(&s.opts.Client),
-				cmd.Config(&s.opts.Config),
-				cmd.Server(&s.opts.Server),
-				cmd.Cache(&s.opts.Cache),
-				cmd.Dialect(&s.opts.Dialect),
-			); err != nil {
+			if err := s.opts.Cmd.Init(options...); err != nil {
 				logger.Fatal(err)
 			}
 		}

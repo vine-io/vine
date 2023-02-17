@@ -25,8 +25,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/client/selector"
@@ -44,7 +43,7 @@ type Options struct {
 	Description string
 	Version     string
 
-	app *cli.App
+	app *cobra.Command
 
 	// We need pointers to things, so we can swap them out if needed.
 	Broker   *broker.Broker
@@ -95,7 +94,7 @@ func Version(v string) Option {
 	}
 }
 
-func CliApp(app *cli.App) Option {
+func CliApp(app *cobra.Command) Option {
 	return func(o *Options) {
 		o.app = app
 	}

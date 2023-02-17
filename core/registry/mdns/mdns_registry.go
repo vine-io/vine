@@ -43,9 +43,13 @@ import (
 )
 
 var (
-	// use a .vine domain rather than .local
-	mdnsDomain = "vine"
+	// DefaultMdnsDomain use a .vine domain rather than .local
+	DefaultMdnsDomain = ".vine"
 )
+
+func init() {
+	registry.Flag.StringVar(&DefaultMdnsDomain, "registry-mdns-domain", DefaultMdnsDomain, "Sets the domain of mdns")
+}
 
 type mdnsTxt struct {
 	Service   string
@@ -162,13 +166,7 @@ func newRegistry(opts ...registry.Option) registry.Registry {
 	}
 
 	// set the domain
-	domain := mdnsDomain
-
-	d, ok := options.Context.Value("mdns.domain").(string)
-	if ok {
-		domain = d
-	}
-
+	domain := DefaultMdnsDomain
 	return &mdnsRegistry{
 		opts:     options,
 		domain:   domain,
@@ -259,7 +257,7 @@ func (m *mdnsRegistry) Register(ctx context.Context, service *registry.Service, 
 		}
 		port, _ := strconv.Atoi(pt)
 
-		log.Infof("[mdns] registry create new service with ip: %s for: %s", net.ParseIP(host).String(), host)
+		log.Infof("[mdns] registry create new service with ip: %s port %d for: %s", net.ParseIP(host).String(), port, host)
 
 		// we got here, new node
 		s, err := mdns.NewMDNSService(

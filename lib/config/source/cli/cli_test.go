@@ -27,44 +27,28 @@ import (
 	"os"
 	"testing"
 
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine"
-	"github.com/vine-io/vine/lib/config"
 	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/lib/config"
 	"github.com/vine-io/vine/lib/config/source"
 )
 
 func TestCliSourceDefault(t *testing.T) {
 	const expVal string = "flagvalue"
 
-	service := vine.NewService(
-		vine.Flags(
-			// to be able to run inside go test
-			&cli.StringFlag{
-				Name: "test.timeout",
-			},
-			&cli.BoolFlag{
-				Name: "test.v",
-			},
-			&cli.StringFlag{
-				Name: "test.run",
-			},
-			&cli.StringFlag{
-				Name: "test.testlogfile",
-			},
-			&cli.StringFlag{
-				Name:    "flag",
-				Usage:   "It changes something",
-				EnvVars: []string{"flag"},
-				Value:   expVal,
-			},
-		),
-	)
+	service := vine.NewService()
+	rootCmd := service.Options().Cmd.App()
+	rootCmd.PersistentFlags().String("test.timeout", "", "")
+	rootCmd.PersistentFlags().String("test.v", "", "")
+	rootCmd.PersistentFlags().String("test.run", "", "")
+	rootCmd.PersistentFlags().String("test.testlogfile", "", "")
+	rootCmd.PersistentFlags().String("flag", expVal, "It changes something")
+
 	var cliSrc source.Source
 	service.Init(
 		// Loads CLI configuration
-		vine.Action(func(c *cli.Context) error {
+		vine.Action(func(c *cobra.Command, args []string) error {
 			cliSrc = NewSource(
 				Context(c),
 			)
@@ -83,29 +67,24 @@ func test(t *testing.T, withContext bool) {
 
 	// setup app
 	app := cmd.App()
-	app.Name = "testapp"
-	app.Flags = []cli.Flag{
-		&cli.StringFlag{
-			Name:    "db-host",
-			EnvVars: []string{"db-host"},
-			Value:   "myval",
-		},
-	}
+	app.Use = "testapp"
+	app.PersistentFlags().String("db-host", "myval", "")
 
 	// with context
 	if withContext {
 		// set action
-		app.Action = func(c *cli.Context) error {
+		app.RunE = func(c *cobra.Command, args []string) error {
 			src = WithContext(c)
 			return nil
 		}
 
 		// run app
-		app.Run([]string{"run", "-db-host", "localhost"})
+		app.SetArgs([]string{"--db-host", "localhost"})
+		app.Execute()
 		// no context
 	} else {
 		// set args
-		os.Args = []string{"run", "-db-host", "localhost"}
+		os.Args = []string{"run", "--db-host", "localhost"}
 		src = NewSource()
 	}
 

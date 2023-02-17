@@ -30,9 +30,21 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/spf13/pflag"
 	"github.com/vine-io/vine/lib/dao/clause"
 	"github.com/vine-io/vine/lib/dao/schema"
 )
+
+var (
+	DefaultDialect Dialect
+
+	Flag = pflag.NewFlagSet("dao", pflag.ExitOnError)
+)
+
+func init() {
+	Flag.String("dao-dialect", "", "Database option for the underlying dao")
+	Flag.String("dao-dsn", "", "DSN database driver name for underlying dao")
+}
 
 // Dialect DAO database dialect
 type Dialect interface {
@@ -140,7 +152,3 @@ type JSONQuery interface {
 	Tx(tx *DB) JSONQuery
 	Build(builder clause.Builder)
 }
-
-var (
-	DefaultDialect Dialect
-)

@@ -28,8 +28,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/registry"
 )
@@ -43,8 +43,8 @@ type Options struct {
 	Address   string
 	Advertise string
 
-	Action func(*cli.Context)
-	Flags  []cli.Flag
+	Action  func(*cobra.Command, []string)
+	FlagSet *pflag.FlagSet
 
 	RegisterTTL      time.Duration
 	RegisterInterval time.Duration
@@ -194,15 +194,15 @@ func VineService(s vine.Service) Option {
 	}
 }
 
-// Flags sets the command flags.
-func Flags(flags ...cli.Flag) Option {
+// FlagSet sets the command flagSet.
+func FlagSet(flagSet *pflag.FlagSet) Option {
 	return func(o *Options) {
-		o.Flags = append(o.Flags, flags...)
+		o.FlagSet = flagSet
 	}
 }
 
 // Action sets the command action.
-func Action(a func(*cli.Context)) Option {
+func Action(a func(*cobra.Command, []string)) Option {
 	return func(o *Options) {
 		o.Action = a
 	}

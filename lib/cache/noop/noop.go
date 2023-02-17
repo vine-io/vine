@@ -38,10 +38,6 @@ func (n *noopCache) Options() cache.Options {
 	return cache.Options{}
 }
 
-func (n *noopCache) String() string {
-	return "noop"
-}
-
 func (n *noopCache) Get(ctx context.Context, key string, opts ...cache.GetOption) ([]*cache.Record, error) {
 	return []*cache.Record{}, nil
 }
@@ -60,6 +56,10 @@ func (n *noopCache) List(ctx context.Context, opts ...cache.ListOption) ([]strin
 
 func (n *noopCache) Close() error {
 	return nil
+}
+
+func (n *noopCache) String() string {
+	return "noop"
 }
 
 func NewCache(opts ...cache.Option) cache.Cache {

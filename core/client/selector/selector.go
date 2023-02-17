@@ -26,8 +26,21 @@ package selector
 import (
 	"errors"
 
+	"github.com/spf13/pflag"
 	"github.com/vine-io/vine/core/registry"
 )
+
+var (
+	ErrNotFound      = errors.New("not found")
+	ErrNoneAvailable = errors.New("none available")
+
+	DefaultSelector = NewSelector()
+	Flag            = pflag.NewFlagSet("selector", pflag.ExitOnError)
+)
+
+func init() {
+	Flag.String("selector-default", "", "Selector used to pick nodes for querying")
+}
 
 // Selector builds on the registry as a mechanism to pick nodes
 // and mark their status. This allows host pools and other things
@@ -56,10 +69,3 @@ type Filter func([]*registry.Service) []*registry.Service
 
 // Strategy is a selection strategy e.g random, round robin
 type Strategy func([]*registry.Service) Next
-
-var (
-	DefaultSelector = NewSelector()
-
-	ErrNotFound      = errors.New("not found")
-	ErrNoneAvailable = errors.New("none available")
-)

@@ -23,92 +23,95 @@
 package config
 
 import (
-	"io/ioutil"
-	"os"
-	"os/user"
-	"path/filepath"
 	"strings"
+	"time"
 
-	conf "github.com/vine-io/vine/lib/config"
-	"github.com/vine-io/vine/lib/config/memory"
-	"github.com/vine-io/vine/lib/config/source/file"
-	log "github.com/vine-io/vine/lib/logger"
+	"github.com/spf13/viper"
 )
 
-// FileName for global vine config
-const FileName = ".vine"
+// FileName for global vine config, format yaml
+var FileName = ".vine"
 
 // config is a singleton which is required to ensure
 // each function call doesn't load the .vine file
 // from disk
 var config = newConfig()
 
-// Get a value from the .vine file
-func Get(path ...string) (string, error) {
-	tk := config.Get(path...).String("")
-	return strings.TrimSpace(tk), nil
+// Get a value from the config
+func Get(path ...string) interface{} {
+	return config.Get(strings.Join(path, "."))
 }
 
-// Set a value in the .vine file
-func Set(value string, path ...string) error {
-	// get the filepath
-	fp, err := filePath()
-	if err != nil {
-		return err
-	}
-
-	// set the value
-	config.Set(value, path...)
-
-	// write to the file
-	return ioutil.WriteFile(fp, config.Bytes(), 0644)
+// GetString a string value from the config
+func GetString(path ...string) string {
+	return config.GetString(strings.Join(path, "."))
 }
 
-func filePath() (string, error) {
-	usr, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(usr.HomeDir, FileName), nil
+// GetInt a int64 value from the config
+func GetInt(path ...string) int {
+	return config.GetInt(strings.Join(path, "."))
 }
 
-// newConfig returns a loaded config
-func newConfig() conf.Config {
-	// get the filepath
-	fp, err := filePath()
-	if err != nil {
-		log.Error(err)
-		return conf.DefaultConfig
-	}
+// GetInt32 a int32 value from the config
+func GetInt32(path ...string) int32 {
+	return config.GetInt32(strings.Join(path, "."))
+}
 
-	// write the file if it does not exist
-	if _, err := os.Stat(fp); os.IsNotExist(err) {
-		ioutil.WriteFile(fp, []byte{}, 0644)
-	} else if err != nil {
-		log.Error(err)
-		return conf.DefaultConfig
-	}
+// GetInt64 a int64 value from the config
+func GetInt64(path ...string) int64 {
+	return config.GetInt64(strings.Join(path, "."))
+}
 
-	// create a new config
-	c := memory.NewConfig(
-		conf.WithSource(
-			file.NewSource(
-				file.WithPath(fp),
-			),
-		),
-	)
+// GetFloat a float value from the config
+func GetFloat(path ...string) float64 {
+	return config.GetFloat64(strings.Join(path, "."))
+}
 
-	if err != c.Init() {
-		log.Error(err)
-		return conf.DefaultConfig
-	}
+// GetStringSlice a string slice value from the config
+func GetStringSlice(path ...string) []string {
+	return config.GetStringSlice(strings.Join(path, "."))
+}
 
-	// load the config
-	if err := c.Load(); err != nil {
-		log.Error(err)
-		return conf.DefaultConfig
-	}
+// GetIntSlice a int slice value from the config
+func GetIntSlice(path ...string) []int {
+	return config.GetIntSlice(strings.Join(path, "."))
+}
 
+// GetStringMap a string map value from the config
+func GetStringMap(path ...string) map[string]interface{} {
+	return config.GetStringMap(strings.Join(path, "."))
+}
+
+// GetDuration a duration value from the config
+func GetDuration(path ...string) time.Duration {
+	return config.GetDuration(strings.Join(path, "."))
+}
+
+// Set a value in the config
+func Set(value interface{}, path ...string) {
+	config.Set(strings.Join(path, "."), value)
+}
+
+// UnmarshalKey takes a single key and unmarshals it into a Struct.
+func UnmarshalKey(rawVal interface{}, path ...string) error {
+	return config.UnmarshalKey(strings.Join(path, ","), rawVal)
+}
+
+// Unmarshal unmarshals the config into a Struct. Make sure that the tags
+// on the fields of the structure are properly set.
+func Unmarshal(rawVal interface{}) error {
+	return config.Unmarshal(rawVal)
+}
+
+// Sync apply value to .vine config
+func Sync() error {
+	return config.WriteConfig()
+}
+
+// newConfig returns a *viper.Viper
+func newConfig() *viper.Viper {
+	viper.SetConfigName(FileName)
+	viper.SetConfigType("yaml")
 	// return the conf
-	return c
+	return viper.New()
 }

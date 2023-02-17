@@ -27,18 +27,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/spf13/pflag"
 	"github.com/vine-io/vine/util/context/metadata"
 )
-
-// Tracer is an interface for distributed tracing
-type Tracer interface {
-	// Start a trace
-	Start(ctx context.Context, name string) (context.Context, *Span)
-	// Finish the trace
-	Finish(*Span) error
-	// Read the traces
-	Read(...ReadOption) ([]*Span, error)
-}
 
 // SpanType describe the nature of the trace span
 type SpanType int
@@ -49,6 +40,27 @@ const (
 	// SpanTypeRequestOutbound is a span created when making a service call
 	SpanTypeRequestOutbound
 )
+
+var (
+	DefaultTracer Tracer = new(noop)
+
+	Flag = pflag.NewFlagSet("trace", pflag.ExitOnError)
+)
+
+func init() {
+	Flag.String("tracer", "", "Trace for vine")
+	Flag.String("tracer-address", "", "Comma-separated list of tracer addresses")
+}
+
+// Tracer is an interface for distributed tracing
+type Tracer interface {
+	// Start a trace
+	Start(ctx context.Context, name string) (context.Context, *Span)
+	// Finish the trace
+	Finish(*Span) error
+	// Read the traces
+	Read(...ReadOption) ([]*Span, error)
+}
 
 // Span is used to record an entry
 type Span struct {
@@ -76,7 +88,7 @@ const (
 )
 
 // FromContext returns a span from context
-func FromContext(ctx context.Context) ( string,  string,  bool) {
+func FromContext(ctx context.Context) (string, string, bool) {
 	traceID, traceOk := metadata.Get(ctx, traceIDKey)
 	vineID, vineOk := metadata.Get(ctx, "Vine-Id")
 	if !traceOk && !vineOk {
@@ -96,10 +108,6 @@ func ToContext(ctx context.Context, traceID, parentSpanID string) context.Contex
 		spanIDKey:  parentSpanID,
 	}, true)
 }
-
-var (
-	DefaultTracer Tracer = new(noop)
-)
 
 type noop struct{}
 

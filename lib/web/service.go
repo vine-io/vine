@@ -35,8 +35,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
 	svc "github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/lib/logger"
@@ -370,8 +369,8 @@ func (s *service) Init(opts ...Option) error {
 
 	serviceOpts := []svc.Option{}
 
-	if len(s.opts.Flags) > 0 {
-		serviceOpts = append(serviceOpts, svc.Flags(s.opts.Flags...))
+	if s.opts.FlagSet != nil {
+		serviceOpts = append(serviceOpts, svc.FlagSets(s.opts.FlagSet))
 	}
 
 	if s.opts.Registry != nil {
@@ -380,40 +379,41 @@ func (s *service) Init(opts ...Option) error {
 
 	s.Unlock()
 
-	serviceOpts = append(serviceOpts, svc.Action(func(ctx *cli.Context) error {
+	serviceOpts = append(serviceOpts, svc.Action(func(ctx *cobra.Command, args []string) error {
 		s.Lock()
 		defer s.Unlock()
 
-		if ttl := ctx.Int("register-ttl"); ttl > 0 {
-			s.opts.RegisterTTL = time.Duration(ttl) * time.Second
+		flags := ctx.PersistentFlags()
+		if ttl, _ := flags.GetDuration("registry-ttl"); ttl > 0 {
+			s.opts.RegisterTTL = ttl * time.Second
 		}
 
-		if interval := ctx.Int("register-interval"); interval > 0 {
+		if interval, _ := flags.GetDuration("registry-interval"); interval > 0 {
 			s.opts.RegisterInterval = time.Duration(interval) * time.Second
 		}
 
-		if name := ctx.String("server-name"); len(name) > 0 {
+		if name, _ := flags.GetString("server-name"); len(name) > 0 {
 			s.opts.Name = name
 		}
 
-		if ver := ctx.String("server-version"); len(ver) > 0 {
+		if ver, _ := flags.GetString("server-version"); len(ver) > 0 {
 			s.opts.Version = ver
 		}
 
-		if id := ctx.String("server-id"); len(id) > 0 {
+		if id, _ := flags.GetString("server-id"); len(id) > 0 {
 			s.opts.Id = id
 		}
 
-		if addr := ctx.String("server-address"); len(addr) > 0 {
+		if addr, _ := flags.GetString("server-address"); len(addr) > 0 {
 			s.opts.Address = addr
 		}
 
-		if adv := ctx.String("server-advertise"); len(adv) > 0 {
+		if adv, _ := flags.GetString("server-advertise"); len(adv) > 0 {
 			s.opts.Advertise = adv
 		}
 
 		if s.opts.Action != nil {
-			s.opts.Action(ctx)
+			s.opts.Action(ctx, args)
 		}
 
 		return nil
