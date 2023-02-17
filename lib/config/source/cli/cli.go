@@ -23,33 +23,32 @@
 package cli
 
 import (
-	"flag"
 	"io/ioutil"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/imdario/mergo"
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/config/source"
 )
 
 type cliSource struct {
 	opts source.Options
-	ctx  *cli.Context
+	ctx  *cobra.Command
 }
 
 func (c *cliSource) Read() (*source.ChangeSet, error) {
 	var changes map[string]interface{}
 
 	// directly using app cli flags, to access default values of not specified options
-	for _, f := range c.ctx.App.Flags {
-		name := f.Names()[0]
-		tmp := toEntry(name, c.ctx.Generic(name))
+	c.ctx.PersistentFlags().VisitAll(func(f *pflag.Flag) {
+		name := f.Name
+		tmp := toEntry(name, f.Value.String())
 		mergo.Map(&changes, tmp) // need to sort error handling
-	}
+	})
 
 	b, err := c.opts.Encoder.Encode(changes)
 	if err != nil {
@@ -112,44 +111,45 @@ func (c *cliSource) String() string {
 // command line flags have already been parsed.
 //
 // Example:
-//      cli.StringFlag{Name: "db-host"},
+//
+//	cli.StringFlag{Name: "db-host"},
 //
 //
-//      {
-//          "database": {
-//              "host": "localhost"
-//          }
-//      }
+//	{
+//	    "database": {
+//	        "host": "localhost"
+//	    }
+//	}
 func NewSource(opts ...source.Option) source.Source {
 	options := source.NewOptions(opts...)
 
-	var ctx *cli.Context
+	var ctx *cobra.Command
 
-	if c, ok := options.Context.Value(contextKey{}).(*cli.Context); ok {
+	if c, ok := options.Context.Value(contextKey{}).(*cobra.Command); ok {
 		ctx = c
 	} else {
 		// no context
 		// get the default app/flags
 		app := cmd.App()
-		flags := app.Flags
+		flags := app.Flags()
 
 		// create flagset
-		set := flag.NewFlagSet(app.Name, flag.ContinueOnError)
+		set := pflag.NewFlagSet(app.Use, pflag.ContinueOnError)
 
 		// apply flags to set
-		for _, f := range flags {
-			f.Apply(set)
-		}
+		set.AddFlagSet(flags)
 
 		// parse flags
 		set.SetOutput(ioutil.Discard)
 		set.Parse(os.Args[1:])
 
 		// normalise flags
-		normalizeFlags(app.Flags, set)
+		normalizeFlags(app.Flags(), set)
 
 		// create context
-		ctx = cli.NewContext(app, set, nil)
+
+		app.PersistentFlags().AddFlagSet(set)
+		ctx = app.Root()
 	}
 
 	return &cliSource{
@@ -160,7 +160,7 @@ func NewSource(opts ...source.Option) source.Source {
 
 // WithContext returns a new source with the context specified.
 // The assumption is that Context is retrieved within an app.Action function.
-func WithContext(ctx *cli.Context, opts ...source.Option) source.Source {
+func WithContext(ctx *cobra.Command, opts ...source.Option) source.Source {
 	return &cliSource{
 		ctx:  ctx,
 		opts: source.NewOptions(opts...),

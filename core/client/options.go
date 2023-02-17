@@ -117,7 +117,7 @@ func NewOptions(options ...Option) Options {
 			Backoff:        DefaultBackoff,
 			Retry:          DefaultRetry,
 			Retries:        DefaultRetries,
-			DialTimeout:    DefaultRequestTimeout,
+			DialTimeout:    DefaultDialTimeout,
 			RequestTimeout: DefaultRequestTimeout,
 			StreamTimeout:  DefaultRequestTimeout,
 		},

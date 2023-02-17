@@ -23,7 +23,6 @@
 package config
 
 import (
-	"os"
 	"testing"
 )
 
@@ -50,29 +49,23 @@ func Test(t *testing.T) {
 		},
 	}
 
-	fp, err := filePath()
-	if err != nil {
-		t.Fatal(err)
-	}
+	//fp, err := filePath()
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			if _, err := os.Stat(fp); err != os.ErrNotExist {
-				os.Remove(fp)
+			//if _, err := os.Stat(fp); err != os.ErrNotExist {
+			//	os.Remove(fp)
+			//}
+
+			for k, v := range tc.values {
+				Set(v, k)
 			}
 
 			for k, v := range tc.values {
-				if err := Set(v, k); err != nil {
-					t.Error(err)
-				}
-			}
-
-			for k, v := range tc.values {
-				val, err := Get(k)
-				if err != nil {
-					t.Error(err)
-					continue
-				}
+				val := Get(k)
 
 				if v != val {
 					t.Errorf("Got '%v' but expected '%v'", val, v)

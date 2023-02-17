@@ -25,7 +25,7 @@ package vine
 import (
 	"context"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/gscheduler"
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/client"
@@ -42,7 +42,7 @@ import (
 type Context struct {
 	context.Context
 
-	App       *cli.App
+	App       *cobra.Command
 	Broker    broker.Broker
 	Client    client.Client
 	Config    config.Config

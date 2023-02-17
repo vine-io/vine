@@ -26,7 +26,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/vine-io/gscheduler"
 
 	"github.com/vine-io/vine/core/broker"
@@ -223,16 +224,32 @@ func Metadata(md map[string]string) Option {
 }
 
 // Flags that can be passed to service
-func Flags(flags ...cli.Flag) Option {
+func Flags(flags ...*pflag.Flag) Option {
 	return func(o *Options) {
-		o.Cmd.App().Flags = append(o.Cmd.App().Flags, flags...)
+		for _, flag := range flags {
+			o.Cmd.App().PersistentFlags().AddFlag(flag)
+		}
 	}
 }
 
-// Action can be used to parse user provided cli options
-func Action(a func(*cli.Context) error) Option {
+// FlagSets that can be passed to service
+func FlagSets(flagSet *pflag.FlagSet) Option {
 	return func(o *Options) {
-		o.Cmd.App().Action = a
+		o.Cmd.App().PersistentFlags().AddFlagSet(flagSet)
+	}
+}
+
+// Action can be used to parse user provided *cobra. options
+func Action(a func(*cobra.Command, []string) error) Option {
+	return func(o *Options) {
+		o.Cmd.App().RunE = a
+	}
+}
+
+// AddCommands add more *cobra.Command
+func AddCommands(commands ...*cobra.Command) Option {
+	return func(o *Options) {
+		o.Cmd.App().AddCommand(commands...)
 	}
 }
 

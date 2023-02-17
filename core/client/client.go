@@ -26,8 +26,41 @@ import (
 	"context"
 	"time"
 
+	"github.com/spf13/pflag"
 	"github.com/vine-io/vine/core/codec"
 )
+
+var (
+	// DefaultClient is a default client to use out of the box
+	DefaultClient Client
+	// DefaultContentType is the default content type for client
+	DefaultContentType = "application/protobuf"
+	// DefaultBackoff is the default backoff function for retries
+	DefaultBackoff = exponentialBackoff
+	// DefaultRetry is the default check-for-retry function for retries
+	DefaultRetry = RetryOnError
+	// DefaultRetries is the default number of times a request is tried
+	DefaultRetries = 1
+	// DefaultDialTimeout is the default dial timeout
+	DefaultDialTimeout = time.Second * 30
+	// DefaultRequestTimeout is the default request timeout
+	DefaultRequestTimeout = time.Second * 30
+	// DefaultPoolSize sets the connection pool size
+	DefaultPoolSize = 100
+	// DefaultPoolTTL sets the connection pool ttl
+	DefaultPoolTTL = time.Minute
+
+	Flag = pflag.NewFlagSet("client", pflag.ExitOnError)
+)
+
+func init() {
+	Flag.String("client-default", "", "Client for vine")
+	Flag.String("client-contentType", DefaultContentType, "Sets the content type for client")
+	Flag.Int("client-retries", DefaultRetries, "Sets the retries")
+	Flag.Duration("client-request-timeout", DefaultRequestTimeout, "Sets the client request timeout")
+	Flag.Int("client-pool-size", DefaultPoolSize, "Sets the client connection pool size")
+	Flag.Duration("client-pool-ttl", DefaultPoolTTL, "Sets the client connection pool ttl")
+}
 
 // Client is the interface used to make requests to services.
 // It supports Request/Response via Transport and Publishing via the Broker.
@@ -102,27 +135,6 @@ type Stream interface {
 	// CloseSend closes the stream
 	CloseSend() error
 }
-
-var (
-	// DefaultClient is a default client to use out of the box
-	DefaultClient Client
-	// DefaultContentType is the default content type for client
-	DefaultContentType = "application/protobuf"
-	// DefaultBackoff is the default backoff function for retries
-	DefaultBackoff = exponentialBackoff
-	// DefaultRetry is the default check-for-retry function for retries
-	DefaultRetry = RetryOnError
-	// DefaultRetries is the default number of times a request is tried
-	DefaultRetries = 1
-	// DefaultDialTimeout is the default dial timeout
-	DefaultDialTimeout = time.Second * 10
-	// DefaultRequestTimeout is the default request timeout
-	DefaultRequestTimeout = time.Second * 10
-	// DefaultPoolSize sets the connection pool size
-	DefaultPoolSize = 100
-	// DefaultPoolTTL sets the connection pool ttl
-	DefaultPoolTTL = time.Minute
-)
 
 // Call makes a synchronous call to a service using the default client
 func Call(ctx context.Context, request Request, response interface{}, opts ...CallOption) error {

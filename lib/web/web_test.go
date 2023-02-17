@@ -29,8 +29,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/pflag"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/lib/web"
@@ -47,24 +46,12 @@ func testFunc() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*250)
 	defer cancel()
 
+	flagSet := pflag.NewFlagSet("test", pflag.ExitOnError)
 	s := vine.NewService(
 		vine.Name("test"),
 		vine.PutContext(ctx),
 		vine.HandleSignal(false),
-		vine.Flags(
-			&cli.StringFlag{
-				Name: "test.timeout",
-			},
-			&cli.BoolFlag{
-				Name: "test.v",
-			},
-			&cli.StringFlag{
-				Name: "test.run",
-			},
-			&cli.StringFlag{
-				Name: "test.testlogfile",
-			},
-		),
+		vine.FlagSets(flagSet),
 	)
 	w := web.NewService(
 		web.VineService(s),

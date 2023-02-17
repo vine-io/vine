@@ -25,16 +25,32 @@ package registry
 import (
 	"context"
 	"errors"
+	"time"
+
+	"github.com/spf13/pflag"
 )
 
 var (
-	DefaultRegistry Registry
+	// Flag pflag.FlagSet for registry
+	Flag = pflag.NewFlagSet("registry", pflag.ExitOnError)
+
+	DefaultRegistry         Registry
+	DefaultRegistryTimeout  = time.Second * 3
+	DefaultRegisterInterval = time.Second * 20
+	DefaultRegisterTTL      = time.Second * 30
 
 	// ErrNotFound not found error when GetService is called
 	ErrNotFound = errors.New("service not found")
 	// ErrWatcherStopped watcher stopped error when watcher is stopped
 	ErrWatcherStopped = errors.New("watcher stopped")
 )
+
+func init() {
+	Flag.String("registry-default", "", "Registry for discovery")
+	Flag.Duration("registry-timeout", DefaultRegistryTimeout, "Sets the registry request timeout.")
+	Flag.Duration("registry-interval", DefaultRegisterInterval, "Register interval")
+	Flag.Duration("registry-ttl", DefaultRegisterTTL, "Registry TTL")
+}
 
 // Registry the registry provides an interface for service discovery
 // and an abstraction over varying implementations

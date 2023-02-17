@@ -68,12 +68,20 @@ func NewOptions(opt ...Option) Options {
 	opts := Options{
 		Codecs:           make(map[string]codec.NewCodec),
 		Metadata:         map[string]string{},
-		RegisterInterval: DefaultRegisterInterval,
-		RegisterTTL:      DefaultRegisterTTL,
+		RegisterInterval: registry.DefaultRegisterInterval,
+		RegisterTTL:      registry.DefaultRegisterTTL,
 	}
 
 	for _, o := range opt {
 		o(&opts)
+	}
+
+	if opts.RegisterInterval == 0 {
+		opts.RegisterInterval = registry.DefaultRegisterInterval
+	}
+
+	if opts.RegisterTTL == 0 {
+		opts.RegisterTTL = registry.DefaultRegisterTTL
 	}
 
 	if opts.Broker == nil {
@@ -109,6 +117,8 @@ func NewOptions(opt ...Option) Options {
 
 	return opts
 }
+
+type Option func(*Options)
 
 // Name the name of server
 func Name(n string) Option {

@@ -47,16 +47,35 @@ import (
 	mnet "github.com/vine-io/vine/util/net"
 )
 
-type grpcClient struct {
-	opts client.Options
-	pool *pool
-	once atomic.Value
-}
+var (
+	// DefaultPoolMaxStreams maximum streams on a connections (20)
+	DefaultPoolMaxStreams = 20
+
+	// DefaultPoolMaxIdle maximum idle conns of a pool (50)
+	DefaultPoolMaxIdle = 50
+
+	// DefaultMaxRecvMsgSize maximum message that client can receive (100 MB)
+	DefaultMaxRecvMsgSize = 1024 * 1024 * 100
+
+	// DefaultMaxSendMsgSize maximum message that client can send (100 MB)
+	DefaultMaxSendMsgSize = 1024 * 1024 * 100
+)
 
 func init() {
 	encoding.RegisterCodec(wrapCodec{jsonCodec{}})
 	encoding.RegisterCodec(wrapCodec{protoCodec{}})
 	encoding.RegisterCodec(wrapCodec{bytesCodec{}})
+
+	client.Flag.IntVar(&DefaultPoolMaxStreams, "client-grpc-maxStreams", DefaultPoolMaxStreams, "Sets maximum streams on a grpc connections")
+	client.Flag.IntVar(&DefaultPoolMaxIdle, "client-grpc-maxIdle", DefaultPoolMaxIdle, "Sets maximum idle conns of a pool")
+	client.Flag.IntVar(&DefaultMaxRecvMsgSize, "client-grpc-maxRecvMsgSize", DefaultMaxRecvMsgSize, "Sets maximum message that client can receive ")
+	client.Flag.IntVar(&DefaultMaxSendMsgSize, "client-grpc-maxSendMsgSize", DefaultMaxSendMsgSize, "Sets maximum message that client can send")
+}
+
+type grpcClient struct {
+	opts client.Options
+	pool *pool
+	once atomic.Value
 }
 
 // secure returns the dial option for whether it's a secure or insecure connection
@@ -313,47 +332,19 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 }
 
 func (g *grpcClient) poolMaxStreams() int {
-	if g.opts.Context == nil {
-		return DefaultPoolMaxStreams
-	}
-	v := g.opts.Context.Value(poolMaxStreams{})
-	if v == nil {
-		return DefaultPoolMaxStreams
-	}
-	return v.(int)
+	return DefaultPoolMaxStreams
 }
 
 func (g *grpcClient) poolMaxIdle() int {
-	if g.opts.Context == nil {
-		return DefaultPoolMaxIdle
-	}
-	v := g.opts.Context.Value(poolMaxIdle{})
-	if v == nil {
-		return DefaultPoolMaxIdle
-	}
-	return v.(int)
+	return DefaultPoolMaxIdle
 }
 
 func (g *grpcClient) maxRecvMsgSizeValue() int {
-	if g.opts.Context == nil {
-		return DefaultMaxRecvMsgSize
-	}
-	v := g.opts.Context.Value(maxRecvMsgSizeKey{})
-	if v == nil {
-		return DefaultMaxRecvMsgSize
-	}
-	return v.(int)
+	return DefaultMaxRecvMsgSize
 }
 
 func (g *grpcClient) maxSendMsgSizeValue() int {
-	if g.opts.Context == nil {
-		return DefaultMaxSendMsgSize
-	}
-	v := g.opts.Context.Value(maxSendMsgSizeKey{})
-	if v == nil {
-		return DefaultMaxSendMsgSize
-	}
-	return v.(int)
+	return DefaultMaxSendMsgSize
 }
 
 func (g *grpcClient) newGRPCCodec(contentType string) (encoding.Codec, error) {

@@ -23,7 +23,21 @@
 // Package broker is an interface used for asynchronous messaging
 package broker
 
-import "context"
+import (
+	"context"
+
+	"github.com/spf13/pflag"
+)
+
+var (
+	DefaultBroker Broker
+
+	Flag = pflag.NewFlagSet("broker", pflag.ExitOnError)
+)
+
+func init() {
+	Flag.String("broker-default", "", "Broker for pub/sub")
+}
 
 // Broker is an interface used for asynchronous messaging.
 type Broker interface {
@@ -61,10 +75,6 @@ type Subscriber interface {
 	Topic() string
 	Unsubscribe() error
 }
-
-var (
-	DefaultBroker Broker
-)
 
 func Init(opts ...Option) error {
 	return DefaultBroker.Init(opts...)

@@ -27,6 +27,8 @@ import (
 	"context"
 	"errors"
 	"time"
+
+	"github.com/spf13/pflag"
 )
 
 var (
@@ -34,7 +36,13 @@ var (
 	ErrNotFound = errors.New("not found")
 	// DefaultCache is the memory cache.
 	DefaultCache Cache
+
+	Flag = pflag.NewFlagSet("cache", pflag.ExitOnError)
 )
+
+func init() {
+	Flag.String("cache-default", "", "Cache used for key-value storage")
+}
 
 // Cache is a data cache interface
 type Cache interface {

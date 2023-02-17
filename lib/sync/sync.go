@@ -26,11 +26,19 @@ package sync
 import (
 	"context"
 	"errors"
+
+	"github.com/spf13/pflag"
 )
 
 var (
 	ErrLockTimeout = errors.New("lock timeout")
+
+	Flag = pflag.NewFlagSet("sync", pflag.ExitOnError)
 )
+
+func init() {
+	Flag.String("sync-default", "", "Sync for vine")
+}
 
 type Role string
 
