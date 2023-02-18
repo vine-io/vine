@@ -31,18 +31,18 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/cmd/vine/version"
+	"github.com/vine-io/vine/util/helper"
 
 	t2 "github.com/vine-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 )
 
-func runSRV(ctx *cli.Context) {
+func runSRV(cmd *cobra.Command, args []string) error {
 	cfg, err := tool.New("vine.toml")
 	if err != nil {
-		fmt.Printf("invalid vine project: %v\n", err)
-		return
+		return fmt.Errorf("invalid vine project: %v\n", err)
 	}
 
 	var plugins []string
@@ -50,19 +50,20 @@ func runSRV(ctx *cli.Context) {
 	dir, _ := os.Getwd()
 	namespace := cfg.Package.Namespace
 	cluster := cfg.Package.Kind == "cluster"
+	flags := cmd.PersistentFlags()
 
 	var name string
 	if cluster {
-		name = ctx.Args().First()
+		name = helper.NewArgs(args).First()
 
 		if len(name) == 0 {
-			fmt.Println("specify service name")
-			return
+
+			return fmt.Errorf("specify service name")
 		}
 
 		if strings.Contains(name, "/") || strings.Contains(name, "\\") {
-			fmt.Println("invalid service name: contains '/' or '\\'")
-			return
+
+			return fmt.Errorf("invalid service name: contains '/' or '\\'")
 		}
 	} else {
 		name = filepath.Base(dir)
@@ -75,7 +76,9 @@ func runSRV(ctx *cli.Context) {
 	if len(namespace) > 0 {
 		command += " --namespace=" + namespace
 	}
-	if plugins = ctx.StringSlice("plugin"); len(plugins) > 0 {
+
+	plugins, _ = flags.GetStringSlice("plugin")
+	if len(plugins) > 0 {
 		command += " --plugin=" + strings.Join(plugins, ":")
 	}
 	command += " " + name
@@ -88,7 +91,7 @@ func runSRV(ctx *cli.Context) {
 		goPath = strings.Split(goPath, ":")[0]
 	}
 
-	for _, plugin := range ctx.StringSlice("plugin") {
+	for _, plugin := range plugins {
 		// registry=etcd:broker=nats
 		for _, p := range strings.Split(plugin, ":") {
 			// registry=etcd
@@ -100,7 +103,7 @@ func runSRV(ctx *cli.Context) {
 		}
 	}
 
-	withAPI := ctx.Bool("with-api")
+	withAPI, _ := flags.GetBool("with-api")
 
 	goDir := dir
 	if runtime.GOOS == "windows" {
@@ -132,8 +135,8 @@ func runSRV(ctx *cli.Context) {
 		if c.Toml.Mod != nil {
 			for _, item := range *c.Toml.Mod {
 				if item.Name == name {
-					fmt.Printf("service %s already exists\n", name)
-					return
+
+					return fmt.Errorf("service %s already exists\n", name)
 				}
 			}
 		} else {
@@ -181,8 +184,7 @@ func runSRV(ctx *cli.Context) {
 		}
 	} else {
 		if c.Toml.Pkg != nil {
-			fmt.Printf("service %s already exists", name)
-			return
+			return fmt.Errorf("service %s already exists", name)
 		}
 		c.Toml.Pkg = &tool.Mod{
 			Name:    c.Name,
@@ -226,29 +228,18 @@ func runSRV(ctx *cli.Context) {
 		}
 	}
 
-	if err := create(c); err != nil {
-		fmt.Println(err)
-		return
-	}
+	return create(c)
 }
 
-func cmdSRV() *cli.Command {
-	return &cli.Command{
-		Name:  "service",
-		Usage: "Create a service template",
-		Flags: []cli.Flag{
-			&cli.StringSliceFlag{
-				Name:  "plugin",
-				Usage: "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times",
-			},
-			&cli.BoolFlag{
-				Name:  "with-api",
-				Usage: "Specify restful api code for service",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			runSRV(c)
-			return nil
-		},
+func cmdSRV() *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:   "service",
+		Short: "Create a service template",
+		RunE:  runSRV,
 	}
+	cmd.PersistentFlags().String("plugin", "", "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times")
+	cmd.PersistentFlags().Bool("with-api", false, "Specify restful api code for service")
+
+	return cmd
 }

@@ -27,8 +27,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cobra"
 
-	"github.com/vine-io/cli"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
 	rrvine "github.com/vine-io/vine/cmd/vine/client/resolver/api"
@@ -67,30 +67,31 @@ var (
 	EnableRPC    = false
 )
 
-func Run(ctx *cli.Context, svcOpts ...vine.Option) {
+func Run(cmd *cobra.Command, args []string, svcOpts ...vine.Option) {
 
-	if len(ctx.String("server-name")) > 0 {
-		Name = ctx.String("server-name")
+	flags := cmd.PersistentFlags()
+	if name, _ := flags.GetString("server-name"); len(name) > 0 {
+		Name = name
 	}
-	if len(ctx.String("address")) > 0 {
-		Address = ctx.String("address")
+	if addr, _ := flags.GetString("address"); len(addr) > 0 {
+		Address = addr
 	}
-	if len(ctx.String("handler")) > 0 {
-		Handler = ctx.String("handler")
+	if h, _ := flags.GetString("handler"); len(h) > 0 {
+		Handler = h
 	}
-	if len(ctx.String("resolver")) > 0 {
-		Resolver = ctx.String("resolver")
+	if r, _ := flags.GetString("resolver"); len(r) > 0 {
+		Resolver = r
 	}
-	if len(ctx.String("enable-rpc")) > 0 {
-		EnableRPC = ctx.Bool("enable-rpc")
+	if r, e := flags.GetBool("enable-rpc"); e == nil {
+		EnableRPC = r
 	}
-	if len(ctx.String("type")) > 0 {
-		Type = ctx.String("type")
+	if t, _ := flags.GetString("type"); len(t) > 0 {
+		Type = t
 	}
-	if len(ctx.String("namespace")) > 0 {
+	if ns, _ := flags.GetString("namespace"); len(ns) > 0 {
 		// remove the service type from the namespace to allow for
 		// backwards compatability
-		Namespace = strings.TrimSuffix(ctx.String("namespace"), "."+Type)
+		Namespace = strings.TrimSuffix(ns, "."+Type)
 	}
 
 	// apiNamespace has the format: "go.vine.api"
@@ -109,8 +110,8 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	// Init API
 	var opts []server.Option
 
-	if ctx.Bool("enable-tls") {
-		config, err := helper.TLSConfig(ctx)
+	if t, _ := flags.GetBool("enable-tls"); t {
+		config, err := helper.TLSConfig(cmd)
 		if err != nil {
 			log.Errorf(err.Error())
 			return
@@ -120,7 +121,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		opts = append(opts, server.TLSConfig(config))
 	}
 
-	if ctx.Bool("enable-cors") {
+	if b, _ := flags.GetBool("enable-cors"); b {
 		opts = append(opts, server.EnableCORS(true))
 	}
 
@@ -129,19 +130,19 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	app := gin.New()
 	app.Use(gin.Recovery())
 
-	if ctx.Bool("enable-stats") {
+	if b, _ := flags.GetBool("enable-stats"); b {
 		st := stats.New()
 		app.Any("/stats", st.StatsHandler)
 		st.Start()
 		defer st.Stop()
 	}
 
-	if ctx.Bool("enable-openapi") {
+	if b, _ := flags.GetBool("enable-openapi"); b {
 		openapi.RegisterOpenAPI(svc.Client(), svc.Options().Registry, app)
 	}
 
 	app.GET(APIPath, func(c *gin.Context) {
-		c.JSON(200, gin.H{"version": ctx.App.Version})
+		c.JSON(200, gin.H{"version": cmd.Version})
 		return
 	})
 
@@ -274,58 +275,24 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	}
 }
 
-func Commands(options ...vine.Option) []*cli.Command {
-	command := &cli.Command{
-		Name:  "api",
-		Usage: "Run the api gateway",
-		Action: func(ctx *cli.Context) error {
-			Run(ctx, options...)
+func Commands(options ...vine.Option) []*cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "api",
+		Short: "Run the api gateway",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			Run(cmd, args, options...)
 			return nil
 		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "address",
-				Usage:   "Set the api address e.g 0.0.0.0:8080",
-				EnvVars: []string{"VINE_API_ADDRESS"},
-			},
-			&cli.StringFlag{
-				Name:    "handler",
-				Usage:   "Specify the request handler to be used for mapping HTTP requests to services; {api, event, http, rpc}",
-				EnvVars: []string{"VINE_API_HANDLER"},
-			},
-			&cli.StringFlag{
-				Name:    "namespace",
-				Usage:   "Set the namespace used by the API e.g. com.example",
-				EnvVars: []string{"VINE_API_NAMESPACE"},
-			},
-			&cli.StringFlag{
-				Name:    "type",
-				Usage:   "Set the service type used by the API e.g. api",
-				EnvVars: []string{"VINE_API_TYPE"},
-			},
-			&cli.StringFlag{
-				Name:    "resolver",
-				Usage:   "Set the hostname resolver used by the API {host, path, grpc}",
-				EnvVars: []string{"VINE_API_RESOLVER"},
-			},
-			&cli.BoolFlag{
-				Name:    "enable-openapi",
-				Usage:   "Enable OpenAPI3",
-				EnvVars: []string{"VINE_ENABLE_OPENAPI"},
-			},
-			&cli.BoolFlag{
-				Name:    "enable-rpc",
-				Usage:   "Enable call the backend directly via /rpc",
-				EnvVars: []string{"VINE_API_ENABLE_RPC"},
-			},
-			&cli.BoolFlag{
-				Name:    "enable-cors",
-				Usage:   "Enable CORS, allowing the API to be called by frontend applications",
-				EnvVars: []string{"VINE_API_ENABLE_CORS"},
-				Value:   true,
-			},
-		},
 	}
+	flags := cmd.PersistentFlags()
+	flags.String("address", "", "Set the api address e.g 0.0.0.0:8080")
+	flags.String("handler", "", "Specify the request handler to be used for mapping HTTP requests to services; {api, event, http, rpc}")
+	flags.String("namespace", "", "Set the namespace used by the API e.g. com.example")
+	flags.String("type", "", "Set the service type used by the API e.g. api")
+	flags.String("resolver", "", "Set the hostname resolver used by the API {host, path, grpc}")
+	flags.String("enable-openapi", "", "Enable OpenAPI3")
+	flags.String("enable-rpc", "", "Enable call the backend directly via /rpc")
+	flags.String("enable-cors", "", "Enable CORS, allowing the API to be called by frontend applications")
 
-	return []*cli.Command{command}
+	return []*cobra.Command{cmd}
 }

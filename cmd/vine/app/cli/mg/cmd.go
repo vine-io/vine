@@ -24,59 +24,29 @@
 package mg
 
 import (
-	"fmt"
-	"os"
-	"os/exec"
-
-	"github.com/vine-io/cli"
-	"github.com/vine-io/vine/util/helper"
+	"github.com/spf13/cobra"
 )
 
-func Commands() []*cli.Command {
-	return []*cli.Command{
-		{
-			Name:        "new",
-			Usage:       "Create vine resource template",
-			Subcommands: []*cli.Command{cmdSRV(), cmdGateway(), cmdProto()},
-			Action: func(c *cli.Context) error {
-				if c.Args().Len() > 0 {
-					command := c.Args().First()
+func Commands() []*cobra.Command {
 
-					v, err := exec.LookPath(command)
-					if err != nil {
-						fmt.Println(helper.UnexpectedSubcommand(c))
-						os.Exit(1)
-					}
-
-					// execute the command
-					ce := exec.Command(v, c.Args().Slice()[1:]...)
-					ce.Stdout = os.Stdout
-					ce.Stderr = os.Stderr
-					return ce.Run()
-				}
-				fmt.Println("No command provided to vine. Please refer to 'vine new help'")
-				os.Exit(1)
-				return nil
-			},
-		},
-		{
-			Name:  "init",
-			Usage: "Initialize a vine project",
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:  "namespace",
-					Usage: "Namespace for the project e.g com.example",
-					Value: "go.vine",
-				},
-				&cli.BoolFlag{
-					Name:  "cluster",
-					Usage: "create cluster package.",
-				},
-			},
-			Action: func(c *cli.Context) error {
-				runInit(c)
-				return nil
-			},
+	newCmd := &cobra.Command{
+		Use:   "new",
+		Short: "Create vine resource template",
+		RunE: func(c *cobra.Command, args []string) error {
+			return c.Help()
 		},
 	}
+	newCmd.AddCommand(cmdSRV(), cmdGateway(), cmdProto())
+
+	initCmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialize a vine project",
+		RunE: func(c *cobra.Command, args []string) error {
+			return runInit(c, args)
+		},
+	}
+	initCmd.PersistentFlags().String("namespace", "go.vine", "Namespace for the project e.g com.example")
+	initCmd.PersistentFlags().String("cluster", "", "create cluster package.")
+
+	return []*cobra.Command{newCmd, initCmd}
 }

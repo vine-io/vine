@@ -31,24 +31,25 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
+	"github.com/vine-io/vine/util/helper"
 )
 
-func runProto(ctx *cli.Context) {
+func runProto(c *cobra.Command, args []string) error {
 	cfg, err := tool.New("vine.toml")
 	if err != nil {
-		fmt.Printf("invalid vine project: %v\n", err)
-		return
+		return fmt.Errorf("invalid vine project: %v\n", err)
 	}
 
-	atype := ctx.String("type")
-	group := ctx.String("group")
-	version := ctx.String("proto-version")
-	dir := ctx.String("dir")
-	paths := ctx.StringSlice("path")
-	plugins := ctx.StringSlice("plugins")
-	name := ctx.Args().First()
+	flags := c.PersistentFlags()
+	atype, _ := flags.GetString("type")
+	group, _ := flags.GetString("group")
+	version, _ := flags.GetString("proto-version")
+	dir, _ := flags.GetString("dir")
+	paths, _ := flags.GetStringSlice("path")
+	plugins, _ := flags.GetStringSlice("plugins")
+	name := helper.NewArgs(args).First()
 	goPath := build.Default.GOPATH
 	// attempt to split path if not windows
 	if runtime.GOOS == "windows" {
@@ -61,7 +62,7 @@ func runProto(ctx *cli.Context) {
 		dir = filepath.Join(goPath, "src")
 	}
 
-	gen := func(pb *tool.Proto, root string, paths, plugins []string) {
+	gen := func(pb *tool.Proto, root string, paths, plugins []string) error {
 		fmt.Printf("change directory %s: \n", root)
 
 		paths = append([]string{root}, paths...)
@@ -89,15 +90,15 @@ func runProto(ctx *cli.Context) {
 		cmd.Dir = root
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			fmt.Printf("generate protobuf: %v: %v\n", err, string(out))
-			return
+			return fmt.Errorf("generate protobuf: %v: %v\n", err, string(out))
 		}
+
+		return nil
 	}
 
 	pwd, err := os.Getwd()
 	if err != nil {
-		fmt.Printf("get pwd: %v\n", err)
-		return
+		return fmt.Errorf("get pwd: %v\n", err)
 	}
 	paths = append(paths, filepath.Join(pwd, "vendor"))
 	if name != "" {
@@ -110,57 +111,36 @@ func runProto(ctx *cli.Context) {
 		}
 
 		if pb == nil {
-			fmt.Printf("file %s/%s/%s.proto not found\n", group, version, name)
-			return
+			return fmt.Errorf("file %s/%s/%s.proto not found\n", group, version, name)
 		}
 
-		gen(pb, dir, paths, plugins)
+		err = gen(pb, dir, paths, plugins)
+		if err != nil {
+			return err
+		}
 	} else {
 		for _, p := range cfg.Proto {
-			gen(&p, dir, paths, plugins)
+			if err = gen(&p, dir, paths, plugins); err != nil {
+				return err
+			}
 		}
 	}
+
+	return nil
 }
 
-func cmdProto() *cli.Command {
-	return &cli.Command{
-		Name:  "proto",
-		Usage: "Generate protobuf file",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "type",
-				Usage: "the type of protobuf file eg api, service.",
-				Value: "api",
-			},
-			&cli.StringFlag{
-				Name:    "proto-version",
-				Aliases: []string{"v"},
-				Usage:   "the version of protobuf file.",
-				Value:   "v1",
-			},
-			&cli.StringFlag{
-				Name:  "group",
-				Usage: "specify the group",
-				Value: "core",
-			},
-			&cli.StringFlag{
-				Name:  "dir",
-				Usage: "base directory for protoc command eg $GOPATH/src.",
-			},
-			&cli.StringSliceFlag{
-				Name:    "path",
-				Aliases: []string{"I"},
-				Usage:   "specify the directory in which to search for imports.",
-			},
-			&cli.StringSliceFlag{
-				Name:    "plugins",
-				Aliases: []string{"P"},
-				Usage:   "specify the gRPC plugin in which to generate.",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			runProto(c)
-			return nil
-		},
+func cmdProto() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "proto",
+		Short: "Generate protobuf file",
+		RunE:  runProto,
 	}
+	cmd.PersistentFlags().String("type", "api", "the type of protobuf file eg api, service.")
+	cmd.PersistentFlags().String("proto-version", "v1", "the version of protobuf file.")
+	cmd.PersistentFlags().String("group", "core", "specify the group.")
+	cmd.PersistentFlags().String("dir", "", "base directory for protoc command eg $GOPATH/src.")
+	cmd.PersistentFlags().StringP("path", "I", "", "specify the directory in which to search for imports.")
+	cmd.PersistentFlags().StringP("plugins", "P", "", "specify the gRPC plugin in which to generate.")
+
+	return cmd
 }

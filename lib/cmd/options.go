@@ -94,7 +94,7 @@ func Version(v string) Option {
 	}
 }
 
-func CliApp(app *cobra.Command) Option {
+func Command(app *cobra.Command) Option {
 	return func(o *Options) {
 		o.app = app
 	}

@@ -34,7 +34,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
+	"github.com/vine-io/vine/util/helper"
 	"gopkg.in/fsnotify.v1"
 
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
@@ -92,16 +93,17 @@ func (r *Runner) Stop() error {
 	return r.Wait()
 }
 
-func run(c *cli.Context) error {
+func run(c *cobra.Command, cArgs []string) error {
 	cfg, err := tool.New("vine.toml")
 	if err != nil && os.IsNotExist(err) {
 		return fmt.Errorf("invalid vine project: %v", err)
 	}
 
-	name := c.Args().First()
-	watches := c.StringSlice("watch")
-	auto := c.Bool("auto-restart")
-	interval := c.Int64("watch-interval")
+	flags := c.PersistentFlags()
+	name := helper.NewArgs(cArgs).First()
+	watches, _ := flags.GetStringSlice("watch")
+	auto, _ := flags.GetBool("auto-restart")
+	interval, _ := flags.GetInt64("watch-interval")
 
 	var mod *tool.Mod
 	switch cfg.Package.Kind {
@@ -127,8 +129,8 @@ func run(c *cli.Context) error {
 	}
 
 	args := []string{mod.Main}
-	if len(c.Args().Tail()) != 0 {
-		args = append(args, c.Args().Tail()...)
+	if len(helper.NewArgs(args).Tail()) != 0 {
+		args = append(args, helper.NewArgs(cArgs).Tail()...)
 	}
 
 	fmt.Printf("go run %s\n", strings.Join(args, " "))
@@ -238,34 +240,14 @@ func run(c *cli.Context) error {
 	return runner.Stop()
 }
 
-func Commands() []*cli.Command {
-	return []*cli.Command{
-		{
-			Name:  "run",
-			Usage: "Start a vine project",
-			Flags: []cli.Flag{
-				&cli.BoolFlag{
-					Name:  "auto-restart",
-					Usage: "auto restart project when code updating.",
-					Value: true,
-				},
-				&cli.StringSliceFlag{
-					Name:  "watch",
-					Usage: "specify directory in which for watching",
-				},
-				&cli.Int64Flag{
-					Name:    "watch-interval",
-					Aliases: []string{"I"},
-					Usage:   "effective interval when event triggering",
-					Value:   3,
-				},
-			},
-			Action: func(c *cli.Context) error {
-				if err := run(c); err != nil {
-					fmt.Println(err)
-				}
-				return nil
-			},
-		},
+func Commands() []*cobra.Command {
+	runCmd := &cobra.Command{
+		Use:   "run",
+		Short: "Start a vine project",
+		RunE:  run,
 	}
+	runCmd.PersistentFlags().Bool("auto-restart", true, "auto restart project when code updating")
+	runCmd.PersistentFlags().StringSlice("watch", nil, "specify directory in which for watching")
+	runCmd.PersistentFlags().Int64("watch-interval", 3, "effective interval when event triggering")
+	return []*cobra.Command{runCmd}
 }

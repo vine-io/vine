@@ -3,10 +3,10 @@ package cli
 import (
 	"os"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 )
 
-func quit(c *cli.Context, args []string) ([]byte, error) {
+func quit(c *cobra.Command, args []string) ([]byte, error) {
 	os.Exit(0)
 	return nil, nil
 }

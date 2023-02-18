@@ -48,7 +48,7 @@ var (
 )
 
 func init() {
-	registry.Flag.StringVar(&DefaultMdnsDomain, "registry-mdns-domain", DefaultMdnsDomain, "Sets the domain of mdns")
+	registry.Flag.StringVar(&DefaultMdnsDomain, "registry.mdns.domain", DefaultMdnsDomain, "Sets the domain of mdns")
 }
 
 type mdnsTxt struct {
@@ -257,7 +257,7 @@ func (m *mdnsRegistry) Register(ctx context.Context, service *registry.Service, 
 		}
 		port, _ := strconv.Atoi(pt)
 
-		log.Infof("[mdns] registry create new service with ip: %s port %d for: %s", net.ParseIP(host).String(), port, host)
+		log.Infof("[mdns] registry create new service with ip=%s port=%d for: %s", net.ParseIP(host).String(), port, host)
 
 		// we got here, new node
 		s, err := mdns.NewMDNSService(

@@ -34,33 +34,32 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
+	"github.com/vine-io/vine/util/helper"
 )
 
-func runSRV(ctx *cli.Context) {
+func runSRV(c *cobra.Command, args []string) error {
 	cfg, err := tool.New("vine.toml")
 	if err != nil {
-		fmt.Printf("invalid vine project: %v\n", err)
-		return
+		return fmt.Errorf("invalid vine project: %v\n", err)
 	}
 
 	switch cfg.Package.Namespace {
 	case "cluster":
 		if cfg.Mod == nil {
-			fmt.Println("invalid vine project: Please create a module first.")
-			return
+			return fmt.Errorf("invalid vine project: Please create a module first.")
 		}
 	case "single":
 		if cfg.Pkg == nil {
-			fmt.Println("invalid vine project: Please create a module first.")
-			return
+			return fmt.Errorf("invalid vine project: Please create a module first.")
 		}
 	}
 
-	flags := ctx.StringSlice("flags")
-	output := ctx.String("output")
-	name := ctx.Args().First()
+	cFlags := c.PersistentFlags()
+	flags, _ := cFlags.GetStringSlice("flags")
+	output, _ := cFlags.GetString("output")
+	name := helper.NewArgs(args).First()
 	cluster := cfg.Package.Kind == "cluster"
 
 	goPath := build.Default.GOPATH
@@ -86,8 +85,7 @@ func runSRV(ctx *cli.Context) {
 		}
 
 		if mod == nil {
-			fmt.Printf("module %s not found\n", name)
-			return
+			return fmt.Errorf("module %s not found\n", name)
 		}
 
 		buildFunc(mod, output, flags, cluster)
@@ -102,6 +100,8 @@ func runSRV(ctx *cli.Context) {
 		}
 
 	}
+
+	return nil
 }
 
 func buildFunc(mod *tool.Mod, output string, flags []string, cluster bool) {
@@ -196,25 +196,14 @@ func isUp(text string) bool {
 	return b
 }
 
-func cmdSRV() *cli.Command {
-	return &cli.Command{
-		Name:  "service",
-		Usage: "Build vine project",
-		Flags: []cli.Flag{
-			&cli.StringSliceFlag{
-				Name:    "flag",
-				Aliases: []string{"L"},
-				Usage:   "specify flags for go command.",
-			},
-			&cli.StringFlag{
-				Name:    "output",
-				Aliases: []string{"O"},
-				Usage:   "specify the output path",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			runSRV(c)
-			return nil
-		},
+func cmdSRV() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "service",
+		Short: "Build vine project",
+		RunE:  runSRV,
 	}
+	cmd.PersistentFlags().StringP("flag", "L", "", "specify flags for go command.")
+	cmd.PersistentFlags().StringP("output", "O", "", "specify the output path")
+
+	return cmd
 }

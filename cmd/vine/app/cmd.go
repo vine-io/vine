@@ -23,13 +23,10 @@
 package app
 
 import (
-	"fmt"
 	"math"
-	"os"
-	"os/exec"
 	"sort"
 
-	ccli "github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/cmd/vine/version"
 
 	"github.com/vine-io/vine"
@@ -38,7 +35,6 @@ import (
 	cliMg "github.com/vine-io/vine/cmd/vine/app/cli/mg"
 	cliRun "github.com/vine-io/vine/cmd/vine/app/cli/run"
 	"github.com/vine-io/vine/lib/cmd"
-	"github.com/vine-io/vine/util/helper"
 )
 
 var (
@@ -54,7 +50,7 @@ var (
 func init() {
 }
 
-func setup(app *ccli.App) {
+func setup(cmd *cobra.Command) {
 	//app.Flags = append(
 	//	app.Flags,
 	//	&ccli.BoolFlag{
@@ -173,7 +169,7 @@ func setup(app *ccli.App) {
 
 	//before := app.Before
 
-	app.Before = func(ctx *ccli.Context) error {
+	cmd.PreRunE = func(c *cobra.Command, args []string) error {
 
 		//if len(ctx.String("api-handler")) > 0 {
 		//	api.Handler = ctx.String("api-handler")
@@ -258,20 +254,20 @@ func setup(app *ccli.App) {
 
 // Init initialised the command line
 func Init(options ...vine.Option) {
-	app := ccli.NewApp()
-	Setup(app, options...)
+	root := &cobra.Command{}
+	Setup(root, options...)
 
 	cmd.Init(
 		cmd.Name(name),
 		cmd.Description(description),
 		cmd.Version(version.Version()),
-		cmd.CliApp(app),
+		cmd.Command(root),
 	)
 }
 
 var commandOrder = []string{"api", "new", "init", "build"}
 
-type commands []*ccli.Command
+type commands []*cobra.Command
 
 func (s commands) Len() int      { return len(s) }
 func (s commands) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
@@ -280,11 +276,11 @@ func (s commands) Less(i, j int) bool {
 	for i, v := range commandOrder {
 		index[v] = i
 	}
-	iVal, ok := index[s[i].Name]
+	iVal, ok := index[s[i].Use]
 	if !ok {
 		iVal = math.MaxInt32
 	}
-	jVal, ok := index[s[j].Name]
+	jVal, ok := index[s[j].Use]
 	if !ok {
 		jVal = math.MaxInt32
 	}
@@ -292,12 +288,12 @@ func (s commands) Less(i, j int) bool {
 }
 
 // Setup sets up a cli.App
-func Setup(app *ccli.App, options ...vine.Option) {
+func Setup(root *cobra.Command, options ...vine.Option) {
 	// Add the various commands
 	//app.Commands = append(app.Commands, runtime.Commands(options...)...)
 	//app.Commands = append(app.Commands, store.Commands(options...)...)
 	//app.Commands = append(app.Commands, config.Commands(options...)...)
-	app.Commands = append(app.Commands, api.Commands(options...)...)
+	root.AddCommand(api.Commands(options...)...)
 	//app.Commands = append(app.Commands, broker.Commands(options...)...)
 	//app.Commands = append(app.Commands, health.Commands(options...)...)
 	//app.Commands = append(app.Commands, proxy.Commands(options...)...)
@@ -309,36 +305,19 @@ func Setup(app *ccli.App, options ...vine.Option) {
 	//app.Commands = append(app.Commands, server.Commands(options...)...)
 	//app.Commands = append(app.Commands, Commands(options...)...)
 	//app.Commands = append(app.Commands, web.Commands(options...)...)
-	app.Commands = append(app.Commands, cliMg.Commands()...)
-	app.Commands = append(app.Commands, cliRun.Commands()...)
-	app.Commands = append(app.Commands, cliBuild.Commands()...)
+	root.AddCommand(cliMg.Commands()...)
+	root.AddCommand(cliRun.Commands()...)
+	root.AddCommand(cliBuild.Commands()...)
 	//app.Commands = append(app.Commands, auth.Commands()...)
 	//app.Commands = append(app.Commands, bot.Commands()...)
 	//app.Commands = append(app.Commands, cli.Commands()...)
 
-	sort.Sort(commands(app.Commands))
+	sort.Sort(commands(root.Commands()))
 
 	// boot vine runtime
-	app.Action = func(c *ccli.Context) error {
-		if c.Args().Len() > 0 {
-			command := c.Args().First()
-
-			v, err := exec.LookPath(command)
-			if err != nil {
-				fmt.Println(helper.UnexpectedCommand(c))
-				os.Exit(1)
-			}
-
-			// execute the command
-			ce := exec.Command(v, c.Args().Slice()[1:]...)
-			ce.Stdout = os.Stdout
-			ce.Stderr = os.Stderr
-			return ce.Run()
-		}
-		fmt.Println("No command provided to vine. Please refer to 'vine help'")
-		os.Exit(1)
-		return nil
+	root.RunE = func(c *cobra.Command, args []string) error {
+		return c.Help()
 	}
 
-	setup(app)
+	setup(root)
 }

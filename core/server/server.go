@@ -27,6 +27,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/google/uuid"
 	"github.com/spf13/pflag"
 	"github.com/vine-io/vine/core/codec"
 	"github.com/vine-io/vine/core/registry"
@@ -38,7 +39,7 @@ var (
 	DefaultAddress       = ":0"
 	DefaultName          = "go.vine.server"
 	DefaultVersion       = "latest"
-	DefaultId            = "vine-id"
+	DefaultId            = uuid.New().String()
 	DefaultServer        Server
 	DefaultRegisterCheck = func(context.Context) error { return nil }
 
@@ -46,12 +47,12 @@ var (
 )
 
 func init() {
-	Flag.String("server-default", "", "Server for vine")
-	Flag.String("server-name", DefaultName, "Name of the server")
-	Flag.String("server-address", DefaultAddress, "Bind address for the server")
-	Flag.String("server-id", DefaultId, "Id of the server")
-	Flag.String("server-advertise", DefaultAddress, "Use instead of the server-address when registering with discovery")
-	Flag.String("server-metadata", "", "A list of key-value pairs defining metadata")
+	Flag.String("server.default", "", "Server for vine")
+	Flag.String("server.name", DefaultName, "Name of the server")
+	Flag.String("server.address", "", "Bind address for the server")
+	Flag.String("server.id", DefaultId, "Id of the server")
+	Flag.String("server.advertise", "", "Use instead of the server-address when registering with discovery")
+	Flag.String("server.metadata", "", "A list of key-value pairs defining metadata")
 }
 
 // Server is a simple vine server abstraction

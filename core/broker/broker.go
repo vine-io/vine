@@ -36,7 +36,7 @@ var (
 )
 
 func init() {
-	Flag.String("broker-default", "", "Broker for pub/sub")
+	Flag.String("broker.default", "", "Broker for pub/sub")
 }
 
 // Broker is an interface used for asynchronous messaging.
