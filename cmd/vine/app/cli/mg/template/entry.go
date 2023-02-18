@@ -159,7 +159,8 @@ import (
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 
 	"github.com/vine-io/vine"
 	ahandler "github.com/vine-io/vine/lib/api/handler"
@@ -184,30 +185,13 @@ var (
 	Type          = "api"
 	APIPath       = "/"
 	enableOpenAPI = false
-
-	flags = []cli.Flag{
-		&cli.StringFlag{
-			Name:        "api-address",
-			Usage:       "The specify for api address",
-			EnvVars:     []string{"VINE_API_ADDRESS"},
-			Required:    true,
-			Value:       Address,
-			Destination: &Address,
-		},
-		&cli.BoolFlag{
-			Name:    "enable-openapi",
-			Usage:   "Enable OpenAPI3",
-			EnvVars: []string{"VINE_ENABLE_OPENAPI"},
-			Value:   true,
-		},
-		&cli.BoolFlag{
-			Name:    "enable-cors",
-			Usage:   "Enable CORS, allowing the API to be called by frontend applications",
-			EnvVars: []string{"VINE_API_ENABLE_CORS"},
-			Value:   true,
-		},
-	}
 )
+
+func init() {
+	pflag.StringVar(&Address, "api-address", Address, "The specify for api address")
+	pflag.Bool("enable-openapi", true, "Enable OpenAPI3")
+	pflag.Bool("enable-cors", true, "Enable CORS, allowing the API to be called by frontend applications")
+}
 
 func Run() {
 	// Init API
@@ -222,12 +206,13 @@ func Run() {
 			"api-address": Address,
 			"namespace": version.Namespace,
 		}),
-		vine.Flags(flags...),
-		vine.Action(func(ctx *cli.Context) error {
-			enableOpenAPI = ctx.Bool("enable-openapi")
+		vine.FlagSets(pflag.CommandLine),
+		vine.Action(func(c *cobra.Command, args []string) error {
+			ctx := c.PersistentFlags()
+			enableOpenAPI, _ = ctx.GetBool("enable-openapi")
 
-			if ctx.Bool("enable-tls") {
-				config, err := helper.TLSConfig(ctx)
+			if b, _ := ctx.GetBool("enable-tls"); b {
+				config, err := helper.TLSConfig(c)
 				if err != nil {
 					log.Errorf(err.Error())
 					return err
@@ -250,7 +235,7 @@ func Run() {
 	app.Use(gin.Recovery())
 
 	if enableOpenAPI {
-		openapi.RegisterOpenAPI(app)
+		openapi.RegisterOpenAPI(svc.Options().Client, svc.Options().Registry, app)
 	}
 
 	// create the namespace resolver

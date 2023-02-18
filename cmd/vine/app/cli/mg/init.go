@@ -29,16 +29,17 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/cmd/vine/version"
 
 	t2 "github.com/vine-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 )
 
-func runInit(ctx *cli.Context) {
-	cluster := ctx.Bool("cluster")
-	namespace := ctx.String("namespace")
+func runInit(cmd *cobra.Command, args []string) error {
+	flags := cmd.PersistentFlags()
+	cluster, _ := flags.GetBool("cluster")
+	namespace, _ := flags.GetString("namespace")
 	useGoModule := os.Getenv("GO111MODULE")
 
 	goPath := build.Default.GOPATH
@@ -67,8 +68,7 @@ func runInit(ctx *cli.Context) {
 	c.VineVersion = version.GitTag
 
 	if _, err := os.Stat("vine.toml"); !os.IsNotExist(err) {
-		fmt.Println("vine.toml already exists")
-		return
+		return fmt.Errorf("vine.toml already exists")
 	}
 	c.Toml = &tool.Config{
 		Package: tool.Package{
@@ -92,8 +92,5 @@ func runInit(ctx *cli.Context) {
 		c.Files = append(c.Files, file{"go.mod", t2.Module})
 	}
 
-	if err := create(c); err != nil {
-		fmt.Println(err)
-		return
-	}
+	return create(c)
 }

@@ -23,41 +23,17 @@
 package build
 
 import (
-	"fmt"
-	"os"
-	"os/exec"
-
-	"github.com/vine-io/cli"
-
-	"github.com/vine-io/vine/util/helper"
+	"github.com/spf13/cobra"
 )
 
-func Commands() []*cli.Command {
-	return []*cli.Command{
-		{
-			Name:        "build",
-			Usage:       "Build vine project or resource",
-			Subcommands: []*cli.Command{cmdProto(), cmdSRV()},
-			Action: func(c *cli.Context) error {
-				if c.Args().Len() > 0 {
-					command := c.Args().First()
-
-					v, err := exec.LookPath(command)
-					if err != nil {
-						fmt.Println(helper.UnexpectedSubcommand(c))
-						os.Exit(1)
-					}
-
-					// execute the command
-					ce := exec.Command(v, c.Args().Slice()[1:]...)
-					ce.Stdout = os.Stdout
-					ce.Stderr = os.Stderr
-					return ce.Run()
-				}
-				fmt.Println("No command provided to vine. Please refer to 'vine build help'")
-				os.Exit(1)
-				return nil
-			},
+func Commands() []*cobra.Command {
+	buildCmd := &cobra.Command{
+		Use:   "build",
+		Short: "Build vine project or resource",
+		RunE: func(c *cobra.Command, args []string) error {
+			return c.Help()
 		},
 	}
+	buildCmd.AddCommand(cmdProto(), cmdSRV())
+	return []*cobra.Command{buildCmd}
 }

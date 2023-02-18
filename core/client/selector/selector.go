@@ -39,7 +39,7 @@ var (
 )
 
 func init() {
-	Flag.String("selector-default", "", "Selector used to pick nodes for querying")
+	Flag.String("selector.default", "", "Selector used to pick nodes for querying")
 }
 
 // Selector builds on the registry as a mechanism to pick nodes

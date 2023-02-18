@@ -93,6 +93,9 @@ func (s *service) Init(opts ...Option) {
 		if len(s.opts.Cmd.Options().Name) == 0 {
 			options = append(options, cmd.Name(s.opts.Server.Options().Name))
 		}
+		if len(s.opts.Cmd.Options().Version) == 0 {
+			options = append(options, cmd.Version(s.opts.Server.Options().Version))
+		}
 
 		if s.opts.Cmd != nil {
 			// Initialise the command flags, overriding new service

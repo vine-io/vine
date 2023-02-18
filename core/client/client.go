@@ -54,12 +54,13 @@ var (
 )
 
 func init() {
-	Flag.String("client-default", "", "Client for vine")
-	Flag.String("client-contentType", DefaultContentType, "Sets the content type for client")
-	Flag.Int("client-retries", DefaultRetries, "Sets the retries")
-	Flag.Duration("client-request-timeout", DefaultRequestTimeout, "Sets the client request timeout")
-	Flag.Int("client-pool-size", DefaultPoolSize, "Sets the client connection pool size")
-	Flag.Duration("client-pool-ttl", DefaultPoolTTL, "Sets the client connection pool ttl")
+	Flag.String("client.default", "", "Client for vine")
+	Flag.String("client.content-type", DefaultContentType, "Sets the content type for client")
+	Flag.Int("client.retries", DefaultRetries, "Sets the retries")
+	Flag.Duration("client.dial-timeout", DefaultDialTimeout, "Sets the client dial timeout")
+	Flag.Duration("client.request-timeout", DefaultRequestTimeout, "Sets the client request timeout")
+	Flag.Int("client.pool-size", DefaultPoolSize, "Sets the client connection pool size")
+	Flag.Duration("client.pool-ttl", DefaultPoolTTL, "Sets the client connection pool ttl")
 }
 
 // Client is the interface used to make requests to services.

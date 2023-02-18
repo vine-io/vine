@@ -23,6 +23,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -51,6 +52,7 @@ import (
 	log "github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/lib/trace"
 	memTracer "github.com/vine-io/vine/lib/trace/memory"
+	"gopkg.in/yaml.v3"
 
 	// servers
 	sgrpc "github.com/vine-io/vine/core/server/grpc"
@@ -60,6 +62,7 @@ import (
 	memCache "github.com/vine-io/vine/lib/cache/memory"
 	nopCache "github.com/vine-io/vine/lib/cache/noop"
 	// config
+	uc "github.com/vine-io/vine/util/config"
 )
 
 func init() {
@@ -160,15 +163,21 @@ func newCmd(opts ...Option) Cmd {
 		options.Context = context.Background()
 	}
 
+	c := new(cmd)
 	rootCmd := &cobra.Command{
-		Use:     options.Name,
-		Short:   options.Description,
-		Version: options.Version,
-		RunE:    before(&options),
+		Use:   options.Name,
+		Short: options.Description,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return c.before(cmd, args)
+		},
 	}
 	rootCmd.SetHelpFunc(help)
+	rootCmd.Version = ""
+	rootCmd.AddCommand(c.Commands()...)
+	rootCmd.InitDefaultCompletionCmd()
 
 	rootCmd.ResetFlags()
+	rootCmd.PersistentFlags().StringP("input", "i", "", "Reads the configuration from given filename")
 	rootCmd.PersistentFlags().AddFlagSet(registry.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(broker.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(client.Flag)
@@ -179,8 +188,8 @@ func newCmd(opts ...Option) Cmd {
 	rootCmd.PersistentFlags().AddFlagSet(trace.Flag)
 
 	options.app = rootCmd
-
-	return &cmd{opts: options}
+	c.opts = options
+	return c
 }
 
 func (c *cmd) App() *cobra.Command {
@@ -194,13 +203,17 @@ func (c *cmd) Init(opts ...Option) error {
 	if len(c.opts.Name) > 0 {
 		c.opts.app.Use = c.opts.Name
 	}
-	if len(c.opts.Version) > 0 {
-		c.opts.app.Version = c.opts.Version
-	}
 
 	c.opts.app.Short = c.opts.Description
 	if c.opts.app.RunE == nil {
-		c.opts.app.RunE = before(&c.opts)
+		c.opts.app.RunE = func(cmd *cobra.Command, args []string) error {
+			return c.before(cmd, args)
+		}
+	}
+
+	err := uc.BindPFlags(c.opts.app.PersistentFlags())
+	if err != nil {
+		return fmt.Errorf("binding flags: %v", err)
 	}
 
 	return c.opts.app.Execute()
@@ -210,243 +223,289 @@ func (c *cmd) Options() Options {
 	return c.opts
 }
 
+func (c *cmd) Commands() []*cobra.Command {
+	versionCmd := &cobra.Command{
+		Use:   "version",
+		Short: "Prints the version information",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.Println(c.opts.Version)
+			os.Exit(0)
+			return nil
+		},
+	}
+
+	defaultCmd := &cobra.Command{
+		Use:   "default",
+		Short: "Prints configuration data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			out := map[string]interface{}{}
+			err := uc.Unmarshal(&out)
+			if err != nil {
+				return err
+			}
+			data, _ := yaml.Marshal(out)
+			cmd.Print(string(data))
+			os.Exit(0)
+			return nil
+		},
+	}
+
+	return []*cobra.Command{versionCmd, defaultCmd}
+}
+
+func (c *cmd) before(cmd *cobra.Command, args []string) error {
+	// If flags are set then use them otherwise do nothing
+	var serverOpts []server.Option
+	var clientOpts []client.Option
+	options := c.opts
+
+	// setup a client to use when calling the runtime. It is important the auth client is wrapped
+	// after the cache client since the wrappers are applied in reverse order and the cache will use
+	vineClient := client.DefaultClient
+
+	if cfg, _ := cmd.PersistentFlags().GetString("input"); len(cfg) != 0 {
+		data, err := os.ReadFile(cfg)
+		if err != nil {
+			return fmt.Errorf("open configuration file: %v", err)
+		}
+		err = uc.ReadConfig(bytes.NewReader(data))
+		if err != nil {
+			return fmt.Errorf("parse configration data: %v", err)
+		}
+	}
+
+	// Set the cache
+	if name := uc.GetString("cache.default"); len(name) > 0 {
+		s, ok := options.Caches[name]
+		if !ok {
+			return fmt.Errorf("unsuported cache: %s", name)
+		}
+
+		*options.Cache = s(cache.WithClient(vineClient))
+		cache.DefaultCache = *options.Cache
+	}
+
+	// Set the dialect
+	if name := uc.GetString("dao.dialect"); len(name) > 0 {
+		d, ok := options.Dialects[name]
+		if !ok {
+			return fmt.Errorf("unsuported dialect: %s", name)
+		}
+
+		*options.Dialect = d()
+		dao.DefaultDialect = *options.Dialect
+	}
+
+	// Set the tracer
+	if name := uc.GetString("tracer.default"); len(name) > 0 {
+		r, ok := options.Tracers[name]
+		if !ok {
+			return fmt.Errorf("unsupported tracer: %s", name)
+		}
+
+		*options.Tracer = r()
+		trace.DefaultTracer = *options.Tracer
+	}
+
+	// Set the client
+	if name := uc.GetString("client.default"); len(name) > 0 {
+		// only change if we have the client and type differs
+		if cl, ok := options.Clients[name]; ok && (*options.Client).String() != name {
+			*options.Client = cl()
+			client.DefaultClient = *options.Client
+		}
+	}
+
+	// Set the server
+	if name := uc.GetString("server.default"); len(name) > 0 {
+		// only change if we have the server and type differs
+		if s, ok := options.Servers[name]; ok && (*options.Server).String() != name {
+			*options.Server = s()
+			server.DefaultServer = *options.Server
+		}
+	}
+
+	// Set the registry
+	if name := uc.GetString("registry.default"); len(name) > 0 && (*options.Registry).String() != name {
+		r, ok := options.Registries[name]
+		if !ok {
+			return fmt.Errorf("registry %s not found", name)
+		}
+
+		*options.Registry = r()
+		registry.DefaultRegistry = *options.Registry
+
+		serverOpts = append(serverOpts, server.Registry(*options.Registry))
+		clientOpts = append(clientOpts, client.Registry(*options.Registry))
+
+		if err := (*options.Selector).Init(selector.Registry(*options.Registry)); err != nil {
+			log.Fatalf("Error configuring registry: %v", err)
+		}
+
+		clientOpts = append(clientOpts, client.Selector(*options.Selector))
+
+		if err := (*options.Broker).Init(broker.Registry(*options.Registry)); err != nil {
+			log.Errorf("Error configuring broker: %v", err)
+		}
+	}
+
+	// Set the broker
+	if name := uc.GetString("broker.default"); len(name) > 0 && (*options.Broker).String() != name {
+		b, ok := options.Brokers[name]
+		if !ok {
+			return fmt.Errorf("broker %s not found", name)
+		}
+
+		*options.Broker = b()
+		broker.DefaultBroker = *options.Broker
+
+		serverOpts = append(serverOpts, server.Broker(*options.Broker))
+		clientOpts = append(clientOpts, client.Broker(*options.Broker))
+	}
+
+	// Set the selector
+	if name := uc.GetString("selector.default"); len(name) > 0 && (*options.Selector).String() != name {
+		s, ok := options.Selectors[name]
+		if !ok {
+			return fmt.Errorf("selector %s not found", name)
+		}
+
+		*options.Selector = s(selector.Registry(*options.Registry))
+		selector.DefaultSelector = *options.Selector
+
+		// No server option here. Should there be?
+		clientOpts = append(clientOpts, client.Selector(*options.Selector))
+	}
+
+	// Parse the server options
+	metadata := make(map[string]string)
+	for _, d := range uc.GetStringSlice("server.metadata") {
+		var key, val string
+		parts := strings.Split(d, "=")
+		key = parts[0]
+		if len(parts) > 1 {
+			val = strings.Join(parts[1:], "=")
+		}
+		metadata[key] = val
+	}
+
+	if len(metadata) > 0 {
+		serverOpts = append(serverOpts, server.Metadata(metadata))
+	}
+
+	if addrs := uc.GetString("broker.address"); len(addrs) > 0 {
+		if err := (*options.Broker).Init(broker.Addrs(strings.Split(addrs, ",")...)); err != nil {
+			log.Fatalf("Error configuring broker: %v", err)
+		}
+	}
+
+	if addrs := uc.GetString("registry.address"); len(addrs) > 0 {
+		if err := (*options.Registry).Init(registry.Addrs(strings.Split(addrs, ",")...)); err != nil {
+			log.Fatalf("Error configuring registry: %v", err)
+		}
+	}
+
+	if dsn := uc.GetString("dao.dsn"); len(dsn) > 0 {
+		if strings.HasPrefix(dsn, "base64:") {
+			b, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(dsn, "base64:"))
+			if err != nil {
+				log.Fatalf("Error configuring dialect dsn: decode base64 string: %v", err)
+			}
+			dsn = string(b)
+		}
+		if err := (*options.Dialect).Init(dao.DSN(dsn)); err != nil {
+			log.Fatalf("Error configuring dialect dsn: %v", err)
+		}
+	}
+
+	if addrs := uc.GetString("cache.address"); len(addrs) > 0 {
+		if err := (*options.Cache).Init(cache.Nodes(strings.Split(addrs, ",")...)); err != nil {
+			log.Fatalf("Error configuring cache: %v", err)
+		}
+	}
+
+	if name := uc.GetString("server.name"); len(name) > 0 {
+		serverOpts = append(serverOpts, server.Name(name))
+	}
+
+	if version := uc.GetString("server.version"); len(version) > 0 {
+		serverOpts = append(serverOpts, server.Version(version))
+	}
+
+	if id := uc.GetString("server.id"); len(id) > 0 {
+		serverOpts = append(serverOpts, server.Id(id))
+	}
+
+	if addr := uc.GetString("server.address"); len(addr) > 0 {
+		serverOpts = append(serverOpts, server.Address(addr))
+	}
+
+	if advertise := uc.GetString("server.advertise"); len(advertise) > 0 {
+		serverOpts = append(serverOpts, server.Advertise(advertise))
+	}
+
+	if ttl := uc.GetDuration("registry.ttl"); ttl >= 0 {
+		serverOpts = append(serverOpts, server.RegisterTTL(ttl*time.Second))
+	}
+
+	if val := uc.GetDuration("registry.interval"); val >= 0 {
+		serverOpts = append(serverOpts, server.RegisterInterval(val*time.Second))
+	}
+
+	// client opts
+	if r := uc.GetInt("client.retries"); r >= 0 {
+		clientOpts = append(clientOpts, client.Retries(r))
+	}
+
+	if t := uc.GetString("client.dialTimeout"); len(t) > 0 {
+		d, err := time.ParseDuration(t)
+		if err != nil {
+			return fmt.Errorf("failed to parse client.dialTimeout: %v", t)
+		}
+		clientOpts = append(clientOpts, client.DialTimeout(d))
+	}
+
+	if t := uc.GetString("client.requestTimeout"); len(t) > 0 {
+		d, err := time.ParseDuration(t)
+		if err != nil {
+			return fmt.Errorf("failed to parse client.requestTimeout: %v", t)
+		}
+		clientOpts = append(clientOpts, client.RequestTimeout(d))
+	}
+
+	if r := uc.GetInt("client.poolSize"); r > 0 {
+		clientOpts = append(clientOpts, client.PoolSize(r))
+	}
+
+	if t := uc.GetString("client.poolTTL"); len(t) > 0 {
+		d, err := time.ParseDuration(t)
+		if err != nil {
+			return fmt.Errorf("failed to parse client.pool.ttl: %v", t)
+		}
+		clientOpts = append(clientOpts, client.PoolTTL(d))
+	}
+
+	// We have some command line opts for the server.
+	// Let's set it up
+	if len(serverOpts) > 0 && *options.Server != nil {
+		if err := (*options.Server).Init(serverOpts...); err != nil {
+			log.Fatalf("Error configuring server: %v", err)
+		}
+	}
+
+	// Use an init option?
+	if len(clientOpts) > 0 && *options.Client != nil {
+		if err := (*options.Client).Init(clientOpts...); err != nil {
+			log.Fatalf("Error configuring client: %v", err)
+		}
+	}
+
+	return nil
+}
+
 func help(cmd *cobra.Command, _ []string) {
 	cmd.Print(cmd.UsageString())
 	os.Exit(0)
-}
-
-func before(options *Options) func(cmd *cobra.Command, args []string) error {
-	return func(cmd *cobra.Command, args []string) error {
-		// If flags are set then use them otherwise do nothing
-		var serverOpts []server.Option
-		var clientOpts []client.Option
-
-		// setup a client to use when calling the runtime. It is important the auth client is wrapped
-		// after the cache client since the wrappers are applied in reverse order and the cache will use
-		vineClient := client.DefaultClient
-		flags := cmd.PersistentFlags()
-
-		// Set the cache
-		if name, _ := flags.GetString("cache-default"); len(name) > 0 {
-			s, ok := options.Caches[name]
-			if !ok {
-				return fmt.Errorf("unsuported cache: %s", name)
-			}
-
-			*options.Cache = s(cache.WithClient(vineClient))
-			cache.DefaultCache = *options.Cache
-		}
-
-		// Set the dialect
-		if name, _ := flags.GetString("dao-dialect"); len(name) > 0 {
-			d, ok := options.Dialects[name]
-			if !ok {
-				return fmt.Errorf("unsuported dialect: %s", name)
-			}
-
-			*options.Dialect = d()
-			dao.DefaultDialect = *options.Dialect
-		}
-
-		// Set the tracer
-		if name, _ := flags.GetString("tracer-default"); len(name) > 0 {
-			r, ok := options.Tracers[name]
-			if !ok {
-				return fmt.Errorf("unsupported tracer: %s", name)
-			}
-
-			*options.Tracer = r()
-			trace.DefaultTracer = *options.Tracer
-		}
-
-		// Set the client
-		if name, _ := flags.GetString("client-default"); len(name) > 0 {
-			// only change if we have the client and type differs
-			if cl, ok := options.Clients[name]; ok && (*options.Client).String() != name {
-				*options.Client = cl()
-				client.DefaultClient = *options.Client
-			}
-		}
-
-		// Set the server
-		if name, _ := flags.GetString("server-default"); len(name) > 0 {
-			// only change if we have the server and type differs
-			if s, ok := options.Servers[name]; ok && (*options.Server).String() != name {
-				*options.Server = s()
-				server.DefaultServer = *options.Server
-			}
-		}
-
-		// Set the registry
-		if name, _ := flags.GetString("registry-default"); len(name) > 0 && (*options.Registry).String() != name {
-			r, ok := options.Registries[name]
-			if !ok {
-				return fmt.Errorf("registry %s not found", name)
-			}
-
-			*options.Registry = r()
-			registry.DefaultRegistry = *options.Registry
-
-			serverOpts = append(serverOpts, server.Registry(*options.Registry))
-			clientOpts = append(clientOpts, client.Registry(*options.Registry))
-
-			if err := (*options.Selector).Init(selector.Registry(*options.Registry)); err != nil {
-				log.Fatalf("Error configuring registry: %v", err)
-			}
-
-			clientOpts = append(clientOpts, client.Selector(*options.Selector))
-
-			if err := (*options.Broker).Init(broker.Registry(*options.Registry)); err != nil {
-				log.Errorf("Error configuring broker: %v", err)
-			}
-		}
-
-		// Set the broker
-		if name, _ := flags.GetString("broker-default"); len(name) > 0 && (*options.Broker).String() != name {
-			b, ok := options.Brokers[name]
-			if !ok {
-				return fmt.Errorf("broker %s not found", name)
-			}
-
-			*options.Broker = b()
-			broker.DefaultBroker = *options.Broker
-
-			serverOpts = append(serverOpts, server.Broker(*options.Broker))
-			clientOpts = append(clientOpts, client.Broker(*options.Broker))
-		}
-
-		// Set the selector
-		if name, _ := flags.GetString("selector-default"); len(name) > 0 && (*options.Selector).String() != name {
-			s, ok := options.Selectors[name]
-			if !ok {
-				return fmt.Errorf("selector %s not found", name)
-			}
-
-			*options.Selector = s(selector.Registry(*options.Registry))
-			selector.DefaultSelector = *options.Selector
-
-			// No server option here. Should there be?
-			clientOpts = append(clientOpts, client.Selector(*options.Selector))
-		}
-
-		// Parse the server options
-		metadata := make(map[string]string)
-		maps, _ := flags.GetStringSlice("server-metadata")
-		for _, d := range maps {
-			var key, val string
-			parts := strings.Split(d, "=")
-			key = parts[0]
-			if len(parts) > 1 {
-				val = strings.Join(parts[1:], "=")
-			}
-			metadata[key] = val
-		}
-
-		if len(metadata) > 0 {
-			serverOpts = append(serverOpts, server.Metadata(metadata))
-		}
-
-		if addrs, _ := flags.GetString("broker-address"); len(addrs) > 0 {
-			if err := (*options.Broker).Init(broker.Addrs(strings.Split(addrs, ",")...)); err != nil {
-				log.Fatalf("Error configuring broker: %v", err)
-			}
-		}
-
-		if addrs, _ := flags.GetString("registry-address"); len(addrs) > 0 {
-			if err := (*options.Registry).Init(registry.Addrs(strings.Split(addrs, ",")...)); err != nil {
-				log.Fatalf("Error configuring registry: %v", err)
-			}
-		}
-
-		if dsn, _ := flags.GetString("dao-dsn"); len(dsn) > 0 {
-			if strings.HasPrefix(dsn, "base64:") {
-				b, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(dsn, "base64:"))
-				if err != nil {
-					log.Fatalf("Error configuring dialect dsn: decode base64 string: %v", err)
-				}
-				dsn = string(b)
-			}
-			if err := (*options.Dialect).Init(dao.DSN(dsn)); err != nil {
-				log.Fatalf("Error configuring dialect dsn: %v", err)
-			}
-		}
-
-		if addrs, _ := flags.GetString("cache-address"); len(addrs) > 0 {
-			if err := (*options.Cache).Init(cache.Nodes(strings.Split(addrs, ",")...)); err != nil {
-				log.Fatalf("Error configuring cache: %v", err)
-			}
-		}
-
-		if name, _ := flags.GetString("server-name"); len(name) > 0 {
-			serverOpts = append(serverOpts, server.Name(name))
-		}
-
-		if version, _ := flags.GetString("server-version"); len(version) > 0 {
-			serverOpts = append(serverOpts, server.Version(version))
-		}
-
-		if id, _ := flags.GetString("server-id"); len(id) > 0 {
-			serverOpts = append(serverOpts, server.Id(id))
-		}
-
-		if addr, _ := flags.GetString("server-address"); len(addr) > 0 {
-			serverOpts = append(serverOpts, server.Address(addr))
-		}
-
-		if advertise, _ := flags.GetString("server-advertise"); len(advertise) > 0 {
-			serverOpts = append(serverOpts, server.Advertise(advertise))
-		}
-
-		if ttl, _ := flags.GetDuration("registry-ttl"); ttl >= 0 {
-			serverOpts = append(serverOpts, server.RegisterTTL(ttl*time.Second))
-		}
-
-		if val, _ := flags.GetDuration("registry-interval"); val >= 0 {
-			serverOpts = append(serverOpts, server.RegisterInterval(val*time.Second))
-		}
-
-		// client opts
-		if r, _ := flags.GetInt("client-retries"); r >= 0 {
-			clientOpts = append(clientOpts, client.Retries(r))
-		}
-
-		if t, _ := flags.GetString("client-request-timeout"); len(t) > 0 {
-			d, err := time.ParseDuration(t)
-			if err != nil {
-				return fmt.Errorf("failed to parse client-request-timeout: %v", t)
-			}
-			clientOpts = append(clientOpts, client.RequestTimeout(d))
-		}
-
-		if r, _ := flags.GetInt("client-pool-size"); r > 0 {
-			clientOpts = append(clientOpts, client.PoolSize(r))
-		}
-
-		if t, _ := flags.GetString("client-pool-ttl"); len(t) > 0 {
-			d, err := time.ParseDuration(t)
-			if err != nil {
-				return fmt.Errorf("failed to parse client-pool-ttl: %v", t)
-			}
-			clientOpts = append(clientOpts, client.PoolTTL(d))
-		}
-
-		// We have some command line opts for the server.
-		// Let's set it up
-		if len(serverOpts) > 0 && *options.Server != nil {
-			if err := (*options.Server).Init(serverOpts...); err != nil {
-				log.Fatalf("Error configuring server: %v", err)
-			}
-		}
-
-		// Use an init option?
-		if len(clientOpts) > 0 && *options.Client != nil {
-			if err := (*options.Client).Init(clientOpts...); err != nil {
-				log.Fatalf("Error configuring client: %v", err)
-			}
-		}
-
-		return nil
-	}
 }
 
 func DefaultOptions() Options {

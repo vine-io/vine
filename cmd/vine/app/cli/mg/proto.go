@@ -30,38 +30,37 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/cmd/vine/version"
+	"github.com/vine-io/vine/util/helper"
 
 	t2 "github.com/vine-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 )
 
-func runProto(ctx *cli.Context) {
-	atype := ctx.String("type")
-	pv := ctx.String("proto-version")
-	group := ctx.String("group")
-	name := ctx.Args().First()
+func runProto(cmd *cobra.Command, args []string) error {
+
+	flags := cmd.PersistentFlags()
+	atype, _ := flags.GetString("type")
+	pv, _ := flags.GetString("proto-version")
+	group, _ := flags.GetString("group")
+	name := helper.NewArgs(args).First()
 
 	if len(name) == 0 {
-		fmt.Println("specify service name")
-		return
+		return fmt.Errorf("specify service name")
 	}
 
 	if strings.Contains(name, "/") || strings.Contains(name, "\\") {
-		fmt.Println("invalid service name: contains '/' or '\\'")
-		return
+		return fmt.Errorf("invalid service name: contains '/' or '\\'")
 	}
 
 	if _, err := os.Stat("vine.toml"); err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	cfg, err := tool.New("vine.toml")
 	if err != nil {
-		fmt.Printf("invalid vine project: %v\n", err)
-		return
+		return fmt.Errorf("invalid vine project: %v\n", err)
 	}
 
 	dir, _ := os.Getwd()
@@ -87,8 +86,7 @@ func runProto(ctx *cli.Context) {
 
 	for _, item := range c.Toml.Proto {
 		if item.Type == atype && item.Group == group && item.Name == name && item.Version == pv {
-			fmt.Printf("%s %s/%s/%s.proto exists\n", atype, group, pv, name)
-			return
+			return fmt.Errorf("%s %s/%s/%s.proto exists\n", atype, group, pv, name)
 		}
 	}
 
@@ -130,37 +128,18 @@ func runProto(ctx *cli.Context) {
 		}
 	}
 
-	if err := create(c); err != nil {
-		fmt.Println(err)
-		return
-	}
+	return create(c)
 }
 
-func cmdProto() *cli.Command {
-	return &cli.Command{
-		Name:  "proto",
-		Usage: "Create a proto file",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "type",
-				Usage: "type of proto eg service, api",
-				Value: "api",
-			},
-			&cli.StringFlag{
-				Name:    "proto-version",
-				Aliases: []string{"v"},
-				Usage:   "specify proto version",
-				Value:   "v1",
-			},
-			&cli.StringFlag{
-				Name:  "group",
-				Usage: "specify the group",
-				Value: "core",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			runProto(c)
-			return nil
-		},
+func cmdProto() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "proto",
+		Short: "Create a proto file",
+		RunE:  runProto,
 	}
+	cmd.PersistentFlags().String("type", "type of proto eg service, api", "api")
+	cmd.PersistentFlags().String("proto-version", "v1", "specify proto version")
+	cmd.PersistentFlags().String("group", "core", "specify the group")
+
+	return cmd
 }

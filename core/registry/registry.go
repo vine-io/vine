@@ -46,10 +46,10 @@ var (
 )
 
 func init() {
-	Flag.String("registry-default", "", "Registry for discovery")
-	Flag.Duration("registry-timeout", DefaultRegistryTimeout, "Sets the registry request timeout.")
-	Flag.Duration("registry-interval", DefaultRegisterInterval, "Register interval")
-	Flag.Duration("registry-ttl", DefaultRegisterTTL, "Registry TTL")
+	Flag.String("registry.default", "", "Registry for discovery")
+	Flag.Duration("registry.timeout", DefaultRegistryTimeout, "Sets the registry request timeout.")
+	Flag.Duration("registry.interval", DefaultRegisterInterval, "Register interval")
+	Flag.Duration("registry.ttl", DefaultRegisterTTL, "Registry TTL")
 }
 
 // Registry the registry provides an interface for service discovery

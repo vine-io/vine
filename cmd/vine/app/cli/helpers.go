@@ -32,18 +32,19 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util"
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/codec/bytes"
 	"github.com/vine-io/vine/lib/cmd"
+	"github.com/vine-io/vine/util/helper"
 )
 
-type exec func(*cli.Context, []string) ([]byte, error)
+type exec func(*cobra.Command, []string) ([]byte, error)
 
-func Print(e exec) func(*cli.Context) error {
-	return func(c *cli.Context) error {
-		rsp, err := e(c, c.Args().Slice())
+func Print(e exec) func(*cobra.Command, []string) error {
+	return func(c *cobra.Command, args []string) error {
+		rsp, err := e(c, helper.NewArgs(args).Slice())
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -55,17 +56,17 @@ func Print(e exec) func(*cli.Context) error {
 	}
 }
 
-func getEnv(c *cli.Context, args []string) ([]byte, error) {
+func getEnv(c *cobra.Command, args []string) ([]byte, error) {
 	env := util.GetEnv(c)
 	return []byte(env.Name), nil
 }
 
-func setEnv(c *cli.Context, args []string) ([]byte, error) {
+func setEnv(c *cobra.Command, args []string) ([]byte, error) {
 	util.SetEnv(args[0])
 	return nil, nil
 }
 
-func listEnvs(c *cli.Context, args []string) ([]byte, error) {
+func listEnvs(c *cobra.Command, args []string) ([]byte, error) {
 	envs := util.GetEnvs()
 	current := util.GetEnv(c)
 
@@ -89,7 +90,7 @@ func listEnvs(c *cli.Context, args []string) ([]byte, error) {
 	return byt.Bytes(), nil
 }
 
-func addEnv(c *cli.Context, args []string) ([]byte, error) {
+func addEnv(c *cobra.Command, args []string) ([]byte, error) {
 	if len(args) == 0 {
 		return nil, errors.New("name required")
 	}
@@ -105,7 +106,7 @@ func addEnv(c *cli.Context, args []string) ([]byte, error) {
 }
 
 // TODO: stream via HTTP
-func streamService(c *cli.Context, args []string) ([]byte, error) {
+func streamService(c *cobra.Command, args []string) ([]byte, error) {
 	if len(args) < 2 {
 		return nil, errors.New("require service and endpoint")
 	}
@@ -126,7 +127,7 @@ func streamService(c *cli.Context, args []string) ([]byte, error) {
 		return nil, fmt.Errorf("error sending to %s.%s: %v", service, endpoint, err)
 	}
 
-	output := c.String("output")
+	output, _ := c.PersistentFlags().GetString("output")
 
 	for {
 		if output == "raw" {
@@ -145,4 +146,3 @@ func streamService(c *cli.Context, args []string) ([]byte, error) {
 		}
 	}
 }
-

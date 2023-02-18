@@ -33,7 +33,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/serenize/snaker"
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
 	"github.com/vine-io/vine/cmd/vine/client/resolver/web"
@@ -50,7 +50,7 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
-//Meta Fields of vine web
+// Meta Fields of vine web
 var (
 	// Name default server name
 	Name = "go.vine.web"
@@ -450,24 +450,25 @@ func (s *service) render(c *gin.Context, tmpl string, data interface{}) {
 	//}
 }
 
-func Run(ctx *cli.Context, svcOpts ...vine.Option) {
+func Run(c *cobra.Command, svcOpts ...vine.Option) error {
 
-	if len(ctx.String("server-name")) > 0 {
-		Name = ctx.String("server-name")
+	ctx := c.PersistentFlags()
+	if name, _ := ctx.GetString("server-name"); len(name) > 0 {
+		Name = name
 	}
-	if len(ctx.String("address")) > 0 {
-		Address = ctx.String("address")
+	if addr, _ := ctx.GetString("address"); len(addr) > 0 {
+		Address = addr
 	}
-	if len(ctx.String("resolver")) > 0 {
-		Resolver = ctx.String("resolver")
+	if r, _ := ctx.GetString("resolver"); len(r) > 0 {
+		Resolver = r
 	}
-	if len(ctx.String("type")) > 0 {
-		Type = ctx.String("type")
+	if t, _ := ctx.GetString("type"); len(t) > 0 {
+		Type = t
 	}
-	if len(ctx.String("namespace")) > 0 {
+	if ns, _ := ctx.GetString("namespace"); len(ns) > 0 {
 		// remove the service type from the namespace to allow for
 		// backwards compatability
-		Namespace = strings.TrimSuffix(ctx.String("namespace"), "."+Type)
+		Namespace = strings.TrimSuffix(ns, "."+Type)
 	}
 
 	// service opts
@@ -492,7 +493,7 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 		},
 	}
 
-	if ctx.Bool("enable-stats") {
+	if b, _ := ctx.GetBool("enable-stats"); b {
 		statsURL = "/stats"
 		st := stats.New()
 		s.app.Any("/stats", st.StatsHandler)
@@ -517,11 +518,10 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 
 	var opts []server.Option
 
-	if ctx.Bool("enable-tls") {
-		config, err := helper.TLSConfig(ctx)
+	if b, _ := ctx.GetBool("enable-tls"); b {
+		config, err := helper.TLSConfig(c)
 		if err != nil {
-			log.Errorf(err.Error())
-			return
+			return fmt.Errorf(err.Error())
 		}
 
 		opts = append(opts, server.EnableTLS(true))
@@ -538,53 +538,36 @@ func Run(ctx *cli.Context, svcOpts ...vine.Option) {
 	server.Handle("/", s.app)
 
 	if err := server.Start(); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// Run server
 	if err := svc.Run(); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if err := server.Stop(); err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
-//Commands for `vine web`
-func Commands(options ...vine.Option) []*cli.Command {
-	command := &cli.Command{
-		Name:  "web",
-		Usage: "Run the web dashboard",
-		Action: func(c *cli.Context) error {
-			Run(c, options...)
-			return nil
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "address",
-				Usage:   "Set the web UI address e.g 0.0.0.0:8082",
-				EnvVars: []string{"VINE_WEB_ADDRESS"},
-			},
-			&cli.StringFlag{
-				Name:    "namespace",
-				Usage:   "Set the namespace used by the Web proxy e.g. com.example.web",
-				EnvVars: []string{"VINE_WEB_NAMESPACE"},
-			},
-			&cli.StringFlag{
-				Name:    "resolver",
-				Usage:   "Set the resolver to route to services e.g path, domain",
-				EnvVars: []string{"VINE_WEB_RESOLVER"},
-			},
-			&cli.StringFlag{
-				Name:    "auth-login-url",
-				EnvVars: []string{"VINE_AUTH_LOGIN_URL"},
-				Usage:   "The relative URL where a user can login",
-			},
+// Commands for `vine web`
+func Commands(options ...vine.Option) []*cobra.Command {
+	webCmd := &cobra.Command{
+		Use:   "web",
+		Short: "Run the web dashboard",
+		RunE: func(c *cobra.Command, args []string) error {
+			return Run(c, options...)
 		},
 	}
+	webCmd.PersistentFlags().String("address", "", "Set the web UI address e.g 0.0.0.0:8082")
+	webCmd.PersistentFlags().String("namespace", "", "Set the namespace used by the Web proxy e.g. com.example.web")
+	webCmd.PersistentFlags().String("resolver", "", "Set the resolver to route to services e.g path, domain")
+	webCmd.PersistentFlags().String("auth-login-url", "", "The relative URL where a user can login")
 
-	return []*cli.Command{command}
+	return []*cobra.Command{webCmd}
 }
 
 func reverse(s []string) {

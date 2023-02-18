@@ -30,8 +30,7 @@ import (
 	"net"
 	"os"
 
-	ccli "github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/util/config"
 )
 
@@ -83,11 +82,7 @@ func AddEnv(env Env) {
 }
 
 func getEnvs() map[string]Env {
-	envsJSON, err := config.Get("envs")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	envsJSON := config.GetString("envs")
 	envs := map[string]Env{}
 	if len(envsJSON) > 0 {
 		err := json.Unmarshal([]byte(envsJSON), &envs)
@@ -108,7 +103,8 @@ func setEnvs(envs map[string]Env) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	err = config.Set(string(envsJSON), "envs")
+	config.Set(string(envsJSON), "envs")
+	err = config.Sync()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -117,16 +113,12 @@ func setEnvs(envs map[string]Env) {
 
 // GetEnv returns the current selected environment
 // Does not take
-func GetEnv(ctx *ccli.Context) Env {
+func GetEnv(c *cobra.Command) Env {
 	var envName string
-	if len(ctx.String("env")) > 0 {
-		envName = ctx.String("env")
+	if e, _ := c.PersistentFlags().GetString("env"); len(e) > 0 {
+		envName = e
 	} else {
-		env, err := config.Get("env")
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		env := config.GetString("env")
 		if env == "" {
 			env = EnvLocal
 		}
@@ -182,14 +174,14 @@ func SetEnv(envName string) {
 	config.Set(envName, "env")
 }
 
-func IsLocal(ctx *ccli.Context) bool {
-	return GetEnv(ctx).Name == EnvLocal
+func IsLocal(c *cobra.Command) bool {
+	return GetEnv(c).Name == EnvLocal
 }
 
-func IsServer(ctx *ccli.Context) bool {
-	return GetEnv(ctx).Name == EnvServer
+func IsServer(c *cobra.Command) bool {
+	return GetEnv(c).Name == EnvServer
 }
 
-func IsPlatform(ctx *ccli.Context) bool {
-	return GetEnv(ctx).Name == EnvPlatform
+func IsPlatform(c *cobra.Command) bool {
+	return GetEnv(c).Name == EnvPlatform
 }

@@ -23,19 +23,40 @@
 package config
 
 import (
+	"io"
 	"strings"
 	"time"
 
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
 // FileName for global vine config, format yaml
 var FileName = ".vine"
 
+var Excludes = []string{"input"}
+
+func isExclude(in string) bool {
+	for _, e := range Excludes {
+		if strings.TrimSpace(in) == e {
+			return true
+		}
+	}
+
+	return false
+}
+
 // config is a singleton which is required to ensure
 // each function call doesn't load the .vine file
 // from disk
 var config = newConfig()
+
+// SetConfigType sets the type of the configuration returned by the
+// remote source, e.g. "json".
+func SetConfigType(in string) { config.SetConfigType(in) }
+
+// ReadConfig reads a new configuration with an existing config.
+func ReadConfig(in io.Reader) error { return config.ReadConfig(in) }
 
 // Get a value from the config
 func Get(path ...string) interface{} {
@@ -108,10 +129,37 @@ func Sync() error {
 	return config.WriteConfig()
 }
 
+// SyncAs writes current configuration to a given filename.
+func SyncAs(filename string) error {
+	return config.SafeWriteConfigAs(filename)
+}
+
+// BindPFlags binds a full flag set to the configuration, using each flag's long
+// name as the config key.
+func BindPFlags(flags *pflag.FlagSet) error {
+	var err error
+	flags.VisitAll(func(flag *pflag.Flag) {
+		name := replace(flag.Name)
+		if isExclude(name) {
+			return
+		}
+		err = config.BindPFlag(name, flag)
+		if err != nil {
+			return
+		}
+	})
+	return err
+}
+
 // newConfig returns a *viper.Viper
 func newConfig() *viper.Viper {
-	viper.SetConfigName(FileName)
-	viper.SetConfigType("yaml")
+	c := viper.New()
+	c.SetConfigName(FileName)
+	c.SetConfigType("yaml")
 	// return the conf
-	return viper.New()
+	return c
+}
+
+func replace(s string) string {
+	return strings.ReplaceAll(s, "_", ".")
 }

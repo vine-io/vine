@@ -33,10 +33,67 @@ import (
 	"os"
 	"strings"
 
-	"github.com/vine-io/cli"
-
+	"github.com/spf13/cobra"
 	"github.com/vine-io/vine/util/context/metadata"
 )
+
+type Args interface {
+	// Get returns the nth argument, or else a blank string
+	Get(n int) string
+	// First returns the first argument, or else a blank string
+	First() string
+	// Tail returns the rest of the arguments (not the first one)
+	// or else an empty string slice
+	Tail() []string
+	// Len returns the length of the wrapped slice
+	Len() int
+	// Present checks if there are any arguments present
+	Present() bool
+	// Slice returns a copy of the internal slice
+	Slice() []string
+}
+
+type args []string
+
+func NewArgs(ar []string) Args {
+	a := args(ar)
+	return &a
+}
+
+func (a *args) Get(n int) string {
+	if len(*a) > n {
+		return (*a)[n]
+	}
+	return ""
+}
+
+func (a *args) First() string {
+	return a.Get(0)
+}
+
+func (a *args) Tail() []string {
+	if a.Len() >= 2 {
+		tail := []string((*a)[1:])
+		ret := make([]string, len(tail))
+		copy(ret, tail)
+		return ret
+	}
+	return []string{}
+}
+
+func (a *args) Len() int {
+	return len(*a)
+}
+
+func (a *args) Present() bool {
+	return a.Len() != 0
+}
+
+func (a *args) Slice() []string {
+	ret := make([]string, len(*a))
+	copy(ret, *a)
+	return ret
+}
 
 func RequestToContext(r *http.Request) context.Context {
 	ctx := context.Background()
@@ -47,10 +104,11 @@ func RequestToContext(r *http.Request) context.Context {
 	return metadata.NewContext(ctx, md)
 }
 
-func TLSConfig(ctx *cli.Context) (*tls.Config, error) {
-	cert := ctx.String("tls-cert-file")
-	key := ctx.String("tls-key-file")
-	ca := ctx.String("tls-client-ca-file")
+func TLSConfig(cmd *cobra.Command) (*tls.Config, error) {
+	flags := cmd.PersistentFlags()
+	cert, _ := flags.GetString("tls-cert-file")
+	key, _ := flags.GetString("tls-key-file")
+	ca, _ := flags.GetString("tls-client-ca-file")
 
 	if len(cert) > 0 && len(key) > 0 {
 		certs, err := tls.LoadX509KeyPair(cert, key)
@@ -84,15 +142,16 @@ func TLSConfig(ctx *cli.Context) (*tls.Config, error) {
 }
 
 // UnexpectedSubcommand checks for erroneous subcommands and prints help and returns error
-func UnexpectedSubcommand(ctx *cli.Context) error {
-	if first := ctx.Args().First(); first != "" {
+func UnexpectedSubcommand(cmd *cobra.Command) error {
+	ar := args(cmd.PersistentFlags().Args())
+	if first := ar.First(); first != "" {
 		// received something that isn't a subcommand
-		return fmt.Errorf("unrecognized subcommand for %s: %s. Please refer to '%s help'", ctx.App.Name, first, ctx.App.Name)
+		return fmt.Errorf("unrecognized subcommand for %s: %s. Please refer to '%s help'", cmd.Name(), first, cmd.Name())
 	}
 	return nil
 }
 
-func UnexpectedCommand(ctx *cli.Context) error {
+func UnexpectedCommand(cmd *cobra.Command) error {
 	commandName := ""
 	// We fall back to os.Args as ctx does not seem to have the original command.
 	for _, arg := range os.Args[1:] {

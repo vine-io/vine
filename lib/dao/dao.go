@@ -42,8 +42,8 @@ var (
 )
 
 func init() {
-	Flag.String("dao-dialect", "", "Database option for the underlying dao")
-	Flag.String("dao-dsn", "", "DSN database driver name for underlying dao")
+	Flag.String("dao.dialect", "", "Database option for the underlying dao")
+	Flag.String("dao.dsn", "", "DSN database driver name for underlying dao")
 }
 
 // Dialect DAO database dialect

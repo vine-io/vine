@@ -48,8 +48,8 @@ var (
 )
 
 func init() {
-	Flag.String("tracer", "", "Trace for vine")
-	Flag.String("tracer-address", "", "Comma-separated list of tracer addresses")
+	Flag.String("tracer.default", "", "Trace for vine")
+	Flag.String("tracer.address", "", "Comma-separated list of tracer addresses")
 }
 
 // Tracer is an interface for distributed tracing

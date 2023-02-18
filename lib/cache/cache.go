@@ -41,7 +41,7 @@ var (
 )
 
 func init() {
-	Flag.String("cache-default", "", "Cache used for key-value storage")
+	Flag.String("cache.default", "", "Cache used for key-value storage")
 }
 
 // Cache is a data cache interface

@@ -72,8 +72,8 @@ func init() {
 	encoding.RegisterCodec(wrapCodec{protoCodec{}})
 	encoding.RegisterCodec(wrapCodec{bytesCodec{}})
 
-	server.Flag.Int("server-grpc-maxMsgSize", DefaultMaxMsgSize, "Sets maximum message size that server can send receive")
-	server.Flag.String("server-grpc-contentType", DefaultContentType, "Sets the content type for grpc protocol")
+	server.Flag.Int("server.grpc.max-msg-size", DefaultMaxMsgSize, "Sets maximum message size that server can send receive")
+	server.Flag.String("server.grpc.content-type", DefaultContentType, "Sets the content type for grpc protocol")
 }
 
 type grpcServer struct {

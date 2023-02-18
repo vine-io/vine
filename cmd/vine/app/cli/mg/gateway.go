@@ -31,17 +31,18 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/vine-io/cli"
+	"github.com/spf13/cobra"
 	t2 "github.com/vine-io/vine/cmd/vine/app/cli/mg/template"
 	"github.com/vine-io/vine/cmd/vine/app/cli/util/tool"
 	"github.com/vine-io/vine/cmd/vine/version"
+	"github.com/vine-io/vine/util/helper"
 )
 
-func runGateway(ctx *cli.Context) {
+func runGateway(cmd *cobra.Command, args []string) error {
 	cfg, err := tool.New("vine.toml")
 	if err != nil {
-		fmt.Printf("invalid vine project: %v\n", err)
-		return
+
+		return fmt.Errorf("invalid vine project: %v\n", err)
 	}
 
 	var plugins []string
@@ -49,19 +50,18 @@ func runGateway(ctx *cli.Context) {
 	dir, _ := os.Getwd()
 	namespace := cfg.Package.Namespace
 	cluster := cfg.Package.Kind == "cluster"
+	flags := cmd.PersistentFlags()
 
 	var name string
 	if cluster {
-		name = ctx.Args().First()
+		name = helper.NewArgs(args).First()
 
 		if len(name) == 0 {
-			fmt.Println("specify service name")
-			return
+			return fmt.Errorf("specify service name")
 		}
 
 		if strings.Contains(name, "/") || strings.Contains(name, "\\") {
-			fmt.Println("invalid service name: contains '/' or '\\'")
-			return
+			return fmt.Errorf("invalid service name: contains '/' or '\\'")
 		}
 	} else {
 		name = filepath.Base(dir)
@@ -74,7 +74,9 @@ func runGateway(ctx *cli.Context) {
 	if len(namespace) > 0 {
 		command += " --namespace=" + namespace
 	}
-	if plugins := ctx.StringSlice("plugin"); len(plugins) > 0 {
+
+	plugins, _ = flags.GetStringSlice("plugin")
+	if len(plugins) > 0 {
 		command += " --plugin=" + strings.Join(plugins, ":")
 	}
 	command += " " + name
@@ -87,7 +89,7 @@ func runGateway(ctx *cli.Context) {
 		goPath = strings.Split(goPath, ":")[0]
 	}
 
-	for _, plugin := range ctx.StringSlice("plugin") {
+	for _, plugin := range plugins {
 		// registry=etcd:broker=nats
 		for _, p := range strings.Split(plugin, ":") {
 			// registry=etcd
@@ -125,14 +127,12 @@ func runGateway(ctx *cli.Context) {
 	c.VineVersion = version.GitTag
 
 	if !cluster {
-		fmt.Println("gateway only in cluster project")
-		return
+		return fmt.Errorf("gateway only in cluster project")
 	}
 	if c.Toml.Mod != nil {
 		for _, item := range *c.Toml.Mod {
 			if item.Name == name {
-				fmt.Printf("gateway %s already exists\n", name)
-				return
+				return fmt.Errorf("gateway %s already exists\n", name)
 			}
 		}
 	} else {
@@ -158,25 +158,16 @@ func runGateway(ctx *cli.Context) {
 		{"vine.toml", t2.TOML},
 	}
 
-	if err := create(c); err != nil {
-		fmt.Println(err)
-		return
-	}
+	return create(c)
 }
 
-func cmdGateway() *cli.Command {
-	return &cli.Command{
-		Name:  "gateway",
-		Usage: "Create a gateway template",
-		Flags: []cli.Flag{
-			&cli.StringSliceFlag{
-				Name:  "plugin",
-				Usage: "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			runGateway(c)
-			return nil
-		},
+func cmdGateway() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gateway",
+		Short: "Create a gateway template",
+		RunE:  runGateway,
 	}
+	cmd.PersistentFlags().String("plugin", "", "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times")
+
+	return cmd
 }
