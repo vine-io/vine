@@ -457,7 +457,7 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		clientOpts = append(clientOpts, client.Retries(r))
 	}
 
-	if t := uc.GetString("client.dialTimeout"); len(t) > 0 {
+	if t := uc.GetString("client.dial-timeout"); len(t) > 0 {
 		d, err := time.ParseDuration(t)
 		if err != nil {
 			return fmt.Errorf("failed to parse client.dialTimeout: %v", t)
@@ -465,7 +465,7 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		clientOpts = append(clientOpts, client.DialTimeout(d))
 	}
 
-	if t := uc.GetString("client.requestTimeout"); len(t) > 0 {
+	if t := uc.GetString("client.request-timeout"); len(t) > 0 {
 		d, err := time.ParseDuration(t)
 		if err != nil {
 			return fmt.Errorf("failed to parse client.requestTimeout: %v", t)
@@ -473,11 +473,11 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		clientOpts = append(clientOpts, client.RequestTimeout(d))
 	}
 
-	if r := uc.GetInt("client.poolSize"); r > 0 {
+	if r := uc.GetInt("client.pool-size"); r > 0 {
 		clientOpts = append(clientOpts, client.PoolSize(r))
 	}
 
-	if t := uc.GetString("client.poolTTL"); len(t) > 0 {
+	if t := uc.GetString("client.pool-ttl"); len(t) > 0 {
 		d, err := time.ParseDuration(t)
 		if err != nil {
 			return fmt.Errorf("failed to parse client.pool.ttl: %v", t)
