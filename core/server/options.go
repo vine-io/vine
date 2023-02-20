@@ -68,8 +68,8 @@ func NewOptions(opt ...Option) Options {
 	opts := Options{
 		Codecs:           make(map[string]codec.NewCodec),
 		Metadata:         map[string]string{},
-		RegisterInterval: registry.DefaultRegisterInterval,
-		RegisterTTL:      registry.DefaultRegisterTTL,
+		RegisterInterval: DefaultRegisterInterval,
+		RegisterTTL:      DefaultRegisterTTL,
 	}
 
 	for _, o := range opt {
@@ -77,11 +77,11 @@ func NewOptions(opt ...Option) Options {
 	}
 
 	if opts.RegisterInterval == 0 {
-		opts.RegisterInterval = registry.DefaultRegisterInterval
+		opts.RegisterInterval = DefaultRegisterInterval
 	}
 
 	if opts.RegisterTTL == 0 {
-		opts.RegisterTTL = registry.DefaultRegisterTTL
+		opts.RegisterTTL = DefaultRegisterTTL
 	}
 
 	if opts.Broker == nil {

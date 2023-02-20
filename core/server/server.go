@@ -26,6 +26,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/spf13/pflag"
@@ -36,12 +37,14 @@ import (
 )
 
 var (
-	DefaultAddress       = ":0"
-	DefaultName          = "go.vine.server"
-	DefaultVersion       = "latest"
-	DefaultId            = uuid.New().String()
-	DefaultServer        Server
-	DefaultRegisterCheck = func(context.Context) error { return nil }
+	DefaultAddress          = ":0"
+	DefaultName             = "go.vine.server"
+	DefaultVersion          = "latest"
+	DefaultId               = uuid.New().String()
+	DefaultServer           Server
+	DefaultRegisterCheck    = func(context.Context) error { return nil }
+	DefaultRegisterInterval = time.Second * 20
+	DefaultRegisterTTL      = time.Second * 30
 
 	Flag = pflag.NewFlagSet("server", pflag.ExitOnError)
 )
@@ -53,6 +56,8 @@ func init() {
 	Flag.String("server.id", DefaultId, "Id of the server")
 	Flag.String("server.advertise", "", "Use instead of the server-address when registering with discovery")
 	Flag.String("server.metadata", "", "A list of key-value pairs defining metadata")
+	Flag.Duration("server.register-interval", DefaultRegisterInterval, "Register interval")
+	Flag.Duration("server.register-ttl", DefaultRegisterTTL, "Registry TTL")
 }
 
 // Server is a simple vine server abstraction

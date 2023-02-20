@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"os"
 	"testing"
 )
 
@@ -18,4 +19,7 @@ func TestLogger(t *testing.T) {
 
 	Fields(map[string]interface{}{"key1": "val1"})
 	Info("info")
+
+	h3 := NewHelper(NewLogger(WithLevel(TraceLevel), WithOutput(os.Stdout)))
+	h3.Info("info => ")
 }

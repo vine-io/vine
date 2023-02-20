@@ -23,10 +23,20 @@
 // Package logger provides a log interface
 package logger
 
+import "github.com/spf13/pflag"
+
 var (
+	// DefaultLevel default level for logger
+	DefaultLevel Level = InfoLevel
 	// DefaultLogger default logger
 	DefaultLogger Logger = NewHelper(NewLogger())
+
+	Flag = pflag.NewFlagSet("logger", pflag.ExitOnError)
 )
+
+func init() {
+	Flag.String("logger.level", "info", "Sets the level for logger")
+}
 
 // Logger is a generic logging interface
 type Logger interface {
@@ -50,6 +60,10 @@ func Init(opts ...Option) error {
 
 func Fields(fields map[string]interface{}) Logger {
 	return DefaultLogger.Fields(fields)
+}
+
+func Field(key string, value interface{}) Logger {
+	return DefaultLogger.Fields(map[string]interface{}{key: value})
 }
 
 func Log(level Level, v ...interface{}) {
