@@ -36,6 +36,7 @@ var (
 
 func init() {
 	Flag.String("logger.level", "info", "Sets the level for logger")
+	Flag.StringSlice("logger.fields", nil, "Sets other fields for logger")
 }
 
 // Logger is a generic logging interface

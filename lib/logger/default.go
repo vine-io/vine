@@ -64,7 +64,7 @@ func (l *defaultLogger) Init(opts ...Option) error {
 }
 
 func (l *defaultLogger) String() string {
-	return "default"
+	return "vine"
 }
 
 func (l *defaultLogger) Fields(fields map[string]interface{}) Logger {
@@ -210,7 +210,7 @@ func (l *defaultLogger) Options() Options {
 func NewLogger(opts ...Option) Logger {
 	// Default options
 	options := Options{
-		Level:   InfoLevel,
+		Level:   DefaultLevel,
 		Fields:  make(map[string]interface{}),
 		Out:     os.Stderr,
 		Context: context.Background(),
