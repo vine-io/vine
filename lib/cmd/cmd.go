@@ -167,7 +167,7 @@ func newCmd(opts ...Option) Cmd {
 	rootCmd := &cobra.Command{
 		Use:   options.Name,
 		Short: options.Description,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return c.before(cmd, args)
 		},
 	}
@@ -205,9 +205,14 @@ func (c *cmd) Init(opts ...Option) error {
 	}
 
 	c.opts.app.Short = c.opts.Description
+	if c.opts.app.PreRunE == nil {
+		c.opts.app.PreRunE = func(cmd *cobra.Command, args []string) error {
+			return c.before(cmd, args)
+		}
+	}
 	if c.opts.app.RunE == nil {
 		c.opts.app.RunE = func(cmd *cobra.Command, args []string) error {
-			return c.before(cmd, args)
+			return nil
 		}
 	}
 
