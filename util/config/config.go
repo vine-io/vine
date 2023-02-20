@@ -34,7 +34,7 @@ import (
 // FileName for global vine config, format yaml
 var FileName = "vine.yml"
 
-var excludes = []string{""}
+var excludes = []string{}
 
 func isExclude(in string) bool {
 	for _, e := range excludes {
