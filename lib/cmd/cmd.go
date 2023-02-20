@@ -289,6 +289,20 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		}
 		lopts = append(lopts, log.WithLevel(level))
 	}
+	fields := make(map[string]interface{})
+	for _, d := range uc.GetStringSlice("logger.fields") {
+		var key, val string
+		parts := strings.Split(d, "=")
+		key = parts[0]
+		if len(parts) > 1 {
+			val = strings.Join(parts[1:], "=")
+		}
+		fields[key] = val
+	}
+
+	if len(fields) > 0 {
+		lopts = append(lopts, log.WithFields(fields))
+	}
 	log.DefaultLogger = log.NewHelper(log.NewLogger(lopts...))
 
 	// Set the cache

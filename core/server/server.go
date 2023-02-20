@@ -55,7 +55,7 @@ func init() {
 	Flag.String("server.address", "", "Bind address for the server")
 	Flag.String("server.id", DefaultId, "Id of the server")
 	Flag.String("server.advertise", "", "Use instead of the server-address when registering with discovery")
-	Flag.String("server.metadata", "", "A list of key-value pairs defining metadata")
+	Flag.StringSlice("server.metadata", nil, "A list of key-value pairs defining metadata")
 	Flag.Duration("server.register-interval", DefaultRegisterInterval, "Register interval")
 	Flag.Duration("server.register-ttl", DefaultRegisterTTL, "Registry TTL")
 }
