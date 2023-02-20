@@ -153,7 +153,7 @@ func runGateway(cmd *cobra.Command, args []string) error {
 		{"pkg/internal/version/version.go", t2.Version},
 		{"pkg/" + name + "/app.go", t2.GatewayEntry},
 		{"deploy/docker/" + name + "/Dockerfile", t2.DockerSRV},
-		{"deploy/config/" + name + ".ini", t2.ConfSRV},
+		{"deploy/config/" + name + ".yml", t2.ConfSRV},
 		{"deploy/systemd/" + name + ".service", t2.SystemedSRV},
 		{"vine.toml", t2.TOML},
 	}
