@@ -38,10 +38,10 @@ type serviceKey struct{}
 type Service interface {
 	// Name The service name
 	Name() string
-	// Init initialises options
-	Init(...Option)
 	// Options returns the current options
 	Options() Options
+	// Init initialises options
+	Init(...Option) error
 	// Server is for handling requests and events
 	Server() server.Server
 	// Client is used to call services
