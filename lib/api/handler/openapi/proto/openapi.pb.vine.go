@@ -6,12 +6,12 @@ package openapi
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+
 	proto "github.com/gogo/protobuf/proto"
-	vine "github.com/vine-io/vine"
 	client "github.com/vine-io/vine/core/client"
 	server "github.com/vine-io/vine/core/server"
 	api "github.com/vine-io/vine/lib/api"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -59,7 +59,7 @@ func (c *openAPIService) GetOpenAPIDoc(ctx context.Context, in *GetOpenAPIDocReq
 
 // Server API for OpenAPIService service
 type OpenAPIServiceHandler interface {
-	GetOpenAPIDoc(*vine.Context, *GetOpenAPIDocRequest, *GetOpenAPIDocResponse) error
+	GetOpenAPIDoc(context.Context, *GetOpenAPIDocRequest, *GetOpenAPIDocResponse) error
 }
 
 func RegisterOpenAPIServiceHandler(s server.Server, hdlr OpenAPIServiceHandler, opts ...server.HandlerOption) error {
@@ -78,5 +78,5 @@ type openAPIServiceHandler struct {
 }
 
 func (h *openAPIServiceHandler) GetOpenAPIDoc(ctx context.Context, in *GetOpenAPIDocRequest, out *GetOpenAPIDocResponse) error {
-	return h.OpenAPIServiceHandler.GetOpenAPIDoc(vine.InitContext(ctx), in, out)
+	return h.OpenAPIServiceHandler.GetOpenAPIDoc(ctx, in, out)
 }

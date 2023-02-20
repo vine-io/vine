@@ -106,7 +106,7 @@ func Run() {
 	srv := vine.NewService()
 	opts := []vine.Option{
 		vine.Name(version.{{title .Name}}Name),
-		vine.Id(version.{{title .Name}}Id),
+		vine.ID(version.{{title .Name}}Id),
 		vine.Version(version.GetVersion()),
 		vine.Metadata(map[string]string{
 			"namespace": version.Namespace,

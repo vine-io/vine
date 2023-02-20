@@ -28,7 +28,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"github.com/vine-io/gscheduler"
 
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/client"
@@ -44,16 +43,15 @@ import (
 
 // Options for vine service
 type Options struct {
-	Broker    broker.Broker
-	Cmd       cmd.Cmd
-	Client    client.Client
-	Config    config.Config
-	Server    server.Server
-	Trace     trace.Tracer
-	Dialect   dao.Dialect
-	Cache     cache.Cache
-	Registry  registry.Registry
-	Scheduler gscheduler.Scheduler
+	Broker   broker.Broker
+	Cmd      cmd.Cmd
+	Client   client.Client
+	Config   config.Config
+	Server   server.Server
+	Trace    trace.Tracer
+	Dialect  dao.Dialect
+	Cache    cache.Cache
+	Registry registry.Registry
 
 	// Before and After functions
 	BeforeStart []func() error

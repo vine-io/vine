@@ -46,7 +46,7 @@ func Commands() []*cobra.Command {
 		},
 	}
 	initCmd.PersistentFlags().String("namespace", "go.vine", "Namespace for the project e.g com.example")
-	initCmd.PersistentFlags().String("cluster", "", "create cluster package.")
+	initCmd.PersistentFlags().Bool("cluster", false, "create cluster package.")
 
 	return []*cobra.Command{newCmd, initCmd}
 }

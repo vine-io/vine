@@ -40,7 +40,6 @@ type vine struct {
 	schemas  *LinkComponents
 	m        sync.Map
 
-	vinePkg      generator.Single
 	apiPbPkg     generator.Single
 	apiPkg       generator.Single
 	openApiPkg   generator.Single
@@ -89,7 +88,6 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	}
 
 	g.contextPkg = g.NewImport("context", "context")
-	g.vinePkg = g.NewImport("github.com/vine-io/vine", "vine")
 	g.apiPbPkg = g.NewImport("github.com/vine-io/vine/lib/api", "api")
 	g.openApiPkg = g.NewImport("github.com/vine-io/vine/lib/api/handler/openapi", "openapi")
 	g.openApiPbPkg = g.NewImport("github.com/vine-io/vine/lib/api/handler/openapi/proto", "openapipb")
@@ -473,7 +471,7 @@ func (g *vine) generateServerSignature(servName string, method *generator.Method
 
 	var reqArgs []string
 	ret := "error"
-	reqArgs = append(reqArgs, "*"+g.vinePkg.Use()+".Context")
+	reqArgs = append(reqArgs, g.contextPkg.Use()+".Context")
 
 	if !method.Proto.GetClientStreaming() {
 		reqArgs = append(reqArgs, "*"+g.typeName(method.Proto.GetInputType()))
@@ -496,7 +494,7 @@ func (g *vine) generateServerMethod(servName string, method *generator.MethodDes
 
 	if !method.Proto.GetServerStreaming() && !method.Proto.GetClientStreaming() {
 		g.P("func (h *", unexport(servName), "Handler) ", methName, "(ctx ", g.contextPkg.Use(), ".Context, in *", inType, ", out *", outType, ") error {")
-		g.P(fmt.Sprintf(`return h.%s.%s(%s.InitContext(ctx), in, out)`, serveType, methName, g.vinePkg.Use()))
+		g.P(fmt.Sprintf(`return h.%s.%s(ctx, in, out)`, serveType, methName))
 		g.P("}")
 		g.P()
 		return hname
@@ -506,9 +504,9 @@ func (g *vine) generateServerMethod(servName string, method *generator.MethodDes
 	if !method.Proto.GetClientStreaming() {
 		g.P("m := new(", inType, ")")
 		g.P("if err := stream.Recv(m); err != nil { return err }")
-		g.P(fmt.Sprintf(`return h.%s.%s(%s.InitContext(ctx), m, &%s{stream})`, serveType, methName, g.vinePkg.Use(), streamType))
+		g.P(fmt.Sprintf(`return h.%s.%s(ctx, m, &%s{stream})`, serveType, methName, streamType))
 	} else {
-		g.P(fmt.Sprintf(`return h.%s.%s(%s.InitContext(ctx), &%s{stream})`, serveType, methName, g.vinePkg.Use(), streamType))
+		g.P(fmt.Sprintf(`return h.%s.%s(ctx, &%s{stream})`, serveType, methName, streamType))
 	}
 	g.P("}")
 	g.P()
