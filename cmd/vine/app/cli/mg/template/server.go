@@ -4,8 +4,9 @@ var (
 	SingleServer = `package server
 
 import (
+	"context"
+
 	"github.com/vine-io/apimachinery/inject"
-	"github.com/vine-io/vine"
 	vserver "github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
@@ -26,7 +27,7 @@ type server struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *server) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(version.{{title .Name}}Name, err.Error())
 	}
@@ -35,7 +36,7 @@ func (s *server) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -55,7 +56,7 @@ func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -83,8 +84,9 @@ func (s *server) Register(svc vserver.Server) error {
 	SingleServerWithAPI = `package server
 
 import (
+	"context"
+
 	"github.com/vine-io/apimachinery/inject"
-	"github.com/vine-io/vine"
 	vserver "github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
@@ -105,7 +107,7 @@ type server struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *server) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(version.{{title .Name}}Name, err.Error())
 	}
@@ -114,7 +116,7 @@ func (s *server) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -134,7 +136,7 @@ func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -162,8 +164,9 @@ func (s *server) Register(svc vserver.Server) error {
 	ClusterServer = `package server
 
 import (
+	"context"
+
 	"github.com/vine-io/apimachinery/inject"
-	"github.com/vine-io/vine"
 	vserver "github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
@@ -184,7 +187,7 @@ type server struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *server) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *server) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(version.{{title .Name}}Name, err.Error())
 	}
@@ -193,7 +196,7 @@ func (s *server) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -213,7 +216,7 @@ func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong
@@ -241,8 +244,9 @@ func (s *server) Register(svc vserver.Server) error {
 	ClusterServerWithAPI = `package server
 
 import (
+	"context"
+
 	"github.com/vine-io/apimachinery/inject"
-	"github.com/vine-io/vine"
 	vserver "github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/api/handler/openapi"
 	verrs "github.com/vine-io/vine/lib/errors"
@@ -263,7 +267,7 @@ type server struct{
 }
 
 // Call is a single request handler called via client.Call or the generated client code
-func (s *service) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (err error) {
+func (s *service) Call(ctx context.Context, req *pb.Request, rsp *pb.Response) (err error) {
 	if err = req.Validate(); err != nil {
 		return verrs.BadRequest(version.{{title .Name}}Name, err.Error())
 	}
@@ -272,7 +276,7 @@ func (s *service) Call(ctx *vine.Context, req *pb.Request, rsp *pb.Response) (er
 }
 
 // Stream is a server side stream handler called via client.Stream or the generated client code
-func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
+func (s *server) Stream(ctx context.Context, req *pb.StreamingRequest, stream pb.{{title .Name}}Service_StreamStream) error {
 	log.Infof("Received {{title .Name}}.Stream request with count: %d", req.Count)
 
 	// TODO: Validate
@@ -292,7 +296,7 @@ func (s *server) Stream(ctx *vine.Context, req *pb.StreamingRequest, stream pb.{
 }
 
 // PingPong is a bidirectional stream handler called via client.Stream or the generated client code
-func (s *server) PingPong(ctx *vine.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
+func (s *server) PingPong(ctx context.Context, stream pb.{{title .Name}}Service_PingPongStream) error {
 	// TODO: Validate
 	s.H.PingPong()
 	// FIXME: fix stream pingpong

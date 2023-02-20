@@ -1,9 +1,9 @@
 package openapi
 
 import (
+	"context"
 	gosync "sync"
 
-	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/server"
 	pb "github.com/vine-io/vine/lib/api/handler/openapi/proto"
 )
@@ -41,7 +41,7 @@ func (s *openapiService) GetAPIDoc() []*pb.OpenAPI {
 	return s.apis
 }
 
-func (s *openapiService) GetOpenAPIDoc(ctx *vine.Context, req *pb.GetOpenAPIDocRequest, rsp *pb.GetOpenAPIDocResponse) error {
+func (s *openapiService) GetOpenAPIDoc(ctx context.Context, req *pb.GetOpenAPIDocRequest, rsp *pb.GetOpenAPIDocResponse) error {
 	s.RLock()
 	defer s.RUnlock()
 
