@@ -185,6 +185,7 @@ func newCmd(opts ...Option) Cmd {
 	rootCmd.PersistentFlags().AddFlagSet(server.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(dao.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(cache.Flag)
+	rootCmd.PersistentFlags().AddFlagSet(log.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(trace.Flag)
 
 	options.app = rootCmd
@@ -279,6 +280,17 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	lopts := []log.Option{}
+	// Set the logger
+	if levelStr := uc.GetString("logger.level"); len(levelStr) > 0 {
+		level, err := log.GetLevel(levelStr)
+		if err != nil {
+			return fmt.Errorf("parse logger.level: %v", err)
+		}
+		lopts = append(lopts, log.WithLevel(level))
+	}
+	log.DefaultLogger = log.NewHelper(log.NewLogger(lopts...))
+
 	// Set the cache
 	if name := uc.GetString("cache.default"); len(name) > 0 {
 		s, ok := options.Caches[name]
@@ -330,6 +342,20 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	// Set the broker
+	if name := uc.GetString("broker.default"); len(name) > 0 && (*options.Broker).String() != name {
+		b, ok := options.Brokers[name]
+		if !ok {
+			return fmt.Errorf("broker %s not found", name)
+		}
+
+		*options.Broker = b()
+		broker.DefaultBroker = *options.Broker
+
+		serverOpts = append(serverOpts, server.Broker(*options.Broker))
+		clientOpts = append(clientOpts, client.Broker(*options.Broker))
+	}
+
 	// Set the registry
 	if name := uc.GetString("registry.default"); len(name) > 0 && (*options.Registry).String() != name {
 		r, ok := options.Registries[name]
@@ -352,20 +378,6 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		if err := (*options.Broker).Init(broker.Registry(*options.Registry)); err != nil {
 			log.Errorf("Error configuring broker: %v", err)
 		}
-	}
-
-	// Set the broker
-	if name := uc.GetString("broker.default"); len(name) > 0 && (*options.Broker).String() != name {
-		b, ok := options.Brokers[name]
-		if !ok {
-			return fmt.Errorf("broker %s not found", name)
-		}
-
-		*options.Broker = b()
-		broker.DefaultBroker = *options.Broker
-
-		serverOpts = append(serverOpts, server.Broker(*options.Broker))
-		clientOpts = append(clientOpts, client.Broker(*options.Broker))
 	}
 
 	// Set the selector
@@ -449,11 +461,11 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		serverOpts = append(serverOpts, server.Advertise(advertise))
 	}
 
-	if ttl := uc.GetDuration("registry.ttl"); ttl >= 0 {
+	if ttl := uc.GetDuration("server.register-ttl"); ttl >= 0 {
 		serverOpts = append(serverOpts, server.RegisterTTL(ttl*time.Second))
 	}
 
-	if val := uc.GetDuration("registry.interval"); val >= 0 {
+	if val := uc.GetDuration("server.register-interval"); val >= 0 {
 		serverOpts = append(serverOpts, server.RegisterInterval(val*time.Second))
 	}
 

@@ -27,8 +27,6 @@ import (
 	"io"
 )
 
-type Option func(*Options)
-
 type Options struct {
 	// The logging level the logger should log at. default is `InfoLevel`
 	Level Level
@@ -39,6 +37,8 @@ type Options struct {
 	// Alternative options
 	Context context.Context
 }
+
+type Option func(*Options)
 
 // WithFields set default fields for the logger
 func WithFields(fields map[string]interface{}) Option {
@@ -60,7 +60,6 @@ func WithOutput(out io.Writer) Option {
 		args.Out = out
 	}
 }
-
 
 func SetOption(k, v interface{}) Option {
 	return func(o *Options) {
