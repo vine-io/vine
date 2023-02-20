@@ -23,7 +23,6 @@
 package cmd
 
 import (
-	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -177,7 +176,6 @@ func newCmd(opts ...Option) Cmd {
 	rootCmd.InitDefaultCompletionCmd()
 
 	rootCmd.ResetFlags()
-	rootCmd.PersistentFlags().StringP("input", "i", "", "Reads the configuration from given filename")
 	rootCmd.PersistentFlags().AddFlagSet(registry.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(broker.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(client.Flag)
@@ -269,16 +267,7 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 	// after the cache client since the wrappers are applied in reverse order and the cache will use
 	vineClient := client.DefaultClient
 
-	if cfg, _ := cmd.PersistentFlags().GetString("input"); len(cfg) != 0 {
-		data, err := os.ReadFile(cfg)
-		if err != nil {
-			return fmt.Errorf("open configuration file: %v", err)
-		}
-		err = uc.ReadConfig(bytes.NewReader(data))
-		if err != nil {
-			return fmt.Errorf("parse configration data: %v", err)
-		}
-	}
+	_ = uc.ReadInConfig()
 
 	lopts := []log.Option{}
 	// Set the logger

@@ -32,12 +32,12 @@ import (
 )
 
 // FileName for global vine config, format yaml
-var FileName = ".vine"
+var FileName = "vine.yml"
 
-var Excludes = []string{"input"}
+var excludes = []string{""}
 
 func isExclude(in string) bool {
-	for _, e := range Excludes {
+	for _, e := range excludes {
 		if strings.TrimSpace(in) == e {
 			return true
 		}
@@ -46,17 +46,40 @@ func isExclude(in string) bool {
 	return false
 }
 
+func AddExclude(items ...string) {
+	excludes = append(excludes, items...)
+}
+
 // config is a singleton which is required to ensure
 // each function call doesn't load the .vine file
 // from disk
 var config = newConfig()
 
+// SetConfigFile explicitly defines the path, name and extension of the config file.
+func SetConfigFile(in string) {
+	config.SetConfigName(in)
+}
+
+// SetConfigName sets name for the config file.
+// Does not include extension.
+func SetConfigName(in string) { config.SetConfigName(in) }
+
 // SetConfigType sets the type of the configuration returned by the
 // remote source, e.g. "json".
 func SetConfigType(in string) { config.SetConfigType(in) }
 
+// AddConfigPath adds a path to search for the config file in.
+// Can be called multiple times to define multiple search paths.
+func AddConfigPath(in string) { config.AddConfigPath(in) }
+
 // ReadConfig reads a new configuration with an existing config.
 func ReadConfig(in io.Reader) error { return config.ReadConfig(in) }
+
+// ReadInConfig will discover and load the configuration file from disk
+// and key/value stores, searching in one of the defined paths.
+func ReadInConfig() error {
+	return config.ReadInConfig()
+}
 
 // Get a value from the config
 func Get(path ...string) interface{} {
@@ -154,7 +177,7 @@ func BindPFlags(flags *pflag.FlagSet) error {
 // newConfig returns a *viper.Viper
 func newConfig() *viper.Viper {
 	c := viper.New()
-	c.SetConfigName(FileName)
+	c.SetConfigFile(FileName)
 	c.SetConfigType("yaml")
 	// return the conf
 	return c
