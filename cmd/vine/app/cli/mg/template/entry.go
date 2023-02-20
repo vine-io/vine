@@ -30,6 +30,7 @@ import (
 	"github.com/vine-io/apimachinery/server"
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
+	uc "github.com/vine-io/vine/util/config"
 
 	"{{.Dir}}/pkg/internal/version"
 )
@@ -37,6 +38,9 @@ import (
 func Run() {
 	var err error
 
+	uc.SetConfigFile("{{.Name}}.yml")
+	uc.SetConfigType("yaml")
+	uc.AddConfigPath(".")
 	srv := vine.NewService()
 	opts := []vine.Option{
 		vine.Name(version.{{title .Name}}Name),
@@ -47,7 +51,9 @@ func Run() {
 		}),
 	}
 
-	srv.Init(opts...)
+	if err = srv.Init(opts...); err != nil {
+		log.Fatal(err)
+	}
 
 	if err = inject.Provide(srv, srv.Server(), srv.Client()); err != nil {
 		log.Fatal(err)
@@ -96,6 +102,7 @@ import (
 	"github.com/vine-io/apimachinery/server"
 	"github.com/vine-io/vine"
 	log "github.com/vine-io/vine/lib/logger"
+	uc "github.com/vine-io/vine/util/config"
 
 	"{{.Dir}}/pkg/internal/version"
 )
@@ -103,6 +110,9 @@ import (
 func Run() {
 	var err error
 
+	uc.SetConfigFile("{{.Name}}.yml")
+	uc.SetConfigType("yaml")
+	uc.AddConfigPath(".")
 	srv := vine.NewService()
 	opts := []vine.Option{
 		vine.Name(version.{{title .Name}}Name),
@@ -113,7 +123,9 @@ func Run() {
 		}),
 	}
 
-	srv.Init(opts...)
+	if err = srv.Init(opts...); err != nil {
+		log.Fatal(err)
+	}
 
 	if err = inject.Provide(srv, srv.Server(), srv.Client()); err != nil {
 		log.Fatal(err)
@@ -173,6 +185,7 @@ import (
 	"github.com/vine-io/vine/lib/api/server"
 	httpapi "github.com/vine-io/vine/lib/api/server/http"
 	log "github.com/vine-io/vine/lib/logger"
+	uc "github.com/vine-io/vine/util/config"
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
 
@@ -198,6 +211,9 @@ func Run() {
 	var opts []server.Option
 
 	// initialise service
+	uc.SetConfigFile("{{.Name}}.yml")
+	uc.SetConfigType("yaml")
+	uc.AddConfigPath(".")
 	svc := vine.NewService(
 		vine.Name(version.{{title .Name}}Name),
 		vine.ID(version.{{title .Name}}Id),

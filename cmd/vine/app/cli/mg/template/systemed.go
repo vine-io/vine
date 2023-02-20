@@ -9,10 +9,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/vine/{{.Name}}
-EnvironmentFile=-/opt/vine/{{.Name}}/config/{{.Name}}.ini
-ExecStart=/opt/vine/{{.Name}}/bin/{{.Name}} \
-  --server-name=${SERVER_NAME} \
-  --server-address=${SERVER_ADDRESS} \
+ExecStart=/opt/vine/{{.Name}}/bin/{{.Name}}
 Restart=on-failure
 LimitNOFILE=65536
 [Install]

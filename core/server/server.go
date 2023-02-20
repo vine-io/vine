@@ -51,13 +51,13 @@ var (
 
 func init() {
 	Flag.String("server.default", "", "Server for vine")
-	Flag.String("server.name", DefaultName, "Name of the server")
+	Flag.String("server.name", "", "Name of the server")
 	Flag.String("server.address", "", "Bind address for the server")
-	Flag.String("server.id", DefaultId, "Id of the server")
+	Flag.String("server.id", "", "Id of the server")
 	Flag.String("server.advertise", "", "Use instead of the server-address when registering with discovery")
 	Flag.StringSlice("server.metadata", nil, "A list of key-value pairs defining metadata")
-	Flag.Duration("server.register-interval", DefaultRegisterInterval, "Register interval")
-	Flag.Duration("server.register-ttl", DefaultRegisterTTL, "Registry TTL")
+	Flag.Duration("server.register-interval", 0, "Register interval")
+	Flag.Duration("server.register-ttl", 0, "Registry TTL")
 }
 
 // Server is a simple vine server abstraction
