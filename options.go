@@ -39,7 +39,6 @@ import (
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/config"
 	"github.com/vine-io/vine/lib/dao"
-	"github.com/vine-io/vine/lib/scheduler"
 	"github.com/vine-io/vine/lib/trace"
 )
 
@@ -71,18 +70,17 @@ type Options struct {
 
 func newOptions(opts ...Option) Options {
 	opt := Options{
-		Broker:    broker.DefaultBroker,
-		Cmd:       cmd.DefaultCmd,
-		Client:    client.DefaultClient,
-		Config:    config.DefaultConfig,
-		Server:    server.DefaultServer,
-		Trace:     trace.DefaultTracer,
-		Dialect:   dao.DefaultDialect,
-		Cache:     cache.DefaultCache,
-		Registry:  registry.DefaultRegistry,
-		Scheduler: scheduler.DefaultScheduler,
-		Context:   context.Background(),
-		Signal:    true,
+		Broker:   broker.DefaultBroker,
+		Cmd:      cmd.DefaultCmd,
+		Client:   client.DefaultClient,
+		Config:   config.DefaultConfig,
+		Server:   server.DefaultServer,
+		Trace:    trace.DefaultTracer,
+		Dialect:  dao.DefaultDialect,
+		Cache:    cache.DefaultCache,
+		Registry: registry.DefaultRegistry,
+		Context:  context.Background(),
+		Signal:   true,
 	}
 
 	for _, o := range opts {

@@ -72,12 +72,13 @@ func (s *service) Name() string {
 // Init initialises options. Additionally, it calls cmd.Init
 // which parses command line flags. cmd.Init is only called
 // on first Init.
-func (s *service) Init(opts ...Option) {
+func (s *service) Init(opts ...Option) error {
 	// process options
 	for _, o := range opts {
 		o(&s.opts)
 	}
 
+	var err error
 	s.once.Do(func() {
 
 		options := []cmd.Option{
@@ -99,22 +100,19 @@ func (s *service) Init(opts ...Option) {
 
 		if s.opts.Cmd != nil {
 			// Initialise the command flags, overriding new service
-			if err := s.opts.Cmd.Init(options...); err != nil {
-				logger.Fatal(err)
+			if err = s.opts.Cmd.Init(options...); err != nil {
+				return
 			}
 		}
 
-		s.opts.BeforeStop = append(s.opts.BeforeStop, func() error {
-			s.opts.Scheduler.Stop()
-			return nil
-		})
-
 		// Explicitly set the table name to the service name
 		name := s.opts.Server.Options().Name
-		if err := s.opts.Cache.Init(cache.Table(name)); err != nil {
-			logger.Fatal(err)
+		if err = s.opts.Cache.Init(cache.Table(name)); err != nil {
+			return
 		}
 	})
+
+	return err
 }
 
 func (s *service) Options() Options {

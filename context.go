@@ -34,7 +34,6 @@ import (
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/config"
 	"github.com/vine-io/vine/lib/dao"
-	"github.com/vine-io/vine/lib/scheduler"
 	"github.com/vine-io/vine/lib/trace"
 )
 
@@ -56,15 +55,14 @@ type Context struct {
 // InitContext context.Context => *vine.Context
 func InitContext(ctx context.Context) *Context {
 	return &Context{
-		Context:   ctx,
-		App:       cmd.DefaultCmd.App(),
-		Broker:    broker.DefaultBroker,
-		Client:    client.DefaultClient,
-		Config:    config.DefaultConfig,
-		Trace:     trace.DefaultTracer,
-		Dialect:   dao.DefaultDialect,
-		Cache:     cache.DefaultCache,
-		Registry:  registry.DefaultRegistry,
-		Scheduler: scheduler.DefaultScheduler,
+		Context:  ctx,
+		App:      cmd.DefaultCmd.App(),
+		Broker:   broker.DefaultBroker,
+		Client:   client.DefaultClient,
+		Config:   config.DefaultConfig,
+		Trace:    trace.DefaultTracer,
+		Dialect:  dao.DefaultDialect,
+		Cache:    cache.DefaultCache,
+		Registry: registry.DefaultRegistry,
 	}
 }
