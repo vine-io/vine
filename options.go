@@ -24,6 +24,7 @@ package vine
 
 import (
 	"context"
+	goflag "flag"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -216,6 +217,24 @@ func Version(v string) Option {
 func Metadata(md map[string]string) Option {
 	return func(o *Options) {
 		_ = o.Server.Init(server.Metadata(md))
+	}
+}
+
+// GoFlags that can be passed to service
+func GoFlags(flags ...*goflag.Flag) Option {
+	return func(o *Options) {
+		for _, flag := range flags {
+			o.Cmd.App().PersistentFlags().AddGoFlag(flag)
+		}
+	}
+}
+
+// GoFlagSet that can be passed to service
+func GoFlagSet(flags ...*goflag.FlagSet) Option {
+	return func(o *Options) {
+		for _, flag := range flags {
+			o.Cmd.App().PersistentFlags().AddGoFlagSet(flag)
+		}
 	}
 }
 
