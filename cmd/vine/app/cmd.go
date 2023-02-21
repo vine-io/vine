@@ -27,13 +27,12 @@ import (
 	"sort"
 
 	"github.com/spf13/cobra"
-	"github.com/vine-io/vine/cmd/vine/version"
-
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/cmd/vine/app/api"
 	cliBuild "github.com/vine-io/vine/cmd/vine/app/cli/build"
 	cliMg "github.com/vine-io/vine/cmd/vine/app/cli/mg"
 	cliRun "github.com/vine-io/vine/cmd/vine/app/cli/run"
+	"github.com/vine-io/vine/cmd/vine/version"
 	"github.com/vine-io/vine/lib/cmd"
 )
 
@@ -260,7 +259,6 @@ func Init(options ...vine.Option) {
 	cmd.Init(
 		cmd.Name(name),
 		cmd.Description(description),
-		cmd.Version(version.Version()),
 		cmd.Command(root),
 	)
 }
@@ -314,6 +312,7 @@ func Setup(root *cobra.Command, options ...vine.Option) {
 
 	sort.Sort(commands(root.Commands()))
 
+	root.Version = version.Version()
 	// boot vine runtime
 	root.RunE = func(c *cobra.Command, args []string) error {
 		return c.Help()
