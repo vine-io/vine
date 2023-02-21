@@ -464,11 +464,11 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		serverOpts = append(serverOpts, server.Advertise(advertise))
 	}
 
-	if ttl := uc.GetDuration("server.register-ttl"); ttl >= 0 {
+	if ttl := uc.GetDuration("server.register-ttl"); ttl > 0 {
 		serverOpts = append(serverOpts, server.RegisterTTL(ttl*time.Second))
 	}
 
-	if val := uc.GetDuration("server.register-interval"); val >= 0 {
+	if val := uc.GetDuration("server.register-interval"); val > 0 {
 		serverOpts = append(serverOpts, server.RegisterInterval(val*time.Second))
 	}
 
@@ -477,20 +477,12 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		clientOpts = append(clientOpts, client.Retries(r))
 	}
 
-	if t := uc.GetString("client.dial-timeout"); len(t) > 0 {
-		d, err := time.ParseDuration(t)
-		if err != nil {
-			return fmt.Errorf("failed to parse client.dialTimeout: %v", t)
-		}
-		clientOpts = append(clientOpts, client.DialTimeout(d))
+	if t := uc.GetDuration("client.dial-timeout"); t > 0 {
+		clientOpts = append(clientOpts, client.DialTimeout(t))
 	}
 
-	if t := uc.GetString("client.request-timeout"); len(t) > 0 {
-		d, err := time.ParseDuration(t)
-		if err != nil {
-			return fmt.Errorf("failed to parse client.requestTimeout: %v", t)
-		}
-		clientOpts = append(clientOpts, client.RequestTimeout(d))
+	if t := uc.GetDuration("client.request-timeout"); t > 0 {
+		clientOpts = append(clientOpts, client.RequestTimeout(t))
 	}
 
 	if r := uc.GetInt("client.pool-size"); r > 0 {
