@@ -12,16 +12,16 @@
     <lastmod>2021-09-09T16:41:11+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/registry/</loc>
-    <lastmod>2021-09-02T10:13:39+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/wrapper/trace/</loc>
     <lastmod>2021-09-07T13:51:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/new/</loc>
-    <lastmod>2021-08-31T09:45:17+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/</loc>
-    <lastmod>2021-08-31T09:45:17+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/wrapper/validator/</loc>
     <lastmod>2021-09-08T08:52:48+08:00</lastmod>
@@ -30,7 +30,7 @@
     <lastmod>2022-12-29T17:13:34+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/vine/</loc>
-    <lastmod>2021-08-27T09:41:41+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/</loc>
     <lastmod>2021-09-06T19:26:52+08:00</lastmod>
@@ -39,7 +39,7 @@
     <lastmod>2021-09-08T09:14:59+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/build/</loc>
-    <lastmod>2022-12-29T17:13:34+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/openapi/</loc>
     <lastmod>2022-12-29T16:15:26+08:00</lastmod>
@@ -57,7 +57,7 @@
     <lastmod>2021-08-27T09:41:41+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/options/</loc>
-    <lastmod>2021-09-01T09:58:46+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/deepcopy/</loc>
     <lastmod>2021-11-12T16:23:38+08:00</lastmod>
@@ -66,7 +66,7 @@
     <lastmod>2021-12-18T16:19:20+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/quickstart/plugins/</loc>
-    <lastmod>2021-09-08T10:17:37+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/guides/dao/</loc>
     <lastmod>2022-06-30T17:25:18+08:00</lastmod>
@@ -81,10 +81,10 @@
     <lastmod>2021-09-03T10:49:54+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/broker/</loc>
-    <lastmod>2021-09-02T12:33:10+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/server/</loc>
-    <lastmod>2021-09-04T21:04:54+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/client/</loc>
     <lastmod>2021-09-04T21:04:54+08:00</lastmod>
@@ -96,10 +96,10 @@
     <lastmod>2021-09-04T21:31:39+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/cache/</loc>
-    <lastmod>2021-09-05T15:20:08+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/cmd/</loc>
-    <lastmod>2021-09-05T16:16:35+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/log/</loc>
     <lastmod>2021-09-05T16:35:33+08:00</lastmod>
@@ -108,7 +108,7 @@
     <lastmod>2021-09-06T10:30:48+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/sync/</loc>
-    <lastmod>2021-09-06T15:14:23+08:00</lastmod>
+    <lastmod>2023-02-21T11:08:51+08:00</lastmod>
   </url><url>
     <loc>https://vine-io.github.io/vine/docs/component/wrapper/</loc>
     <lastmod>2021-09-06T19:26:52+08:00</lastmod>
