@@ -29,11 +29,11 @@
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Registry &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;Option) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// ------------------------------- 模块初始化
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options &lt;span style=&#34;color:#6272a4&#34;&gt;// ----------------------------------- 模块的配置信息
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// --------- 注册服务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// ----- 注销服务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;//- 根据名称查找服务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;// ----- 查询所有服务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;// -------------- 监听服务变化
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(context.Context, &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;RegisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// --------- 注册服务
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(context.Context, &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DeregisterOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// ----- 注销服务
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(context.Context,&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;//- 根据名称查找服务
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListServices&lt;/span&gt;(context.Context, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Service, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;// ----- 查询所有服务
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(context.Context, &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchOption) (Watcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;) &lt;span style=&#34;color:#6272a4&#34;&gt;// -------------- 监听服务变化
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt; &lt;span style=&#34;color:#6272a4&#34;&gt;// ------------------------------------- 查询实现 Registry 接口的具体类型
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
@@ -82,12 +82,13 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 注册服务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(svc); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	ctx &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Register&lt;/span&gt;(ctx, svc); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 注销服务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(svc); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Deregister&lt;/span&gt;(ctx, svc); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
@@ -103,7 +104,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 查询单个服务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	list, err = r.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.test&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	ctx &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	list, err = r.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetService&lt;/span&gt;(ctx, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.test&amp;#34;&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
@@ -117,7 +119,8 @@
 &lt;h3 id=&#34;监听服务&#34;&gt;监听服务&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 启动一个监听器
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	watcher, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.test&amp;#34;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	ctx &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	watcher, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; r.&lt;span style=&#34;color:#50fa7b&#34;&gt;Watch&lt;/span&gt;(ctx, registry.&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchService&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine.test&amp;#34;&lt;/span&gt;))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
@@ -206,9 +209,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;服务启动&#34;&gt;服务启动&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 服务以插件的方式，注册多种实现，用户可以再服务启动时选择喜欢的类型。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./helloworld --registy&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;etcd --registry-address&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;127.0.0.1:2379
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;# 或者使用环境变量&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_REGISTRY&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;ETCD &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;VINE_REGISTRY_ADDRESS&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;127.0.0.1:2379 ./helloworld
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./helloworld --registy.default&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;etcd --registry.address&lt;span style=&#34;color:#ff79c6&#34;&gt;=&lt;/span&gt;127.0.0.1:2379
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
@@ -465,7 +466,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Address&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Connect&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Disconnect&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Message, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;PublishOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(ctx context.Context, topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, m &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Message, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;PublishOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Subscribe&lt;/span&gt;(topic &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, h Handler, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;SubscribeOption) (Subscriber, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
@@ -519,7 +520,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;lt;-&lt;/span&gt;time.&lt;span style=&#34;color:#50fa7b&#34;&gt;After&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#6272a4&#34;&gt;// publish message to broker
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;        b.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(topic, &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;broker.Message{Header: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;}, Body: []&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;byte&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hello world&amp;#34;&lt;/span&gt;)})
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;        b.&lt;span style=&#34;color:#50fa7b&#34;&gt;Publish&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), topic, &lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;broker.Message{Header: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;{&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;}, Body: []&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;byte&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hello world&amp;#34;&lt;/span&gt;)})
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Sleep&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;)
@@ -760,24 +761,53 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;grpc-结合-http&#34;&gt;gRPC 结合 http&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;Server&lt;/code&gt; 的 gRPC 实现可以同时提供 gRPC 和 http 服务:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	gh &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.Grpc2Http{
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		CertFile: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;server.pem&amp;#34;&lt;/span&gt;,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		KeyFile:  &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;server.key&amp;#34;&lt;/span&gt;,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		CaFile:   &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;ca.pem&amp;#34;&lt;/span&gt;,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;GrpcToHttp&lt;/span&gt;(gh))
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;net/http&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/gin-gonic/gin&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	membroker &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/broker/memory&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry/memory&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server/grpc&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	reg &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	bro &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; membroker.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	mux &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gin.&lt;span style=&#34;color:#50fa7b&#34;&gt;New&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	mux.&lt;span style=&#34;color:#50fa7b&#34;&gt;GET&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(ctx &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;gin.Context) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		ctx.&lt;span style=&#34;color:#50fa7b&#34;&gt;JSON&lt;/span&gt;(http.StatusOK, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;hello world&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#ff79c6&#34;&gt;return&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	})
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(grpc.&lt;span style=&#34;color:#50fa7b&#34;&gt;HttpHandler&lt;/span&gt;(mux), server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(reg), server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(bro))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Start&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;select&lt;/span&gt; {}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;grpc 内置 prometheus metrics 和 golang http prof 接口&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;http-实现&#34;&gt;http 实现&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;net/http&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	membroker &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/broker/memory&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/registry/memory&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	vhttp &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/core/server/http&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	log &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/lib/logger&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	reg &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; memory.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewRegistry&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	bro &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; membroker.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewBroker&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// create server
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	srv &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(reg), server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(bro))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	srv &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vhttp.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServer&lt;/span&gt;(server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Registry&lt;/span&gt;(reg), server.&lt;span style=&#34;color:#50fa7b&#34;&gt;Broker&lt;/span&gt;(bro))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// create server mux
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	mux &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; http.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewServeMux&lt;/span&gt;()
@@ -790,15 +820,15 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// register handler
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; srv.&lt;span style=&#34;color:#50fa7b&#34;&gt;Handle&lt;/span&gt;(hd); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		t.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// start server
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; srv.&lt;span style=&#34;color:#50fa7b&#34;&gt;Start&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		t.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatal&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;select&lt;/span&gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;select&lt;/span&gt; {}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
@@ -1393,13 +1423,13 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Options allows you to view the current options.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Get takes a single key name and optional GetOptions. It returns matching []*Record or an error.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(key &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Record, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(ctx context.Context, key &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;GetOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Record, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Put writes a record to the cache, and returns an error if the record was not written.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(r &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Record, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;PutOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(ctx context.Context, r &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Record, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;PutOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Del removes the record with the corresponding key from the cache.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Del&lt;/span&gt;(key &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DelOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Del&lt;/span&gt;(ctx context.Context, key &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;DelOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// List returns any keys that match, or an empty list with no error if none matched.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;List&lt;/span&gt;(opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;List&lt;/span&gt;(ctx context.Context, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListOption) ([]&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Close the cache
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Close&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// String returns the name of the implementation.
@@ -1446,21 +1476,21 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		Metadata: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;map&lt;/span&gt;[&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;]&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt;{}{}, &lt;span style=&#34;color:#6272a4&#34;&gt;// 
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		Expiry:   time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#6272a4&#34;&gt;// 过期时间
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(r); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), r); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;获取-keyvalue&#34;&gt;获取 key/value&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 获取所有 keys
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	keys, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;List&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	keys, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;List&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;())
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(keys)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 通过 key 获取 value
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	rr, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	rr, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
@@ -1468,7 +1498,7 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;删除-key&#34;&gt;删除 key&lt;/h3&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Del&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Del&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
@@ -1485,7 +1515,7 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Put&lt;/code&gt; options&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(r,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Put&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), r,
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;PutExpiry&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定 key 过期时间
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;PutTo&lt;/span&gt;(),     &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定 database 和 table
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;PutTTL&lt;/span&gt;(),    &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定 key ttl
@@ -1494,6 +1524,7 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;List&lt;/code&gt; options&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	keys, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;List&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(),
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListFrom&lt;/span&gt;(),  &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定 database 和 table
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListLimit&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 限制 key 数量
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListOffset&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询偏移量
@@ -1503,7 +1534,7 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Get&lt;/code&gt; options&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Get&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetFrom&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定 database 和 table
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetLimit&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 限制 key 数量
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetOffset&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询偏移量
@@ -1513,7 +1544,7 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;Del&lt;/code&gt; options&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Del&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	cc.&lt;span style=&#34;color:#50fa7b&#34;&gt;Del&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		cache.&lt;span style=&#34;color:#50fa7b&#34;&gt;DelFrom&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定 database 和 table
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
@@ -1531,9 +1562,9 @@ json 配置实例：&lt;/p&gt;
         
         
         &lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 结合 &lt;a href=&#34;https://github.com/vine-io/cli&#34;&gt;cli&lt;/a&gt; 提供 &lt;code&gt;Cmd&lt;/code&gt; 模块，作为服务的命令工具：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 结合 &lt;a href=&#34;https://github.com/spf13/cobra&#34;&gt;cobra&lt;/a&gt; 提供 &lt;code&gt;Cmd&lt;/code&gt; 模块，作为服务的命令工具：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;type&lt;/span&gt; Cmd &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;interface&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// App The cli app within this cmd
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// App The cobra Command within this cmd
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;App&lt;/span&gt;() &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;cli.App
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Init Adds options, parses flags and initialise
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// exits on error
@@ -1555,8 +1586,6 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; c.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	c.&lt;span style=&#34;color:#50fa7b&#34;&gt;App&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;RunAndExitOnError&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;options&#34;&gt;options&lt;/h2&gt;
 &lt;p&gt;罗列 &lt;code&gt;Cmd&lt;/code&gt; 的 options:&lt;/p&gt;
@@ -1581,198 +1610,257 @@ json 配置实例：&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th&gt;参数&lt;/th&gt;
-&lt;th&gt;说明&lt;/th&gt;
-&lt;th&gt;默认值&lt;/th&gt;
-&lt;th&gt;环境换脸&lt;/th&gt;
-&lt;th&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;参数&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;说明&lt;/strong&gt;&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;&lt;strong&gt;默认值&lt;/strong&gt;&lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;client string&lt;/td&gt;
-&lt;td&gt;Client for vine;&lt;/td&gt;
-&lt;td&gt;rpc&lt;/td&gt;
-&lt;td&gt;[$VINE_CLIENT]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;broker.default string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Broker for pub/sub&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;cache.default string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Cache used for key-value storage&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.content-type string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the content type for client&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;client-request-timeout string&lt;/td&gt;
-&lt;td&gt;Sets the client request timeout. e.g 500ms, 5s, 1m.&lt;/td&gt;
-&lt;td&gt;Default: 5s&lt;/td&gt;
-&lt;td&gt;[$VINE_CLIENT_REQUEST_TIMEOUT]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.default string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Client for vine&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;client-retries int&lt;/td&gt;
-&lt;td&gt;Sets the client retries.&lt;/td&gt;
-&lt;td&gt;Default: 1 (default: 1)&lt;/td&gt;
-&lt;td&gt;[$VINE_CLIENT_RETIES]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.dial-timeout duration&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the client dial timeout&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;client-pool-size int&lt;/td&gt;
-&lt;td&gt;Sets the client connection pool size.&lt;/td&gt;
-&lt;td&gt;Default: 1 (default: 0)&lt;/td&gt;
-&lt;td&gt;[$VINE_CLIENT_POOL_SIZE]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.grpc.max-idle int&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets maximum idle conns of a pool&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;50&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.grpc.max-recv-msg-size int&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets maximum message that client can receive&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;104857600&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.grpc.max-send-msg-size int&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets maximum message that client can send&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;104857600&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.grpc.max-streams int&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets maximum streams on a grpc connections (default 20)&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;client-pool-ttl string&lt;/td&gt;
-&lt;td&gt;Sets the client connection pool ttl. e.g 500ms, 5s, 1m.&lt;/td&gt;
-&lt;td&gt;Default: 1m&lt;/td&gt;
-&lt;td&gt;[$VINE_CLIENT_POOL_TTL]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.pool-size int&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the client connection pool size&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.pool-ttl duration&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the client connection pool ttl&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.request-timeout duration&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the client request timeout&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;client.retries int&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the retries&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;register-ttl int&lt;/td&gt;
-&lt;td&gt;Register TTL in seconds&lt;/td&gt;
-&lt;td&gt;(default: 60)&lt;/td&gt;
-&lt;td&gt;[$VINE_REGISTER_TTL]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;dao.dialect string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Database option for the underlying dao&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;dao.dsn string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;DSN database driver name for underlying dao&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;register-interval int&lt;/td&gt;
-&lt;td&gt;Register interval in seconds&lt;/td&gt;
-&lt;td&gt;(default: 30)&lt;/td&gt;
-&lt;td&gt;[$VINE_REGISTER_INTERVAL]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;logger.fields strings&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets other fields for logger&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;server string&lt;/td&gt;
-&lt;td&gt;Server for vine;&lt;/td&gt;
-&lt;td&gt;rpc&lt;/td&gt;
-&lt;td&gt;[$VINE_SERVER]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;logger.level string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the level for logger&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;server-name string&lt;/td&gt;
-&lt;td&gt;Name of the server. go.vine.svc.example&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_SERVER_NAME]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;registry.address string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the registry addresses&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;server-version string&lt;/td&gt;
-&lt;td&gt;Version of the server. 1.1.0&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_SERVER_VERSION]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;registry.default string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Registry for discovery&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;server-id string&lt;/td&gt;
-&lt;td&gt;Id of the server. Auto-generated if not specified&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_SERVER_ID]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;registry.mdns.domain string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the domain of mdns&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ldquo;.vine&amp;rdquo;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;registry.timeout duration&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the registry request timeout&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;3s&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;selector.default string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Selector used to pick nodes for querying&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;server-address string&lt;/td&gt;
-&lt;td&gt;Bind address for the server. 127.0.0.1:8080&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_SERVER_ADDRESS]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.address string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Bind address for the server&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;server-advertise string&lt;/td&gt;
-&lt;td&gt;Use instead of the server-address when registering with discovery. 127.0.0.1:8080&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_SERVER_ADVERTISE]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.advertise string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Use instead of the server-address when registering with discovery&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;server-metadata strings&lt;/td&gt;
-&lt;td&gt;A list of key-value pairs defining metadata. version=1.0.0&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_SERVER_METADATA]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.default string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Server for vine&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.grpc.content-type string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets the content type for grpc protocol&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ldquo;application/grpc&amp;rdquo;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.grpc.max-msg-size int&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sets maximum message size that server can send receive&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;104857600&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.id string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Id of the server&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;broker string&lt;/td&gt;
-&lt;td&gt;Broker for pub/sub. http, nats&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_BROKER]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.metadata strings&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A list of key-value pairs defining metadata&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;broker-address string&lt;/td&gt;
-&lt;td&gt;Comma-separated list of broker addresses&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_BROKER_ADDRESS]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.name string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Name of the server&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;registry string&lt;/td&gt;
-&lt;td&gt;Registry for discovery. memory, mdns&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_REGISTRY]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.register-interval duration&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Register interval&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;registry-address string&lt;/td&gt;
-&lt;td&gt;Comma-separated list of registry addresses&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_REGISTRY_ADDRESS]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;server.register-ttl duration&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Registry TTL&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;selector string&lt;/td&gt;
-&lt;td&gt;Selector used to pick nodes for querying&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_SELECTOR]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;tracer.address string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Comma-separated list of tracer addresses&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td&gt;&amp;ndash;dao-dialect string&lt;/td&gt;
-&lt;td&gt;Database option for the underlying dao&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_DAO_DIALECT]&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&amp;ndash;dao-dsn string&lt;/td&gt;
-&lt;td&gt;DSN database driver name for underlying dao&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_DSN]&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&amp;ndash;config string&lt;/td&gt;
-&lt;td&gt;The source of the config to be used to get configuration&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_CONFIG]&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&amp;ndash;cache string&lt;/td&gt;
-&lt;td&gt;Cache used for key-value storage&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_CACHE]&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&amp;ndash;cache-address string&lt;/td&gt;
-&lt;td&gt;Comma-separated list of cache addresses&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_CACHE_ADDRESS]&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&amp;ndash;tracer string&lt;/td&gt;
-&lt;td&gt;Tracer for distributed tracing, e.g. memory, jaeger&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_TRACER]&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&amp;ndash;tracer-address string&lt;/td&gt;
-&lt;td&gt;Comma-separated list of tracer addresses&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;[$VINE_TRACER_ADDRESS]&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash;tracer.default string&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Trace for vine&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;h1 id=&#34;添加额外参数&#34;&gt;添加额外参数&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 的 &lt;code&gt;Cmd&lt;/code&gt; 是基于 &lt;a href=&#34;https://github.com/spf13/cobra&#34;&gt;cobra&lt;/a&gt; 构建的，因此如果需要添加额外的参数，方法和 cobra 一样:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	c &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cmd.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewCmd&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 添加 other 参数， --other=xxx
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	c.&lt;span style=&#34;color:#50fa7b&#34;&gt;App&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;PersistentFlags&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;other&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;Sets the other parameters&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; c.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;添加子命令&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	c &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cmd.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewCmd&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 添加子命令
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// go run main.go sub
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// &amp;gt; execute sub command
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	c.&lt;span style=&#34;color:#50fa7b&#34;&gt;App&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;AddCommand&lt;/span&gt;(&lt;span style=&#34;color:#ff79c6&#34;&gt;&amp;amp;&lt;/span&gt;cobra.Command{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		Use:   &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		Short: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;command for test&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		Run: &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;(cmd &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;cobra.Command, args []&lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			cmd.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;execute sub command&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	})
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; c.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;(); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;viper&#34;&gt;viper&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/spf13/viper&#34;&gt;viper&lt;/a&gt; 可以读取不同格式参数文件，例如 json、yaml、toml 等。同时可以和 cobra 库结合。&lt;strong&gt;Vine&lt;/strong&gt; 引入 viper 库实现同时支持读取命令行参数和配置文件，详情可见 &lt;a href=&#34;https://pkg.go.dev/github.com/vine-io/vine/util/config&#34;&gt;config&lt;/a&gt;。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;go run main.go default
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;输出支持的配置参数格式&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;broker:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    default: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cache:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    default: &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可以通过设置，在启动服务时使命令行参数和配置文件同时生效。
+先启动服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	uc &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine/util/config&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 配置参数文件名称
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	uc.&lt;span style=&#34;color:#50fa7b&#34;&gt;SetConfigName&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;config.yml&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 配置参数文件格式，yaml、json、toml
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	uc.&lt;span style=&#34;color:#50fa7b&#34;&gt;SetConfigType&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;yaml&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// 指定在哪个目录下查找配置文件，支持多个路径
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	uc.&lt;span style=&#34;color:#50fa7b&#34;&gt;AddConfigPath&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;.&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;编辑配置文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;server&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;name&lt;/span&gt;: cmdtest
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#ff79c6&#34;&gt;address&lt;/span&gt;: &lt;span style=&#34;color:#bd93f9&#34;&gt;127.0.0.1&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;35000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动服务&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-golang&#34; data-lang=&#34;golang&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; run cmd&lt;span style=&#34;color:#ff79c6&#34;&gt;/&lt;/span&gt;main.&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;--&lt;/span&gt;server.id=cmdtest&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;id
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;2023&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;02&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;21&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;58&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;30&lt;/span&gt; file=vine&lt;span style=&#34;color:#ff79c6&#34;&gt;/&lt;/span&gt;service.&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;173&lt;/span&gt; level=info Starting [service] cmdtest
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;2023&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;02&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;21&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;58&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;30&lt;/span&gt; file=vine&lt;span style=&#34;color:#ff79c6&#34;&gt;/&lt;/span&gt;service.&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;174&lt;/span&gt; level=info service [version] latest
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;2023&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;02&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;21&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;58&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;30&lt;/span&gt; file=grpc&lt;span style=&#34;color:#ff79c6&#34;&gt;/&lt;/span&gt;grpc.&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;911&lt;/span&gt; level=info Server [grpc] Listening on &lt;span style=&#34;color:#bd93f9&#34;&gt;127.0.0.1&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;35000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;2023&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;02&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;21&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;58&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;30&lt;/span&gt; file=grpc&lt;span style=&#34;color:#ff79c6&#34;&gt;/&lt;/span&gt;grpc.&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;752&lt;/span&gt; level=info Registry [mdns] Registering node: cmdtest&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;cmdtest&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;id
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;2023&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;02&lt;/span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#bd93f9&#34;&gt;21&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;10&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;58&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;30&lt;/span&gt; file=mdns&lt;span style=&#34;color:#ff79c6&#34;&gt;/&lt;/span&gt;mdns_registry.&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bd93f9&#34;&gt;260&lt;/span&gt; level=info [mdns] registry create new service with ip=&lt;span style=&#34;color:#bd93f9&#34;&gt;127.0.0.1&lt;/span&gt; port=&lt;span style=&#34;color:#bd93f9&#34;&gt;35000&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt;: &lt;span style=&#34;color:#bd93f9&#34;&gt;127.0.0.1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;服务启动读取参数信息的优先级从高到低依次为: 配置文件 -&amp;gt; 命令行参数 -&amp;gt; 可选参数。&lt;/p&gt;
 
       </description>
     </item>
@@ -1960,13 +2048,15 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Options Return the options
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;() Options
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Leader Elect a leader
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;LeaderOption) (Leader, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(ctx context.Context, name &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;LeaderOption) (Leader, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// ListMembers get all election member
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListMembers&lt;/span&gt;(opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListMembersOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Member, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;ListMembers&lt;/span&gt;(ctx context.Context, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;ListMembersOption) ([]&lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt;Member, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// WatchElect watch leader event
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;WatchElect&lt;/span&gt;(ctx context.Context, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;WatchElectOption) (ElectWatcher, &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Lock acquires a lock
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;LockOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(ctx context.Context, id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;, opts &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;LockOption) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// Unlock releases a lock
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Unlock&lt;/span&gt;(id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;Unlock&lt;/span&gt;(ctx context.Context, id &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;) &lt;span style=&#34;color:#8be9fd&#34;&gt;error&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#6272a4&#34;&gt;// String Sync implementation
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#50fa7b&#34;&gt;String&lt;/span&gt;() &lt;span style=&#34;color:#8be9fd&#34;&gt;string&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
@@ -1979,14 +2069,14 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 创建锁
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	ch &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;make&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;chan&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;struct&lt;/span&gt;{}, &lt;span style=&#34;color:#bd93f9&#34;&gt;1&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;go&lt;/span&gt; &lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}
@@ -1995,7 +2085,7 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 释放锁
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err = s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Unlock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err = s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Unlock&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1 released&amp;#34;&lt;/span&gt;)
@@ -2011,13 +2101,13 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	id &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; uuid.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewString&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 新 leader
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	role1, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;leader&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderNS&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;), sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderId&lt;/span&gt;(id), sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderTTL&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	role1, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;leader&amp;#34;&lt;/span&gt;, sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderNS&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;), sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderId&lt;/span&gt;(id), sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderTTL&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 查询所有选举成员
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    ms, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListMembers&lt;/span&gt;(sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;MemberNS&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    ms, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; s.&lt;span style=&#34;color:#50fa7b&#34;&gt;ListMembers&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;MemberNS&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;default&amp;#34;&lt;/span&gt;))
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;for&lt;/span&gt; _, m &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;range&lt;/span&gt; ms {
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(m)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
@@ -2037,14 +2127,14 @@ json 配置实例：&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上锁和释放锁&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Lock&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;lock1&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockTTL&lt;/span&gt;(),   &lt;span style=&#34;color:#6272a4&#34;&gt;// 锁的 ttl
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LockWait&lt;/span&gt;(),  &lt;span style=&#34;color:#6272a4&#34;&gt;// 超时时间
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;选举&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;leader&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Leader&lt;/span&gt;(context.&lt;span style=&#34;color:#50fa7b&#34;&gt;TODO&lt;/span&gt;(), &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;leader&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderNS&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// namespace
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderTTL&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		sync.&lt;span style=&#34;color:#50fa7b&#34;&gt;LeaderId&lt;/span&gt;(), &lt;span style=&#34;color:#6272a4&#34;&gt;// 成员 id
@@ -2066,119 +2156,6 @@ json 配置实例：&lt;/p&gt;
         
         
         
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: 定时任务</title>
-      <link>https://vine-io.github.io/vine/docs/component/job/</link>
-      <pubDate>Wed, 01 Sep 2021 10:20:54 +0800</pubDate>
-      
-      <guid>https://vine-io.github.io/vine/docs/component/job/</guid>
-      <description>
-        
-        
-        &lt;p&gt;&lt;strong&gt;Vine&lt;/strong&gt; 服务内部携带定时任务调度器，用户可以注册 &lt;code&gt;Job&lt;/code&gt;，服务启动时，调度器同时启动。&lt;/p&gt;
-&lt;h2 id=&#34;新建&#34;&gt;新建&lt;/h2&gt;
-&lt;p&gt;我们来尝试创建一个任务:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;package&lt;/span&gt; main
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;log&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;time&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gscheduler&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/vine&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).          &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务名称，唯一值
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Duration&lt;/span&gt;(time.Second).    &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务触发间隔时间
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {               &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务业务主体
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()                     &lt;span style=&#34;color:#6272a4&#34;&gt;// 返回 *Job
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 添加定时任务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;AddJob&lt;/span&gt;(job); err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalln&lt;/span&gt;(err)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;NewService&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Run&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;构建过程&#34;&gt;构建过程&lt;/h2&gt;
-&lt;p&gt;我们提供一组方法来简化定时任务的创建过程。&lt;/p&gt;
-&lt;p&gt;创建定时任务:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Duration&lt;/span&gt;(time.Second).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建 crontab 定时任务:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff79c6&#34;&gt;import&lt;/span&gt; (
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff79c6&#34;&gt;...&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gscheduler&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;github.com/vine-io/gscheduler/cron&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// crontab 表达式格式: 秒 分 时 日 月 周
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    c, err &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; cron.&lt;span style=&#34;color:#50fa7b&#34;&gt;Parse&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;*/3 * * * * *&amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#ff79c6&#34;&gt;if&lt;/span&gt; err &lt;span style=&#34;color:#ff79c6&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ff79c6&#34;&gt;nil&lt;/span&gt; {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		log.&lt;span style=&#34;color:#50fa7b&#34;&gt;Fatalf&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;invalid crontab expr: %v&amp;#34;&lt;/span&gt;, err)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	}
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// c = cron.Every(time.Second)
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Spec&lt;/span&gt;(c).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建一次性任务:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Delay&lt;/span&gt;(time.&lt;span style=&#34;color:#50fa7b&#34;&gt;Now&lt;/span&gt;().&lt;span style=&#34;color:#50fa7b&#34;&gt;Add&lt;/span&gt;(time.Second &lt;span style=&#34;color:#ff79c6&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#bd93f9&#34;&gt;2&lt;/span&gt;)).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;额外的功能:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    job &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; gscheduler.&lt;span style=&#34;color:#50fa7b&#34;&gt;JobBuilder&lt;/span&gt;().
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Name&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;testjob&amp;#34;&lt;/span&gt;).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Duration&lt;/span&gt;(time.Second).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Silent&lt;/span&gt;().  &lt;span style=&#34;color:#6272a4&#34;&gt;// 任务静默
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Times&lt;/span&gt;(&lt;span style=&#34;color:#bd93f9&#34;&gt;3&lt;/span&gt;).  &lt;span style=&#34;color:#6272a4&#34;&gt;// 指定任务执行次数
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Fn&lt;/span&gt;(&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;			fmt.&lt;span style=&#34;color:#50fa7b&#34;&gt;Println&lt;/span&gt;(&lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;done!&amp;#34;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		}).
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;		&lt;span style=&#34;color:#50fa7b&#34;&gt;Out&lt;/span&gt;()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;其他&#34;&gt;其他&lt;/h2&gt;
-&lt;p&gt;内部定时任务调度器的其他功能:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#8be9fd;font-style:italic&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#50fa7b&#34;&gt;main&lt;/span&gt;() {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 根据 id 获取任务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;    j, _ &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;GetJob&lt;/span&gt;(job.&lt;span style=&#34;color:#50fa7b&#34;&gt;ID&lt;/span&gt;())
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 更新任务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;UpdateJob&lt;/span&gt;(j)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#6272a4&#34;&gt;// 删除任务
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#6272a4&#34;&gt;&lt;/span&gt;	vine.&lt;span style=&#34;color:#50fa7b&#34;&gt;RemoveJob&lt;/span&gt;(j)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       </description>
     </item>
     

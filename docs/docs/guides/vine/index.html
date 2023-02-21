@@ -842,31 +842,6 @@ if (!doNotTrack) {
         
       
       
-      
-        
-          
-
-
-
-
-
-
-<ul class="td-sidebar-nav__section pr-md-3">
-  <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/job/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">定时任务</a>
-  </li>
-  <ul>
-    <li class="collapse " id="vinedocscomponentjob">
-      
-      
-      
-    </li>
-  </ul>
-</ul>
-
-        
-      
-      
     </li>
   </ul>
 </ul>
@@ -1197,31 +1172,31 @@ if (!doNotTrack) {
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/vine
 </span></span></code></pre></div><p>验证安装结果</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ vine --help
-</span></span><span style="display:flex;"><span>NAME:
-</span></span><span style="display:flex;"><span>   vine - A vine service runtime
+</span></span><span style="display:flex;"><span>A vine service runtime
 </span></span><span style="display:flex;"><span>        _
 </span></span><span style="display:flex;"><span> _   __<span style="color:#ff79c6">(</span>_<span style="color:#ff79c6">)</span>___  ___
 </span></span><span style="display:flex;"><span>| | / / / __ <span style="color:#f1fa8c">\/</span> _ <span style="color:#f1fa8c">\
 </span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c"></span>| |/ / / / / /  __/
 </span></span><span style="display:flex;"><span>|___/_/_/ /_/<span style="color:#f1fa8c">\_</span>__/
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>USAGE:
-</span></span><span style="display:flex;"><span>   vine <span style="color:#ff79c6">[</span>global options<span style="color:#ff79c6">]</span> <span style="color:#8be9fd;font-style:italic">command</span> <span style="color:#ff79c6">[</span><span style="color:#8be9fd;font-style:italic">command</span> options<span style="color:#ff79c6">]</span> <span style="color:#ff79c6">[</span>arguments...<span style="color:#ff79c6">]</span>
+</span></span><span style="display:flex;"><span>Usage:
+</span></span><span style="display:flex;"><span>  vine <span style="color:#ff79c6">[</span>flags<span style="color:#ff79c6">]</span>
+</span></span><span style="display:flex;"><span>  vine <span style="color:#ff79c6">[</span>command<span style="color:#ff79c6">]</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>VERSION:
-</span></span><span style="display:flex;"><span>   ...
+</span></span><span style="display:flex;"><span>Available Commands:
+</span></span><span style="display:flex;"><span>  api         Run the api gateway
+</span></span><span style="display:flex;"><span>  build       Build vine project or resource
+</span></span><span style="display:flex;"><span>  completion  Generate the autocompletion script <span style="color:#ff79c6">for</span> the specified shell
+</span></span><span style="display:flex;"><span>  <span style="color:#8be9fd;font-style:italic">help</span>        Help about any <span style="color:#8be9fd;font-style:italic">command</span>
+</span></span><span style="display:flex;"><span>  init        Initialize a vine project
+</span></span><span style="display:flex;"><span>  new         Create vine resource template
+</span></span><span style="display:flex;"><span>  run         Start a vine project
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>COMMANDS:
-</span></span><span style="display:flex;"><span>   api      Run the api gateway
-</span></span><span style="display:flex;"><span>   new      Create vine resource template
-</span></span><span style="display:flex;"><span>   init     Initialize a vine project
-</span></span><span style="display:flex;"><span>   build    Build vine project or resource
-</span></span><span style="display:flex;"><span>   run      Start a vine project
-</span></span><span style="display:flex;"><span>   help, h  Shows a list of commands or <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">for</span> one <span style="color:#8be9fd;font-style:italic">command</span>
+</span></span><span style="display:flex;"><span>Flags:
+</span></span><span style="display:flex;"><span>  -h, --help      <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">for</span> vine
+</span></span><span style="display:flex;"><span>  -v, --version   version <span style="color:#ff79c6">for</span> vine
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>GLOBAL OPTIONS:
-</span></span><span style="display:flex;"><span>   --help, -h     show <span style="color:#8be9fd;font-style:italic">help</span> <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
-</span></span><span style="display:flex;"><span>   --version, -v  print the version <span style="color:#ff79c6">(</span>default: <span style="color:#8be9fd;font-style:italic">false</span><span style="color:#ff79c6">)</span>
+</span></span><span style="display:flex;"><span>Use <span style="color:#f1fa8c">&#34;vine [command] --help&#34;</span> <span style="color:#ff79c6">for</span> more information about a command.
 </span></span></code></pre></div><p>vine 命令行工具支持多个子命令，包含以下功能:</p>
 <ul>
 <li>启动网关</li>
@@ -1246,32 +1221,33 @@ if (!doNotTrack) {
 <h3 id="新建服务">新建服务</h3>
 <p>执行以下命令创建一个服务:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ vine new service 
-</span></span><span style="display:flex;"><span>Creating resource example in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/example
+</span></span><span style="display:flex;"><span>Creating resource example in <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/github.com/lack-io/foo
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>.
 </span></span><span style="display:flex;"><span>├── cmd
 </span></span><span style="display:flex;"><span>│   └── main.go
 </span></span><span style="display:flex;"><span>├── pkg
-</span></span><span style="display:flex;"><span>│   ├── runtime
-</span></span><span style="display:flex;"><span>│   │   └── doc.go
-</span></span><span style="display:flex;"><span>│   ├── plugin.go
+</span></span><span style="display:flex;"><span>│   ├── internal
+</span></span><span style="display:flex;"><span>│   │   ├── storage
+</span></span><span style="display:flex;"><span>│   │   │   └── storage.go
+</span></span><span style="display:flex;"><span>│   │   └── version
+</span></span><span style="display:flex;"><span>│   │       └── version.go
 </span></span><span style="display:flex;"><span>│   ├── app.go
+</span></span><span style="display:flex;"><span>│   ├── builtin.go
 </span></span><span style="display:flex;"><span>│   ├── server
 </span></span><span style="display:flex;"><span>│   │   └── example.go
-</span></span><span style="display:flex;"><span>│   ├── service
-</span></span><span style="display:flex;"><span>│   │   ├── example.go
-</span></span><span style="display:flex;"><span>│   │   └── wire.go
-</span></span><span style="display:flex;"><span>│   └── dao
+</span></span><span style="display:flex;"><span>│   └── service
 </span></span><span style="display:flex;"><span>│       └── example.go
 </span></span><span style="display:flex;"><span>├── deploy
 </span></span><span style="display:flex;"><span>│   ├── Dockerfile
-</span></span><span style="display:flex;"><span>│   ├── example.ini
-</span></span><span style="display:flex;"><span>│   └── example.service
-</span></span><span style="display:flex;"><span>├── proto
-</span></span><span style="display:flex;"><span>│   └── service
+</span></span><span style="display:flex;"><span>│   ├── foo.yml
+</span></span><span style="display:flex;"><span>│   └── foo.service
+</span></span><span style="display:flex;"><span>├── api
+</span></span><span style="display:flex;"><span>│   └── services
 </span></span><span style="display:flex;"><span>│       └── example
 </span></span><span style="display:flex;"><span>│           └── v1
 </span></span><span style="display:flex;"><span>│               └── example.proto
+</span></span><span style="display:flex;"><span>├── Makefile
 </span></span><span style="display:flex;"><span>└── vine.toml
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>
@@ -1281,23 +1257,21 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>download protobuf <span style="color:#ff79c6">for</span> vine:
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> example
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> github.com/lack-io/foo
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>install dependencies:
-</span></span><span style="display:flex;"><span>   go get github.com/google/wire/cmd/wire
-</span></span><span style="display:flex;"><span>	go get github.com/gogo/protobuf
-</span></span><span style="display:flex;"><span>	go get github.com/vine-io/vine/cmd/protoc-gen-gogo
-</span></span><span style="display:flex;"><span>	go get github.com/vine-io/vine/cmd/protoc-gen-vine
-</span></span><span style="display:flex;"><span>	go get github.com/vine-io/vine/cmd/protoc-gen-validator
-</span></span><span style="display:flex;"><span>	go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
-</span></span><span style="display:flex;"><span>	go get github.com/vine-io/vine/cmd/protoc-gen-dao
+</span></span><span style="display:flex;"><span>        go get github.com/gogo/protobuf
+</span></span><span style="display:flex;"><span>        go get github.com/vine-io/vine/cmd/protoc-gen-gogo
+</span></span><span style="display:flex;"><span>        go get github.com/vine-io/vine/cmd/protoc-gen-vine
+</span></span><span style="display:flex;"><span>        go get github.com/vine-io/vine/cmd/protoc-gen-validator
+</span></span><span style="display:flex;"><span>        go get github.com/vine-io/vine/cmd/protoc-gen-deepcopy
+</span></span><span style="display:flex;"><span>        go get github.com/vine-io/vine/cmd/protoc-gen-dao
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> example
-</span></span><span style="display:flex;"><span>	vine build example
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> github.com/lack-io/foo
+</span></span><span style="display:flex;"><span>        vine build foo
 </span></span></code></pre></div><h3 id="安装依赖包">安装依赖包</h3>
 <p>根据提示，安装依赖</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ go get github.com/google/wire/cmd/wire
-</span></span><span style="display:flex;"><span>$ go get github.com/gogo/protobuf
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ go get github.com/gogo/protobuf
 </span></span><span style="display:flex;"><span>$ go get github.com/vine-io/vine/cmd/protoc-gen-gogo
 </span></span><span style="display:flex;"><span>$ go get github.com/vine-io/vine/cmd/protoc-gen-vine
 </span></span><span style="display:flex;"><span>$ go get github.com/vine-io/vine/cmd/protoc-gen-validator
@@ -1309,9 +1283,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>change directory <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src:
 </span></span><span style="display:flex;"><span>protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. --validator_out<span style="color:#ff79c6">=</span>:. example/proto/service/example/v1/example.proto
 </span></span></code></pre></div><p>编译成二进制文件:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ go mod vendor
-</span></span><span style="display:flex;"><span>go: finding module <span style="color:#ff79c6">for</span> package github.com/google/wire
-</span></span><span style="display:flex;"><span>go: found github.com/google/wire in github.com/google/wire v0.5.0
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ go mod tidy <span style="color:#ff79c6">&amp;&amp;</span> go mod vendor
 </span></span><span style="display:flex;"><span>$ vine build service example
 </span></span><span style="display:flex;"><span>vine build service example
 </span></span><span style="display:flex;"><span>go build -a -installsuffix cgo -ldflags <span style="color:#f1fa8c">&#34;-s -w&#34;</span> cmd/main.go
@@ -1326,30 +1298,30 @@ if (!doNotTrack) {
 </span></span></code></pre></div><h2 id="vine-项目结构">vine 项目结构</h2>
 <p>vine 项目采用合理的结构，使代码结构变得清晰易理解。项目分成两种类型，<code>cluster</code> 分布式和 <code>single</code> 单服务。两种类型的目录结构上有一些区别</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4"># 单服务项目</span>
-</span></span><span style="display:flex;"><span>.
-</span></span><span style="display:flex;"><span>├── cmd  <span style="color:#6272a4"># 服务入口目录, single类型时目录下只有 main.go 文件，cluster 下包含多个服务同名的目录，内部有 main.go 文件</span>
+</span></span><span style="display:flex;"><span>├── cmd <span style="color:#6272a4"># 服务入口目录, single类型时目录下只有 main.go 文件，cluster 下包含多个服务同名的目录，内部有 main.go 文件</span>
 </span></span><span style="display:flex;"><span>│   └── main.go
 </span></span><span style="display:flex;"><span>├── pkg  <span style="color:#6272a4"># pkg 每个服务核心代码存放下该目录下，single类型时，目录下直接存放服务代码，cluster类型时，目录还有一层服务同名的子目录。</span>
-</span></span><span style="display:flex;"><span>│   ├── runtime  <span style="color:#6272a4"># 各服务公用的工具包和 client 等</span>
-</span></span><span style="display:flex;"><span>│   │   └── doc.go
-</span></span><span style="display:flex;"><span>│   ├── plugin.go <span style="color:#6272a4"># vine 服务的插件信息</span>
-</span></span><span style="display:flex;"><span>│   ├── app.go    <span style="color:#6272a4"># 服务入口，初始化的一些代码</span>
-</span></span><span style="display:flex;"><span>│   ├── server    <span style="color:#6272a4"># 提供 rpc 服务，只进行一些数据的验证，具体工具调用 service</span>
-</span></span><span style="display:flex;"><span>│   │   └── example.go
-</span></span><span style="display:flex;"><span>│   ├── service   <span style="color:#6272a4"># 服务业务逻辑代码</span>
-</span></span><span style="display:flex;"><span>│   │   ├── example.go
-</span></span><span style="display:flex;"><span>│   │   └── wire.go <span style="color:#6272a4"># 使用 github.com/google/wire 实现 DI</span>
-</span></span><span style="display:flex;"><span>│   └── dao       <span style="color:#6272a4"># 数据库交互代码，有 protoc 工具自动生成</span>
+</span></span><span style="display:flex;"><span>│   ├── internal <span style="color:#6272a4"># 各服务公用的工具包和 client 等</span>
+</span></span><span style="display:flex;"><span>│   │   ├── storage
+</span></span><span style="display:flex;"><span>│   │   │   └── storage.go
+</span></span><span style="display:flex;"><span>│   │   └── version
+</span></span><span style="display:flex;"><span>│   │       └── version.go
+</span></span><span style="display:flex;"><span>│   ├── app.go <span style="color:#6272a4"># 服务入口，初始化的一些代码</span>
+</span></span><span style="display:flex;"><span>│   ├── builtin.go <span style="color:#6272a4"># vine 服务的插件信息</span>
+</span></span><span style="display:flex;"><span>│   ├── server <span style="color:#6272a4"># 提供 rpc 服务，只进行一些数据的验证，具体工具调用 service</span>
+</span></span><span style="display:flex;"><span>│   │   └── example.go 
+</span></span><span style="display:flex;"><span>│   └── service  <span style="color:#6272a4"># 服务业务逻辑代码</span>
 </span></span><span style="display:flex;"><span>│       └── example.go
-</span></span><span style="display:flex;"><span>├── deploy    <span style="color:#6272a4"># 项目代码部署时需要的文件，single 和 cluster 结构上不同</span>
+</span></span><span style="display:flex;"><span>├── deploy   <span style="color:#6272a4"># 项目代码部署时需要的文件，single 和 cluster 结构上不同</span>
 </span></span><span style="display:flex;"><span>│   ├── Dockerfile <span style="color:#6272a4"># 服务 Dockerfile</span>
-</span></span><span style="display:flex;"><span>│   ├── example.ini <span style="color:#6272a4"># 服务的启动参数配置文件</span>
-</span></span><span style="display:flex;"><span>│   └── example.service <span style="color:#6272a4"># CentOS 上的服务脚本</span>
-</span></span><span style="display:flex;"><span>├── proto    <span style="color:#6272a4"># 存放 *.proto 文件及其生成的 *.go 代码，分成 apis 和 service 类型</span>
-</span></span><span style="display:flex;"><span>│   └── service <span style="color:#6272a4"># 提供 gRPC 服务，引用 proto/apis 下的 message  </span>
+</span></span><span style="display:flex;"><span>│   ├── foo.yml <span style="color:#6272a4"># 服务的启动参数配置文件</span>
+</span></span><span style="display:flex;"><span>│   └── foo.service <span style="color:#6272a4"># CentOS 上的服务脚本</span>
+</span></span><span style="display:flex;"><span>├── api <span style="color:#6272a4"># 存放 *.proto 文件及其生成的 *.go 代码，分成 apis 和 service 类型</span>
+</span></span><span style="display:flex;"><span>│   └── services <span style="color:#6272a4"># 提供 gRPC 服务，引用 proto/apis 下的 message  </span>
 </span></span><span style="display:flex;"><span>│       └── example <span style="color:#6272a4"># 和服务同名的目录</span>
-</span></span><span style="display:flex;"><span>│           └── v1  <span style="color:#6272a4"># 服务接口版本，默认为 v1</span>
+</span></span><span style="display:flex;"><span>│           └── v1 <span style="color:#6272a4"># 服务接口版本，默认为 v1</span>
 </span></span><span style="display:flex;"><span>│               └── example.proto
+</span></span><span style="display:flex;"><span>├── Makefile
 </span></span><span style="display:flex;"><span>└── vine.toml <span style="color:#6272a4"># vine 项目的描述文件，有该文件则被认定为 vine 项目。</span>
 </span></span></code></pre></div><p><code>vine.toml</code> 文件内容说明</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ff79c6">[</span>package<span style="color:#ff79c6">]</span>   
@@ -1540,8 +1512,6 @@ if (!doNotTrack) {
         
             
         
-            
-        
     
 </div>
 
@@ -1581,7 +1551,7 @@ if (!doNotTrack) {
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2023 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>

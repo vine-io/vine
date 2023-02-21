@@ -839,31 +839,6 @@ if (!doNotTrack) {
         
       
       
-      
-        
-          
-
-
-
-
-
-
-<ul class="td-sidebar-nav__section pr-md-3">
-  <li class="td-sidebar-nav__section-title">
-    <a  href="/vine/docs/component/job/" class="align-left pl-0 pr-2 collapsed td-sidebar-link td-sidebar-link__section">定时任务</a>
-  </li>
-  <ul>
-    <li class="collapse " id="vinedocscomponentjob">
-      
-      
-      
-    </li>
-  </ul>
-</ul>
-
-        
-      
-      
     </li>
   </ul>
 </ul>
@@ -1188,13 +1163,15 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Options Return the options
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Options</span>() Options
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Leader Elect a leader
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Leader</span>(id <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>LeaderOption) (Leader, <span style="color:#8be9fd">error</span>)
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Leader</span>(ctx context.Context, name <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>LeaderOption) (Leader, <span style="color:#8be9fd">error</span>)
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// ListMembers get all election member
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">ListMembers</span>(opts <span style="color:#ff79c6">...</span>ListMembersOption) ([]<span style="color:#ff79c6">*</span>Member, <span style="color:#8be9fd">error</span>)
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">ListMembers</span>(ctx context.Context, opts <span style="color:#ff79c6">...</span>ListMembersOption) ([]<span style="color:#ff79c6">*</span>Member, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// WatchElect watch leader event
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">WatchElect</span>(ctx context.Context, opts <span style="color:#ff79c6">...</span>WatchElectOption) (ElectWatcher, <span style="color:#8be9fd">error</span>)
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Lock acquires a lock
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Lock</span>(id <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>LockOption) <span style="color:#8be9fd">error</span>
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Lock</span>(ctx context.Context, id <span style="color:#8be9fd">string</span>, opts <span style="color:#ff79c6">...</span>LockOption) <span style="color:#8be9fd">error</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// Unlock releases a lock
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Unlock</span>(id <span style="color:#8be9fd">string</span>) <span style="color:#8be9fd">error</span>
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">Unlock</span>(ctx context.Context, id <span style="color:#8be9fd">string</span>) <span style="color:#8be9fd">error</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// String Sync implementation
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 </span></span><span style="display:flex;"><span>}
@@ -1207,14 +1184,14 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 创建锁
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Lock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>, sync.<span style="color:#50fa7b">LockTTL</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>))
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Lock</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#f1fa8c">&#34;lock1&#34;</span>, sync.<span style="color:#50fa7b">LockTTL</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>))
 </span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 </span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	ch <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd;font-style:italic">struct</span>{}, <span style="color:#bd93f9">1</span>)
 </span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
-</span></span><span style="display:flex;"><span>		err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Lock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>, sync.<span style="color:#50fa7b">LockTTL</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>))
+</span></span><span style="display:flex;"><span>		err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Lock</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#f1fa8c">&#34;lock1&#34;</span>, sync.<span style="color:#50fa7b">LockTTL</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>))
 </span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 </span></span><span style="display:flex;"><span>			log.<span style="color:#50fa7b">Fatalln</span>(err)
 </span></span><span style="display:flex;"><span>		}
@@ -1223,7 +1200,7 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>	}()
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 释放锁
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err = s.<span style="color:#50fa7b">Unlock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err = s.<span style="color:#50fa7b">Unlock</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#f1fa8c">&#34;lock1&#34;</span>); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 </span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;lock1 released&#34;</span>)
@@ -1239,13 +1216,13 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	id <span style="color:#ff79c6">:=</span> uuid.<span style="color:#50fa7b">NewString</span>()
 </span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 新 leader
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	role1, err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Leader</span>(<span style="color:#f1fa8c">&#34;leader&#34;</span>, sync.<span style="color:#50fa7b">LeaderNS</span>(<span style="color:#f1fa8c">&#34;default&#34;</span>), sync.<span style="color:#50fa7b">LeaderId</span>(id), sync.<span style="color:#50fa7b">LeaderTTL</span>(<span style="color:#bd93f9">3</span>))
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	role1, err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">Leader</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#f1fa8c">&#34;leader&#34;</span>, sync.<span style="color:#50fa7b">LeaderNS</span>(<span style="color:#f1fa8c">&#34;default&#34;</span>), sync.<span style="color:#50fa7b">LeaderId</span>(id), sync.<span style="color:#50fa7b">LeaderTTL</span>(<span style="color:#bd93f9">3</span>))
 </span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 </span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalln</span>(err)
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#6272a4">// 查询所有选举成员
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    ms, _ <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">ListMembers</span>(sync.<span style="color:#50fa7b">MemberNS</span>(<span style="color:#f1fa8c">&#34;default&#34;</span>))
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    ms, _ <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">ListMembers</span>(context.<span style="color:#50fa7b">TODO</span>(), sync.<span style="color:#50fa7b">MemberNS</span>(<span style="color:#f1fa8c">&#34;default&#34;</span>))
 </span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">for</span> _, m <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> ms {
 </span></span><span style="display:flex;"><span>		fmt.<span style="color:#50fa7b">Println</span>(m)
 </span></span><span style="display:flex;"><span>	}
@@ -1265,14 +1242,14 @@ if (!doNotTrack) {
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>上锁和释放锁</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-</span></span><span style="display:flex;"><span>    s.<span style="color:#50fa7b">Lock</span>(<span style="color:#f1fa8c">&#34;lock1&#34;</span>,
+</span></span><span style="display:flex;"><span>    s.<span style="color:#50fa7b">Lock</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#f1fa8c">&#34;lock1&#34;</span>,
 </span></span><span style="display:flex;"><span>		sync.<span style="color:#50fa7b">LockTTL</span>(),   <span style="color:#6272a4">// 锁的 ttl
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		sync.<span style="color:#50fa7b">LockWait</span>(),  <span style="color:#6272a4">// 超时时间
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	)
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>选举</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
-</span></span><span style="display:flex;"><span>    s.<span style="color:#50fa7b">Leader</span>(<span style="color:#f1fa8c">&#34;leader&#34;</span>,
+</span></span><span style="display:flex;"><span>    s.<span style="color:#50fa7b">Leader</span>(context.<span style="color:#50fa7b">TODO</span>(), <span style="color:#f1fa8c">&#34;leader&#34;</span>,
 </span></span><span style="display:flex;"><span>		sync.<span style="color:#50fa7b">LeaderNS</span>(), <span style="color:#6272a4">// namespace
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		sync.<span style="color:#50fa7b">LeaderTTL</span>(), <span style="color:#6272a4">// 
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		sync.<span style="color:#50fa7b">LeaderId</span>(), <span style="color:#6272a4">// 成员 id
@@ -1288,8 +1265,6 @@ if (!doNotTrack) {
     
     
     <hr class="panel-line">
-        
-            
         
             
         
@@ -1404,7 +1379,7 @@ if (!doNotTrack) {
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2023 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
