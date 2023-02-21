@@ -44,7 +44,7 @@ import (
 
 var (
 	// DefaultMdnsDomain use a .vine domain rather than .local
-	DefaultMdnsDomain = ".vine"
+	DefaultMdnsDomain = "vine"
 )
 
 func init() {
@@ -158,7 +158,7 @@ func decode(record []string) (*mdnsTxt, error) {
 func newRegistry(opts ...registry.Option) registry.Registry {
 	options := registry.Options{
 		Context: context.Background(),
-		Timeout: time.Millisecond * 100,
+		Timeout: time.Second * 1,
 	}
 
 	for _, o := range opts {

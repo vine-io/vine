@@ -66,10 +66,10 @@ func init() {
 	encoding.RegisterCodec(wrapCodec{protoCodec{}})
 	encoding.RegisterCodec(wrapCodec{bytesCodec{}})
 
-	client.Flag.IntVar(&DefaultPoolMaxStreams, "client.grpc.max-streams", DefaultPoolMaxStreams, "Sets maximum streams on a grpc connections")
-	client.Flag.IntVar(&DefaultPoolMaxIdle, "client.grpc.max-idle", DefaultPoolMaxIdle, "Sets maximum idle conns of a pool")
-	client.Flag.IntVar(&DefaultMaxRecvMsgSize, "client.grpc.max-recv-msg-size", DefaultMaxRecvMsgSize, "Sets maximum message that client can receive ")
-	client.Flag.IntVar(&DefaultMaxSendMsgSize, "client.grpc.max-send-msg-size", DefaultMaxSendMsgSize, "Sets maximum message that client can send")
+	client.Flag.Int("client.grpc.max-streams", DefaultPoolMaxStreams, "Sets maximum streams on a grpc connections")
+	client.Flag.Int("client.grpc.max-idle", DefaultPoolMaxIdle, "Sets maximum idle conns of a pool")
+	client.Flag.Int("client.grpc.max-recv-msg-size", DefaultMaxRecvMsgSize, "Sets maximum message that client can receive ")
+	client.Flag.Int("client.grpc.max-send-msg-size", DefaultMaxSendMsgSize, "Sets maximum message that client can send")
 }
 
 type grpcClient struct {

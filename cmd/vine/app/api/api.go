@@ -32,6 +32,7 @@ import (
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
 	rrvine "github.com/vine-io/vine/cmd/vine/client/resolver/api"
+	grpcServer "github.com/vine-io/vine/core/server/grpc"
 	ahandler "github.com/vine-io/vine/lib/api/handler"
 	aapi "github.com/vine-io/vine/lib/api/handler/api"
 	"github.com/vine-io/vine/lib/api/handler/event"
@@ -46,7 +47,6 @@ import (
 	"github.com/vine-io/vine/lib/api/router"
 	regRouter "github.com/vine-io/vine/lib/api/router/registry"
 	"github.com/vine-io/vine/lib/api/server"
-	httpapi "github.com/vine-io/vine/lib/api/server/http"
 	log "github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
@@ -55,7 +55,7 @@ import (
 
 var (
 	Name         = "go.vine.api"
-	Address      = ":8080"
+	Address      = "127.0.0.1:8080"
 	Handler      = "meta"
 	Resolver     = "vine"
 	RPCPath      = "/rpc"
@@ -101,6 +101,7 @@ func Run(cmd *cobra.Command, args []string, svcOpts ...vine.Option) {
 	svcOpts = append(
 		svcOpts,
 		vine.Name(Name),
+		vine.Address(Address),
 		vine.Metadata(map[string]string{"api-address": Address}),
 	)
 
@@ -254,23 +255,12 @@ func Run(cmd *cobra.Command, args []string, svcOpts ...vine.Option) {
 
 	// create the auth wrapper and the server
 	// TODO: app middleware
-	api := httpapi.NewServer(Address)
-
-	api.Init(opts...)
-	api.Handle(APIPath, app)
-
-	// Start API
-	if err := api.Start(); err != nil {
+	if err := svc.Server().Init(grpcServer.HttpHandler(app)); err != nil {
 		log.Fatal(err)
 	}
 
 	// Run server
 	if err := svc.Run(); err != nil {
-		log.Fatal(err)
-	}
-
-	// Stop API
-	if err := api.Stop(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -286,13 +276,13 @@ func Commands(options ...vine.Option) []*cobra.Command {
 	}
 	flags := cmd.PersistentFlags()
 	flags.String("address", "", "Set the api address e.g 0.0.0.0:8080")
-	flags.String("handler", "", "Specify the request handler to be used for mapping HTTP requests to services; {api, event, http, rpc}")
+	flags.String("handler", "rpc", "Specify the request handler to be used for mapping HTTP requests to services; {api, event, http, rpc}")
 	flags.String("namespace", "", "Set the namespace used by the API e.g. com.example")
 	flags.String("type", "", "Set the service type used by the API e.g. api")
 	flags.String("resolver", "", "Set the hostname resolver used by the API {host, path, grpc}")
-	flags.String("enable-openapi", "", "Enable OpenAPI3")
-	flags.String("enable-rpc", "", "Enable call the backend directly via /rpc")
-	flags.String("enable-cors", "", "Enable CORS, allowing the API to be called by frontend applications")
+	flags.Bool("enable-openapi", true, "Enable OpenAPI3")
+	flags.Bool("enable-rpc", false, "Enable call the backend directly via /rpc")
+	flags.Bool("enable-cors", true, "Enable CORS, allowing the API to be called by frontend applications")
 
 	return []*cobra.Command{cmd}
 }
