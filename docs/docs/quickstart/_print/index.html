@@ -178,10 +178,11 @@ This the multi-page printable view of this section.
 <li><a href="https://github.com/vine-io/vine/tree/master/cmd/protoc-gen-vine">protoc-gen-vine</a></li>
 </ul>
 <p>使用 protoc、protoc-gen-gogo、protoc-gen-vine 来生成 protobuf code</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get github.com/gogo/protobuf
-</span></span><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/protoc-gen-gogo
-</span></span><span style="display:flex;"><span>go get github.com/vine-io/vine/cmd/protoc-gen-vine
-</span></span></code></pre></div><p>使用命令生成 <code>greet.pb.go</code> 和 <code>greet.vine.go</code> 文件:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go install github.com/gogo/protobuf@latest
+</span></span><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/protoc-gen-gogo@latest
+</span></span><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/protoc-gen-vine@latest
+</span></span></code></pre></div><p>或者直接下载编译包 <a href="https://github.com/vine-io/vine/releases">https://github.com/vine-io/vine/releases</a></p>
+<p>使用命令生成 <code>greet.pb.go</code> 和 <code>greet.vine.go</code> 文件:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src
 </span></span><span style="display:flex;"><span>protoc -I<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src --gogo_out<span style="color:#ff79c6">=</span>:. --vine_out<span style="color:#ff79c6">=</span>:. mysite/proto/greet.proto
 </span></span></code></pre></div><p>执行成功后会生成新的文件:</p>
@@ -221,7 +222,9 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span>	)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 服务初始化
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	app.<span style="color:#50fa7b">Init</span>()
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> app.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;init greet: %v&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 注册服务
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> pb.<span style="color:#50fa7b">RegisterGreeterHandler</span>(app.<span style="color:#50fa7b">Server</span>(), <span style="color:#ff79c6">&amp;</span>greet{}); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
@@ -439,11 +442,7 @@ This the multi-page printable view of this section.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go env -w <span style="color:#8be9fd;font-style:italic">GO111MODULE</span><span style="color:#ff79c6">=</span>on
 </span></span></code></pre></div><h2 id="安装">安装</h2>
 <p>安装 <strong>Vine</strong> 工具</p>
-<p>go get 安装</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get -u github.com/vine-io/vine/cmd/vine@latest
-</span></span><span style="display:flex;"><span>go get -u github.com/vine-io/vine/cmd/protoc-gen-gogo@latest
-</span></span><span style="display:flex;"><span>go get -u github.com/vine-io/vine/cmd/protoc-gen-vine@latest
-</span></span></code></pre></div><p>go install 安装</p>
+<p>go install 安装</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/vine@latest
 </span></span><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/protoc-gen-gogo@latest
 </span></span><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/protoc-gen-vine@latest
@@ -451,7 +450,8 @@ This the multi-page printable view of this section.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/vine-io/vine
 </span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> vine
 </span></span><span style="display:flex;"><span>make build <span style="color:#ff79c6">&amp;&amp;</span> mv vine <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/bin/vine 
-</span></span></code></pre></div><h2 id="创建项目">创建项目</h2>
+</span></span></code></pre></div><p>直接下载二进制文件 <a href="https://github.com/vine-io/vine/releases/latest">release</a></p>
+<h2 id="创建项目">创建项目</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4"># 新建项目根目录</span>
 </span></span><span style="display:flex;"><span>mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/helloworld
 </span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/helloworld
@@ -463,6 +463,7 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span><span style="color:#6272a4"># 生成代码</span>
 </span></span><span style="display:flex;"><span>vine build proto
 </span></span><span style="display:flex;"><span><span style="color:#6272a4"># 安装依赖</span>
+</span></span><span style="display:flex;"><span>go mod tidy 
 </span></span><span style="display:flex;"><span>go mod vendor
 </span></span><span style="display:flex;"><span><span style="color:#6272a4"># 启动服务</span>
 </span></span><span style="display:flex;"><span>vine run helloworld
@@ -658,15 +659,16 @@ This the multi-page printable view of this section.
     
 	<p>我们提供一套工具帮助开发者快速构建微服务。</p>
 <h2 id="安装">安装</h2>
-<p>使用 go get 安装</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go get -u github.com/vine-io/vine/cmd/vine@latest
+<p>使用 go install 安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go install github.com/vine-io/vine/cmd/vine@latest
 </span></span></code></pre></div><p>编译包安装 (推荐)</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget https://github.com/vine-io/vine/releases/download/v0.23.0/vine-darwin-amd64-v0.23.0.tar.gz
-</span></span><span style="display:flex;"><span>tar -xvf vine-darwin-amd64-v0.23.0.tar.gz
-</span></span><span style="display:flex;"><span>cp -r darwin-amd64/* <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/bin/
-</span></span></code></pre></div><p>工具使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>bash -c <span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">$(</span>curl -fsSL https://raw.github.com/vine-io/vine/master/tools/install.sh<span style="color:#ff79c6">)</span><span style="color:#f1fa8c">&#34;</span>
+</span></span></code></pre></div><blockquote>
+<p>windows 平台直接去 <a href="https://github.com/vine-io/vine/releases/latest">release</a> 下载</p>
+</blockquote>
+<p>工具使用</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vine --version
-</span></span><span style="display:flex;"><span>&gt; v0.23.0-8b25f36c-1630374346
+</span></span><span style="display:flex;"><span>&gt; vine version v1.5.0-5a39306c-1676942884
 </span></span></code></pre></div><h2 id="新建项目">新建项目</h2>
 <p>创建目录作为项目根目录</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p <span style="color:#8be9fd;font-style:italic">$GOPATH</span>/src/foo
@@ -831,11 +833,8 @@ This the multi-page printable view of this section.
 </span></span></code></pre></div><h2 id="服务-options">服务 options</h2>
 <p>在 <strong>Vine</strong> 中，我们有可以设置多种选项，包括用于身份验证，配置和存储等内容的基础包。你可以使用 <code>service.Options()</code> 来访问这些。</p>
 <p>auth、config、registry、cache 等包将默认为我们的零依赖插件。可以通过设置环境变量或者命令行参数来配置它们，在执行 <code>service.Init()</code> 后生效。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4">## as an env vars</span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">VINE_CACHE</span><span style="color:#ff79c6">=</span>file go run main.go
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#6272a4">## or as a flag</span>
-</span></span><span style="display:flex;"><span>go run main.go --cache<span style="color:#ff79c6">=</span>file
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#6272a4">## or as a flag</span>
+</span></span><span style="display:flex;"><span>go run main.go --cache.default<span style="color:#ff79c6">=</span>file
 </span></span></code></pre></div><h2 id="使用-options">使用 options</h2>
 <p>在内部，可以通过选项访问存储：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>service <span style="color:#ff79c6">:=</span> vine.<span style="color:#50fa7b">NewService</span>(
@@ -859,7 +858,7 @@ This the multi-page printable view of this section.
 </span></span></code></pre></div><h2 id="所有-options">所有 options</h2>
 <p>vine 服务初始化是，支持以下 options</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>vine.<span style="color:#50fa7b">Name</span>(),            <span style="color:#6272a4">// 微服务名称
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Id</span>(),              <span style="color:#6272a4">// 微服务 uuid
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">ID</span>(),              <span style="color:#6272a4">// 微服务 uuid
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Version</span>(),         <span style="color:#6272a4">// 微服务版本
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Address</span>(),         <span style="color:#6272a4">// 微服务绑定地址
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Metadata</span>(),        <span style="color:#6272a4">// 微服务 metadata
@@ -867,7 +866,6 @@ This the multi-page printable view of this section.
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Client</span>(),          <span style="color:#6272a4">// 设置内部 Client 模块
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Selector</span>(),        <span style="color:#6272a4">// 设置 client selector 
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">HandleSignal</span>(),    <span style="color:#6272a4">// 是否处理系统信号
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Context</span>(),         <span style="color:#6272a4">// 设置 Context 
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Broker</span>(),          <span style="color:#6272a4">// 设置内部 broker 模块
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Registry</span>(),        <span style="color:#6272a4">// 设置内部 Registry 模块
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">RegisterTTL</span>(),     <span style="color:#6272a4">// 服务注册有效时间
@@ -876,7 +874,10 @@ This the multi-page printable view of this section.
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Dialect</span>(),         <span style="color:#6272a4">// 设置 Dialect 模块
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Cmd</span>(),             <span style="color:#6272a4">// 设置 Cmd 模块
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Action</span>(),          <span style="color:#6272a4">// 设置 Cmd Action 回调函数
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Flags</span>(),           <span style="color:#6272a4">// 添加 Cmd Flags 
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">Flags</span>(),           <span style="color:#6272a4">// 添加 Cmd pflag.Flags 
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">FlagSet</span>(),         <span style="color:#6272a4">// 添加 Cmd pflag.FlagSet
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">GoFlags</span>(),         <span style="color:#6272a4">// 添加 Cmd flag.Flags 
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">GoFlagSet</span>(),       <span style="color:#6272a4">// 添加 Cmd flag.FlagSet
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapHandler</span>(),     <span style="color:#6272a4">// 添加 Server 请求拦截器
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapClient</span>(),      <span style="color:#6272a4">// 添加 Client 请求拦截器
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>vine.<span style="color:#50fa7b">WrapCall</span>(),        <span style="color:#6272a4">// 添加 Client Call 请求拦截器
@@ -931,9 +932,7 @@ This the multi-page printable view of this section.
 </span></span></code></pre></div><p>通过包含插件文件来构建应用程序：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go build -o service main.go plugins.go
 </span></span></code></pre></div><p>使用插件</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>service --registry<span style="color:#ff79c6">=</span>etcd --broker<span style="color:#ff79c6">=</span>nats
-</span></span></code></pre></div><p>或者使用环境变量</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">VINE_REGISTRY</span><span style="color:#ff79c6">=</span>etcd <span style="color:#8be9fd;font-style:italic">VINE_BROKER</span><span style="color:#ff79c6">=</span>nats service
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>service --registry.default<span style="color:#ff79c6">=</span>etcd --broker.default<span style="color:#ff79c6">=</span>nats
 </span></span></code></pre></div><h2 id="插件选项">插件选项</h2>
 <p>或者你可以将插件设置在选项中</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
@@ -967,11 +966,11 @@ This the multi-page printable view of this section.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> Registry <span style="color:#8be9fd;font-style:italic">interface</span> {
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Init</span>(<span style="color:#ff79c6">...</span>Option) <span style="color:#8be9fd">error</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Options</span>() Options
-</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Register</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Deregister</span>(<span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">GetService</span>(<span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">ListServices</span>(<span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
-</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Watch</span>(<span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Register</span>(context.Context, <span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>RegisterOption) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Deregister</span>(context.Context, <span style="color:#ff79c6">*</span>Service, <span style="color:#ff79c6">...</span>DeregisterOption) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">GetService</span>(context.Context, <span style="color:#8be9fd">string</span>, <span style="color:#ff79c6">...</span>GetOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">ListServices</span>(context.Context, <span style="color:#ff79c6">...</span>ListOption) ([]<span style="color:#ff79c6">*</span>Service, <span style="color:#8be9fd">error</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Watch</span>(context.Context, <span style="color:#ff79c6">...</span>WatchOption) (Watcher, <span style="color:#8be9fd">error</span>)
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>查阅 <a href="https://github.com/vine-io/plugins">plugins</a> 可以更好地了解实现细节。</p>
@@ -1081,7 +1080,7 @@ This the multi-page printable view of this section.
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2023 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>

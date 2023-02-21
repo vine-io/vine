@@ -149,7 +149,7 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Address</span>() <span style="color:#8be9fd">string</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Connect</span>() <span style="color:#8be9fd">error</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Disconnect</span>() <span style="color:#8be9fd">error</span>
-</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Publish</span>(topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Publish</span>(ctx context.Context, topic <span style="color:#8be9fd">string</span>, m <span style="color:#ff79c6">*</span>Message, opts <span style="color:#ff79c6">...</span>PublishOption) <span style="color:#8be9fd">error</span>
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">Subscribe</span>(topic <span style="color:#8be9fd">string</span>, h Handler, opts <span style="color:#ff79c6">...</span>SubscribeOption) (Subscriber, <span style="color:#8be9fd">error</span>)
 </span></span><span style="display:flex;"><span>	<span style="color:#50fa7b">String</span>() <span style="color:#8be9fd">string</span>
 </span></span><span style="display:flex;"><span>}
@@ -203,7 +203,7 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
 </span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">&lt;-</span>time.<span style="color:#50fa7b">After</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">1</span>)
 </span></span><span style="display:flex;"><span>		<span style="color:#6272a4">// publish message to broker
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>        b.<span style="color:#50fa7b">Publish</span>(context.<span style="color:#50fa7b">TODO</span>(), topic, <span style="color:#ff79c6">&amp;</span>broker.Message{Header: <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{<span style="color:#f1fa8c">&#34;a&#34;</span>: <span style="color:#f1fa8c">&#34;b&#34;</span>}, Body: []<span style="color:#8be9fd;font-style:italic">byte</span>(<span style="color:#f1fa8c">&#34;hello world&#34;</span>)})
 </span></span><span style="display:flex;"><span>	}()
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    time.<span style="color:#50fa7b">Sleep</span>(time.Second <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>)
@@ -257,7 +257,7 @@ This the multi-page printable view of this section.
         
       </div>
       <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-        <small class="text-white">&copy; 2022 The Docsy Authors All Rights Reserved</small>
+        <small class="text-white">&copy; 2023 The Docsy Authors All Rights Reserved</small>
         <small class="ml-1"><a href="https://policies.google.com/privacy" target="_blank">隐私政策</a></small>
 	
 		<p class="mt-2"><a href="/vine/about/">关于</a></p>
