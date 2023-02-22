@@ -45,7 +45,7 @@ func TestMDNS(t *testing.T) {
 			Version: "1.0.1",
 			Nodes: []*registry.Node{
 				{
-					Id:      "test1-1",
+					Id:      "1",
 					Address: "10.0.0.1:10001",
 					Metadata: map[string]string{
 						"foo": "bar",
@@ -58,7 +58,7 @@ func TestMDNS(t *testing.T) {
 			Version: "1.0.2",
 			Nodes: []*registry.Node{
 				{
-					Id:      "test2-1",
+					Id:      "1",
 					Address: "10.0.0.2:10002",
 					Metadata: map[string]string{
 						"foo2": "bar2",
@@ -71,7 +71,7 @@ func TestMDNS(t *testing.T) {
 			Version: "1.0.3",
 			Nodes: []*registry.Node{
 				{
-					Id:      "test3-1",
+					Id:      "1",
 					Address: "10.0.0.3:10003",
 					Metadata: map[string]string{
 						"foo3": "bar3",
@@ -122,7 +122,7 @@ func TestMDNS(t *testing.T) {
 
 		node := s[0].Nodes[0]
 
-		if strings.HasPrefix(service.Nodes[0].Id, node.Id) {
+		if service.Nodes[0].Id != node.Id {
 			t.Fatalf("Expected node id %s got %s", service.Nodes[0].Id, node.Id)
 		}
 
@@ -235,7 +235,7 @@ func TestWatcher(t *testing.T) {
 			Version: "1.0.1",
 			Nodes: []*registry.Node{
 				{
-					Id:      "test1-1",
+					Id:      "1",
 					Address: "10.0.0.1:10001",
 					Metadata: map[string]string{
 						"foo": "bar",
@@ -248,7 +248,7 @@ func TestWatcher(t *testing.T) {
 			Version: "1.0.2",
 			Nodes: []*registry.Node{
 				{
-					Id:      "test2-1",
+					Id:      "1",
 					Address: "10.0.0.2:10002",
 					Metadata: map[string]string{
 						"foo2": "bar2",
@@ -261,7 +261,7 @@ func TestWatcher(t *testing.T) {
 			Version: "1.0.3",
 			Nodes: []*registry.Node{
 				{
-					Id:      "test3-1",
+					Id:      "1",
 					Address: "10.0.0.3:10003",
 					Metadata: map[string]string{
 						"foo3": "bar3",
@@ -353,7 +353,7 @@ func TestWatcher(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if strings.HasPrefix(res.Service.Name, service.Name) {
+			if !strings.HasPrefix(res.Service.Name, service.Name) {
 				continue
 			}
 
