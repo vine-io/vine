@@ -137,7 +137,7 @@ func cmdProto() *cobra.Command {
 		Short: "Create a proto file",
 		RunE:  runProto,
 	}
-	cmd.PersistentFlags().String("type", "type of proto eg service, api", "api")
+	cmd.PersistentFlags().String("type", "api", "type of proto eg service, api")
 	cmd.PersistentFlags().String("proto-version", "v1", "specify proto version")
 	cmd.PersistentFlags().String("group", "core", "specify the group")
 
