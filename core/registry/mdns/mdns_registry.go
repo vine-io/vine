@@ -158,7 +158,7 @@ func decode(record []string) (*mdnsTxt, error) {
 func newRegistry(opts ...registry.Option) registry.Registry {
 	options := registry.Options{
 		Context: context.Background(),
-		Timeout: time.Second * 1,
+		Timeout: time.Millisecond * 100,
 	}
 
 	for _, o := range opts {
