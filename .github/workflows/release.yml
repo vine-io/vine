@@ -1,0 +1,56 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+
+  deploy:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.18
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Lint Go Code
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go install golang.org/x/lint/golint@latest
+          make lint
+
+      - name: Changelog
+        uses: Bullrich/generate-release-changelog@master
+        id: Changelog
+        env:
+          REPO: ${{ github.repository }}
+
+      #- name: Get Tag Version
+      #  run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
+
+      - name: Build Tar
+        run: make tar
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+          files: |
+            vine-darwin-arm64-${{ github.ref }}.tar.gz
+            vine-darwin-amd64-${{ github.ref }}.tar.gz
+            vine-linux-amd64-${{ github.ref }}.tar.gz
+            vine-linux-arm64-${{ github.ref }}.tar.gz
+            vine-windows-amd64-${{ github.ref }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
