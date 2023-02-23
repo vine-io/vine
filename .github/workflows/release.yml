@@ -32,7 +32,9 @@ jobs:
           REPO: ${{ github.repository }}
 
       - name: Get Tag Version
-        run: echo "GIT_TAG=`echo $()`" >> $GITHUB_ENV
+        run: |
+          echo "tag=${{ github.ref_name }}" >> $GITHUB_ENV
+          echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
 
       - name: Build Tar
         run: make tar
@@ -48,10 +50,10 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            vine-darwin-arm64-${{ github.ref_name }}.tar.gz
-            vine-darwin-amd64-${{ github.ref_name }}.tar.gz
-            vine-linux-amd64-${{ github.ref_name }}.tar.gz
-            vine-linux-arm64-${{ github.ref_name }}.tar.gz
-            vine-windows-amd64-${{ github.ref_name }}.tar.gz
+            ./_output/vine-darwin-arm64-${{ github.ref_name }}.tar.gz
+            ./_output/vine-darwin-amd64-${{ github.ref_name }}.tar.gz
+            ./_output/vine-linux-amd64-${{ github.ref_name }}.tar.gz
+            ./_output/vine-linux-arm64-${{ github.ref_name }}.tar.gz
+            ./_output/vine-windows-amd64-${{ github.ref_name }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
