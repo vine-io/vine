@@ -62,7 +62,7 @@ jobs:
       - name: Build
         run: | 
           make build
-          echo "$(ls .)" >> $GITHUB_OUTPUT
+          echo "vine=$(ls .)" >> $GITHUB_OUTPUT
         
 
       - name: Tar
