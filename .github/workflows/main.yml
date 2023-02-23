@@ -60,7 +60,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build
-        run: make build
+        run: | 
+          make build
+          echo "$(ls .)" >> $GITHUB_OUTPUT
+        
 
       - name: Tar
         run: make tar
