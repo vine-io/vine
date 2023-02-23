@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.19
 
       - name: Check out code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - name: Lint Go Code
         run: |
@@ -31,26 +31,27 @@ jobs:
         env:
           REPO: ${{ github.repository }}
 
-      #- name: Get Tag Version
-      #  run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
+      - name: Get Tag Version
+        run: echo "GIT_TAG=`echo $()`" >> $GITHUB_ENV
 
       - name: Build Tar
         run: make tar
 
       - name: Release
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
           body: |
             ${{ steps.Changelog.outputs.changelog }}
           draft: false
           prerelease: false
           files: |
-            vine-darwin-arm64-${{ github.ref }}.tar.gz
-            vine-darwin-amd64-${{ github.ref }}.tar.gz
-            vine-linux-amd64-${{ github.ref }}.tar.gz
-            vine-linux-arm64-${{ github.ref }}.tar.gz
-            vine-windows-amd64-${{ github.ref }}.tar.gz
+            vine-darwin-arm64-${{ github.ref_name }}.tar.gz
+            vine-darwin-amd64-${{ github.ref_name }}.tar.gz
+            vine-linux-amd64-${{ github.ref_name }}.tar.gz
+            vine-linux-arm64-${{ github.ref_name }}.tar.gz
+            vine-windows-amd64-${{ github.ref_name }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
