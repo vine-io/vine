@@ -10,6 +10,8 @@ jobs:
   deploy:
     name: release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
