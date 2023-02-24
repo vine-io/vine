@@ -26,7 +26,6 @@ jobs:
           make lint
 
       - name: Changelog
-        uses: scottbrenner/generate-changelog-action@master
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
           go install github.com/lack-io/changelog@latest
