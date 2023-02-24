@@ -48,7 +48,7 @@ var (
 )
 
 func init() {
-	registry.Flag.StringVar(&DefaultMdnsDomain, "registry.mdns.domain", DefaultMdnsDomain, "Sets the domain of mdns")
+	registry.Flag.String("registry.mdns.domain", DefaultMdnsDomain, "Sets the domain of mdns")
 }
 
 type mdnsTxt struct {
@@ -165,8 +165,13 @@ func newRegistry(opts ...registry.Option) registry.Registry {
 		o(&options)
 	}
 
-	// set the domain
 	domain := DefaultMdnsDomain
+	v, ok := options.Context.Value(domainKey{}).(string)
+	if ok {
+		domain = v
+	}
+
+	// set the domain
 	return &mdnsRegistry{
 		opts:     options,
 		domain:   domain,
