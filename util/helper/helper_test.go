@@ -42,8 +42,8 @@ func TestRequestToContext(t *testing.T) {
 				},
 			},
 			metadata.Metadata{
-				"Foo1": "bar",
-				"Foo2": "bar,baz",
+				"foo1": "bar",
+				"foo2": "bar,baz",
 			},
 		},
 	}

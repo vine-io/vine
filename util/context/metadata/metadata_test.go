@@ -78,7 +78,7 @@ func TestMetadataCopy(t *testing.T) {
 
 func TestMetadataContext(t *testing.T) {
 	md := Metadata{
-		"Foo": "bar",
+		"foo": "bar",
 	}
 
 	ctx := NewContext(context.TODO(), md)
@@ -88,8 +88,8 @@ func TestMetadataContext(t *testing.T) {
 		t.Errorf("Unexpected error retrieving metadata, got %t", ok)
 	}
 
-	if emd["Foo"] != md["Foo"] {
-		t.Errorf("Expected key: %s val: %s, got key: %s val: %s", "Foo", md["Foo"], "Foo", emd["Foo"])
+	if emd["foo"] != md["foo"] {
+		t.Errorf("Expected key: %s val: %s, got key: %s val: %s", "foo", md["foo"], "foo", emd["foo"])
 	}
 
 	if i := len(emd); i != 1 {
@@ -115,7 +115,7 @@ func TestMergeContext(t *testing.T) {
 				append:    Metadata{"Sumo": "demo2"},
 				overwrite: false,
 			},
-			want: Metadata{"Foo": "bar", "Sumo": "demo"},
+			want: Metadata{"foo": "bar", "sumo": "demo"},
 		},
 		{
 			name: "matching key, overwrite true",
@@ -124,7 +124,7 @@ func TestMergeContext(t *testing.T) {
 				append:    Metadata{"Sumo": "demo2"},
 				overwrite: true,
 			},
-			want: Metadata{"Foo": "bar", "Sumo": "demo2"},
+			want: Metadata{"foo": "bar", "sumo": "demo2"},
 		},
 	}
 	for _, tt := range tests {

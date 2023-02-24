@@ -42,7 +42,7 @@ import (
 func testHttp(t *testing.T, path, service, ns string) {
 	r := memory.NewRegistry()
 
-	l, err := net.Listen("tcp", "127.0.0.1:0")
+	l, err := net.Listen("tcp", "127.0.0.1:11111")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,10 +73,10 @@ func testHttp(t *testing.T, path, service, ns string) {
 
 	// create new request and writer
 	w := httptest.NewRecorder()
-	//req, err := http.NewRequest("POST", path, nil)
-	//if err != nil {
-	//	t.Fatal(err)
-	//}
+	req, err := http.NewRequest("POST", path, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// initialise the handler
 	rt := regRouter.NewRouter(
@@ -91,6 +91,7 @@ func testHttp(t *testing.T, path, service, ns string) {
 
 	// execute the handler
 	c, _ := gin.CreateTestContext(w)
+	c.Request = req
 	p.Handle(c)
 
 	if w.Code != 200 {
