@@ -44,7 +44,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           release_name: Release ${{ github.ref_name }}
-          body_path: _output/CHANGELOG.md
+          body_path: ./_output/CHANGELOG.md
           draft: false
           prerelease: false
           files: |
