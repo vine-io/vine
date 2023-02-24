@@ -111,6 +111,11 @@ func GetFloat(path ...string) float64 {
 	return config.GetFloat64(strings.Join(path, "."))
 }
 
+// GetBool a boolean value from the config
+func GetBool(path ...string) bool {
+	return config.GetBool(strings.Join(path, "."))
+}
+
 // GetStringSlice a string slice value from the config
 func GetStringSlice(path ...string) []string {
 	return config.GetStringSlice(strings.Join(path, "."))
