@@ -25,12 +25,6 @@ jobs:
           go install golang.org/x/lint/golint@latest
           make lint
 
-      - name: Changelog
-        uses: Bullrich/generate-release-changelog@master
-        id: Changelog
-        env:
-          REPO: ${{ github.repository }}
-
       - name: Get Tag Version
         run: |
           echo "tag=${{ github.ref_name }}" >> $GITHUB_ENV
@@ -38,6 +32,10 @@ jobs:
 
       - name: Build Tar
         run: make tar
+
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -54,6 +52,6 @@ jobs:
             ./_output/vine-darwin-amd64-${{ github.ref_name }}.tar.gz
             ./_output/vine-linux-amd64-${{ github.ref_name }}.tar.gz
             ./_output/vine-linux-arm64-${{ github.ref_name }}.tar.gz
-            ./_output/vine-windows-amd64-${{ github.ref_name }}.tar.gz
+            ./_output/vine-windows-amd64-${{ github.ref_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
