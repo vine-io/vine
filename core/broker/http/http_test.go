@@ -165,7 +165,7 @@ func pub(be *testing.B, c int) {
 	ctx := context.TODO()
 	done := make(chan bool, c*4)
 
-	sub, err := b.Subscribe(topic, func(p broker.Event) error {
+	bsub, err := b.Subscribe(topic, func(p broker.Event) error {
 		done <- true
 		m := p.Message()
 		if string(m.Body) != string(msg.Body) {
@@ -203,7 +203,7 @@ func pub(be *testing.B, c int) {
 
 	wg.Wait()
 	be.StopTimer()
-	sub.Unsubscribe()
+	bsub.Unsubscribe()
 	close(ch)
 	close(done)
 

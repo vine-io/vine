@@ -67,6 +67,10 @@ type Event struct {
 	Data string `json:"data,omitempty"`
 }
 
+func (m *Event) Reset()         { *m = Event{} }
+func (m *Event) String() string { return proto.CompactTextString(m) }
+func (*Event) ProtoMessage()    {}
+
 type StreamType string
 
 const (

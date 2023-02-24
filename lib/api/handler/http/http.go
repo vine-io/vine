@@ -26,6 +26,7 @@ package http
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
 
@@ -65,7 +66,16 @@ func (h *httpHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	httputil.NewSingleHostReverseProxy(rp).ServeHTTP(c.Writer, c.Request)
+	proxy := httputil.NewSingleHostReverseProxy(rp)
+	proxy.Director = func(req *http.Request) {
+		req.Header = c.Request.Header
+		req.Host = rp.Host
+		req.URL.Scheme = rp.Scheme
+		req.URL.Host = rp.Host
+		req.URL.Path = rp.Path
+	}
+
+	proxy.ServeHTTP(c.Writer, c.Request)
 }
 
 // getService returns the service for this request from the selector

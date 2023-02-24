@@ -24,10 +24,11 @@ package rpc
 
 import (
 	"bytes"
-	"encoding/json"
 	"net/http"
 	"testing"
 
+	json "github.com/json-iterator/go"
+	"github.com/vine-io/vine/core/codec/proto"
 	"github.com/vine-io/vine/lib/api"
 )
 
@@ -38,11 +39,12 @@ func TestRequestPayloadFromRequest(t *testing.T) {
 		Name: "Test",
 	}
 
-	//protoBytes, err := proto.Marshal(&protoEvent)
-	//if err != nil {
-	//	t.Fatal("Failed to marshal proto", err)
-	//}
-	//t.Log(string(protoBytes))
+	m := proto.Marshaler{}
+	protoBytes, err := m.Marshal(&protoEvent)
+	if err != nil {
+		t.Fatal("Failed to marshal proto", err)
+	}
+	t.Log(string(protoBytes))
 
 	jsonBytes, err := json.Marshal(protoEvent)
 	if err != nil {
@@ -62,7 +64,7 @@ func TestRequestPayloadFromRequest(t *testing.T) {
 			t.Fatalf("Failed to extract payload from request: %v", err)
 		}
 		if string(extByte) != string(jsonUrlBytes) {
-			t.Fatalf("Expected %v and %v to match", string(extByte), jsonUrlBytes)
+			t.Fatalf("Expected %v and %v to match", string(extByte), string(jsonUrlBytes))
 		}
 	})
 
