@@ -33,6 +33,9 @@ endif
 	git tag -d $(TAG)
 	git tag $(TAG)
 
+changelog:
+	changelog --last --output _output/CHANGELOG.md
+
 build-tag:
 	sed -i "" "s/GitCommit = ".*"/GitCommit = \"$(GIT_COMMIT)\"/g" cmd/vine/version/version.go
 	sed -i "" "s/GitTag    = ".*"/GitTag    = \"$(GIT_TAG)\"/g" cmd/vine/version/version.go
@@ -73,7 +76,7 @@ tar-darwin-arm64:
 	done && \
 	cd _output && rm -fr $(NAME)-darwin-arm64-$(GIT_TAG).tar.gz && tar -zcvf $(NAME)-darwin-arm64-$(GIT_TAG).tar.gz darwin-arm64/* && rm -fr darwin-arm64
 
-tar: tar-windows tar-linux-amd64 tar-linux-arm64 tar-darwin-amd64 tar-darwin-arm64
+tar: changelog tar-windows tar-linux-amd64 tar-linux-arm64 tar-darwin-amd64 tar-darwin-arm64
 
 build:
 	go build -a -installsuffix cgo -ldflags "-s -w $(LDFLAGS)" -o $(NAME) cmd/vine/main.go
