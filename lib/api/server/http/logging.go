@@ -31,8 +31,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/felixge/httpsnoop"
-
-	"github.com/vine-io/vine/lib/logger"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 type logging struct {
@@ -235,9 +234,9 @@ func writeCombinedLog(params LogFormatterParams) {
 	buf = appendQuoted(buf, params.Request.UserAgent())
 	buf = append(buf, '"')
 	if params.StatusCode >= 200 && params.StatusCode < 400 {
-		logger.Info(string(buf))
+		log.Info(string(buf))
 	} else {
-		logger.Error(string(buf))
+		log.Error(string(buf))
 	}
 }
 
