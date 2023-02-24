@@ -129,6 +129,7 @@ var (
 
 func newCmd(opts ...Option) Cmd {
 	options := Options{
+		root:     true,
 		Broker:   &broker.DefaultBroker,
 		Client:   &client.DefaultClient,
 		Registry: &registry.DefaultRegistry,
@@ -163,13 +164,17 @@ func newCmd(opts ...Option) Cmd {
 	}
 
 	c := new(cmd)
-	rootCmd := &cobra.Command{
-		Use:   options.Name,
-		Short: options.Description,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return c.before(cmd, args)
-		},
+	rootCmd := options.app
+	if rootCmd == nil {
+		rootCmd = &cobra.Command{
+			Use:   options.Name,
+			Short: options.Description,
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				return c.before(cmd, args)
+			},
+		}
 	}
+
 	rootCmd.SetHelpFunc(help)
 	rootCmd.Version = ""
 	rootCmd.AddCommand(c.Commands()...)
@@ -188,6 +193,7 @@ func newCmd(opts ...Option) Cmd {
 
 	options.app = rootCmd
 	c.opts = options
+
 	return c
 }
 
@@ -199,7 +205,7 @@ func (c *cmd) Init(opts ...Option) error {
 	for _, o := range opts {
 		o(&c.opts)
 	}
-	if len(c.opts.Name) > 0 {
+	if len(c.opts.Name) > 0 && c.opts.root {
 		c.opts.app.Use = c.opts.Name
 	}
 
@@ -218,6 +224,10 @@ func (c *cmd) Init(opts ...Option) error {
 	err := uc.BindPFlags(c.opts.app.PersistentFlags())
 	if err != nil {
 		return fmt.Errorf("binding flags: %v", err)
+	}
+
+	if !c.opts.root {
+		return nil
 	}
 
 	return c.opts.app.Execute()

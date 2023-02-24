@@ -43,7 +43,8 @@ type Options struct {
 	Description string
 	Version     string
 
-	app *cobra.Command
+	root bool // app is root?
+	app  *cobra.Command
 
 	// We need pointers to things, so we can swap them out if needed.
 	Broker   *broker.Broker
@@ -72,6 +73,14 @@ type Options struct {
 }
 
 type Option func(o *Options)
+
+// NewApp sets the root of command line
+func NewApp(app *cobra.Command) Option {
+	return func(o *Options) {
+		o.root = false
+		o.app = app
+	}
+}
 
 // Name command line Name
 func Name(n string) Option {
