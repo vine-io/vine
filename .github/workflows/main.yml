@@ -63,7 +63,7 @@ jobs:
         run: | 
           make build
           vine=$(ls vine)
-          echo "binary=$vine" >> $GITHUB_OUTPUT
+          echo "binary=$vine" 
         
 
       - name: Tar

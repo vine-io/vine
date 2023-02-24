@@ -3,6 +3,8 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine"
+	vclient "github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/registry"
 	ahandler "github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/api/handler/openapi"
 	arpc "github.com/vine-io/vine/lib/api/handler/rpc"
@@ -49,4 +51,35 @@ func NewRPCGateway(s vine.Service, ns string, wrapper func(*gin.Engine)) *gin.En
 	app.Use(rp.Handle)
 
 	return app
+}
+
+// PrimpHandler primp *gin.Engine with rpc handler
+func PrimpHandler(app *gin.Engine, reg registry.Registry, client vclient.Client, ns string) {
+
+	Type := "api"
+	HandlerType := "rpc"
+
+	openapi.RegisterOpenAPI(client, reg, app)
+
+	// create the namespace resolver
+	nsResolver := namespace.NewResolver(Type, ns)
+	// resolver options
+	rops := []resolver.Option{
+		resolver.WithNamespace(nsResolver.ResolveWithType),
+		resolver.WithHandler(HandlerType),
+	}
+
+	rr := grpc.NewResolver(rops...)
+	rt := regRouter.NewRouter(
+		router.WithHandler(arpc.Handler),
+		router.WithResolver(rr),
+		router.WithRegistry(reg),
+	)
+
+	rp := arpc.NewHandler(
+		ahandler.WithNamespace(ns),
+		ahandler.WithRouter(rt),
+		ahandler.WithClient(client),
+	)
+	app.Use(rp.Handle)
 }

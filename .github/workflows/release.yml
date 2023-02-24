@@ -34,7 +34,7 @@ jobs:
       - name: Get Tag Version
         run: |
           echo "tag=${{ github.ref_name }}" >> $GITHUB_ENV
-          echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "tag=${{ github.ref_name }}"
 
       - name: Build Tar
         run: make tar
