@@ -131,7 +131,7 @@ func TestCORSHTTPServer(t *testing.T) {
 		t.Fatalf("Unexpected Access-Control-Allow-Headers, got %s, expected %s", allowHeaders, testAllowHeaders)
 	}
 
-	if err := s.Stop(); err != nil {
+	if err = s.Stop(); err != nil {
 		t.Fatal(err)
 	}
 }
