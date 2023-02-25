@@ -34,7 +34,7 @@ endif
 	git tag $(TAG)
 
 changelog:
-	mkdir _output
+	mkdir -p _output
 	changelog --last --output _output/CHANGELOG.md
 
 build-tag:
