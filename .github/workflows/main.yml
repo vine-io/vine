@@ -69,8 +69,3 @@ jobs:
           make build
           vine=$(ls vine)
           echo "binary=$vine" 
-
-      - name: Tar
-        run: |
-          make tar
-          echo ./_output/CHANGELOG.md
