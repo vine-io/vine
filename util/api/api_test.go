@@ -12,17 +12,19 @@ import (
 	"github.com/vine-io/vine/core/server/grpc"
 )
 
-func TestNewRPCGateway(t *testing.T) {
+func TestNewPrimpHandler(t *testing.T) {
 	addr := "127.0.0.1:35500"
 	s := vine.NewService(vine.Address(addr))
 
 	msg := "hello world"
 	ns := "go.vine"
-	app := NewRPCGateway(s, ns, func(app *gin.Engine) {
-		app.GET("/hello", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, msg)
-		})
+	gin.SetMode(gin.ReleaseMode)
+	app := gin.New()
+	app.GET("/hello", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, msg)
 	})
+
+	PrimpHandler(app, s.Client(), ns)
 
 	s.Server().Init(grpc.HttpHandler(app))
 

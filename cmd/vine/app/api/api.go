@@ -139,7 +139,7 @@ func Run(cmd *cobra.Command, args []string, svcOpts ...vine.Option) {
 	}
 
 	if b, _ := flags.GetBool("enable-openapi"); b {
-		openapi.RegisterOpenAPI(svc.Client(), svc.Options().Registry, app)
+		openapi.RegisterOpenAPI(svc.Client(), app)
 	}
 
 	app.GET(APIPath, func(c *gin.Context) {
