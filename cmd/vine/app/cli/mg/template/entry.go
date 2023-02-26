@@ -251,7 +251,7 @@ func Run() {
 	app.Use(gin.Recovery())
 
 	if enableOpenAPI {
-		openapi.RegisterOpenAPI(svc.Options().Client, svc.Options().Registry, app)
+		openapi.RegisterOpenAPI(svc.Options().Client, app)
 	}
 
 	// create the namespace resolver
