@@ -184,6 +184,14 @@ func (m *mdnsRegistry) Init(opts ...registry.Option) error {
 	for _, o := range opts {
 		o(&m.opts)
 	}
+
+	domain := DefaultMdnsDomain
+	v, ok := m.opts.Context.Value(domainKey{}).(string)
+	if ok {
+		domain = v
+	}
+	m.domain = domain
+
 	return nil
 }
 
