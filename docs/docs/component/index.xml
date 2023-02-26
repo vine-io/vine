@@ -297,7 +297,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Init&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	openapi.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterOpenAPI&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;().Client, s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;().Registry, app)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	openapi.&lt;span style=&#34;color:#50fa7b&#34;&gt;RegisterOpenAPI&lt;/span&gt;(s.&lt;span style=&#34;color:#50fa7b&#34;&gt;Options&lt;/span&gt;().Client, app)
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	Type, Namespace &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;api&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;go.vine&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	HandlerType &lt;span style=&#34;color:#ff79c6&#34;&gt;:=&lt;/span&gt; &lt;span style=&#34;color:#f1fa8c&#34;&gt;&amp;#34;rpc&amp;#34;&lt;/span&gt;
