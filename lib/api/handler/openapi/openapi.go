@@ -41,7 +41,7 @@ var (
 	DefaultPrefix = "/openapi-ui/"
 )
 
-func RegisterOpenAPI(co client.Client, reg registry.Registry, router *gin.Engine) {
+func RegisterOpenAPI(co client.Client, router *gin.Engine) {
 	mime.AddExtensionType(".svg", "image/svg+xml")
 	statikFs, err := fs.New()
 	if err != nil {
@@ -52,8 +52,8 @@ func RegisterOpenAPI(co client.Client, reg registry.Registry, router *gin.Engine
 
 	router.GET(DefaultPrefix, swagger())
 	router.GET(path.Join(DefaultPrefix, "redoc"), redoc())
-	router.GET("/openapi.json", openAPIJOSN(co, reg))
-	router.GET("/services", openAPIService(reg))
+	router.GET("/openapi.json", openAPIJOSN(co))
+	router.GET("/services", openAPIService(co))
 	log.Infof("Starting OpenAPI at %v", DefaultPrefix)
 }
 
@@ -77,8 +77,9 @@ func redoc() func(ctx *gin.Context) {
 	}
 }
 
-func openAPIJOSN(co client.Client, reg registry.Registry) func(ctx *gin.Context) {
+func openAPIJOSN(co client.Client) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
+		reg := co.Options().Registry
 		services, err := reg.ListServices(ctx)
 		if err != nil {
 			ctx.JSON(500, err.Error())
@@ -89,8 +90,9 @@ func openAPIJOSN(co client.Client, reg registry.Registry) func(ctx *gin.Context)
 	}
 }
 
-func openAPIService(reg registry.Registry) func(ctx *gin.Context) {
+func openAPIService(co client.Client) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
+		reg := co.Options().Registry
 		services, err := reg.ListServices(ctx)
 		if err != nil {
 			ctx.JSON(500, err.Error())

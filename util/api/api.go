@@ -2,9 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/vine-io/vine"
 	vclient "github.com/vine-io/vine/core/client"
-	"github.com/vine-io/vine/core/registry"
 	ahandler "github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/api/handler/openapi"
 	arpc "github.com/vine-io/vine/lib/api/handler/rpc"
@@ -15,51 +13,13 @@ import (
 	"github.com/vine-io/vine/util/namespace"
 )
 
-func NewRPCGateway(s vine.Service, ns string, wrapper func(*gin.Engine)) *gin.Engine {
-	gin.SetMode(gin.ReleaseMode)
-	app := gin.New()
-	app.Use(gin.Recovery())
-	openapi.RegisterOpenAPI(s.Client(), s.Options().Registry, app)
-
-	if wrapper != nil {
-		wrapper(app)
-	}
-
-	Type := "api"
-	HandlerType := "rpc"
-
-	// create the namespace resolver
-	nsResolver := namespace.NewResolver(Type, ns)
-	// resolver options
-	rops := []resolver.Option{
-		resolver.WithNamespace(nsResolver.ResolveWithType),
-		resolver.WithHandler(HandlerType),
-	}
-
-	rr := grpc.NewResolver(rops...)
-	rt := regRouter.NewRouter(
-		router.WithHandler(arpc.Handler),
-		router.WithResolver(rr),
-		router.WithRegistry(s.Options().Registry),
-	)
-
-	rp := arpc.NewHandler(
-		ahandler.WithNamespace(ns),
-		ahandler.WithRouter(rt),
-		ahandler.WithClient(s.Client()),
-	)
-	app.Use(rp.Handle)
-
-	return app
-}
-
 // PrimpHandler primp *gin.Engine with rpc handler
-func PrimpHandler(app *gin.Engine, reg registry.Registry, client vclient.Client, ns string) {
+func PrimpHandler(app *gin.Engine, co vclient.Client, ns string) {
 
 	Type := "api"
 	HandlerType := "rpc"
 
-	openapi.RegisterOpenAPI(client, reg, app)
+	openapi.RegisterOpenAPI(co, app)
 
 	// create the namespace resolver
 	nsResolver := namespace.NewResolver(Type, ns)
@@ -73,13 +33,13 @@ func PrimpHandler(app *gin.Engine, reg registry.Registry, client vclient.Client,
 	rt := regRouter.NewRouter(
 		router.WithHandler(arpc.Handler),
 		router.WithResolver(rr),
-		router.WithRegistry(reg),
+		router.WithRegistry(co.Options().Registry),
 	)
 
 	rp := arpc.NewHandler(
 		ahandler.WithNamespace(ns),
 		ahandler.WithRouter(rt),
-		ahandler.WithClient(client),
+		ahandler.WithClient(co),
 	)
 	app.Use(rp.Handle)
 }
