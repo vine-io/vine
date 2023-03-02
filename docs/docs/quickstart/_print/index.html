@@ -209,6 +209,7 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;log&#34;</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;github.com/vine-io/vine/lib/api/handler/openapi&#34;</span>
 </span></span><span style="display:flex;"><span>	pb <span style="color:#f1fa8c">&#34;mysite/proto&#34;</span>
 </span></span><span style="display:flex;"><span>)
 </span></span><span style="display:flex;"><span>
@@ -229,6 +230,11 @@ This the multi-page printable view of this section.
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 服务初始化
 </span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err <span style="color:#ff79c6">:=</span> app.<span style="color:#50fa7b">Init</span>(); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
 </span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;init greet: %v&#34;</span>, err)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 注册 openapi 服务
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">if</span> err = openapi.<span style="color:#50fa7b">RegisterOpenAPIHandler</span>(svc); err <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+</span></span><span style="display:flex;"><span>		log.<span style="color:#50fa7b">Fatalf</span>(<span style="color:#f1fa8c">&#34;register openapi hander: %v&#34;</span>, err)
 </span></span><span style="display:flex;"><span>	}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 注册服务
