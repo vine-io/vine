@@ -38,7 +38,6 @@ import (
 	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/lib/config"
-	"github.com/vine-io/vine/lib/dao"
 	"github.com/vine-io/vine/lib/trace"
 )
 
@@ -50,7 +49,6 @@ type Options struct {
 	Config   config.Config
 	Server   server.Server
 	Trace    trace.Tracer
-	Dialect  dao.Dialect
 	Cache    cache.Cache
 	Registry registry.Registry
 
@@ -75,7 +73,6 @@ func newOptions(opts ...Option) Options {
 		Config:   config.DefaultConfig,
 		Server:   server.DefaultServer,
 		Trace:    trace.DefaultTracer,
-		Dialect:  dao.DefaultDialect,
 		Cache:    cache.DefaultCache,
 		Registry: registry.DefaultRegistry,
 		Context:  context.Background(),
@@ -134,13 +131,6 @@ func HandleSignal(b bool) Option {
 func Server(s server.Server) Option {
 	return func(o *Options) {
 		o.Server = s
-	}
-}
-
-// Dialect sets the dialect to use
-func Dialect(d dao.Dialect) Option {
-	return func(o *Options) {
-		o.Dialect = d
 	}
 }
 

@@ -35,8 +35,6 @@ import (
 	mCache "github.com/vine-io/vine/lib/cache/memory"
 	"github.com/vine-io/vine/lib/config"
 	mConfig "github.com/vine-io/vine/lib/config/memory"
-	"github.com/vine-io/vine/lib/dao"
-	nopDao "github.com/vine-io/vine/lib/dao/nop"
 	"github.com/vine-io/vine/lib/trace"
 	mTrace "github.com/vine-io/vine/lib/trace/memory"
 )
@@ -52,8 +50,6 @@ func init() {
 	server.DefaultServer = gserver.NewServer()
 	// default config
 	config.DefaultConfig = mConfig.NewConfig()
-	// default dao
-	dao.DefaultDialect = nopDao.NewDialect()
 	// default cache
 	cache.DefaultCache = mCache.NewCache()
 	// default trace
