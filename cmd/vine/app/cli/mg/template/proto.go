@@ -1,8 +1,7 @@
 package template
 
 var (
-	ProtoType = `// +dao:output={{.Dir}}/pkg/internal/storage/{{.Group}}{{.Version}}/{{.Name}};{{.Name}}
-syntax = "proto3";
+	ProtoType = `syntax = "proto3";
 
 package {{.Group}}{{.Version}};
 
