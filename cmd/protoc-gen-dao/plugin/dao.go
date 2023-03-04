@@ -53,7 +53,7 @@ const (
 	// inline
 	_inline = "inline"
 	// dao primary key
-	_pk         = "pk"
+	_pk         = "primaryKey"
 	_daoExtract = "daoInject"
 )
 
@@ -77,10 +77,13 @@ type dao struct {
 	ctxPkg     generator.Single
 	fmtPkg     generator.Single
 	timePkg    generator.Single
+	reflectPkg generator.Single
 	stringPkg  generator.Single
 	errPkg     generator.Single
 	DriverPkg  generator.Single
 	jsonPkg    generator.Single
+	gormPkg    generator.Single
+	schemaPkg  generator.Single
 	daoPkg     generator.Single
 	clausePkg  generator.Single
 	runtimePkg generator.Single
@@ -130,13 +133,16 @@ func (g *dao) Generate(file *generator.FileDescriptor) {
 
 	g.ctxPkg = g.NewImport("context", "context")
 	g.fmtPkg = g.NewImport("fmt", "fmt")
+	g.reflectPkg = g.NewImport("reflect", "reflect")
 	g.timePkg = g.NewImport("time", "time")
 	g.stringPkg = g.NewImport("strings", "strings")
 	g.DriverPkg = g.NewImport("database/sql/driver", "driver")
 	g.jsonPkg = g.NewImport("github.com/json-iterator/go", "json")
 	g.errPkg = g.NewImport("errors", "errors")
-	g.daoPkg = g.NewImport("github.com/vine-io/vine/lib/dao", "dao")
-	g.clausePkg = g.NewImport("github.com/vine-io/vine/lib/dao/clause", "clause")
+	g.gormPkg = g.NewImport("gorm.io/gorm", "gorm")
+	g.schemaPkg = g.NewImport("gorm.io/gorm/schema", "schema")
+	g.clausePkg = g.NewImport("gorm.io/gorm/clause", "clause")
+	g.daoPkg = g.NewImport("github.com/vine-io/apimachinery/storage/dao", "dao")
 	g.runtimePkg = g.NewImport("github.com/vine-io/apimachinery/runtime", "runtime")
 	g.storagePkg = g.NewImport("github.com/vine-io/apimachinery/storage", "apistorage")
 	if g.gen.OutPut.Load {
@@ -318,10 +324,10 @@ func addKnownStorages(factory apistorage.Factory) error {
 	}
 
 	g.P("func init() {")
-	for k, table := range g.regTables {
-		sgv := g.wrapPkg("SchemeGroupVersion")
-		g.P(fmt.Sprintf(`store[%s.WithKind("%s")] = &%s{}`, sgv, k, table))
-	}
+	//for k, table := range g.regTables {
+	//	//sgv := g.wrapPkg("SchemeGroupVersion")
+	//	g.P(fmt.Sprintf(`store[%s.WithKind("%s")] = &%s{}`, sgv, k, table))
+	//}
 
 	g.P("}")
 }
@@ -408,85 +414,25 @@ func (g *dao) generateAliasField(file *generator.FileDescriptor, field *Field) {
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) DaoDataType() string {`, alias))
-	g.P(fmt.Sprintf(`return %s.DefaultDialect.JSONDataType()`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`func (m *%s) GormDBDataType(db *%s.DB, field *%s.Field) string {`, alias, g.gormPkg.Use(), g.schemaPkg.Use()))
+	g.P(fmt.Sprintf(`return %s.GetGormDBDataType(db, field)`, g.daoPkg.Use()))
 	g.P("}")
 	g.P()
 }
 
 func (g *dao) generateStorage(file *generator.FileDescriptor, schema *Storage) {
-
-	g.generateStorageFields(file, schema)
-
-	g.generateStorageIOMethods(file, schema)
-
-	g.generateStorageUtilMethods(file, schema)
-
-	g.generateStorageCURDMethods(file, schema)
+	g.generateEntityIOMethods(file, schema)
+	g.generateStorageEntity(file, schema)
+	g.generateStorageMethods(file, schema)
 }
 
-func (g *dao) generateStorageFields(file *generator.FileDescriptor, schema *Storage) {
-	g.P(fmt.Sprintf(`// %s the Storage for %s`, schema.Name, schema.Desc.Proto.GetName()))
-	g.P("type ", schema.Name, " struct {")
-	g.P(fmt.Sprintf(`tx *dao.DB %s`, toQuoted(`json:"-" dao:"-"`)))
-	g.P(fmt.Sprintf(`exprs []%s.Expression %s`, g.clausePkg.Use(), toQuoted(`json:"-" dao:"-"`)))
-	g.P()
-	for _, field := range schema.Fields {
-		switch field.Type {
-		case _point:
-			g.P(fmt.Sprintf(`%s *%s %s`, field.Name, field.Alias, MargeTags(field.Tags...)))
-		case _slice, _map:
-			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Alias, MargeTags(field.Tags...)))
-		default:
-			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Type, MargeTags(field.Tags...)))
-		}
-	}
-	g.P(fmt.Sprintf(`InnerDeletionTimestamp int64 %s`, toQuoted(`json:"innerDeletionTimestamp,omitempty" dao:"column:inner_deletion_timestamp"`)))
-	g.P("}")
-	g.P()
-}
-
-func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *Storage) {
-	sname := schema.Name
+func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *Storage) {
 	pname := schema.Desc.Proto.GetName()
-
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) AutoMigrate() error {`, sname))
-		g.P("return dao.DefaultDialect.Migrator().AutoMigrate(m)")
-		g.P("}")
-		g.P()
-
-		g.P(fmt.Sprintf(`func (m *%s) Load(object %s.Object) error {`, sname, g.runtimePkg.Use()))
-		g.P(fmt.Sprintf(`in, ok := object.(*%s)`, g.wrapPkg(pname)))
-		g.P("if !ok {")
-		g.P(fmt.Sprintf("return %s.ErrInvalidObject", g.storagePkg.Use()))
-		g.P("}")
-		g.P()
-		g.P(fmt.Sprintf("*m = *From%s(in).(*%s)", pname, sname))
-		g.P("return nil")
-		g.P("}")
-		g.P()
-	}
-
-	g.P(fmt.Sprintf(`func (m *%sStorage) WithTx(tx *dao.DB) *%s {
-	m.tx = tx
-	return m
-}`, pname, sname))
-
-	g.P(fmt.Sprintf(`func Register%s() error {`, pname))
-	g.P(fmt.Sprintf(`return dao.DefaultDialect.Migrator().AutoMigrate(&%s{})`, sname))
-	g.P("}")
-	g.P()
-
-	g.P(fmt.Sprintf(`func %sBuilder() *%s {`, sname, sname))
-	g.P(fmt.Sprintf(`return &%s{tx: dao.DefaultDialect.NewTx()}`, sname))
-	g.P("}")
-	g.P()
 
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _float32, _float64, _int32, _int64, _uint32, _uint64, _string, _bool:
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in %s) *%s {`, sname, field.Name, field.Type, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in %s) *%s {`, pname, field.Name, field.Type, pname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
 			g.P("}")
@@ -495,12 +441,12 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 			key, value := field.Map.Key, field.Map.Value
 			keyString, _ := g.buildFieldGoType(file, key)
 			valueString, _ := g.buildFieldGoType(file, value)
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in map[%s]%s) *%s {`, sname, field.Name, keyString, valueString, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in map[%s]%s) *%s {`, pname, field.Name, keyString, valueString, pname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
 			g.P("}")
 			g.P()
-			g.P(fmt.Sprintf(`func (m *%s) Put%s(k %s, v %s) *%s {`, sname, field.Name, keyString, valueString, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Put%s(k %s, v %s) *%s {`, pname, field.Name, keyString, valueString, pname))
 			g.P(fmt.Sprintf(`if len(m.%s) == 0 {`, field.Name))
 			g.P(fmt.Sprintf(`m.%s = map[%s]%s{}`, field.Name, keyString, valueString))
 			g.P(`}`)
@@ -508,7 +454,7 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 			g.P(`return m`)
 			g.P("}")
 			g.P()
-			g.P(fmt.Sprintf(`func (m *%s) Remove%s(k %s) *%s {`, sname, field.Name, keyString, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Remove%s(k %s) *%s {`, pname, field.Name, keyString, pname))
 			g.P(fmt.Sprintf(`if len(m.%s) == 0 {`, field.Name))
 			g.P(`return m`)
 			g.P(`}`)
@@ -518,12 +464,12 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 			g.P()
 		case _slice:
 			typ, _ := g.buildFieldGoType(file, field.Slice)
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in []%s) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in []%s) *%s {`, pname, field.Name, typ, pname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
 			g.P("}")
 			g.P()
-			g.P(fmt.Sprintf(`func (m *%s) Add%s(in %s) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Add%s(in %s) *%s {`, pname, field.Name, typ, pname))
 			g.P(fmt.Sprintf(`if len(m.%s) == 0 {`, field.Name))
 			g.P(fmt.Sprintf(`m.%s = []%s{}`, field.Name, typ))
 			g.P(`}`)
@@ -531,7 +477,7 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 			g.P(`return m`)
 			g.P("}")
 			g.P()
-			g.P(fmt.Sprintf(`func (m *%s) Filter%s(fn func(item %s) bool) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Filter%s(fn func(item %s) bool) *%s {`, pname, field.Name, typ, pname))
 			g.P(fmt.Sprintf(`out := make([]%s, 0)`, typ))
 			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
 			g.P(`if !fn(item) {`)
@@ -542,7 +488,7 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 			g.P(`return m`)
 			g.P(`}`)
 			g.P()
-			g.P(fmt.Sprintf(`func (m *%s) Remove%s(index int) *%s {`, sname, field.Name, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Remove%s(index int) *%s {`, pname, field.Name, pname))
 			g.P(fmt.Sprintf(`if index < 0 || index >= len(m.%s) {`, field.Name))
 			g.P(`return m`)
 			g.P(`}`)
@@ -567,7 +513,7 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 				}
 				typ = fmt.Sprintf(`%s.%s`, v, subMsg.Proto.GetName())
 			}
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in *%s) *%s {`, sname, field.Name, typ, sname))
+			g.P(fmt.Sprintf(`func (m *%s) Set%s(in *%s) *%s {`, pname, field.Name, typ, pname))
 			g.P(fmt.Sprintf(`m.%s = (*%s)(in)`, field.Name, field.Alias))
 			g.P(`return m`)
 			g.P("}")
@@ -575,16 +521,38 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 		}
 	}
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func From%s(obj %s.Object) %s.Storage {`, pname, g.runtimePkg.Use(), g.storagePkg.Use()))
-		g.P(fmt.Sprintf("in := obj.(*%s)", g.wrapPkg(pname)))
-	} else {
-		g.P(fmt.Sprintf(`func From%s(in *%s) *%s {`, pname, g.wrapPkg(pname), sname))
-	}
-	g.P(fmt.Sprintf(`out := new(%s)`, sname))
-	g.P(`out.tx = dao.DefaultDialect.NewTx()`)
+	g.P("type XX", pname, " struct {")
 	for _, field := range schema.Fields {
 		switch field.Type {
+		case _point:
+			g.P(fmt.Sprintf(`%s *%s %s`, field.Name, field.Alias, MargeTags(field.Tags...)))
+		case _slice, _map:
+			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Alias, MargeTags(field.Tags...)))
+		default:
+			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Type, MargeTags(field.Tags...)))
+		}
+	}
+	g.P(fmt.Sprintf(`InnerDeletionTimestamp int64 %s`, toQuoted(`json:"innerDeletionTimestamp,omitempty" gorm:"column:inner_deletion_timestamp"`)))
+	g.P("}")
+
+	g.P(fmt.Sprintf(`func From%s(in *%s) *XX%s {`, pname, g.wrapPkg(pname), pname))
+	g.P(fmt.Sprintf(`out := new(XX%s)`, pname))
+	for _, field := range schema.Fields {
+		switch field.Type {
+		case _map:
+			key, value := field.Map.Key, field.Map.Value
+			keyString, _ := g.buildFieldGoType(file, key)
+			valueString, _ := g.buildFieldGoType(file, value)
+			g.P(fmt.Sprintf(`if out.%s == nil { out.%s = make(map[%s]%s) }`, field.Name, field.Name, keyString, valueString))
+			g.P(fmt.Sprintf(`for k, v := range in.%s {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s[k] = v`, field.Name))
+			g.P("}")
+		case _slice:
+			typ, _ := g.buildFieldGoType(file, field.Desc.Proto)
+			g.P(fmt.Sprintf(`out.%s = make([]%s, len(in.%s))`, field.Name, typ, field.Name))
+			g.P(fmt.Sprintf(`for i, item := range in.%s {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s[i] = item`, field.Name))
+			g.P("}")
 		case _float32, _float64, _int32, _int64, _uint32, _uint64:
 			g.P(fmt.Sprintf(`if in.%s != 0 {`, field.Name))
 			if field.Desc.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_ENUM {
@@ -595,10 +563,6 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 			g.P("}")
 		case _bool:
 			continue
-		case _map:
-			g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
-			g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
-			g.P("}")
 		case _string:
 			if field.Desc.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_BYTES {
 				g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
@@ -607,10 +571,6 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 				g.P(fmt.Sprintf(`if in.%s != "" {`, field.Name))
 				g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
 			}
-			g.P("}")
-		case _slice:
-			g.P(fmt.Sprintf(`if len(in.%s) != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`out.%s = in.%s`, field.Name, field.Name))
 			g.P("}")
 		case _point:
 			g.P(fmt.Sprintf(`if in.%s != nil {`, field.Name))
@@ -622,10 +582,24 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) To%s() *%s {`, sname, pname, g.wrapPkg(pname)))
+	g.P(fmt.Sprintf(`func (m *XX%s) To%s() *%s {`, pname, pname, g.wrapPkg(pname)))
 	g.P(fmt.Sprintf(`out := new(%s)`, g.wrapPkg(pname)))
 	for _, field := range schema.Fields {
 		switch field.Type {
+		case _map:
+			key, value := field.Map.Key, field.Map.Value
+			keyString, _ := g.buildFieldGoType(file, key)
+			valueString, _ := g.buildFieldGoType(file, value)
+			g.P(fmt.Sprintf(`if out.%s == nil { out.%s = make(map[%s]%s) }`, field.Name, field.Name, keyString, valueString))
+			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s[k] = v`, field.Name))
+			g.P("}")
+		case _slice:
+			typ, _ := g.buildFieldGoType(file, field.Desc.Proto)
+			g.P(fmt.Sprintf(`out.%s = make([]%s, len(m.%s))`, field.Name, typ, field.Name))
+			g.P(fmt.Sprintf(`for i, item := range m.%s {`, field.Name))
+			g.P(fmt.Sprintf(`out.%s[i] = item`, field.Name))
+			g.P("}")
 		case _point:
 			var typPkg string
 			obj := g.objectNamed(field.Desc.Proto.GetTypeName())
@@ -655,45 +629,148 @@ func (g *dao) generateStorageIOMethods(file *generator.FileDescriptor, schema *S
 	g.P("return out")
 	g.P("}")
 	g.P()
-}
 
-func (g *dao) generateStorageUtilMethods(file *generator.FileDescriptor, schema *Storage) {
-	g.P("func (", schema.Name, ") TableName() string {")
+	g.P(fmt.Sprintf("func (m XX%s) PrimaryKey() (string, any, bool) {", pname))
+	fpk := schema.PK
+	if fpk.Desc.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_STRING {
+		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == ""`, fpk.Desc.Proto.GetName(), fpk.Name, fpk.Name))
+	} else {
+		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == 0`, fpk.Desc.Proto.GetName(), fpk.Name, fpk.Name))
+	}
+	g.P("}")
+	g.P()
+
+	g.P("func (XX", pname, ") TableName() string {")
 	g.P(`return "`, schema.Table, `"`)
 	g.P("}")
 	g.P()
-
-	g.P("func (m ", schema.Name, ") PrimaryKey() (string, interface{}, bool) {")
-	if schema.PK.Type == _string {
-		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == ""`, toColumnName(schema.PK.Name), schema.PK.Name, schema.PK.Name))
-	} else {
-		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == 0`, toColumnName(schema.PK.Name), schema.PK.Name, schema.PK.Name))
-	}
-	g.P("}")
-	g.P()
 }
 
-func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema *Storage) {
-	source, target := schema.Name, schema.Desc.Proto.GetName()
+func (g *dao) generateStorageEntity(file *generator.FileDescriptor, schema *Storage) {
+
+	sname, pname := schema.Name, schema.Desc.Proto.GetName()
+
+	g.P(fmt.Sprintf(`// %s the Storage for %s`, sname, pname))
+	g.P("type ", sname, " struct {")
+	g.P(fmt.Sprintf(`tx *gorm.DB %s`, toQuoted(`json:"-" gorm:"-"`)))
+	g.P("m *XX", pname)
+	g.P(fmt.Sprintf(`exprs []%s.Expression %s`, g.clausePkg.Use(), toQuoted(`json:"-" gorm:"-"`)))
+	g.P()
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func New%s(tx *%s.DB, m *%s) *%s {
+	return &%s{tx: tx, exprs: make([]%s.Expression, 0), m: From%s(m)}
+}`, sname, g.gormPkg.Use(), pname, sname, sname, g.clausePkg.Use(), pname))
+}
+
+func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Storage) {
+	sname, pname := schema.Name, schema.Desc.Proto.GetName()
+
+	g.P(fmt.Sprintf(`func (s *%s) AutoMigrate() error {`, sname))
+	g.P(fmt.Sprintf("return s.tx.Migrator().AutoMigrate(&XX%s{})", pname))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf("func (s %s) Target() %s.Type {", sname, g.reflectPkg.Use()))
+	g.P(fmt.Sprintf(`return reflect.TypeOf(new(%s))`, g.wrapPkg(pname)))
+	g.P("}")
+	g.P()
+
 	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int32) ([]%s.Object, int64, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) FindPage(ctx %s.Context, page, size int) ([]*%s, int64, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
+		g.P(fmt.Sprintf(`func (s *%s) Load(tx *%s.DB, in %s.Object) error {
+	return s.XXLoad(tx, in.(*%s))
+}`, sname, g.gormPkg.Use(), g.runtimePkg.Use(), g.wrapPkg(pname)))
+
+		g.P(fmt.Sprintf(`func (s *%s) FindPage(ctx %s.Context, page, size int32) (%s.Object, error) {
+	items, total, err := s.XXFindPage(ctx, page, size)
+	if err != nil {
+		return nil, err
 	}
+
+	out := &%sList{}
+	out.Page = page
+	out.Size = size
+	out.Total = total
+	out.Items = items
+	if len(items) > 0 {
+		out.TypeMeta = items[0].TypeMeta
+	}
+	return out, nil
+}`, sname, g.ctxPkg.Use(), g.runtimePkg.Use(), pname))
+		g.P()
+
+		g.P(fmt.Sprintf(`func (s *%s) FindAll(ctx %s.Context) (%s.Object, error) {
+			items, err := s.XXFindAll(ctx)
+			if err != nil {
+				return nil, err
+			}
+
+			out := &%sList{}
+			out.Total = int64(len(items))
+			out.Items = items
+			if len(items) > 0 {
+				out.TypeMeta = items[0].TypeMeta
+			}
+			return out, nil
+		}`, sname, g.ctxPkg.Use(), g.runtimePkg.Use(), pname))
+		g.P()
+
+		g.P(fmt.Sprintf(`func (s *%s) FindPk(ctx %s.Context, id any) (%s.Object, error) {
+			return s.XXFindPk(ctx, id)
+		}`, sname, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P()
+
+		g.P(fmt.Sprintf(`func (s *%s) FindOne(ctx %s.Context) (%s.Object, error) {
+			return s.XXFindOne(ctx)
+		}`, sname, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P()
+
+		g.P(fmt.Sprintf(`func (s *%s) Cond(exprs ...%s.Expression) %s.Storage {
+			return s.XXCond(exprs...)
+		}`, sname, g.clausePkg.Use(), g.storagePkg.Use()))
+		g.P()
+
+		g.P(fmt.Sprintf(`func (s *%s) Create(ctx %s.Context) (%s.Object, error) {
+			return s.XXCreate(ctx)
+		}`, sname, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P()
+
+		g.P(fmt.Sprintf(`func (s *%s) Updates(ctx %s.Context) (%s.Object, error) {
+			return s.XXUpdates(ctx)
+		}`, sname, g.ctxPkg.Use(), g.runtimePkg.Use()))
+		g.P()
+
+		g.P(fmt.Sprintf(`func (s *%s) Delete(ctx %s.Context, soft bool) error {
+			return s.XXDelete(ctx, soft)
+		}`, sname, g.ctxPkg.Use()))
+		g.P()
+	}
+
+	g.P(fmt.Sprintf(`func (s *%s) XXLoad(tx *%s.DB, in *%s) error {`, sname, g.gormPkg.Use(), g.wrapPkg(pname)))
+	g.P(fmt.Sprintf(`s.tx = tx`))
+	g.P(fmt.Sprintf("*s.m = *From%s(in)", pname))
+	g.P("return nil")
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (s *%s) XXFindPage(ctx %s.Context, page, size int32) ([]*%s, int64, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P("m := s.m")
 	g.P(`pk, _, _ := m.PrimaryKey()`)
 	g.P()
-	g.P(`m.exprs = append(m.exprs,`)
+	g.P(`s.exprs = append(s.exprs,`)
 	g.P(fmt.Sprintf(`%s.OrderBy{Columns: []%s.OrderByColumn{{Column: %s.Column{Table: m.TableName(), Name: pk}, Desc: true}}},`, g.clausePkg.Use(), g.clausePkg.Use(), g.clausePkg.Use()))
-	g.P(fmt.Sprintf(`%s.Cond().Build("inner_deletion_timestamp", 0),`, g.clausePkg.Use()))
+	g.P(fmt.Sprintf(`%s.Cond().Build("inner_deletion_timestamp", 0),`, g.daoPkg.Use()))
 	g.P(`)`)
 	g.P()
-	g.P(`total, err := m.Count(ctx)`)
+	g.P(`total, err := s.Count(ctx)`)
 	g.P(`if err != nil {`)
 	g.P(`return nil, 0, err`)
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`m.exprs = append(m.exprs, %s.Limit{Offset: int((page - 1) * size), Limit: int(size)})`, g.clausePkg.Use()))
-	g.P(`data, err := m.findAll(ctx)`)
+	g.P("limit := int(size)")
+	g.P(fmt.Sprintf(`s.exprs = append(s.exprs, %s.Limit{Offset: int((page - 1) * size), Limit: &limit})`, g.clausePkg.Use()))
+	g.P(`data, err := s.findAll(ctx)`)
 	g.P(`if err != nil {`)
 	g.P(`return nil, 0, err`)
 	g.P("}")
@@ -702,160 +779,93 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) FindAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	}
-	g.P(fmt.Sprintf(`m.exprs = append(m.exprs, %s.Cond().Build("inner_deletion_timestamp", 0))`, g.clausePkg.Use()))
-	g.P(`return m.findAll(ctx)`)
+	g.P(fmt.Sprintf(`func (s *%s) XXFindAll(ctx %s.Context) ([]*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P(fmt.Sprintf(`s.exprs = append(s.exprs, %s.Cond().Build("inner_deletion_timestamp", 0))`, g.daoPkg.Use()))
+	g.P(`return s.findAll(ctx)`)
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) FindPureAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	}
-	g.P(`return m.findAll(ctx)`)
+	g.P(fmt.Sprintf(`func (s *%s) XXFindPureAll(ctx %s.Context) ([]*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P(`return s.findAll(ctx)`)
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) findAll(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	}
-	g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`func (s *%s) findAll(ctx %s.Context) ([]*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P(fmt.Sprintf(`dest := make([]*XX%s, 0)`, pname))
+	g.P("m := s.m")
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(`clauses := append(m.extractClauses(tx), m.exprs...)`)
+	g.P(`clauses := append(s.extractClauses(tx), s.exprs...)`)
 	g.P(`if err := tx.Clauses(clauses...).Find(&dest).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	if schema.Deep {
-		g.P(fmt.Sprintf(`outs := make([]%s.Object, len(dest))`, g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`outs := make([]*%s, len(dest))`, g.wrapPkg(target)))
-	}
+	g.P(fmt.Sprintf(`outs := make([]*%s, len(dest))`, g.wrapPkg(pname)))
 	g.P(`for i := range dest {`)
-	g.P(fmt.Sprintf(`outs[i] = dest[i].To%s()`, target))
+	g.P(fmt.Sprintf(`outs[i] = dest[i].To%s()`, pname))
 	g.P("}")
 	g.P()
 	g.P(fmt.Sprintf(`return outs, nil`))
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindEntitiesPage(ctx %s.Context, page, size int) ([]*%s, int64, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-		g.P(`pk, _, _ := m.PrimaryKey()`)
-		g.P()
-		g.P(`m.exprs = append(m.exprs,`)
-		g.P(fmt.Sprintf(`%s.OrderBy{Columns: []%s.OrderByColumn{{Column: %s.Column{Table: m.TableName(), Name: pk}, Desc: true}}},`, g.clausePkg.Use(), g.clausePkg.Use(), g.clausePkg.Use()))
-		g.P(fmt.Sprintf(`%s.Cond().Build("inner_deletion_timestamp", 0),`, g.clausePkg.Use()))
-		g.P(`)`)
-		g.P()
-		g.P(`total, err := m.Count(ctx)`)
-		g.P(`if err != nil {`)
-		g.P(`return nil, 0, err`)
-		g.P("}")
-		g.P()
-		g.P(fmt.Sprintf(`m.exprs = append(m.exprs, %s.Limit{Offset: int((page - 1) * size), Limit: int(size)})`, g.clausePkg.Use()))
-		g.P(`data, err := m.findAllEntities(ctx)`)
-		g.P(`if err != nil {`)
-		g.P(`return nil, 0, err`)
-		g.P("}")
-		g.P()
-		g.P(`return data, total, nil`)
-		g.P("}")
-		g.P()
-
-		g.P(fmt.Sprintf(`func (m *%s) FindAllEntities(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-		g.P(fmt.Sprintf(`m.exprs = append(m.exprs, %s.Cond().Build("inner_deletion_timestamp", 0))`, g.clausePkg.Use()))
-		g.P(`return m.findAllEntities(ctx)`)
-		g.P("}")
-		g.P()
-
-		g.P(fmt.Sprintf(`func (m *%s) FindPureAllEntities(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-		g.P(`return m.findAllEntities(ctx)`)
-		g.P("}")
-		g.P()
-
-		g.P(fmt.Sprintf(`func (m *%s) findAllEntities(ctx %s.Context) ([]*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-		g.P(fmt.Sprintf(`dest := make([]*%s, 0)`, source))
-		g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
-		g.P()
-		g.P(`clauses := append(m.extractClauses(tx), m.exprs...)`)
-		g.P(`if err := tx.Clauses(clauses...).Find(&dest).Error; err != nil {`)
-		g.P("return nil, err")
-		g.P("}")
-		g.P()
-		g.P(fmt.Sprintf(`outs := make([]*%s, len(dest))`, g.wrapPkg(target)))
-		g.P(`for i := range dest {`)
-		g.P(fmt.Sprintf(`outs[i] = dest[i].To%s()`, target))
-		g.P("}")
-		g.P()
-		g.P(fmt.Sprintf(`return outs, nil`))
-		g.P("}")
-		g.P()
-	}
-
-	g.P(fmt.Sprintf(`func (m *%s) Count(ctx %s.Context) (total int64, err error) {`, source, g.ctxPkg.Use()))
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`func (s *%s) Count(ctx %s.Context) (total int64, err error) {`, sname, g.ctxPkg.Use()))
+	g.P(`m := s.m`)
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(fmt.Sprintf(`clauses := append(m.extractClauses(tx), %s.Cond().Build("inner_deletion_timestamp", 0))`, g.clausePkg.Use()))
-	g.P(`clauses = append(clauses, m.exprs...)`)
+	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build("inner_deletion_timestamp", 0))`, g.daoPkg.Use()))
+	g.P(`clauses = append(clauses, s.exprs...)`)
 	g.P()
 	g.P(`err = tx.Clauses(clauses...).Count(&total).Error`)
 	g.P(`return`)
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) FindOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	}
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`func (s *%s) XXFindPk(ctx %s.Context, id any) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P("m := s.m")
+	g.P(`pk, _, _ := m.PrimaryKey()`)
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(fmt.Sprintf(`clauses := append(m.extractClauses(tx), %s.Cond().Build("inner_deletion_timestamp", 0))`, g.clausePkg.Use()))
-	g.P(`clauses = append(clauses, m.exprs...)`)
+	g.P(fmt.Sprintf(`if err := tx.Where(pk+" = ?", id).First(&m).Error; err != nil { return nil, err }`))
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf(`func (s *%s) XXFindOne(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P("m := s.m")
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P()
+	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build("inner_deletion_timestamp", 0))`, g.daoPkg.Use()))
+	g.P(`clauses = append(clauses, s.exprs...)`)
 	g.P()
 	g.P(`if err := tx.Clauses(clauses...).First(&m).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) FindPureOne(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) FindPureOne(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	}
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`func (s *%s) XXFindPureOne(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P(`m := s.m`)
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(`if err := tx.Clauses(m.exprs...).First(&m).Error; err != nil {`)
+	g.P(`if err := tx.Clauses(s.exprs...).First(&m).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) %s.Storage {`, source, g.clausePkg.Use(), g.storagePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) Cond(exprs ...%s.Expression) *%s {`, source, g.clausePkg.Use(), source))
-	}
-	g.P(`m.exprs = append(m.exprs, exprs...)`)
-	g.P(`return m`)
+	g.P(fmt.Sprintf(`func (s *%s) XXCond(exprs ...%s.Expression) *%s {`, sname, g.clausePkg.Use(), sname))
+	g.P(`s.exprs = append(s.exprs, exprs...)`)
+	g.P(`return s`)
 	g.P(`}`)
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) extractClauses(tx *%s.DB) []%s.Expression {`, source, g.daoPkg.Use(), g.clausePkg.Use()))
+	g.P(fmt.Sprintf(`func (s *%s) extractClauses(tx *%s.DB) []%s.Expression {`, sname, g.gormPkg.Use(), g.clausePkg.Use()))
+	g.P("m := s.m")
 	g.P(`exprs := make([]clause.Expression, 0)`)
 	for _, field := range schema.Fields {
 		column := toColumnName(field.Name)
@@ -870,9 +880,9 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 			g.P(fmt.Sprintf(`for k, v := range m.%s {`, field.Name))
 			switch field.Map.Key.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
-				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.ParseOp(v), v, k))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.JSONQuery("%s").Equals(v, k))`, g.daoPkg.Use(), column))
 			case descriptor.FieldDescriptorProto_TYPE_INT32, descriptor.FieldDescriptorProto_TYPE_INT64:
-				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONEq, v, %s))`, g.daoPkg.Use(), column, g.daoPkg.Use(), `fmt.Sprintf("%d", k)`))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.JSONQuery("%s").Equals(v, %s))`, g.daoPkg.Use(), column, `fmt.Sprintf("%d", k)`))
 			}
 			g.P("}")
 			g.P("}")
@@ -880,9 +890,9 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
 			g.P(fmt.Sprintf(`for k, v := range dao.FieldPatch(m.%s) {`, field.Name))
 			g.P(`if v == nil {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.JSONHasKey, "", %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.JSONQuery("%s").HasKey(%s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.stringPkg.Use()))
 			g.P(`} else {`)
-			g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Op(%s.ParseOp(v), v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.JSONQuery("%s").Equals(v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.stringPkg.Use()))
 			g.P("}")
 			g.P("}")
 			g.P("}")
@@ -891,7 +901,7 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 			g.P(fmt.Sprintf(`for _, item := range m.%s {`, field.Name))
 			switch field.Slice.GetType() {
 			case descriptor.FieldDescriptorProto_TYPE_STRING:
-				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Contains(%s.JSONEq, item))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.JSONQuery("%s").HasKey(item))`, g.daoPkg.Use(), column))
 			case descriptor.FieldDescriptorProto_TYPE_UINT32,
 				descriptor.FieldDescriptorProto_TYPE_UINT64,
 				descriptor.FieldDescriptorProto_TYPE_INT32,
@@ -900,11 +910,11 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 				descriptor.FieldDescriptorProto_TYPE_SFIXED64,
 				descriptor.FieldDescriptorProto_TYPE_FIXED32,
 				descriptor.FieldDescriptorProto_TYPE_FIXED64:
-				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Contains(%s.JSONEq, item))`, g.daoPkg.Use(), column, g.daoPkg.Use()))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.JSONQuery("%s").HasKey(item))`, g.daoPkg.Use(), column))
 			case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 				g.P(`for k, v := range dao.FieldPatch(item) {`)
 				g.P(`if v != nil {`)
-				g.P(fmt.Sprintf(`exprs = append(exprs, %s.DefaultDialect.JSONBuild("%s").Tx(tx).Contains(%s.JSONEq, v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.daoPkg.Use(), g.stringPkg.Use()))
+				g.P(fmt.Sprintf(`exprs = append(exprs, %s.JSONQuery("%s").Equals(v, %s.Split(k, ".")...))`, g.daoPkg.Use(), column, g.stringPkg.Use()))
 				g.P(`}`)
 				g.P("}")
 			}
@@ -912,13 +922,13 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 			g.P("}")
 		case _string:
 			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
-			g.P(fmt.Sprintf(`exprs = append(exprs, %s.Cond().Op(%s.ParseOp(m.%s)).Build("%s", m.%s))`, g.clausePkg.Use(), g.clausePkg.Use(), field.Name, column, field.Name))
+			g.P(fmt.Sprintf(`exprs = append(exprs, %s.Cond().Op(%s.ParseOp(m.%s)).Build("%s", m.%s))`, g.daoPkg.Use(), g.daoPkg.Use(), field.Name, column, field.Name))
 			g.P("}")
 		case _bool:
 			continue
 		default:
 			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`exprs = append(exprs,  %s.Cond().Build("%s", m.%s))`, g.clausePkg.Use(), column, field.Name))
+			g.P(fmt.Sprintf(`exprs = append(exprs,  %s.Cond().Build("%s", m.%s))`, g.daoPkg.Use(), column, field.Name))
 			g.P("}")
 		}
 	}
@@ -927,71 +937,26 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 	g.P("}")
 	g.P()
 
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) Create(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	}
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`func (s *%s) XXCreate(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P("m := s.m")
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`if err := tx.Create(m).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) BatchUpdates(ctx %s.Context) error {`, source, g.ctxPkg.Use()))
-	g.P(`if len(m.exprs) == 0 {`)
-	g.P(fmt.Sprintf(`return %s.New("missing conditions")`, g.errPkg.Use()))
-	g.P("}")
-	g.P()
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
-	g.P()
-	g.P(`values := make(map[string]interface{}, 0)`)
-	for _, field := range schema.Fields {
-		column := toColumnName(field.Name)
-		if field == schema.PK {
-			continue
-		}
-		switch field.Type {
-		case _point, _map:
-			g.P(fmt.Sprintf(`if m.%s != nil {`, field.Name))
-			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
-			g.P("}")
-		case _slice:
-			g.P(fmt.Sprintf(`if len(m.%s) != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
-			g.P("}")
-		case _string:
-			g.P(fmt.Sprintf(`if m.%s != "" {`, field.Name))
-			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
-			g.P("}")
-		case _bool:
-			continue
-		default:
-			g.P(fmt.Sprintf(`if m.%s != 0 {`, field.Name))
-			g.P(fmt.Sprintf(`values["%s"] = m.%s`, column, field.Name))
-			g.P("}")
-		}
-	}
-	g.P()
-	g.P(`return tx.Clauses(m.exprs...).Updates(values).Error`)
-	g.P("}")
-	g.P()
-
-	if schema.Deep {
-		g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (%s.Object, error) {`, source, g.ctxPkg.Use(), g.runtimePkg.Use()))
-	} else {
-		g.P(fmt.Sprintf(`func (m *%s) Updates(ctx %s.Context) (*%s, error) {`, source, g.ctxPkg.Use(), g.wrapPkg(target)))
-	}
+	g.P(fmt.Sprintf(`func (s *%s) XXUpdates(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
+	g.P("m := s.m")
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(fmt.Sprintf(`return nil, %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`values := make(map[string]interface{}, 0)`)
 	for _, field := range schema.Fields {
@@ -1025,42 +990,27 @@ func (g *dao) generateStorageCURDMethods(file *generator.FileDescriptor, schema 
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`err := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`err := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`, g.gormPkg.Use()))
 	g.P("if err != nil {")
 	g.P(`return nil, err`)
 	g.P("}")
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, target))
+	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func (m *%s) BatchDelete(ctx %s.Context, soft bool) error {`, source, g.ctxPkg.Use()))
-	g.P(`tx := m.tx.Session(&dao.Session{}).Table(m.TableName()).WithContext(ctx)`)
-	g.P(fmt.Sprintf(`clauses := append(m.exprs, m.extractClauses(tx)...)`))
-	g.P()
-	g.P(`if soft {`)
-	g.P(fmt.Sprintf(`return tx.Clauses(clauses...).Updates(map[string]interface{}{"inner_deletion_timestamp": %s.Now().UnixNano()}).Error`, g.timePkg.Use()))
-	g.P(`}`)
-	g.P(fmt.Sprintf(`return tx.Clauses(clauses...).Delete(&%s{}).Error`, source))
-	g.P("}")
-	g.P()
-
-	g.P(fmt.Sprintf(`func (m *%s) Delete(ctx %s.Context, soft bool) error {`, source, g.ctxPkg.Use()))
+	g.P(fmt.Sprintf(`func (s *%s) XXDelete(ctx %s.Context, soft bool) error {`, sname, g.ctxPkg.Use()))
+	g.P("m := s.m")
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(fmt.Sprintf(`return %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`tx := m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`if soft {`)
 	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{"inner_deletion_timestamp": %s.Now().UnixNano()}).Error`, g.timePkg.Use()))
 	g.P(`}`)
-	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Delete(&%s{}).Error`, source))
-	g.P("}")
-	g.P()
-
-	g.P(fmt.Sprintf(`func (m *%s) Tx(ctx %s.Context) *dao.DB {`, source, g.ctxPkg.Use()))
-	g.P(fmt.Sprintf(`return m.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Clauses(m.exprs...)`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Delete(&%s{}).Error`, sname))
 	g.P("}")
 	g.P()
 }
@@ -1112,7 +1062,7 @@ func (g *dao) buildJSONTags(field *generator.FieldDescriptor) *FieldTag {
 }
 
 func (g *dao) buildDaoTags(field *generator.FieldDescriptor, autoIncr bool) *FieldTag {
-	fTag := &FieldTag{Key: "dao", Values: []string{}, Seq: ";"}
+	fTag := &FieldTag{Key: "gorm", Values: []string{}, Seq: ";"}
 	fTag.Values = append(fTag.Values, fmt.Sprintf(`column:%s`, toColumnName(field.Proto.GetName())))
 	for _, tag := range g.extractTags(field.Comments) {
 		// TODO: parse dao tags
