@@ -1,32 +1,7 @@
-// MIT License
-//
-// Copyright (c) 2020 Lack
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-package schema
+package plugin
 
 import (
-	"crypto/sha1"
-	"fmt"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/jinzhu/inflection"
 )
@@ -35,10 +10,6 @@ import (
 type Namer interface {
 	TableName(table string) string
 	ColumnName(table, column string) string
-	JoinTableName(joinTable string) string
-	RelationshipFKName(Relationship) string
-	CheckerName(table, column string) string
-	IndexName(table, column string) string
 }
 
 // Replacer replacer interface like strings.Replacer
@@ -65,46 +36,6 @@ func (ns NamingStrategy) TableName(str string) string {
 // ColumnName convert string to column name
 func (ns NamingStrategy) ColumnName(table, column string) string {
 	return ns.toDBName(column)
-}
-
-// JoinTableName convert string to join table name
-func (ns NamingStrategy) JoinTableName(str string) string {
-	if !ns.NoLowerCase && strings.ToLower(str) == str {
-		return ns.TablePrefix + str
-	}
-
-	if ns.SingularTable {
-		return ns.TablePrefix + ns.toDBName(str)
-	}
-	return ns.TablePrefix + inflection.Plural(ns.toDBName(str))
-}
-
-// RelationshipFKName generate fk name for relation
-func (ns NamingStrategy) RelationshipFKName(rel Relationship) string {
-	return ns.formatName("fk", rel.Schema.Table, ns.toDBName(rel.Name))
-}
-
-// CheckerName generate checker name
-func (ns NamingStrategy) CheckerName(table, column string) string {
-	return ns.formatName("chk", table, column)
-}
-
-// IndexName generate index name
-func (ns NamingStrategy) IndexName(table, column string) string {
-	return ns.formatName("idx", table, ns.toDBName(column))
-}
-
-func (ns NamingStrategy) formatName(prefix, table, name string) string {
-	formatedName := strings.Replace(fmt.Sprintf("%v_%v_%v", prefix, table, name), ".", "_", -1)
-
-	if utf8.RuneCountInString(formatedName) > 64 {
-		h := sha1.New()
-		h.Write([]byte(formatedName))
-		bs := h.Sum(nil)
-
-		formatedName = fmt.Sprintf("%v%v%v", prefix, table, name)[0:56] + string(bs)[:8]
-	}
-	return formatedName
 }
 
 var (

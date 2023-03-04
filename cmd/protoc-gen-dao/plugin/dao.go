@@ -37,7 +37,6 @@ import (
 
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/vine-io/vine/cmd/generator"
-	"github.com/vine-io/vine/lib/dao/schema"
 )
 
 var TagString = "gen"
@@ -1176,11 +1175,11 @@ func (g *dao) extractTags(comments []*generator.Comment) map[string]*Tag {
 }
 
 func toTableName(text string) string {
-	return schema.NamingStrategy{}.TableName(text)
+	return NamingStrategy{}.TableName(text)
 }
 
 func toColumnName(text string) string {
-	return schema.NamingStrategy{}.ColumnName("", text)
+	return NamingStrategy{}.ColumnName("", text)
 }
 
 func toQuoted(text string) string {

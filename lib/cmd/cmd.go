@@ -24,7 +24,6 @@ package cmd
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"math/rand"
 	"os"
@@ -47,7 +46,6 @@ import (
 	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/config"
 	configMemory "github.com/vine-io/vine/lib/config/memory"
-	"github.com/vine-io/vine/lib/dao"
 	log "github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/lib/trace"
 	memTracer "github.com/vine-io/vine/lib/trace/memory"
@@ -55,8 +53,6 @@ import (
 
 	// servers
 	sgrpc "github.com/vine-io/vine/core/server/grpc"
-
-	daoNop "github.com/vine-io/vine/lib/dao/nop"
 
 	memCache "github.com/vine-io/vine/lib/cache/memory"
 	nopCache "github.com/vine-io/vine/lib/cache/noop"
@@ -108,10 +104,6 @@ var (
 		"grpc": sgrpc.NewServer,
 	}
 
-	DefaultDialects = map[string]func(...dao.Option) dao.Dialect{
-		"nop": daoNop.NewDialect,
-	}
-
 	DefaultCaches = map[string]func(...cache.Option) cache.Cache{
 		"memory": memCache.NewCache,
 		"noop":   nopCache.NewCache,
@@ -135,7 +127,6 @@ func newCmd(opts ...Option) Cmd {
 		Registry: &registry.DefaultRegistry,
 		Server:   &server.DefaultServer,
 		Selector: &selector.DefaultSelector,
-		Dialect:  &dao.DefaultDialect,
 		Cache:    &cache.DefaultCache,
 		Tracer:   &trace.DefaultTracer,
 		Config:   &config.DefaultConfig,
@@ -145,7 +136,6 @@ func newCmd(opts ...Option) Cmd {
 		Registries: DefaultRegistries,
 		Selectors:  DefaultSelectors,
 		Servers:    DefaultServers,
-		Dialects:   DefaultDialects,
 		Caches:     DefaultCaches,
 		Tracers:    DefaultTracers,
 		Configs:    DefaultConfigs,
@@ -186,7 +176,6 @@ func newCmd(opts ...Option) Cmd {
 	rootCmd.PersistentFlags().AddFlagSet(client.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(selector.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(server.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(dao.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(cache.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(log.Flag)
 	rootCmd.PersistentFlags().AddFlagSet(trace.Flag)
@@ -315,17 +304,6 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		cache.DefaultCache = *options.Cache
 	}
 
-	// Set the dialect
-	if name := uc.GetString("dao.dialect"); len(name) > 0 {
-		d, ok := options.Dialects[name]
-		if !ok {
-			return fmt.Errorf("unsuported dialect: %s", name)
-		}
-
-		*options.Dialect = d()
-		dao.DefaultDialect = *options.Dialect
-	}
-
 	// Set the tracer
 	if name := uc.GetString("tracer.default"); len(name) > 0 {
 		r, ok := options.Tracers[name]
@@ -432,19 +410,6 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 	if addrs := uc.GetString("registry.address"); len(addrs) > 0 {
 		if err := (*options.Registry).Init(registry.Addrs(strings.Split(addrs, ",")...)); err != nil {
 			log.Fatalf("Error configuring registry: %v", err)
-		}
-	}
-
-	if dsn := uc.GetString("dao.dsn"); len(dsn) > 0 {
-		if strings.HasPrefix(dsn, "base64:") {
-			b, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(dsn, "base64:"))
-			if err != nil {
-				log.Fatalf("Error configuring dialect dsn: decode base64 string: %v", err)
-			}
-			dsn = string(b)
-		}
-		if err := (*options.Dialect).Init(dao.DSN(dsn)); err != nil {
-			log.Fatalf("Error configuring dialect dsn: %v", err)
 		}
 	}
 

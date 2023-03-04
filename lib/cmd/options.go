@@ -33,7 +33,6 @@ import (
 	"github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/cache"
 	"github.com/vine-io/vine/lib/config"
-	"github.com/vine-io/vine/lib/dao"
 	"github.com/vine-io/vine/lib/trace"
 )
 
@@ -53,7 +52,6 @@ type Options struct {
 	Config   *config.Config
 	Client   *client.Client
 	Server   *server.Server
-	Dialect  *dao.Dialect
 	Cache    *cache.Cache
 	Tracer   *trace.Tracer
 
@@ -63,7 +61,6 @@ type Options struct {
 	Registries map[string]func(...registry.Option) registry.Registry
 	Selectors  map[string]func(...selector.Option) selector.Selector
 	Servers    map[string]func(...server.Option) server.Server
-	Dialects   map[string]func(...dao.Option) dao.Dialect
 	Caches     map[string]func(...cache.Option) cache.Cache
 	Tracers    map[string]func(...trace.Option) trace.Tracer
 
@@ -145,12 +142,6 @@ func Server(s *server.Server) Option {
 	}
 }
 
-func Dialect(d *dao.Dialect) Option {
-	return func(o *Options) {
-		o.Dialect = d
-	}
-}
-
 func Cache(c *cache.Cache) Option {
 	return func(o *Options) {
 		o.Cache = c
@@ -202,12 +193,5 @@ func NewServer(name string, s func(...server.Option) server.Server) Option {
 func NewTracer(name string, t func(...trace.Option) trace.Tracer) Option {
 	return func(o *Options) {
 		o.Tracers[name] = t
-	}
-}
-
-// NewDialect new dao func
-func NewDialect(name string, t func(...dao.Option) dao.Dialect) Option {
-	return func(o *Options) {
-		o.Dialects[name] = t
 	}
 }
