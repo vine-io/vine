@@ -133,9 +133,10 @@ func runProto(cmd *cobra.Command, args []string) error {
 
 func cmdProto() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "proto",
-		Short: "Create a proto file",
-		RunE:  runProto,
+		Use:           "proto",
+		Short:         "Create a proto file",
+		SilenceErrors: true,
+		RunE:          runProto,
 	}
 	cmd.PersistentFlags().String("type", "api", "type of proto eg service, api")
 	cmd.PersistentFlags().String("proto-version", "v1", "specify proto version")
