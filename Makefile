@@ -114,7 +114,8 @@ install:
 	go get github.com/vine-io/vine/cmd/protoc-gen-cli
 
 openapi:
-	statik -m -f -src third_party/OpenAPI/ -dest service/api/handler/openapi
+	cd $(GOPATH)/src
+	protoc  -I . -I /Users/xingyys/project/gopath/src -I /Users/xingyys/project/gopath/src/github.com/gogo/protobuf/gogoproto --gogo_out=:. --vine_out=:. github.com/vine-io/vine/lib/api/handler/openapi/proto/openapi.proto
 
 docker:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .

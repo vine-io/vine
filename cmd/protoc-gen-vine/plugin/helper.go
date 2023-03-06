@@ -49,6 +49,7 @@ const (
 	_put      = "put"
 	_patch    = "patch"
 	_delete   = "delete"
+	_entity   = "entity"
 	_body     = "body"
 	_summary  = "summary"
 	_security = "security"

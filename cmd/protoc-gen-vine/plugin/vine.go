@@ -132,10 +132,10 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 
 	g.P()
 	g.P("// API Endpoints for ", servName, " service")
-	g.P("func New", servName, "Endpoints () []*", g.apiPbPkg.Use(), ".Endpoint {")
-	g.P("return []*", g.apiPbPkg.Use(), ".Endpoint{")
+	g.P("func New", servName, "Endpoints () []", g.apiPbPkg.Use(), ".Endpoint {")
+	g.P("return []", g.apiPbPkg.Use(), ".Endpoint{")
 	for _, method := range service.Methods {
-		g.generateEndpoint(servName, method, false)
+		g.generateEndpoint(servName, method)
 	}
 	g.P("}")
 	g.P("}")
@@ -239,11 +239,11 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 	g.P(unexport(servName) + "Impl")
 	g.P("}")
 	g.P("h := &", unexport(servName), "Handler{hdlr}")
-	for _, method := range service.Methods {
-		g.generateEndpoint(servName, method, true)
-	}
+	g.P(fmt.Sprintf("endpoints := New%sEndpoints()", servName))
+	g.P(fmt.Sprintf("for _, ep := range endpoints { opts = append(opts, %s.WithEndpoint(&ep)) }", g.apiPkg.Use()))
 	if _, ok := svcTags[_openapi]; ok {
 		g.P(fmt.Sprintf(`%s.RegisterOpenAPIDoc(New%sOpenAPI())`, g.openApiPkg.Use(), servName))
+		g.P(fmt.Sprintf(`%s.InjectEndpoints(endpoints...)`, g.openApiPkg.Use()))
 	}
 	g.P("return s.Handle(s.NewHandler(&", servName, "{h}, opts...))")
 	g.P("}")
@@ -262,7 +262,7 @@ func (g *vine) generateService(file *generator.FileDescriptor, service *generato
 }
 
 // generateEndpoint creates the api endpoint
-func (g *vine) generateEndpoint(servName string, method *generator.MethodDescriptor, with bool) {
+func (g *vine) generateEndpoint(servName string, method *generator.MethodDescriptor) {
 	tags := g.extractTags(method.Comments)
 	if len(tags) == 0 {
 		return
@@ -288,14 +288,8 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 	} else {
 		return
 	}
-	if with {
-		g.P("opts = append(opts, ", g.apiPkg.Use(), ".WithEndpoint(&", g.apiPbPkg.Use(), ".Endpoint{")
-		defer g.P("}))")
-	} else {
-		g.P("&", g.apiPbPkg.Use(), ".Endpoint{")
-		defer g.P("},")
-	}
 
+	g.P("", g.apiPbPkg.Use(), ".Endpoint{")
 	desc := extractDesc(method.Comments)
 	if len(desc) == 0 {
 		desc = []string{servName + "." + method.Proto.GetName()}
@@ -305,6 +299,9 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 	g.P("Description:", fmt.Sprintf(`"%s",`, strings.Join(desc, " ")))
 	g.P("Path:", fmt.Sprintf(`[]string{"%s"},`, path))
 	g.P("Method:", fmt.Sprintf(`[]string{"%s"},`, meth))
+	if v, ok := tags[_entity]; ok {
+		g.P("Entity:", fmt.Sprintf(`"%s",`, v.Value))
+	}
 	if v, ok := tags[_body]; ok {
 		g.P("Body:", fmt.Sprintf(`"%s",`, v.Value))
 	} else {
@@ -318,6 +315,7 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 		g.P(fmt.Sprintf("Stream: %s.Client,", g.apiPkg.Use()))
 	}
 	g.P(`Handler: "rpc",`)
+	defer g.P("},")
 }
 
 // generateClientSignature returns the client-side signature for a method.
