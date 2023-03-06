@@ -111,6 +111,7 @@ func endpointToPb(ep *api.Endpoint) *pb.Endpoint {
 		Method:      ep.Method,
 		Path:        ep.Path,
 		Entity:      ep.Entity,
+		Security:    ep.Security,
 		Body:        ep.Body,
 		Stream:      string(ep.Stream),
 	}

@@ -302,6 +302,9 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 	if v, ok := tags[_entity]; ok {
 		g.P("Entity:", fmt.Sprintf(`"%s",`, v.Value))
 	}
+	if v, ok := tags[_security]; ok {
+		g.P("Security:", fmt.Sprintf(`"%s",`, v.Value))
+	}
 	if v, ok := tags[_body]; ok {
 		g.P("Body:", fmt.Sprintf(`"%s",`, v.Value))
 	} else {

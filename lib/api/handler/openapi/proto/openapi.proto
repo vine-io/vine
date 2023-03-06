@@ -235,6 +235,7 @@ message Endpoint {
     repeated string method = 5;
     repeated string path = 6;
     string entity = 7;
-    string body = 8;
-    string stream = 9;
+    string security = 8;
+    string body = 9;
+    string stream = 10;
 }
