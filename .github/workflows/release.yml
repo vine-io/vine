@@ -50,6 +50,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
+            ./_output/CHANGELOG.md
             ./_output/vine-darwin-arm64-${{ github.ref_name }}.tar.gz
             ./_output/vine-darwin-amd64-${{ github.ref_name }}.tar.gz
             ./_output/vine-linux-amd64-${{ github.ref_name }}.tar.gz
