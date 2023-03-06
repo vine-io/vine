@@ -93,6 +93,8 @@ type Endpoint struct {
 	Method []string `json:"method,omitempty"`
 	// HTTP Path e.g /greeter. Expect POSIX regex
 	Path []string `json:"path,omitempty"`
+	// Entity HTTP method for resource
+	Entity string `json:"entity,omitempty"`
 	// Body destination
 	// "*" or "" - top level message value
 	// "string" - inner message value

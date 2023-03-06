@@ -6,12 +6,21 @@ option go_package = "github.com/vine-io/vine/lib/api/handler/openapi/proto;opena
 
 service OpenAPIService {
     rpc GetOpenAPIDoc (GetOpenAPIDocRequest) returns (GetOpenAPIDocResponse);
+    rpc GetEndpoint(GetEndpointRequest) returns (GetEndpointResponse);
 }
 
 message GetOpenAPIDocRequest {}
 
 message GetOpenAPIDocResponse {
     repeated OpenAPI apis = 1;
+}
+
+message GetEndpointRequest {
+    string name = 1;
+}
+
+message GetEndpointResponse {
+    map<string, Endpoint> endpoints = 1;
 }
 
 message OpenAPI {
@@ -191,4 +200,41 @@ message Schema {
     repeated PathParameters parameters = 51;
 
     Schema additionalProperties = 60;
+}
+
+/*
+// Endpoint is a mapping between an RPC method and HTTP endpoint
+type Endpoint struct {
+	// RPC Method e.g. Greeter.Hello
+	Name string `json:"name,omitempty"`
+	// Description e.g what's this endpoint for
+	Description string `json:"description,omitempty"`
+	// API Handler e.g rpc, proxy
+	Handler string `json:"handler,omitempty"`
+	// HTTP Host e.g example.com
+	Host []string `json:"host,omitempty"`
+	// HTTP Methods e.g GET, POST
+	Method []string `json:"method,omitempty"`
+	// HTTP Path e.g /greeter. Expect POSIX regex
+	Path []string `json:"path,omitempty"`
+	// Entity HTTP method for resource
+	Entity string `json:"entity,omitempty"`
+	// Body destination
+	// "*" or "" - top level message value
+	// "string" - inner message value
+	Body string `json:"body,omitempty"`
+	// Stream flag
+	Stream StreamType `json:"stream,omitempty"`
+}
+ */
+message Endpoint {
+    string name = 1;
+    string description = 2;
+    string handler = 3;
+    repeated string host = 4;
+    repeated string method = 5;
+    repeated string path = 6;
+    string entity = 7;
+    string body = 8;
+    string stream = 9;
 }
