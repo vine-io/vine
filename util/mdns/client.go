@@ -111,7 +111,9 @@ func Query(params *QueryParam) error {
 		if params.Timeout == 0 {
 			params.Timeout = time.Second
 		}
-		params.Context, _ = context.WithTimeout(context.Background(), params.Timeout)
+		var cancel context.CancelFunc
+		params.Context, cancel = context.WithTimeout(context.Background(), params.Timeout)
+		defer cancel()
 	}
 
 	// Run the query
@@ -142,9 +144,9 @@ func Listen(entries chan<- *ServiceEntry, exit chan struct{}) error {
 	for {
 		select {
 		case <-exit:
-			return nil
+			goto exit
 		case <-client.closedCh:
-			return nil
+			goto exit
 		case m := <-msgCh:
 			e := messageToEntry(m, ip)
 			if e == nil {
@@ -170,6 +172,7 @@ func Listen(entries chan<- *ServiceEntry, exit chan struct{}) error {
 			}
 		}
 	}
+exit:
 
 	return nil
 }

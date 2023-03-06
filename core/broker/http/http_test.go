@@ -185,7 +185,7 @@ func pub(be *testing.B, c int) {
 		go func() {
 			for range ch {
 				if err := b.Publish(ctx, topic, msg); err != nil {
-					be.Fatalf("Unexpected publish error: %v", err)
+					be.Errorf("Unexpected publish error: %v", err)
 				}
 				select {
 				case <-done:
