@@ -85,6 +85,8 @@ func Encode(e *Endpoint) map[string]string {
 	set("handler", e.Handler)
 	set("method", strings.Join(e.Method, ","))
 	set("path", strings.Join(e.Path, ","))
+	set("entity", e.Entity)
+	set("security", e.Security)
 	set("host", strings.Join(e.Host, ","))
 	set("stream", string(e.Stream))
 
@@ -103,8 +105,10 @@ func Decode(e map[string]string) *Endpoint {
 		Handler:     e["handler"],
 		Method:      slice(e["method"]),
 		Path:        slice(e["path"]),
+		Entity:      e["entity"],
+		Security:    e["security"],
 		Host:        slice(e["host"]),
-		Stream:      StreamType(e["stream"]),
+		Stream:      e["stream"],
 	}
 }
 
@@ -167,7 +171,7 @@ func NewGateway() Gateway {
 //
 // Usage:
 //
-// 	proto.RegisterHandler(service.Server(), new(Handler), api.WithEndpoint(
+//	proto.RegisterHandler(service.Server(), new(Handler), api.WithEndpoint(
 //		&api.Endpoint{
 //			Name: "Greeter.Hello",
 //			Path: []string{"/greeter"},

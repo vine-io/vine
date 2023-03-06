@@ -20,7 +20,7 @@ var (
 
 func init() {
 	openAPIOnce.Do(func() {
-		globalOpenAPI = &openapiService{endpoints: map[string]*pb.Endpoint{}}
+		globalOpenAPI = &openapiService{endpoints: map[string]*api.Endpoint{}}
 	})
 }
 
@@ -28,7 +28,7 @@ type openapiService struct {
 	gosync.RWMutex
 
 	apis      []*pb.OpenAPI
-	endpoints map[string]*pb.Endpoint
+	endpoints map[string]*api.Endpoint
 }
 
 func (s *openapiService) AppendAPIDoc(api *pb.OpenAPI) {
@@ -63,7 +63,7 @@ func (s *openapiService) GetEndpoint(ctx context.Context, req *pb.GetEndpointReq
 	if !ok {
 		return fmt.Errorf("not found")
 	}
-	rsp.Endpoints = map[string]*pb.Endpoint{ep.Name: ep}
+	rsp.Endpoints = map[string]*api.Endpoint{ep.Name: ep}
 	return nil
 }
 
@@ -76,7 +76,7 @@ func InjectEndpoints(endpoints ...api.Endpoint) error {
 		if v, ok := globalOpenAPI.endpoints[ep.Name]; ok {
 			return fmt.Errorf("injects a new endpoint=%s, conflicts with Endpoint{Name:%s, Method:%s}", ep.Name, v.Name, strings.Join(v.Method, ","))
 		}
-		globalOpenAPI.endpoints[ep.Name] = endpointToPb(&ep)
+		globalOpenAPI.endpoints[ep.Name] = &ep
 	}
 
 	return nil
@@ -90,7 +90,7 @@ func GetAllOpenAPIDoc() []*pb.OpenAPI {
 	return globalOpenAPI.GetAPIDoc()
 }
 
-func GetEndpoint(name string) (map[string]*pb.Endpoint, error) {
+func GetEndpoint(name string) (map[string]*api.Endpoint, error) {
 	if name == "" {
 		return globalOpenAPI.endpoints, nil
 	}
@@ -99,22 +99,5 @@ func GetEndpoint(name string) (map[string]*pb.Endpoint, error) {
 	if !ok {
 		return nil, fmt.Errorf("not found")
 	}
-	return map[string]*pb.Endpoint{ep.Name: ep}, nil
-}
-
-func endpointToPb(ep *api.Endpoint) *pb.Endpoint {
-	pbEp := &pb.Endpoint{
-		Name:        ep.Name,
-		Description: ep.Description,
-		Handler:     ep.Handler,
-		Host:        ep.Host,
-		Method:      ep.Method,
-		Path:        ep.Path,
-		Entity:      ep.Entity,
-		Security:    ep.Security,
-		Body:        ep.Body,
-		Stream:      string(ep.Stream),
-	}
-
-	return pbEp
+	return map[string]*api.Endpoint{ep.Name: ep}, nil
 }

@@ -252,7 +252,7 @@ func isWebSocket(c *gin.Context) bool {
 }
 
 func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client, so selector.SelectOption) {
-	if service.Endpoint.Stream != api.Client {
+	if service.Endpoint.Stream != string(api.Client) {
 		writeError(ctx, fmt.Errorf("server endpoint must be gRPC client stream"))
 		return
 	}
@@ -473,7 +473,7 @@ func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client, so
 }
 
 func isDownLoadLink(s *api.Service) bool {
-	return s.Endpoint.Stream == api.Server && strings.HasSuffix(strings.ToLower(s.Endpoint.Name), "download")
+	return s.Endpoint.Stream == string(api.Server) && strings.HasSuffix(strings.ToLower(s.Endpoint.Name), "download")
 }
 
 type responseReader struct {
