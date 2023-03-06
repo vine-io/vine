@@ -25,8 +25,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // API Endpoints for OpenAPIService service
-func NewOpenAPIServiceEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
+func NewOpenAPIServiceEndpoints() []api.Endpoint {
+	return []api.Endpoint{}
 }
 
 // Client API for OpenAPIService service
@@ -82,6 +82,10 @@ func RegisterOpenAPIServiceHandler(s server.Server, hdlr OpenAPIServiceHandler, 
 		openAPIServiceImpl
 	}
 	h := &openAPIServiceHandler{hdlr}
+	endpoints := NewOpenAPIServiceEndpoints()
+	for _, ep := range endpoints {
+		opts = append(opts, api.WithEndpoint(&ep))
+	}
 	return s.Handle(s.NewHandler(&OpenAPIService{h}, opts...))
 }
 
