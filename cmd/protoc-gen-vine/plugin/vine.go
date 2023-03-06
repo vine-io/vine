@@ -311,11 +311,11 @@ func (g *vine) generateEndpoint(servName string, method *generator.MethodDescrip
 		g.P("Body:", `"*",`)
 	}
 	if method.Proto.GetServerStreaming() && method.Proto.GetClientStreaming() {
-		g.P(fmt.Sprintf("Stream: %s.Bidirectional,", g.apiPkg.Use()))
+		g.P(fmt.Sprintf("Stream: string(%s.Bidirectional),", g.apiPkg.Use()))
 	} else if method.Proto.GetServerStreaming() {
-		g.P(fmt.Sprintf("Stream: %s.Server,", g.apiPkg.Use()))
+		g.P(fmt.Sprintf("Stream: string(%s.Server),", g.apiPkg.Use()))
 	} else if method.Proto.GetClientStreaming() {
-		g.P(fmt.Sprintf("Stream: %s.Client,", g.apiPkg.Use()))
+		g.P(fmt.Sprintf("Stream: string(%s.Client),", g.apiPkg.Use()))
 	}
 	g.P(`Handler: "rpc",`)
 	defer g.P("},")
