@@ -77,7 +77,7 @@ func (s *docStore) discovery(co client.Client, reg registry.Registry, services [
 
 		for _, i := range list {
 			rsp, e := pb.NewOpenAPIService(i.Name, co).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
-			if e != nil {
+			if e != nil && i.Name != "go.vine.api" {
 				log.Warnf("get %s openapi: %v", i.Name, e)
 			}
 			if e != nil || len(rsp.Apis) == 0 {

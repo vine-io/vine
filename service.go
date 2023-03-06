@@ -88,7 +88,6 @@ func (s *service) Init(opts ...Option) error {
 			cmd.Config(&s.opts.Config),
 			cmd.Server(&s.opts.Server),
 			cmd.Cache(&s.opts.Cache),
-			cmd.Dialect(&s.opts.Dialect),
 		}
 
 		if len(s.opts.Cmd.Options().Name) == 0 {

@@ -20,7 +20,7 @@ var (
 
 func init() {
 	openAPIOnce.Do(func() {
-		globalOpenAPI = &openapiService{}
+		globalOpenAPI = &openapiService{endpoints: map[string]*pb.Endpoint{}}
 	})
 }
 
