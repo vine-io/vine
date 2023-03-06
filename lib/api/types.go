@@ -95,6 +95,8 @@ type Endpoint struct {
 	Path []string `json:"path,omitempty"`
 	// Entity HTTP method for resource
 	Entity string `json:"entity,omitempty"`
+	// Security HTTP authorization, e.g. Basic, Bearer
+	Security string `json:"security,omitempty"`
 	// Body destination
 	// "*" or "" - top level message value
 	// "string" - inner message value
