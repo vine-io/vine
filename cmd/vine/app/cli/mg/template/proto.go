@@ -9,14 +9,14 @@ option go_package = "{{.Dir}}/api/types/{{.Group}}/{{.Version}};{{.Group}}{{.Ver
 option java_package = "io.vine.types.{{.Group}}.{{.Version}}";
 option java_multiple_files = true;
 
-import "github.com/vine-io/apimachinery/apis/meta/v1/meta.proto";
+import "github.com/vine-io/apimachinery/apis/meta/v1/generated.proto";
 
 // +gen:object
 message {{title .Name}} {
 	// +gen:inline
-	metav1.TypeMeta typeMeta = 1;
+	v1.TypeMeta typeMeta = 1;
 	// +gen:inline
-	metav1.ObjectMeta metadata = 2;
+	v1.ObjectMeta metadata = 2;
 	
 	// +gen:required
 	{{title .Name}}Spec spec = 3;
@@ -37,10 +37,11 @@ option java_multiple_files = true;
 
 // +gen:openapi
 service {{title .Name}}Service {
+	// +gen:entity={{.Name}}
 	// +gen:post=/api/{{.Group}}/{{.Version}}/{{.Name}}/Call
-	rpc Call(Request) returns (Response) {}
-	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
-	rpc PingPong(stream Ping) returns (stream Pong) {}
+	rpc Call(Request) returns (Response);
+	rpc Stream(StreamingRequest) returns (stream StreamingResponse);
+	rpc PingPong(stream Ping) returns (stream Pong);
 }
 
 message Request {
@@ -98,6 +99,7 @@ message {{title .Name}}Response {
 import (
 	"github.com/vine-io/apimachinery/runtime"
 	"github.com/vine-io/apimachinery/schema"
+	"github.com/vine-io/apimachinery/storage"
 )
 
 // GroupName is the group name for this API
@@ -111,6 +113,16 @@ var (
 	AddToScheme   = SchemaBuilder.AddToScheme
 	sets          = make([]runtime.Object, 0)
 )
+
+var (
+	FactoryBuilder = storage.NewFactoryBuilder(addKnownFactory)
+	AddToBuilder   = FactoryBuilder.AddToFactory
+	storageSet     = make([]storage.Storage, 0)
+)
+
+func addKnownFactory(f storage.Factory) error {
+	return f.AddKnownStorages(SchemeGroupVersion, storageSet...)
+}
 
 func addKnownTypes(scheme runtime.Scheme) error {
 	return scheme.AddKnownTypes(SchemeGroupVersion, sets...)

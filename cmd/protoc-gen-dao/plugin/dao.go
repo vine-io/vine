@@ -323,11 +323,11 @@ func addKnownStorages(factory apistorage.Factory) error {
 	}
 
 	g.P("func init() {")
-	//for k, table := range g.regTables {
-	//	//sgv := g.wrapPkg("SchemeGroupVersion")
-	//	g.P(fmt.Sprintf(`store[%s.WithKind("%s")] = &%s{}`, sgv, k, table))
-	//}
-
+	g.P("storageSet = append(storageSet,")
+	for _, table := range g.regTables {
+		g.P(fmt.Sprintf(`&%s{},`, table))
+	}
+	g.P(")")
 	g.P("}")
 }
 
