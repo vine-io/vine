@@ -25,6 +25,16 @@ message {{title .Name}} {
 message {{title .Name}}Spec {
 	
 }
+
+// +gen:object
+message {{title .Name}}List {
+	// +gen:inline
+	v1.TypeMeta typeMeta = 1;
+	// +gen:inline
+	v1.ListMeta metadata = 2;
+	
+	repeated {{title .Name}} items = 3;
+}
 `
 
 	ProtoSRV = `syntax = "proto3";
