@@ -194,6 +194,7 @@ type FileOutPut struct {
 
 func (g *Generator) extractFileOutFile(file *FileDescriptor) (output *FileOutPut) {
 	output = &FileOutPut{}
+	g.P("// ", file)
 	for path, comment := range file.comments {
 		parts := strings.Split(path, ",")
 		if len(parts) == 0 {
