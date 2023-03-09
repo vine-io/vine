@@ -17,10 +17,10 @@ syntax = 'proto3';
 
 package api;
 
+import "github.com/vine-io/vine/core/registry/registry.proto";
+
 // Package-wide variables from generator "generated".
 option go_package = "github.com/vine-io/vine/lib/api";
-
-import "github.com/vine-io/vine/core/registry/registry.proto";
 
 // Endpoint is a mapping between an RPC method and HTTP endpoint
 message Endpoint {

@@ -95,8 +95,8 @@ func (g *vine) Generate(file *generator.FileDescriptor) {
 	g.clientPkg = g.NewImport("github.com/vine-io/vine/core/client", "client")
 	g.serverPkg = g.NewImport("github.com/vine-io/vine/core/server", "server")
 
-	for i, service := range file.TagServices() {
-		g.generateService(file, service, i)
+	for i := range file.TagServices() {
+		g.generateService(file, file.TagServices()[i], i)
 	}
 }
 

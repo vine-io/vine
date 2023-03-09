@@ -72,7 +72,8 @@ func RegisterOpenAPIDoc(api *pb.OpenAPI) {
 }
 
 func InjectEndpoints(endpoints ...api.Endpoint) error {
-	for _, ep := range endpoints {
+	for i := range endpoints {
+		ep := endpoints[i]
 		if v, ok := globalOpenAPI.endpoints[ep.Name]; ok {
 			return fmt.Errorf("injects a new endpoint=%s, conflicts with Endpoint{Name:%s, Method:%s}", ep.Name, v.Name, strings.Join(v.Method, ","))
 		}

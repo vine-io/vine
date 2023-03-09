@@ -213,8 +213,8 @@ func Metadata(md map[string]string) Option {
 // GoFlags that can be passed to service
 func GoFlags(flags ...*goflag.Flag) Option {
 	return func(o *Options) {
-		for _, flag := range flags {
-			o.Cmd.App().PersistentFlags().AddGoFlag(flag)
+		for i := range flags {
+			o.Cmd.App().PersistentFlags().AddGoFlag(flags[i])
 		}
 	}
 }

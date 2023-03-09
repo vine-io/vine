@@ -81,23 +81,24 @@ func (s *service) Init(opts ...Option) error {
 	var err error
 	s.once.Do(func() {
 
-		options := []cmd.Option{
-			cmd.Broker(&s.opts.Broker),
-			cmd.Registry(&s.opts.Registry),
-			cmd.Client(&s.opts.Client),
-			cmd.Config(&s.opts.Config),
-			cmd.Server(&s.opts.Server),
-			cmd.Cache(&s.opts.Cache),
-		}
-
-		if len(s.opts.Cmd.Options().Name) == 0 {
-			options = append(options, cmd.Name(s.opts.Server.Options().Name))
-		}
-		if len(s.opts.Cmd.Options().Version) == 0 {
-			options = append(options, cmd.Version(s.opts.Server.Options().Version))
-		}
-
 		if s.opts.Cmd != nil {
+
+			options := []cmd.Option{
+				cmd.Broker(&s.opts.Broker),
+				cmd.Registry(&s.opts.Registry),
+				cmd.Client(&s.opts.Client),
+				cmd.Config(&s.opts.Config),
+				cmd.Server(&s.opts.Server),
+				cmd.Cache(&s.opts.Cache),
+			}
+
+			if len(s.opts.Cmd.Options().Name) == 0 {
+				options = append(options, cmd.Name(s.opts.Server.Options().Name))
+			}
+			if len(s.opts.Cmd.Options().Version) == 0 {
+				options = append(options, cmd.Version(s.opts.Server.Options().Version))
+			}
+
 			// Initialise the command flags, overriding new service
 			if err = s.opts.Cmd.Init(options...); err != nil {
 				return
