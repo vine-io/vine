@@ -115,7 +115,8 @@ install:
 
 openapi:
 	cd $(GOPATH)/src && \
-	protoc  -I . -I /Users/xingyys/project/gopath/src -I /Users/xingyys/project/gopath/src/github.com/gogo/protobuf/gogoproto --gogo_out=:. --vine_out=:. github.com/vine-io/vine/lib/api/handler/openapi/proto/openapi.proto
+	protoc  -I . -I $(GOPATH)/src -I $(GOPATH)/src/github.com/gogo/protobuf/gogoproto --gogo_out=:. --vine_out=:. $(ROOT)/lib/api/handler/openapi/proto/openapi.proto
+	sed -i "" 's/json:"ref,omitempty"/json:"$$ref,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
 
 docker:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .

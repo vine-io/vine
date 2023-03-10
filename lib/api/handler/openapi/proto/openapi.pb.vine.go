@@ -9,6 +9,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 	client "github.com/vine-io/vine/core/client"
 	server "github.com/vine-io/vine/core/server"
+	_ "github.com/vine-io/vine/lib/api"
 	api "github.com/vine-io/vine/lib/api"
 	math "math"
 )
