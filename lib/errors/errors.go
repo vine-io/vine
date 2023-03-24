@@ -338,7 +338,7 @@ func FromErr(err error) *Error {
 			case codes.FailedPrecondition:
 				return PreconditionFailed("", s.Message())
 			case codes.Aborted:
-				return Conflict("", s.Message())
+				return ServiceUnavailable("", s.Message())
 			case codes.OutOfRange:
 				return BadGateway("", s.Message())
 			case codes.Unimplemented:

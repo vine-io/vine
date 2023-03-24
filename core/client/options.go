@@ -120,6 +120,7 @@ func NewOptions(options ...Option) Options {
 			DialTimeout:    DefaultDialTimeout,
 			RequestTimeout: DefaultRequestTimeout,
 			StreamTimeout:  DefaultRequestTimeout,
+			Context:        context.Background(),
 		},
 		PoolSize: DefaultPoolSize,
 		PoolTTL:  DefaultPoolTTL,

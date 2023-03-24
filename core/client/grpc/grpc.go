@@ -34,6 +34,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding"
 	gmetadata "google.golang.org/grpc/metadata"
 
@@ -109,7 +110,7 @@ func (g *grpcClient) secure(addr string) grpc.DialOption {
 	}
 
 	// other fallback to insecure
-	return grpc.WithInsecure()
+	return grpc.WithTransportCredentials(insecure.NewCredentials())
 }
 
 func (g *grpcClient) next(request client.Request, opts client.CallOptions) (selector.Next, error) {
@@ -167,7 +168,6 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 	var grr error
 
 	grpcDialOptions := []grpc.DialOption{
-		grpc.WithTimeout(opts.DialTimeout),
 		g.secure(address),
 		grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(maxRecvMsgSize),
@@ -255,7 +255,6 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 	maxSendMsgSize := g.maxSendMsgSizeValue()
 
 	grpcDialOptions := []grpc.DialOption{
-		grpc.WithTimeout(opts.DialTimeout),
 		g.secure(address),
 		grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(maxRecvMsgSize),

@@ -63,12 +63,12 @@ func AuthTLS(t *tls.Config) client.Option {
 }
 
 // DialOptions to be used to configure gRPC dial options
-func DialOptions(opts ...grpc.DialOption) client.CallOption {
-	return func(o *client.CallOptions) {
-		if o.Context == nil {
-			o.Context = context.Background()
+func DialOptions(opts ...grpc.DialOption) client.Option {
+	return func(o *client.Options) {
+		if o.CallOptions.Context == nil {
+			o.CallOptions.Context = context.Background()
 		}
-		o.Context = context.WithValue(o.Context, grpcDialOptions{}, opts)
+		o.CallOptions.Context = context.WithValue(o.Context, grpcDialOptions{}, opts)
 	}
 }
 
