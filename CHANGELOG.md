@@ -1,202 +1,250 @@
+# 1.5.10 (2023/03/24)
+
+### Bug Fixes
+
+- [c4969f63](https://github.com/vine-io/vine/commit/c4969f638a9b7d7d7e10da6a405fe92978a66d7f) : grpc client stream 调整
+
+### Others
+
+- [b4db7569](https://github.com/vine-io/vine/commit/b4db7569d084613026b2ed5c78b1a03c7858dc34) v1.5.10
+
+# 1.5.9 (2023/03/10)
+
+### Bug Fixes
+
+- [d934c060](https://github.com/vine-io/vine/commit/d934c0605a9849ef8c89925b0209d5b6558cd20f) : openapi 格式错误
+
+### Others
+
+- [c2f9c6da](https://github.com/vine-io/vine/commit/c2f9c6da5d00398a782ead650b32bedea4b69987) v1.5.9
+
+# 1.5.8 (2023/03/09)
+
+### Bug Fixes
+
+- [0207eed7](https://github.com/vine-io/vine/commit/0207eed7fbac1ccf8f38923c5b7b68ebef256b04) : range 循环取值错误
+
+### Others
+
+- [27b37deb](https://github.com/vine-io/vine/commit/27b37deb613e6a60523b298c1d4d56f160e4aeec) v1.5.8
+
+# 1.5.7 (2023/03/08)
+
+### Features
+
+- [cf78afc1](https://github.com/vine-io/vine/commit/cf78afc1bee8b70db238e21e7f075118e6efba39) : 添加 proto
+
+### Bug Fixes
+
+- [cc81e7da](https://github.com/vine-io/vine/commit/cc81e7da66a6468a86c56c9bc0f71a3af7f8048b) : vine new proto
+- [eac76b52](https://github.com/vine-io/vine/commit/eac76b527facfe37a545ac3e5406e9f2d44052f9) : 调整 protoc-gen-dao
+
+### Others
+
+- [ba3c292b](https://github.com/vine-io/vine/commit/ba3c292bcfcab0a27cf270a1cb23c50c89ae530f) v1.5.7
+- [a574ebd2](https://github.com/vine-io/vine/commit/a574ebd22ffc848d593c76cb67da5c1a2af2a693) v1.5.7
+- [233c9870](https://github.com/vine-io/vine/commit/233c9870cda9dec0a301d00527c74885417b14a4) docs
+- [49f1e9f8](https://github.com/vine-io/vine/commit/49f1e9f836a56366508053b02cb301ed7b039604) v1.5.6
+
 # 1.5.5 (2023/03/06)
 
 ### Features
 
-- [8e3dbe96](https://github.com/vine-io/vine/commit/8e3dbe96b1535323299f65f53ddf4faf9b19df05) : openapi 接口新增 Security 字段
+- [621ea8e2](https://github.com/vine-io/vine/commit/621ea8e2646238111c05c8d07c5e8f8dbf175c9b) : openapi 接口新增 Security 字段
 
 ### Bug Fixes
 
-- [ea743fcd](https://github.com/vine-io/vine/commit/ea743fcd5f54cc22b242b649769a75b3c53c1d65) : github ci/cd
+- [21916f9a](https://github.com/vine-io/vine/commit/21916f9ae703a76a14d1ae29873a69e1ea6d36ad) : github ci/cd
 
 ### Others
 
-- [0f37ed9f](https://github.com/vine-io/vine/commit/0f37ed9ff9b48cef9465268ec4d046951ab74970) v1.5.5
-- [f9ce30ac](https://github.com/vine-io/vine/commit/f9ce30ac4d694bb1ae9e0ecdc7d8c42d05d188f7) v1.5.5
+- [79ab7cf5](https://github.com/vine-io/vine/commit/79ab7cf52ed2d51d502bde05e5e914fcdddad8c7) v1.5.5
+- [29f7a773](https://github.com/vine-io/vine/commit/29f7a7739d7dc6aab14ddfde6c8341e65702969b) v1.5.5
 
 # 1.5.4 (2023/03/06)
 
 ### Features
 
-- [bf26d87b](https://github.com/vine-io/vine/commit/bf26d87b031e3934057bab64d6dfeccf056b3fbc) : 新增 openapi 接口，获取所有 endpoint
-- [49329f55](https://github.com/vine-io/vine/commit/49329f559e5b305a897cb59c6d17aeb51bc316e7) : proto-gen-dao 调整
+- [0a4a3ee8](https://github.com/vine-io/vine/commit/0a4a3ee879fdc1e27398d5bfaa34d62080c88341) : 新增 openapi 接口，获取所有 endpoint
+- [7ada2be1](https://github.com/vine-io/vine/commit/7ada2be1eefa455a160c0b59802d45ce9277406d) : proto-gen-dao 调整
 
 ### Bug Fixes
 
-- [e260ef97](https://github.com/vine-io/vine/commit/e260ef97d24cc6b0953b2c12b3a517091b364a0b) : 调整 vine 工具
-- [37e8af6a](https://github.com/vine-io/vine/commit/37e8af6a4f0b11d9e20b8de0851e098461103f89) : 调整测试代码
-- [a4d801fa](https://github.com/vine-io/vine/commit/a4d801fa0c87618c9a76b2f45919a332f6289e26) : Makefile
-- [81ae11c7](https://github.com/vine-io/vine/commit/81ae11c77277c5557b1f0f0f4f8e3e9e520beeda) : README.md
-- [d57a47cc](https://github.com/vine-io/vine/commit/d57a47ccbb3ef1cf6dbf484e1950cc77e65c9575) : 移除 dao, 使用 gorm 代替
-- [ca751bb1](https://github.com/vine-io/vine/commit/ca751bb1187ca11773b5a51008991340645f73e0) : deepcopy 调整
-- [950e7a18](https://github.com/vine-io/vine/commit/950e7a1897d1b24c69018495b4456c071c09ab84) : util/api 调整
-- [9e8f04fa](https://github.com/vine-io/vine/commit/9e8f04fa8c1ee2e4aa5ad6f7258b57cf12b8dd75) : mdns 支持调整 domain
+- [72900e98](https://github.com/vine-io/vine/commit/72900e98ce8d08b3c0cf8e2c0c5a3a5d1d2d2842) : 调整 vine 工具
+- [b19f23d8](https://github.com/vine-io/vine/commit/b19f23d809b71a6d91d0e048ac9367987720108f) : 调整测试代码
+- [2d84254e](https://github.com/vine-io/vine/commit/2d84254e011decadc706dbee2705b5afecb4e710) : Makefile
+- [24ee59d2](https://github.com/vine-io/vine/commit/24ee59d2aef188da321d8cb2128504d3864bdefb) : README.md
+- [825db9b0](https://github.com/vine-io/vine/commit/825db9b01ff8aa1064be6995d4b0034b2d1b77f0) : 移除 dao, 使用 gorm 代替
+- [a83d81cc](https://github.com/vine-io/vine/commit/a83d81cc2713cee3ea1c60c99febfe58cb92fed8) : deepcopy 调整
+- [1d54961b](https://github.com/vine-io/vine/commit/1d54961b6e55928af7e7f377282cbb807bef3056) : util/api 调整
+- [31107ab9](https://github.com/vine-io/vine/commit/31107ab9648e70b9ef71abbeb2cf4b23561ac328) : mdns 支持调整 domain
 
 ### Others
 
-- [d87e7f93](https://github.com/vine-io/vine/commit/d87e7f93e21fe7d52baad80f0a7824ca656d752f) v1.5.4
-- [deffcc39](https://github.com/vine-io/vine/commit/deffcc3924235ede3b4ad2ea21ddf5b59f27b3fa) 更新 docs
-- [cb357540](https://github.com/vine-io/vine/commit/cb3575402b92b94a64781ce9423b3c49c02aef02) github cicd
+- [9a4fb5fc](https://github.com/vine-io/vine/commit/9a4fb5fce3de8c12c69e341f4590a56469d49bf6) v1.5.4
+- [457a83fd](https://github.com/vine-io/vine/commit/457a83fd1dec5d7e4276d26d83bddb87d4fee99f) 更新 docs
+- [58794e8a](https://github.com/vine-io/vine/commit/58794e8a1a9ab6cd8c1fc71ebc2709f1db1c350a) github cicd
 
 # 1.5.3 (2023/02/25)
 
 ### Features
 
-- [323eaa9b](https://github.com/vine-io/vine/commit/323eaa9b4c0f136323721552abbabc5ca7dd19f8) : 添加 changelog
-- [d1d9e840](https://github.com/vine-io/vine/commit/d1d9e840fc83cda216cb751a04d563208692cfa1) : 支持 cobra.Command 嵌入 vine service
-- [4b8ead36](https://github.com/vine-io/vine/commit/4b8ead36908a88b227cca9d393c0215e6b3ac7e3) : 新增 regsitry mdns 参数
-- [7525fe26](https://github.com/vine-io/vine/commit/7525fe26c45959345e4b5be690cb4f1ec6c859a6) : util 调整
+- [f4ae68d6](https://github.com/vine-io/vine/commit/f4ae68d6be57a0a5721e57666d4b1d898a1668e2) : 添加 changelog
+- [4dc70c19](https://github.com/vine-io/vine/commit/4dc70c19b41c16a3f1ff8699a1996a9b41e7ed32) : 支持 cobra.Command 嵌入 vine service
+- [35e866cd](https://github.com/vine-io/vine/commit/35e866cd36a3581c60cca432f2c6ec7e4e0c30f1) : 新增 regsitry mdns 参数
+- [4d87cacd](https://github.com/vine-io/vine/commit/4d87cacd4a18f96e725f643b0d9f425325ab4a87) : util 调整
 
 ### Bug Fixes
 
-- [e57c3805](https://github.com/vine-io/vine/commit/e57c3805d300febda6ea9f44102f5bd551bf6b69) : modify Makefile
-- [ec84ab4e](https://github.com/vine-io/vine/commit/ec84ab4e0e94b25de049269397961b975aa36b16) : github action release
-- [eece43ee](https://github.com/vine-io/vine/commit/eece43eeab6cc5fb68e802a40103b30ae1faa319) : api http modify
-- [69614db5](https://github.com/vine-io/vine/commit/69614db5925f0a856a60553d3dfd342f272a9d53) : api http modify
-- [38d43144](https://github.com/vine-io/vine/commit/38d431447efb4e1ca36612d9ea2aaeb1d900d10f) : update test case
+- [dcc5f69d](https://github.com/vine-io/vine/commit/dcc5f69d128f8c252401ec2093ff4a91cb860bf5) : modify Makefile
+- [dad0cbee](https://github.com/vine-io/vine/commit/dad0cbeefd2b41297e555a4f3594b2e7073c3802) : github action release
+- [f6cc4e6f](https://github.com/vine-io/vine/commit/f6cc4e6f5d1d903b95e15b1178c434b77b530040) : api http modify
+- [279ab86a](https://github.com/vine-io/vine/commit/279ab86a668e18cc99855b2421cdaa240eb46776) : api http modify
+- [4b643305](https://github.com/vine-io/vine/commit/4b6433055ce0e811155518207c38f9192ec45f25) : update test case
 
 ### Others
 
-- [937ecd0b](https://github.com/vine-io/vine/commit/937ecd0bf030a8fe97bdb614aee543ccee79d252) github action
-- [b571cba9](https://github.com/vine-io/vine/commit/b571cba9cee25a4d35c6f478a295f4eeb6efbdc3) github action
-- [6e97624e](https://github.com/vine-io/vine/commit/6e97624e6ad7652e1672313c36ed2d543c43f038) github action
-- [37bc5476](https://github.com/vine-io/vine/commit/37bc54768dd9fb529e04f4c1ea48fbed02169051) v1.5.3
-- [d9eb2660](https://github.com/vine-io/vine/commit/d9eb2660142c37d722a4b6c07e620a0be751a516) github action
-- [7e091636](https://github.com/vine-io/vine/commit/7e0916368f5dd270e4a63b88c4ea928aab9f5a9b) v1.5.3-alpha
-- [449e33af](https://github.com/vine-io/vine/commit/449e33af6195b9ce697d86b9142614a5f90c9fcb) action main
-- [07892afc](https://github.com/vine-io/vine/commit/07892afc8141abda5b77f6301974d4163c850341) Update main.yml
-- [c93d70fe](https://github.com/vine-io/vine/commit/c93d70fe9364a0f4927a25bbd7243b1c9380e55f) action release
+- [3b848609](https://github.com/vine-io/vine/commit/3b848609ae63a9f0093eff148e98afda76f03188) github action
+- [45b079dd](https://github.com/vine-io/vine/commit/45b079dde643481006c11f04a17f7fdea0c34233) github action
+- [1c8022cc](https://github.com/vine-io/vine/commit/1c8022cc1a8c30e502e9d5fb3cc0400d2020f774) github action
+- [62b766b0](https://github.com/vine-io/vine/commit/62b766b0d6ab78bbd2e6809fbb1428be4bbba080) v1.5.3
+- [045a1912](https://github.com/vine-io/vine/commit/045a19123bc5ddacb56a3d4d357b76c8ad4a6095) github action
+- [51d3f000](https://github.com/vine-io/vine/commit/51d3f000b9ee211853578a21ea261f57f5baa0b3) v1.5.3-alpha
+- [64fed1a7](https://github.com/vine-io/vine/commit/64fed1a7d834c147697c2b3ac65a30bf113f629e) action main
+- [4b396d0e](https://github.com/vine-io/vine/commit/4b396d0e39ca7585325b1620f2a7da00afedac02) Update main.yml
+- [2e355992](https://github.com/vine-io/vine/commit/2e355992c9f3ae91b74661baa0c898c08d959dab) action release
 
 # 1.5.2 (2023/02/23)
 
 ### Features
 
-- [d38d7853](https://github.com/vine-io/vine/commit/d38d7853083d4fb4868f69749bce00a2b964adaf) : 添加 util/api
+- [adace677](https://github.com/vine-io/vine/commit/adace677e95a10a0f5a0f9187fc094100eecbaff) : 添加 util/api
 
 ### Bug Fixes
 
-- [f68e4b43](https://github.com/vine-io/vine/commit/f68e4b434ccec22088dd59a2deb7e2b4e2263822) : github ci/cd
-- [75bb6dbc](https://github.com/vine-io/vine/commit/75bb6dbc06bb0c2d33587604472da07c0bb391bc) : 调整 mdns registry 超时时间
-- [d205994f](https://github.com/vine-io/vine/commit/d205994ffc39c81612b845ae642ca721b673a10e) : vine server id
-- [02e85c67](https://github.com/vine-io/vine/commit/02e85c67cf3376e5da3f2b969bb17259daa2b195) : vine cli
-- [a1efc043](https://github.com/vine-io/vine/commit/a1efc0430e89e637e898fd30045667a1c77eb0bb) : docs 更新
-- [072011cb](https://github.com/vine-io/vine/commit/072011cbcb8ef0d4a0a96b326fbd68505f558ef9) : docs 更新
+- [ce922aae](https://github.com/vine-io/vine/commit/ce922aaeec92f8e47a500088eb28dec420394fef) : github ci/cd
+- [7395c391](https://github.com/vine-io/vine/commit/7395c391d97d2826a5a8da6f8eaafd5e1221581c) : 调整 mdns registry 超时时间
+- [1fc5bc3b](https://github.com/vine-io/vine/commit/1fc5bc3bce407ab557f86bc123b2caa89129a769) : vine server id
+- [ee0fec24](https://github.com/vine-io/vine/commit/ee0fec246cbddb12fe168ee163b2f3df1333d551) : vine cli
+- [3f413442](https://github.com/vine-io/vine/commit/3f413442d3f41ba8f64565955b91b8b9fa4ad2f8) : docs 更新
+- [368e52ab](https://github.com/vine-io/vine/commit/368e52abba28870cb9e4b36ba8a89e3d12610bc1) : docs 更新
 
 ### Others
 
-- [9da773d8](https://github.com/vine-io/vine/commit/9da773d832f1e3bfe1d3853d91aaecd678c395bc) github ci/cd
-- [76a9cc9b](https://github.com/vine-io/vine/commit/76a9cc9b6d263f484271ff9548c78ec94364c895) v1.5.2
-- [3cb460e3](https://github.com/vine-io/vine/commit/3cb460e3d7357bcc08a68c08e32c86917873272b) v1.5.2
+- [e22777f4](https://github.com/vine-io/vine/commit/e22777f49aea59873bf25901a595805b517984d9) github ci/cd
+- [feddf082](https://github.com/vine-io/vine/commit/feddf08212e13e01233aab35b125d0d7999bf609) v1.5.2
+- [e97b8faf](https://github.com/vine-io/vine/commit/e97b8fafae9fd0e9a470def31d50388d4c643c82) v1.5.2
 
 # 1.5.1 (2023/02/21)
 
 ### Features
 
-- [8cc2e344](https://github.com/vine-io/vine/commit/8cc2e344d9e8b2286be58aaf04234922bb0dc8b3) : 新增 vine 参数
-- [5bd3bff7](https://github.com/vine-io/vine/commit/5bd3bff7f110ef81244d0bc594fdd4c50985a72e) : 新增 install.sh 脚本
+- [3194612f](https://github.com/vine-io/vine/commit/3194612f8e73c4b4fb683bc657798129d70feb89) : 新增 vine 参数
+- [5b6d3857](https://github.com/vine-io/vine/commit/5b6d385774b075b982adc4d622264a191480c251) : 新增 install.sh 脚本
 
 ### Bug Fixes
 
-- [c0466349](https://github.com/vine-io/vine/commit/c04663499da780b6caaa6e2b3a78902a18be29c6) : docs 更新
-- [5a39306c](https://github.com/vine-io/vine/commit/5a39306c23cd6ea11221390dfeb7a7feca12b932) : vine api 参数调整
+- [c7cf5915](https://github.com/vine-io/vine/commit/c7cf5915618fcc8c75f240cdbad6a9734f567f55) : docs 更新
+- [cc7fcbc2](https://github.com/vine-io/vine/commit/cc7fcbc251968b40938919eec2226d2a961eeb72) : vine api 参数调整
 
 ### Others
 
-- [2c311bad](https://github.com/vine-io/vine/commit/2c311bad3204ab96e6cdf574516bb64af9dc2c03) v1.5.1
-- [c81cd3e2](https://github.com/vine-io/vine/commit/c81cd3e2bc5012aca1677daf3c76fc0a68d7f7c0) v1.5.1
+- [a9b0817c](https://github.com/vine-io/vine/commit/a9b0817c47aa823186b183d1f8620dd8e7384fc4) v1.5.1
+- [02f4ac64](https://github.com/vine-io/vine/commit/02f4ac6431e1ade2a0629a2f14cb1a37b49391c8) v1.5.1
 
 # 1.5.0 (2023/02/20)
 
 ### Features
 
-- [ba8edde1](https://github.com/vine-io/vine/commit/ba8edde12da0d844cfc42bb0da0583d8bd7bd465) : 添加子命令
+- [29874a65](https://github.com/vine-io/vine/commit/29874a650f91ee78b081ae21c45baed01b076450) : 添加子命令
 
 ### Bug Fixes
 
-- [abef6d05](https://github.com/vine-io/vine/commit/abef6d0557a1d2fb55d5039461934aace9923095) : vine 模板调整
-- [e9c291f7](https://github.com/vine-io/vine/commit/e9c291f7434631a1cbdf72dd4d71004b0269f61c) : modify
-- [4459d079](https://github.com/vine-io/vine/commit/4459d079eabd38f47b0fe04d8c689df84bee4ac8) : 调整 vine 工具
-- [8e725320](https://github.com/vine-io/vine/commit/8e725320933387322481711d07bf8402eea2c4b8) : 移除 *vine.Context
-- [74e70be7](https://github.com/vine-io/vine/commit/74e70be78aa85d813758e891033c8893a31cf3f5) : 移除 scheduler
-- [18c2bc49](https://github.com/vine-io/vine/commit/18c2bc493313dae1fe7e291fe655ae9b4be5ff6a) : 设置默认配置文件路径
-- [d3402d23](https://github.com/vine-io/vine/commit/d3402d2354bc003acb37591a972ef2e2b95d1b07) : modify logger.fields
-- [de78c744](https://github.com/vine-io/vine/commit/de78c7441fcd9e0fa78e075d4bc706a4ecd9521c) : 添加 logger 命令行参数
-- [c5011a49](https://github.com/vine-io/vine/commit/c5011a4976e8c508c41c83ecab68349210f7d728) : cmd modify
-- [1e5f401e](https://github.com/vine-io/vine/commit/1e5f401e56e62506271084d165aaf0d6925ed417) : modify cmd
-- [d77cfa97](https://github.com/vine-io/vine/commit/d77cfa97fdf395bb81bc5bba55f932bed095b80f) : registry cache
-- [1621e271](https://github.com/vine-io/vine/commit/1621e271dd4c52f7e4f53dac49fdec6d3ddab14a) : grpc codec
-- [9b9fef96](https://github.com/vine-io/vine/commit/9b9fef96885fad62e7ba4ae498175884fbd5d6a9) : vine cli
-- [e2b96eea](https://github.com/vine-io/vine/commit/e2b96eeaac26c9aa646ca01e8801e824465a4479) : protoc-gen-vine
+- [1de244ed](https://github.com/vine-io/vine/commit/1de244eda6a52ef31ba3e64aaa1018ba3bd4396c) : vine 模板调整
+- [c1926917](https://github.com/vine-io/vine/commit/c192691762ef38d090d3b242d0b5694c11d5ce50) : modify
+- [69acdf26](https://github.com/vine-io/vine/commit/69acdf26f2bbd4717b67f9341eaa719da782acab) : 调整 vine 工具
+- [31dbef83](https://github.com/vine-io/vine/commit/31dbef83944e0dec736a826ed5f201e3bb945d65) : 移除 *vine.Context
+- [4cda899c](https://github.com/vine-io/vine/commit/4cda899c3f9f79463df2e111916aea5cd29e7c57) : 移除 scheduler
+- [0ec314c8](https://github.com/vine-io/vine/commit/0ec314c83a6e70883c68ee6a69e5cb2a0db322ea) : 设置默认配置文件路径
+- [477def5a](https://github.com/vine-io/vine/commit/477def5ab5a5a18ffcde879e75f4fb4ce08ccbe0) : modify logger.fields
+- [2906f6d0](https://github.com/vine-io/vine/commit/2906f6d0067eb730069357555d3de1c06d29e688) : 添加 logger 命令行参数
+- [767c8612](https://github.com/vine-io/vine/commit/767c8612967a6705109f8dcb1546ccfd584fa7b3) : cmd modify
+- [35e0730d](https://github.com/vine-io/vine/commit/35e0730d0ad36891bee73979ce9a65a4109c8db4) : modify cmd
+- [7c7e20be](https://github.com/vine-io/vine/commit/7c7e20be9156af00f275304e6ddb7c13e28ff80c) : registry cache
+- [354ebb3b](https://github.com/vine-io/vine/commit/354ebb3bab376204be7d2694a0a64854dd5d263c) : grpc codec
+- [16f88dd5](https://github.com/vine-io/vine/commit/16f88dd5e653291858131384de1ca14ce65e6ef5) : vine cli
+- [09bf37f9](https://github.com/vine-io/vine/commit/09bf37f9f762b10da280ceb08f9b3b9d4f1c9705) : protoc-gen-vine
 
 ### Others
 
-- [0ac577ca](https://github.com/vine-io/vine/commit/0ac577ca6e454f43516d9436fa01afdb9a941a3f) v1.5.0
-- [3b2a82ff](https://github.com/vine-io/vine/commit/3b2a82ff7c25edef786c9b9d3348dbef6f2b4190) v1.4.21
-- [924621b9](https://github.com/vine-io/vine/commit/924621b9169e6ecfe940c35219b1989be7a9d228) v1.4.20
-- [9ec9f674](https://github.com/vine-io/vine/commit/9ec9f67416633a7429948d8b504d9f8e59c99b91) cli 转成 cobra 和 viper
+- [98e98219](https://github.com/vine-io/vine/commit/98e982193687a49e2ca69d2fbdb216b350707380) v1.5.0
+- [239e79d3](https://github.com/vine-io/vine/commit/239e79d35733dcea0fcf8eb955e8a44507e44251) v1.4.21
+- [4efdfbc6](https://github.com/vine-io/vine/commit/4efdfbc644ea2dc93f62f01825faea4b3360b63e) v1.4.20
+- [cac9e2c1](https://github.com/vine-io/vine/commit/cac9e2c110a3101c8a3e0bc869f5554d6c790951) cli 转成 cobra 和 viper
 
 # 1.4.19 (2023/02/08)
 
 ### Bug Fixes
 
-- [7f172720](https://github.com/vine-io/vine/commit/7f172720d1c7fedf187e876d4c73773d86024a7a) : openapi modify
-- [fa0465c7](https://github.com/vine-io/vine/commit/fa0465c7b5c455b8dfbbfcbffdea978821da4d1e) : openapi modify
+- [fa9382e3](https://github.com/vine-io/vine/commit/fa9382e3ff481245739fd8ce9dc7bd699b02460d) : openapi modify
+- [6723fafc](https://github.com/vine-io/vine/commit/6723fafc375e0d872659bb38d692787110472c27) : openapi modify
 
 ### Others
 
-- [770cbb7e](https://github.com/vine-io/vine/commit/770cbb7ecba2f217d8c5fe7bc390f28707c6e536) v1.4.19
-- [7cbd5bc0](https://github.com/vine-io/vine/commit/7cbd5bc0e8c400a0e4def51ed8dd301998d9199b) v1.4.19
+- [d9d68f04](https://github.com/vine-io/vine/commit/d9d68f04cd0c89fe0ad6d5f93f071c4784e01922) v1.4.19
+- [9bb27d11](https://github.com/vine-io/vine/commit/9bb27d1104554c888fcef259291e62a63ea82f15) v1.4.19
 
 # 1.4.18 (2023/02/07)
 
 ### Bug Fixes
 
-- [21695091](https://github.com/vine-io/vine/commit/216950917684747aab6fbd48bd42980ff41922cf) : 调整 openapi 文档
-- [e3354470](https://github.com/vine-io/vine/commit/e3354470d85cf6c996eef082ead1391ef3c6eb95) : cmd
-- [0032bb72](https://github.com/vine-io/vine/commit/0032bb72a4498f979f71eab2f219c952e17318ff) : 调整 proto-gen-vine
+- [c37e4063](https://github.com/vine-io/vine/commit/c37e4063150f8d13aba463bbdba17dc9ab8fbd1f) : 调整 openapi 文档
+- [840c27a8](https://github.com/vine-io/vine/commit/840c27a887439ddd1ce70597af9b187f1e4a6a6d) : cmd
+- [2cfc4f05](https://github.com/vine-io/vine/commit/2cfc4f0504931dde05cefc090c546dcfc36a0ad1) : 调整 proto-gen-vine
 
 ### Others
 
-- [01b349f3](https://github.com/vine-io/vine/commit/01b349f3450bed3e40afdf9fafd23a4453f9a34e) v1.4.18
+- [8d4400d4](https://github.com/vine-io/vine/commit/8d4400d47a463f7fec55808c6242a03a18678ba1) v1.4.18
 
 # 1.4.17 (2023/01/12)
 
 ### Features
 
-- [2cc165a9](https://github.com/vine-io/vine/commit/2cc165a914c3731d722c61b4475534311af4339b) : 更新 protoc-gen-dao
+- [945c4140](https://github.com/vine-io/vine/commit/945c414026b4f74554def689f327d16288e3fdf2) : 更新 protoc-gen-dao
 
 ### Bug Fixes
 
-- [58c569ef](https://github.com/vine-io/vine/commit/58c569efb6965f4716f478860d9d93b85d08a0b9) : 调整 core/server/grpc
+- [0db386fe](https://github.com/vine-io/vine/commit/0db386fe3e53506362adc4483695161b7b85f25a) : 调整 core/server/grpc
 
 ### Others
 
-- [e4397beb](https://github.com/vine-io/vine/commit/e4397bebfce75e5f2f7ca4238618e9eca6ecb3c4) v1.4.17
+- [4b5656f9](https://github.com/vine-io/vine/commit/4b5656f97090cd98a66dcc80df3410164cf656c9) v1.4.17
 
 # 1.4.16 (2023/01/09)
 
 ### Bug Fixes
 
-- [a48855b9](https://github.com/vine-io/vine/commit/a48855b99ec9f9cdb7b32052361f1737156dde9e) : 调整 protoc-gen-dao
+- [119be1d2](https://github.com/vine-io/vine/commit/119be1d2102374e2f53762bcf999bf066cae7b4a) : 调整 protoc-gen-dao
 
 ### Others
 
-- [cd0a9de6](https://github.com/vine-io/vine/commit/cd0a9de6da4421359d9c827f541a81decc8877f3) v1.4.16
+- [8609d51a](https://github.com/vine-io/vine/commit/8609d51a39a14af4ddaad4eb9db0bea3210e8c3a) v1.4.16
 
 # 1.4.15 (2023/01/05)
 
 ### Bug Fixes
 
-- [dc05a3b7](https://github.com/vine-io/vine/commit/dc05a3b74722db7a96d7acfbcd3740a91555c783) : 库升级
-- [24abba22](https://github.com/vine-io/vine/commit/24abba227bb90bd68de0cd3b8e9de89b95a25875) : opendoc
-- [25be6905](https://github.com/vine-io/vine/commit/25be6905c38b2ac835265602805de1bbe0bd4ebf) : make lint
-- [12d04dc9](https://github.com/vine-io/vine/commit/12d04dc9910717377858a2217d762f07cc829c2f) : ci/cd
-- [1b558182](https://github.com/vine-io/vine/commit/1b558182067bf5f5f506ec44fa09293471fc49c1) : Makefile
+- [df6355d6](https://github.com/vine-io/vine/commit/df6355d66c0134fe1732bab1ac19fa63b0c49c63) : 库升级
+- [d4cd58b5](https://github.com/vine-io/vine/commit/d4cd58b5ee1e9c162518d149c628a60676e5364c) : opendoc
+- [4034a323](https://github.com/vine-io/vine/commit/4034a32310d7f94a7bba9ff601cb3fee6525878d) : make lint
+- [227fd22e](https://github.com/vine-io/vine/commit/227fd22e8e230dfcaeaadf07250650134cd91ff6) : ci/cd
+- [d7dbe347](https://github.com/vine-io/vine/commit/d7dbe3474de00478fd0f4bce3e3c1338ab115c44) : Makefile
 - [8d9847ec](https://github.com/vine-io/vine/commit/8d9847ec70bfc7dc714000f726412c88e4fb7f2f) : .github
 
 ### Others
 
-- [0bf3335d](https://github.com/vine-io/vine/commit/0bf3335de21136e78f0e2ff94c56cf370ce59b3c) v1.4.15
-- [36c40c56](https://github.com/vine-io/vine/commit/36c40c569fffe2998848f84a31d58d756d15c70e) Update main.yml
+- [bfa1c5b3](https://github.com/vine-io/vine/commit/bfa1c5b3bf84d75b78a0ec77c7486b28f1735120) v1.4.15
+- [c0a620d8](https://github.com/vine-io/vine/commit/c0a620d88bcf2db4d66f2b0ee52b991d39f0ef17) Update main.yml
 
 # 1.4.14 (2022/12/30)
 
