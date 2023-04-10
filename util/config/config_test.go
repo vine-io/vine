@@ -23,6 +23,7 @@
 package config
 
 import (
+	"bytes"
 	"testing"
 )
 
@@ -73,4 +74,35 @@ func Test(t *testing.T) {
 			}
 		})
 	}
+}
+
+type UnmarshalKeyS struct {
+	Name string `yaml:"name"`
+	Sub  *SubS  `yaml:"sub"`
+}
+
+type SubS struct {
+	X int32 `mapstructure:"sx"`
+	Y int32 `mapstructure:"sy"`
+}
+
+func TestUnmarshalKey(t *testing.T) {
+	SetConfigType("yaml")
+	in := bytes.NewBufferString(`
+name: test
+sub:
+  sx: 1
+  sy: 2`)
+	err := ReadConfig(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sub := SubS{}
+	err = UnmarshalKey(&sub, "sub")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(sub)
 }

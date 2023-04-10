@@ -693,8 +693,8 @@ func (g *dao) generateStorageEntity(file *generator.FileDescriptor, schema *Stor
 func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Storage) {
 	sname, pname := schema.Name, schema.Desc.Proto.GetName()
 
-	g.P(fmt.Sprintf(`func (s *%s) AutoMigrate() error {`, sname))
-	g.P(fmt.Sprintf("return s.tx.Migrator().AutoMigrate(&XX%s{})", pname))
+	g.P(fmt.Sprintf(`func (s *%s) AutoMigrate(tx *%s.DB) error {`, g.gormPkg.Use(), sname))
+	g.P(fmt.Sprintf("return tx.Migrator().AutoMigrate(&XX%s{})", pname))
 	g.P("}")
 	g.P()
 

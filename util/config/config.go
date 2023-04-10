@@ -143,7 +143,7 @@ func Set(value interface{}, path ...string) {
 
 // UnmarshalKey takes a single key and unmarshals it into a Struct.
 func UnmarshalKey(rawVal interface{}, path ...string) error {
-	return config.UnmarshalKey(strings.Join(path, ","), rawVal)
+	return config.UnmarshalKey(strings.Join(path, "."), rawVal)
 }
 
 // Unmarshal unmarshals the config into a Struct. Make sure that the tags
