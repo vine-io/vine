@@ -15,7 +15,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0
 	github.com/imdario/mergo v0.3.11
 	github.com/jinzhu/inflection v1.0.0
-	github.com/jinzhu/now v1.1.1
 	github.com/json-iterator/go v1.1.12
 	github.com/kr/pretty v0.3.0
 	github.com/miekg/dns v1.1.50

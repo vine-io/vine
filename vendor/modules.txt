@@ -92,9 +92,6 @@ github.com/inconshreveable/mousetrap
 # github.com/jinzhu/inflection v1.0.0
 ## explicit
 github.com/jinzhu/inflection
-# github.com/jinzhu/now v1.1.1
-## explicit; go 1.12
-github.com/jinzhu/now
 # github.com/json-iterator/go v1.1.12
 ## explicit; go 1.12
 github.com/json-iterator/go
@@ -196,9 +193,7 @@ github.com/subosito/gotenv
 github.com/ugorji/go/codec
 # github.com/vine-io/gscheduler v0.3.0
 ## explicit; go 1.16
-github.com/vine-io/gscheduler
 github.com/vine-io/gscheduler/cron
-github.com/vine-io/gscheduler/rbtree
 # github.com/xlab/treeprint v1.0.0
 ## explicit; go 1.13
 github.com/xlab/treeprint
