@@ -679,14 +679,14 @@ func (g *dao) generateStorageEntity(file *generator.FileDescriptor, schema *Stor
 	g.P("type ", sname, " struct {")
 	g.P(fmt.Sprintf(`tx *gorm.DB %s`, toQuoted(`json:"-" gorm:"-"`)))
 	g.P("joins []string ", toQuoted(`json:"-" gorm:"-"`))
-	g.P("m *XX", pname)
+	g.P("m XX", pname)
 	g.P(fmt.Sprintf(`exprs []%s.Expression %s`, g.clausePkg.Use(), toQuoted(`json:"-" gorm:"-"`)))
 	g.P()
 	g.P("}")
 	g.P()
 
 	g.P(fmt.Sprintf(`func New%s(tx *%s.DB, m *%s) *%s {
-	return &%s{tx: tx, joins: []string{}, exprs: make([]%s.Expression, 0), m: From%s(m)}
+	return &%s{tx: tx, joins: []string{}, exprs: make([]%s.Expression, 0), m: *From%s(m)}
 }`, sname, g.gormPkg.Use(), pname, sname, sname, g.clausePkg.Use(), pname))
 }
 
@@ -775,7 +775,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 
 	g.P(fmt.Sprintf(`func (s *%s) XXLoad(tx *%s.DB, in *%s) error {`, sname, g.gormPkg.Use(), g.wrapPkg(pname)))
 	g.P(fmt.Sprintf(`s.tx = tx`))
-	g.P(fmt.Sprintf("*s.m = *From%s(in)", pname))
+	g.P(fmt.Sprintf("s.m = *From%s(in)", pname))
 	g.P("return nil")
 	g.P("}")
 	g.P()
