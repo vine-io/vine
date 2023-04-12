@@ -267,8 +267,9 @@ func Run(cmd *cobra.Command, args []string, svcOpts ...vine.Option) {
 
 func Commands(options ...vine.Option) []*cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "api",
-		Short: "Run the api gateway",
+		Use:          "api",
+		SilenceUsage: true,
+		Short:        "Run the api gateway",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			Run(cmd, args, options...)
 			return nil

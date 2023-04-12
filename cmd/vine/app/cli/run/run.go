@@ -242,9 +242,10 @@ func run(c *cobra.Command, cArgs []string) error {
 
 func Commands() []*cobra.Command {
 	runCmd := &cobra.Command{
-		Use:   "run",
-		Short: "Start a vine project",
-		RunE:  run,
+		Use:          "run",
+		Short:        "Start a vine project",
+		SilenceUsage: true,
+		RunE:         run,
 	}
 	runCmd.PersistentFlags().Bool("auto-restart", true, "auto restart project when code updating")
 	runCmd.PersistentFlags().StringSlice("watch", nil, "specify directory in which for watching")

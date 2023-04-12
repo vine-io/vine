@@ -163,9 +163,10 @@ func runGateway(cmd *cobra.Command, args []string) error {
 
 func cmdGateway() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gateway",
-		Short: "Create a gateway template",
-		RunE:  runGateway,
+		Use:          "gateway",
+		Short:        "Create a gateway template",
+		SilenceUsage: true,
+		RunE:         runGateway,
 	}
 	cmd.PersistentFlags().String("plugin", "", "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times")
 

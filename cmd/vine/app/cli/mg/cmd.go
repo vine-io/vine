@@ -39,8 +39,9 @@ func Commands() []*cobra.Command {
 	newCmd.AddCommand(cmdSRV(), cmdGateway(), cmdProto())
 
 	initCmd := &cobra.Command{
-		Use:   "init",
-		Short: "Initialize a vine project",
+		Use:          "init",
+		Short:        "Initialize a vine project",
+		SilenceUsage: true,
 		RunE: func(c *cobra.Command, args []string) error {
 			return runInit(c, args)
 		},

@@ -234,9 +234,10 @@ func runSRV(cmd *cobra.Command, args []string) error {
 func cmdSRV() *cobra.Command {
 
 	cmd := &cobra.Command{
-		Use:   "service",
-		Short: "Create a service template",
-		RunE:  runSRV,
+		Use:          "service",
+		Short:        "Create a service template",
+		SilenceUsage: true,
+		RunE:         runSRV,
 	}
 	cmd.PersistentFlags().String("plugin", "", "Specify plugins e.g --plugin=registry=etcd:broker=nats or use flag multiple times")
 	cmd.PersistentFlags().Bool("with-api", false, "Specify restful api code for service")
