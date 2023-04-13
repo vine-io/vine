@@ -14,12 +14,12 @@ import (
 )
 
 // PrimpHandler primp *gin.Engine with rpc handler
-func PrimpHandler(app *gin.Engine, co vclient.Client, ns string) {
+func PrimpHandler(ns, name string, app *gin.Engine, co vclient.Client) {
 
 	Type := "api"
 	HandlerType := "rpc"
 
-	openapi.RegisterOpenAPI(co, app)
+	openapi.RegisterOpenAPI(name, co, app)
 
 	// create the namespace resolver
 	nsResolver := namespace.NewResolver(Type, ns)

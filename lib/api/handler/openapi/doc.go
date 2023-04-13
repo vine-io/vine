@@ -49,33 +49,34 @@ func newDocStore(api *pb.OpenAPI) *docStore {
 	return &docStore{Doc: api}
 }
 
-func (s *docStore) discovery(co client.Client, reg registry.Registry, services []*registry.Service) {
+func (s *docStore) discovery(name string, co client.Client, reg registry.Registry, services []*registry.Service) {
 	ctx := context.TODO()
 	for _, item := range services {
 		list, err := reg.GetService(ctx, item.Name)
 		if err != nil {
 			continue
 		}
-		if item.Name == "go.vine.api" {
-			for _, node := range item.Nodes {
-				if url, ok := node.Metadata["api-address"]; ok {
-					if strings.HasPrefix(url, ":") {
-						for _, ip := range maddr.IPv4s() {
-							if ip == "localhost" || ip == "127.0.0.1" {
-								continue
-							}
-							url = ip + url
-						}
-					}
-					if !strings.HasPrefix(url, "http://") || !strings.HasPrefix(url, "https://") {
-						url = "http://" + url
-					}
-					s.AddServer(url, item.Name)
-				}
-			}
-		}
 
 		for _, i := range list {
+			if i.Name == name {
+				for _, node := range i.Nodes {
+					if url, ok := node.Metadata["api-address"]; ok {
+						if strings.HasPrefix(url, ":") {
+							for _, ip := range maddr.IPv4s() {
+								if ip == "localhost" || ip == "127.0.0.1" {
+									continue
+								}
+								url = ip + url
+							}
+						}
+						if !strings.HasPrefix(url, "http://") || !strings.HasPrefix(url, "https://") {
+							url = "http://" + url
+						}
+						s.AddServer(url, i.Name)
+					}
+				}
+			}
+
 			rsp, e := pb.NewOpenAPIService(i.Name, co).GetOpenAPIDoc(ctx, &pb.GetOpenAPIDocRequest{})
 			if e != nil && i.Name != "go.vine.api" {
 				log.Warnf("get %s openapi: %v", i.Name, e)

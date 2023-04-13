@@ -24,7 +24,7 @@ func TestNewPrimpHandler(t *testing.T) {
 		ctx.JSON(http.StatusOK, msg)
 	})
 
-	PrimpHandler(app, s.Client(), ns)
+	PrimpHandler(ns, s.Name(), app, s.Client())
 
 	s.Server().Init(grpc.HttpHandler(app))
 

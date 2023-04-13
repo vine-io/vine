@@ -119,6 +119,7 @@ message PathRequestBody {
 message PathRequestBodyContent {
     ApplicationContent applicationJson = 1;
     ApplicationContent applicationXml = 2;
+    ApplicationContent applicationYaml = 3;
 }
 
 message ApplicationContent {

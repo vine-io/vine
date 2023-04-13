@@ -117,6 +117,10 @@ openapi:
 	cd $(GOPATH)/src && \
 	protoc  -I . -I $(GOPATH)/src -I $(GOPATH)/src/github.com/gogo/protobuf/gogoproto --gogo_out=:. --vine_out=:. $(ROOT)/lib/api/handler/openapi/proto/openapi.proto
 	sed -i "" 's/json:"ref,omitempty"/json:"$$ref,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
+	sed -i "" 's/json:"applicationJson,omitempty"/json:"application\/json,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
+	sed -i "" 's/json:"applicationXml,omitempty"/json:"application\/xml,,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
+	sed -i "" 's/json:"applicationYaml,omitempty"/json:"application\/yaml,,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
+	statik --src=third_party/OpenAPI -dest=lib/api/handler/openapi/
 
 docker:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
