@@ -440,11 +440,11 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 	}
 
 	if ttl := uc.GetDuration("server.register-ttl"); ttl > 0 {
-		serverOpts = append(serverOpts, server.RegisterTTL(ttl*time.Second))
+		serverOpts = append(serverOpts, server.RegisterTTL(ttl))
 	}
 
 	if val := uc.GetDuration("server.register-interval"); val > 0 {
-		serverOpts = append(serverOpts, server.RegisterInterval(val*time.Second))
+		serverOpts = append(serverOpts, server.RegisterInterval(val))
 	}
 
 	// client opts
