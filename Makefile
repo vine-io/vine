@@ -103,7 +103,6 @@ build-linux-tool:
 	GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w ${LDFLAGS}" -o _output/vine.exe cmd/vine/main.go
 
 install:
-	go get github.com/rakyll/statik
 	go get github.com/gogo/protobuf
 	go get github.com/vine-io/vine/cmd/vine
 	go get github.com/vine-io/vine/cmd/protoc-gen-gogo
@@ -120,7 +119,6 @@ openapi:
 	sed -i "" 's/json:"applicationJson,omitempty"/json:"application\/json,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
 	sed -i "" 's/json:"applicationXml,omitempty"/json:"application\/xml,,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
 	sed -i "" 's/json:"applicationYaml,omitempty"/json:"application\/yaml,,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
-	statik --src=third_party/OpenAPI -dest=lib/api/handler/openapi/
 
 docker:
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .

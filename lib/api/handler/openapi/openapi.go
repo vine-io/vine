@@ -26,14 +26,15 @@ import (
 	"bytes"
 	"html/template"
 	"mime"
+	"net/http"
 	"path"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rakyll/statik/fs"
 	"github.com/vine-io/vine/core/client"
 	"github.com/vine-io/vine/core/registry"
-	_ "github.com/vine-io/vine/lib/api/handler/openapi/statik"
+	"github.com/vine-io/vine/third_party"
+
 	log "github.com/vine-io/vine/lib/logger"
 )
 
@@ -43,12 +44,7 @@ var (
 
 func RegisterOpenAPI(name string, co client.Client, router *gin.Engine) {
 	mime.AddExtensionType(".svg", "image/svg+xml")
-	statikFs, err := fs.New()
-	if err != nil {
-		log.Fatalf("Starting OpenAPI: %v", err)
-	}
-
-	router.StaticFS(filepath.Join(DefaultPrefix, "static/"), statikFs)
+	router.StaticFS(filepath.Join(DefaultPrefix, "static/"), http.FS(third_party.GetStatic()))
 
 	router.GET(DefaultPrefix, swagger())
 	router.GET(path.Join(DefaultPrefix, "redoc"), redoc())

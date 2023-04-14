@@ -98,6 +98,12 @@ func (s *docStore) AddServer(url, desc string) {
 	s.Lock()
 	defer s.Unlock()
 
+	for _, item := range s.Doc.Servers {
+		if item.Url == url {
+			return
+		}
+	}
+
 	s.Doc.Servers = append(s.Doc.Servers, &pb.OpenAPIServer{
 		Url:         url,
 		Description: desc,
