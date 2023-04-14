@@ -20,7 +20,6 @@ require (
 	github.com/miekg/dns v1.1.50
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/rakyll/statik v0.1.7
 	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
