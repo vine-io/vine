@@ -1,3 +1,57 @@
+# 1.6.3 (2023/04/14)
+
+### Bug Fixes
+
+- [68a5094f](https://github.com/vine-io/vine/commit/68a5094f0c0fb209142e14f3fe0c46bfde222ec1) : 移除statik
+
+### Others
+
+- [f8fd97cb](https://github.com/vine-io/vine/commit/f8fd97cb4b2718a79a7f31afe12a705727a69385) v1.6.3
+
+# 1.6.2 (2023/04/13)
+
+### Features
+
+- [4f768416](https://github.com/vine-io/vine/commit/4f768416d92f3d6db9e8eeeecbf8c277281e6f8e) : openapi swagger-4.x
+
+### Others
+
+- [b83ae1f1](https://github.com/vine-io/vine/commit/b83ae1f13bb6bba4eea2f6f18a3dd5e6cba2ace1) v1.6.2
+
+# 1.6.1 (2023/04/13)
+
+### Bug Fixes
+
+- [1c45bb08](https://github.com/vine-io/vine/commit/1c45bb08e7141e34fdd140ef737f788b6547e620) : vine server register
+- [fc60febc](https://github.com/vine-io/vine/commit/fc60febc4662c536adb40dfe202e8dfb2b76f8dd) : vine command line
+- [2c951307](https://github.com/vine-io/vine/commit/2c951307e88cfd14b6a410491d95130bdd77c302) : modify protoc-gen-dao
+
+### Others
+
+- [b63e9fcd](https://github.com/vine-io/vine/commit/b63e9fcdce13cd630277c085f3b80a1bcd7670f8) v1.6.1
+
+# 1.6.0 (2023/04/10)
+
+### Bug Fixes
+
+- [e3cf3646](https://github.com/vine-io/vine/commit/e3cf3646f7e28f93d0bba01fc7f6925aec854816) : protoc-gen-dao
+
+### Others
+
+- [3d197918](https://github.com/vine-io/vine/commit/3d197918334df80f77c8b8327e854df0afd93b44) v1.6.0
+
+# 1.5.11 (2023/04/10)
+
+### Bug Fixes
+
+- [f35890df](https://github.com/vine-io/vine/commit/f35890df6ee51168a7b5b4b17808a31b122d55da) : protoc-gen-dao
+
+### Others
+
+- [638f37d2](https://github.com/vine-io/vine/commit/638f37d2ba5d540d0d997172a60baf61ed0d5430) v1.5.11
+- [f658f4d0](https://github.com/vine-io/vine/commit/f658f4d0f286a4b081e41a848a0f462836f8a7d0) docs
+- [02a238ec](https://github.com/vine-io/vine/commit/02a238ec54e66a6e38bdbd413505dd0aa2606ac0) CHANGELOG.md
+
 # 1.5.10 (2023/03/24)
 
 ### Bug Fixes
