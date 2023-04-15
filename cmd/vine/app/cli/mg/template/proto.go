@@ -110,6 +110,7 @@ import (
 	"github.com/vine-io/apimachinery/runtime"
 	"github.com/vine-io/apimachinery/schema"
 	"github.com/vine-io/apimachinery/storage"
+	"gorm.io/gorm"
 )
 
 // GroupName is the group name for this API
@@ -130,8 +131,8 @@ var (
 	storageSet     = make([]storage.Storage, 0)
 )
 
-func addKnownFactory(f storage.Factory) error {
-	return f.AddKnownStorages(SchemeGroupVersion, storageSet...)
+func addKnownFactory(db *gorm.db, f storage.Factory) error {
+	return f.AddKnownStorages(db, SchemeGroupVersion, storageSet...)
 }
 
 func addKnownTypes(scheme runtime.Scheme) error {

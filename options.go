@@ -61,11 +61,13 @@ type Options struct {
 	// Other options for implementations of the interface
 	// can be stored in a context
 	Context context.Context
+	Cancel  context.CancelFunc
 
 	Signal bool
 }
 
 func newOptions(opts ...Option) Options {
+	ctx, cancel := context.WithCancel(context.Background())
 	opt := Options{
 		Broker:   broker.DefaultBroker,
 		Cmd:      cmd.DefaultCmd,
@@ -75,7 +77,8 @@ func newOptions(opts ...Option) Options {
 		Trace:    trace.DefaultTracer,
 		Cache:    cache.DefaultCache,
 		Registry: registry.DefaultRegistry,
-		Context:  context.Background(),
+		Context:  ctx,
+		Cancel:   cancel,
 		Signal:   true,
 	}
 

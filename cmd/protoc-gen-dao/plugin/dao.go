@@ -222,6 +222,7 @@ func (g *dao) wrapStorages(file *generator.FileDescriptor, msg *generator.Messag
 }
 
 func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDescriptor, s *Storage, n *int) {
+	fileName := strings.ReplaceAll(filepath.Base(file.GetName()), ".", "_")
 	for _, item := range m.Fields {
 		fTags := g.extractTags(item.Comments)
 
@@ -243,7 +244,7 @@ func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDe
 			Num:  *n,
 		}
 		if item.Proto.IsRepeated() {
-			alias := generator.CamelCaseSlice([]string{m.Proto.GetName(), item.Proto.GetName()})
+			alias := generator.CamelCaseSlice([]string{fileName, m.Proto.GetName(), item.Proto.GetName()})
 			if strings.HasSuffix(item.Proto.GetTypeName(), "Entry") {
 				field.Type = _map
 				for _, nest := range m.Proto.GetNestedType() {

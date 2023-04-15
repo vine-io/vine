@@ -150,6 +150,12 @@ func (s *service) Start() error {
 func (s *service) Stop() error {
 	var gerr error
 
+	select {
+	case <-s.opts.Context.Done():
+	default:
+		s.opts.Cancel()
+	}
+
 	for _, fn := range s.opts.BeforeStop {
 		if err := fn(); err != nil {
 			gerr = err
@@ -185,6 +191,7 @@ func (s *service) Run() error {
 	select {
 	// wait on kill signal
 	case <-ch:
+		s.opts.Cancel()
 	// wait on context cancel
 	case <-s.opts.Context.Done():
 	}
