@@ -198,10 +198,10 @@ func isUp(text string) bool {
 
 func cmdSRV() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:           "service",
-		Short:         "Build vine project",
-		SilenceErrors: true,
-		RunE:          runSRV,
+		Use:          "service",
+		Short:        "Build vine project",
+		SilenceUsage: true,
+		RunE:         runSRV,
 	}
 	cmd.PersistentFlags().StringP("flag", "L", "", "specify flags for go command.")
 	cmd.PersistentFlags().StringP("output", "O", "", "specify the output path")

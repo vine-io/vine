@@ -52,7 +52,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	// servers
-	sgrpc "github.com/vine-io/vine/core/server/grpc"
+	grpcServer "github.com/vine-io/vine/core/server/grpc"
 
 	memCache "github.com/vine-io/vine/lib/cache/memory"
 	nopCache "github.com/vine-io/vine/lib/cache/noop"
@@ -101,7 +101,7 @@ var (
 	}
 
 	DefaultServers = map[string]func(...server.Option) server.Server{
-		"grpc": sgrpc.NewServer,
+		"grpc": grpcServer.NewServer,
 	}
 
 	DefaultCaches = map[string]func(...cache.Option) cache.Cache{
@@ -228,8 +228,9 @@ func (c *cmd) Options() Options {
 
 func (c *cmd) Commands() []*cobra.Command {
 	versionCmd := &cobra.Command{
-		Use:   "version",
-		Short: "Prints the version information",
+		Use:          "version",
+		Short:        "Prints the version information",
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.Println(c.opts.Version)
 			os.Exit(0)
@@ -238,8 +239,9 @@ func (c *cmd) Commands() []*cobra.Command {
 	}
 
 	defaultCmd := &cobra.Command{
-		Use:   "default",
-		Short: "Prints configuration data",
+		Use:          "default",
+		Short:        "Prints configuration data",
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			out := map[string]interface{}{}
 			err := uc.Unmarshal(&out)
@@ -262,13 +264,13 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 	var clientOpts []client.Option
 	options := c.opts
 
-	// setup a client to use when calling the runtime. It is important the auth client is wrapped
+	// set up a client to use when calling the runtime. It is important the auth client is wrapped
 	// after the cache client since the wrappers are applied in reverse order and the cache will use
 	vineClient := client.DefaultClient
 
 	_ = uc.ReadInConfig()
 
-	lopts := []log.Option{}
+	lopts := make([]log.Option, 0)
 	// Set the logger
 	if levelStr := uc.GetString("logger.level"); len(levelStr) > 0 {
 		level, err := log.GetLevel(levelStr)

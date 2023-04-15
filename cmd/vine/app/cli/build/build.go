@@ -28,9 +28,9 @@ import (
 
 func Commands() []*cobra.Command {
 	buildCmd := &cobra.Command{
-		Use:           "build",
-		SilenceErrors: true,
-		Short:         "Build vine project or resource",
+		Use:          "build",
+		SilenceUsage: true,
+		Short:        "Build vine project or resource",
 		RunE: func(c *cobra.Command, args []string) error {
 			return c.Help()
 		},
