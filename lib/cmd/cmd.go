@@ -35,7 +35,7 @@ import (
 	brokerHttp "github.com/vine-io/vine/core/broker/http"
 	"github.com/vine-io/vine/core/broker/memory"
 	"github.com/vine-io/vine/core/client"
-	cGrpc "github.com/vine-io/vine/core/client/grpc"
+	grpcClient "github.com/vine-io/vine/core/client/grpc"
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/client/selector/dns"
 	"github.com/vine-io/vine/core/client/selector/static"
@@ -50,10 +50,8 @@ import (
 	"github.com/vine-io/vine/lib/trace"
 	memTracer "github.com/vine-io/vine/lib/trace/memory"
 	"gopkg.in/yaml.v3"
-
 	// servers
 	grpcServer "github.com/vine-io/vine/core/server/grpc"
-
 	memCache "github.com/vine-io/vine/lib/cache/memory"
 	nopCache "github.com/vine-io/vine/lib/cache/noop"
 	// config
@@ -87,7 +85,7 @@ var (
 	}
 
 	DefaultClients = map[string]func(...client.Option) client.Client{
-		"grpc": cGrpc.NewClient,
+		"grpc": grpcClient.NewClient,
 	}
 
 	DefaultRegistries = map[string]func(...registry.Option) registry.Registry{
