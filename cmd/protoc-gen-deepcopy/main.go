@@ -21,22 +21,28 @@
 // SOFTWARE.
 
 // protoc-gen-deepcopy is a plugin for the Google protocol buffer compiler to generate
-// Go code. Run it bu building this program and putting it in your path with
+// Go code. Run it by building this program and putting it in your path with
 // the name
-//		protoc-gen-deepcopy
+//
+//	protoc-gen-deepcopy
+//
 // That word 'deepcopy' at the end becomes part of the option string set for the
 // protocol compiler, so once the protocol compiler (protoc) is installed
 // you can run
-//		protoc --deepcopy_out=:out_directory --go_out=output_directory input_directory/file.proto
+//
+//	protoc --deepcopy_out=:out_directory --go_out=output_directory input_directory/file.proto
+//
 // to generate vine code for the protocol defined by file.proto.
 // With input that, the output will be written to
-//		output_directory/file.deepcopy.pb.go
+//
+//	output_directory/file.deepcopy.pb.go
 //
 // The generated code is documented in the package comment for
 // the library.
 //
 // See the README and documentation is protocol buffers to learn more:
-//		https://developers.google.com/protocol-buffers/
+//
+//	https://developers.google.com/protocol-buffers/
 package main
 
 import (

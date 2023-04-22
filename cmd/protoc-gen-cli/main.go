@@ -21,22 +21,28 @@
 // SOFTWARE.
 
 // protoc-gen-cli is a plugin for the Google protocol buffer compiler to generate
-// Go code. Run it bu building this program and putting it in your path with
+// Go code. Run it by building this program and putting it in your path with
 // the name
-//		protoc-gen-cli
+//
+//	protoc-gen-cli
+//
 // That word 'cli' at the end becomes part of the option string set for the
 // protocol compiler, so once the protocol compiler (protoc) is installed
 // you can run
-//		protoc --cli_out=:out_directory --go_out=output_directory input_directory/file.proto
+//
+//	protoc --cli_out=:out_directory --go_out=output_directory input_directory/file.proto
+//
 // to generate vine code for the protocol defined by file.proto.
 // With input that, the output will be written to
-//		output_directory/file.cli.pb.go
+//
+//	output_directory/file.cli.pb.go
 //
 // The generated code is documented in the package comment for
 // the library.
 //
 // See the README and documentation is protocol buffers to learn more:
-//		https://developers.google.com/protocol-buffers/
+//
+//	https://developers.google.com/protocol-buffers/
 package main
 
 import (
