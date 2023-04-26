@@ -131,7 +131,7 @@ var (
 	storageSet     = make([]storage.Storage, 0)
 )
 
-func addKnownFactory(db *gorm.db, f storage.Factory) error {
+func addKnownFactory(db *gorm.DB, f storage.Factory) error {
 	return f.AddKnownStorages(db, SchemeGroupVersion, storageSet...)
 }
 
