@@ -413,6 +413,12 @@ func (c *cmd) before(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	if ns := uc.GetString("registry.namespace"); len(ns) > 0 {
+		if err := (*options.Registry).Init(registry.Namespace(ns)); err != nil {
+			log.Fatal("Error configuring registry: %v", err)
+		}
+	}
+
 	if addrs := uc.GetString("cache.address"); len(addrs) > 0 {
 		if err := (*options.Cache).Init(cache.Nodes(strings.Split(addrs, ",")...)); err != nil {
 			log.Fatalf("Error configuring cache: %v", err)
