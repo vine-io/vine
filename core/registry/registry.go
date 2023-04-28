@@ -35,7 +35,9 @@ var (
 	Flag = pflag.NewFlagSet("registry", pflag.ExitOnError)
 
 	DefaultRegistry        Registry
-	DefaultRegistryTimeout = time.Second * 3
+	DefaultRegistryTimeout = time.Second * 10
+	// DefaultNamespace the default value of namespace
+	DefaultNamespace = "vine"
 
 	// ErrNotFound not found error when GetService is called
 	ErrNotFound = errors.New("service not found")
@@ -47,6 +49,7 @@ func init() {
 	Flag.String("registry.default", "", "Registry for discovery")
 	Flag.String("registry.address", "", "Sets the registry addresses")
 	Flag.Duration("registry.timeout", DefaultRegistryTimeout, "Sets the registry request timeout")
+	Flag.String("registry.namespace", DefaultNamespace, "Sets the registry namespace")
 }
 
 // Registry the registry provides an interface for service discovery

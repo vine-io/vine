@@ -112,9 +112,10 @@ install:
 	go get github.com/vine-io/vine/cmd/protoc-gen-dao
 	go get github.com/vine-io/vine/cmd/protoc-gen-cli
 
-openapi:
+generate:
 	cd $(GOPATH)/src && \
-	protoc  -I . -I $(GOPATH)/src -I $(GOPATH)/src/github.com/gogo/protobuf/gogoproto --gogo_out=:. --vine_out=:. $(ROOT)/lib/api/handler/openapi/proto/openapi.proto
+	protoc -I . -I $(GOPATH)/src -I $(GOPATH)/src/github.com/gogo/protobuf/gogoproto --gogo_out=:. --deepcopy_out=:. $(ROOT)/core/registry/registry.proto && \
+	protoc -I . -I $(GOPATH)/src -I $(GOPATH)/src/github.com/gogo/protobuf/gogoproto --gogo_out=:. --vine_out=:. $(ROOT)/lib/api/handler/openapi/proto/openapi.proto
 	sed -i "" 's/json:"ref,omitempty"/json:"$$ref,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
 	sed -i "" 's/json:"applicationJson,omitempty"/json:"application\/json,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go
 	sed -i "" 's/json:"applicationXml,omitempty"/json:"application\/xml,,omitempty"/g' lib/api/handler/openapi/proto/openapi.pb.go

@@ -42,18 +42,10 @@ import (
 	"github.com/vine-io/vine/util/mdns"
 )
 
-var (
-	// DefaultMdnsDomain use a .vine domain rather than .local
-	DefaultMdnsDomain = "vine"
-)
-
-func init() {
-	registry.Flag.String("registry.mdns.domain", DefaultMdnsDomain, "Sets the domain of mdns")
-}
-
 type mdnsTxt struct {
 	Service   string
 	Version   string
+	Namespace string
 	node      []*registry.Node
 	Endpoints []*registry.Endpoint
 	Metadata  map[string]string
@@ -157,19 +149,16 @@ func decode(record []string) (*mdnsTxt, error) {
 
 func newRegistry(opts ...registry.Option) registry.Registry {
 	options := registry.Options{
-		Context: context.Background(),
-		Timeout: time.Millisecond * 100,
+		Namespace: registry.DefaultNamespace,
+		Context:   context.Background(),
+		Timeout:   time.Millisecond * 100,
 	}
 
 	for _, o := range opts {
 		o(&options)
 	}
 
-	domain := DefaultMdnsDomain
-	v, ok := options.Context.Value(domainKey{}).(string)
-	if ok {
-		domain = v
-	}
+	domain := options.Namespace
 
 	// set the domain
 	return &mdnsRegistry{
@@ -185,12 +174,7 @@ func (m *mdnsRegistry) Init(opts ...registry.Option) error {
 		o(&m.opts)
 	}
 
-	domain := DefaultMdnsDomain
-	v, ok := m.opts.Context.Value(domainKey{}).(string)
-	if ok {
-		domain = v
-	}
-	m.domain = domain
+	m.domain = m.opts.Namespace
 
 	return nil
 }
@@ -200,16 +184,25 @@ func (m *mdnsRegistry) Options() registry.Options {
 }
 
 func (m *mdnsRegistry) Register(ctx context.Context, service *registry.Service, opts ...registry.RegisterOption) error {
+	var options registry.RegisterOptions
+	for _, o := range opts {
+		o(&options)
+	}
+
 	m.Lock()
 	defer m.Unlock()
 
+	domain := m.domain
+	if options.Namespace != "" {
+		domain = options.Namespace
+	}
 	entries, ok := m.services[service.Name]
 	// first entry, create wildcard used for list queries
 	if !ok {
 		s, err := mdns.NewMDNSService(
 			service.Name,
 			"_services",
-			m.domain+".",
+			domain+".",
 			"",
 			9999,
 			[]net.IP{net.ParseIP("0.0.0.0")},
@@ -253,6 +246,7 @@ func (m *mdnsRegistry) Register(ctx context.Context, service *registry.Service, 
 		txt, err := encode(&mdnsTxt{
 			Service:   service.Name,
 			Version:   service.Version,
+			Namespace: service.Namespace,
 			Endpoints: service.Endpoints,
 			node:      service.Nodes,
 			Metadata:  node.Metadata,
@@ -270,13 +264,13 @@ func (m *mdnsRegistry) Register(ctx context.Context, service *registry.Service, 
 		}
 		port, _ := strconv.Atoi(pt)
 
-		log.Infof("[mdns] registry create new service with ip=%s port=%d for: %s", net.ParseIP(host).String(), port, host)
+		log.Infof("[mdns] registry create new service with domain=%s ip=%s port=%d for: %s", domain, net.ParseIP(host).String(), port, host)
 
 		// we got here, new node
 		s, err := mdns.NewMDNSService(
 			node.Id,
 			service.Name,
-			m.domain+".",
+			domain+".",
 			"",
 			port,
 			[]net.IP{net.ParseIP(host)},
@@ -340,6 +334,11 @@ func (m *mdnsRegistry) Deregister(ctx context.Context, service *registry.Service
 }
 
 func (m *mdnsRegistry) GetService(ctx context.Context, service string, opts ...registry.GetOption) ([]*registry.Service, error) {
+	var options registry.GetOptions
+	for _, o := range opts {
+		o(&options)
+	}
+
 	serviceMap := make(map[string]*registry.Service)
 	entries := make(chan *mdns.ServiceEntry, 10)
 	done := make(chan bool)
@@ -353,6 +352,9 @@ func (m *mdnsRegistry) GetService(ctx context.Context, service string, opts ...r
 	p.Entries = entries
 	// set the domain
 	p.Domain = m.domain
+	if options.Namespace != "" {
+		p.Domain = options.Namespace
+	}
 
 	go func() {
 		for {
@@ -383,6 +385,7 @@ func (m *mdnsRegistry) GetService(ctx context.Context, service string, opts ...r
 					s = &registry.Service{
 						Name:      txt.Service,
 						Version:   txt.Version,
+						Namespace: p.Domain,
 						Metadata:  txt.Metadata,
 						Nodes:     txt.node,
 						Endpoints: txt.Endpoints,
@@ -432,6 +435,11 @@ func (m *mdnsRegistry) GetService(ctx context.Context, service string, opts ...r
 }
 
 func (m *mdnsRegistry) ListServices(ctx context.Context, opts ...registry.ListOption) ([]*registry.Service, error) {
+	var options registry.ListOptions
+	for _, o := range opts {
+		o(&options)
+	}
+
 	serviceMap := make(map[string]bool)
 	entries := make(chan *mdns.ServiceEntry, 10)
 	done := make(chan bool)
@@ -445,6 +453,9 @@ func (m *mdnsRegistry) ListServices(ctx context.Context, opts ...registry.ListOp
 	p.Entries = entries
 	// set domain
 	p.Domain = m.domain
+	if options.Namespace != "" {
+		p.Domain = options.Namespace
+	}
 
 	var services []*registry.Service
 
@@ -489,12 +500,16 @@ func (m *mdnsRegistry) Watch(ctx context.Context, opts ...registry.WatchOption) 
 		o(&wo)
 	}
 
+	domain := m.domain
+	if wo.Namespace != "" {
+		domain = wo.Namespace
+	}
 	md := &mdnsWatcher{
 		id:       uuid.New().String(),
 		wo:       wo,
 		ch:       make(chan *mdns.ServiceEntry, 32),
 		exit:     make(chan struct{}),
-		domain:   m.domain,
+		domain:   domain,
 		registry: m,
 	}
 
@@ -610,6 +625,7 @@ func (m *mdnsWatcher) Next() (*registry.Result, error) {
 			service := &registry.Service{
 				Name:      txt.Service,
 				Version:   txt.Version,
+				Namespace: txt.Namespace,
 				Endpoints: txt.Endpoints,
 				Metadata:  txt.Metadata,
 			}

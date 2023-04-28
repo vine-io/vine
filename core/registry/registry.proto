@@ -72,13 +72,15 @@ message Service {
 
     string version = 2;
 
-    map<string, string> metadata = 3;
+    string namespace = 3;
 
-    repeated Endpoint endpoints = 4;
+    map<string, string> metadata = 4;
 
-    repeated Node nodes = 5;
+    repeated Endpoint endpoints = 5;
 
-    int64 ttl = 6;
+    repeated Node nodes = 6;
+
+    int64 ttl = 7;
 }
 
 // Value is an opaque value for a request or response

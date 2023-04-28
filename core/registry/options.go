@@ -30,6 +30,7 @@ import (
 
 type Options struct {
 	Addrs     []string
+	Namespace string
 	Timeout   time.Duration
 	Secure    bool
 	TLSConfig *tls.Config
@@ -38,23 +39,49 @@ type Options struct {
 	Context context.Context
 }
 
+func NewOptions(opts ...Option) Options {
+	var options Options
+	for _, o := range opts {
+		o(&options)
+	}
+
+	if options.Context == nil {
+		options.Context = context.Background()
+	}
+
+	if options.Timeout == 0 {
+		options.Timeout = DefaultRegistryTimeout
+	}
+
+	if options.Namespace == "" {
+		options.Namespace = DefaultNamespace
+	}
+
+	return options
+}
+
 type RegisterOptions struct {
-	TTL time.Duration
+	TTL       time.Duration
+	Namespace string
 }
 
 type WatchOptions struct {
 	// Specify a service to watch
 	// If blank, the watch is for all services
-	Service string
+	Service   string
+	Namespace string
 }
 
 type DeregisterOptions struct {
+	Namespace string
 }
 
 type GetOptions struct {
+	Namespace string
 }
 
 type ListOptions struct {
+	Namespace string
 }
 
 type OpenAPIOptions struct {
@@ -78,6 +105,12 @@ type OpenAPIOption func(*OpenAPIOptions)
 func Addrs(addrs ...string) Option {
 	return func(o *Options) {
 		o.Addrs = addrs
+	}
+}
+
+func Namespace(ns string) Option {
+	return func(o *Options) {
+		o.Namespace = ns
 	}
 }
 
@@ -107,9 +140,39 @@ func RegisterTTL(t time.Duration) RegisterOption {
 	}
 }
 
+func RegisterNamespace(ns string) RegisterOption {
+	return func(o *RegisterOptions) {
+		o.Namespace = ns
+	}
+}
+
+func DeregisterNamespace(ns string) DeregisterOption {
+	return func(o *DeregisterOptions) {
+		o.Namespace = ns
+	}
+}
+
 // WatchService watches a service
 func WatchService(name string) WatchOption {
 	return func(o *WatchOptions) {
 		o.Service = name
+	}
+}
+
+func WatchNamespace(ns string) WatchOption {
+	return func(o *WatchOptions) {
+		o.Namespace = ns
+	}
+}
+
+func GetNamespace(ns string) GetOption {
+	return func(o *GetOptions) {
+		o.Namespace = ns
+	}
+}
+
+func ListNamespace(ns string) ListOption {
+	return func(o *ListOptions) {
+		o.Namespace = ns
 	}
 }

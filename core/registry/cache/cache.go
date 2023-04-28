@@ -132,7 +132,7 @@ func (c *cache) del(service string) {
 	delete(c.ttls, service)
 }
 
-func (c *cache) get(ctx context.Context, service string) ([]*registry.Service, error) {
+func (c *cache) get(ctx context.Context, service string, opts ...registry.GetOption) ([]*registry.Service, error) {
 	// read lock
 	c.RLock()
 
@@ -151,9 +151,9 @@ func (c *cache) get(ctx context.Context, service string) ([]*registry.Service, e
 	}
 
 	// get does the actual request for a service and cache it
-	get := func(service string, cached []*registry.Service) ([]*registry.Service, error) {
+	get := func(service string, cached []*registry.Service, opts ...registry.GetOption) ([]*registry.Service, error) {
 		// ask the registry
-		svcs, err := c.Registry.GetService(ctx, service)
+		svcs, err := c.Registry.GetService(ctx, service, opts...)
 		if err != nil {
 			// check the cache
 			if len(cached) > 0 {
@@ -202,7 +202,7 @@ func (c *cache) get(ctx context.Context, service string) ([]*registry.Service, e
 	}
 
 	// get and return services
-	return get(service, cp)
+	return get(service, cp, opts...)
 }
 
 func (c *cache) set(service string, services []*registry.Service) {
@@ -440,7 +440,7 @@ func (c *cache) watch(w registry.Watcher) error {
 
 func (c *cache) GetService(ctx context.Context, service string, opts ...registry.GetOption) ([]*registry.Service, error) {
 	// get the service
-	services, err := c.get(ctx, service)
+	services, err := c.get(ctx, service, opts...)
 	if err != nil {
 		return nil, err
 	}

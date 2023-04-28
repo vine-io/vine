@@ -89,7 +89,7 @@ func TestMDNS(t *testing.T) {
 		opts = append(opts, registry.Timeout(time.Millisecond*100))
 	}
 
-	opts = append(opts, WithDomain("test"))
+	opts = append(opts, registry.Namespace("test"))
 
 	// new registry
 	r := NewRegistry(opts...)
