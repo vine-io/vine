@@ -2264,9 +2264,9 @@ func (f *simpleField) decl(g *Generator, mc *msgCtx) {
 		tags := []string{}
 		parts := strings.Split(f.tags, " ")
 		for _, item := range parts {
-			if strings.HasPrefix(strings.TrimSpace(item), "json") {
-				item = `json:",inline"`
-			}
+			//if strings.HasPrefix(strings.TrimSpace(item), "json") {
+			//	item = `json:",inline"`
+			//}
 			tags = append(tags, item)
 		}
 		g.P(f.comment, f.goType[1:], "\t`", strings.Join(tags, " "), "`", f.deprecated)
