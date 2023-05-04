@@ -282,6 +282,7 @@ func (m *Marshaler) marshalObject(out *errWriter, v proto.Message, indent, typeU
 
 	out.write("{")
 	if err := m.marshalObjectField(out, v, indent, ""); err != nil {
+		out.write("}")
 		return err
 	}
 	out.write("}")
@@ -328,6 +329,7 @@ func (m *Marshaler) marshalObjectField(out *errWriter, v proto.Message, indent, 
 				if err := m.marshalObjectField(out, sm, indent, ""); err != nil {
 					return err
 				}
+				m.writeSep(out)
 			}
 			continue
 		}
