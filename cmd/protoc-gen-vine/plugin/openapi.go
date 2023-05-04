@@ -506,6 +506,15 @@ func (g *vine) generateComponents(svcName string) {
 					if _, ok := tags[_required]; ok {
 						requirements = append(requirements, `"`+field.Proto.GetJsonName()+`"`)
 					}
+					if _, ok := tags[_inline]; ok {
+						submsg := g.extractMessage(field.Proto.GetTypeName())
+						for _, sf := range submsg.Fields {
+							g.P(fmt.Sprintf(`"%s": &%s.Schema{`, sf.Proto.GetJsonName(), g.openApiPbPkg.Use()))
+							g.generateSchema(svcName, sf, tags, false)
+							g.P("},")
+						}
+						continue
+					}
 					g.P(fmt.Sprintf(`"%s": &%s.Schema{`, field.Proto.GetJsonName(), g.openApiPbPkg.Use()))
 					g.generateSchema(svcName, field, tags, false)
 					g.P("},")
@@ -521,6 +530,15 @@ func (g *vine) generateComponents(svcName string) {
 				g.P(fmt.Sprintf(`Properties: map[string]*%s.Schema{`, g.openApiPbPkg.Use()))
 				for _, field := range cField {
 					tags := g.extractTags(field.Comments)
+					if _, ok := tags[_inline]; ok {
+						submsg := g.extractMessage(field.Proto.GetTypeName())
+						for _, sf := range submsg.Fields {
+							g.P(fmt.Sprintf(`"%s": &%s.Schema{`, sf.Proto.GetJsonName(), g.openApiPbPkg.Use()))
+							g.generateSchema(svcName, sf, tags, false)
+							g.P("},")
+						}
+						continue
+					}
 					g.P(fmt.Sprintf(`"%s": &%s.Schema{`, field.Proto.GetJsonName(), g.openApiPbPkg.Use()))
 					g.generateSchema(svcName, field, tags, false)
 					g.P("},")

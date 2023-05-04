@@ -108,6 +108,7 @@ func defaultResolveAny(typeUrl string) (proto.Message, error) {
 // parsed.
 //
 // The JSON marshaling must follow the proto to JSON specification:
+//
 //	https://developers.google.com/protocol-buffers/docs/proto3#json
 type JSONPBMarshaler interface {
 	MarshalJSONPB(*Marshaler) ([]byte, error)
@@ -119,6 +120,7 @@ type JSONPBMarshaler interface {
 // produced.
 //
 // The JSON unmarshaling must follow the JSON to proto specification:
+//
 //	https://developers.google.com/protocol-buffers/docs/proto3#json
 type JSONPBUnmarshaler interface {
 	UnmarshalJSONPB(*Unmarshaler, []byte) error
@@ -279,6 +281,14 @@ func (m *Marshaler) marshalObject(out *errWriter, v proto.Message, indent, typeU
 	}
 
 	out.write("{")
+	if err := m.marshalObjectField(out, v, indent, ""); err != nil {
+		return err
+	}
+	out.write("}")
+	return out.err
+}
+
+func (m *Marshaler) marshalObjectField(out *errWriter, v proto.Message, indent, typeURL string) error {
 	if m.Indent != "" {
 		out.write("\n")
 	}
@@ -292,6 +302,8 @@ func (m *Marshaler) marshalObject(out *errWriter, v proto.Message, indent, typeU
 		firstField = false
 	}
 
+	s := reflect.ValueOf(v).Elem()
+
 	for i := 0; i < s.NumField(); i++ {
 		value := s.Field(i)
 		valueField := s.Type().Field(i)
@@ -301,6 +313,22 @@ func (m *Marshaler) marshalObject(out *errWriter, v proto.Message, indent, typeU
 
 		//this is not a protobuf field
 		if valueField.Tag.Get("protobuf") == "" && valueField.Tag.Get("protobuf_oneof") == "" {
+			continue
+		}
+
+		// handle inline json
+		if tag := valueField.Tag.Get("json"); tag == ",inline" &&
+			(value.Kind() == reflect.Struct || value.Kind() == reflect.Ptr) {
+			sv := value // interface -> *T -> T
+			if sv.Kind() == reflect.Struct {
+				sv = sv.Addr()
+			}
+
+			if sm, ok := sv.Interface().(proto.Message); ok {
+				if err := m.marshalObjectField(out, sm, indent, ""); err != nil {
+					return err
+				}
+			}
 			continue
 		}
 
@@ -415,7 +443,6 @@ func (m *Marshaler) marshalObject(out *errWriter, v proto.Message, indent, typeU
 		out.write("\n")
 		out.write(indent)
 	}
-	out.write("}")
 	return out.err
 }
 
@@ -731,12 +758,19 @@ func (m *Marshaler) marshalValue(out *errWriter, prop *proto.Properties, v refle
 		}
 	}
 
+	if v.Kind() == reflect.Int32 || v.Kind() == reflect.Int64 ||
+		v.Kind() == reflect.Uint32 || v.Kind() == reflect.Uint64 {
+		iv := v.Int()
+		out.write(fmt.Sprintf("%d", iv))
+		return out.err
+	}
+
 	// Default handling defers to the encoding/json library.
 	b, err := json.Marshal(v.Interface())
 	if err != nil {
 		return err
 	}
-	needToQuote := string(b[0]) != `"` && (v.Kind() == reflect.Int64 || v.Kind() == reflect.Uint64)
+	needToQuote := string(b[0]) != `"` && (v.Kind() == reflect.String)
 	if needToQuote {
 		out.write(`"`)
 	}
