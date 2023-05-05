@@ -53,6 +53,7 @@ const (
 	_inline = "inline"
 	// dao primary key
 	_pk         = "primaryKey"
+	_deleteAt   = "deleteAt"
 	_daoExtract = "daoInject"
 )
 
@@ -212,6 +213,9 @@ func (g *dao) wrapStorages(file *generator.FileDescriptor, msg *generator.Messag
 	if s.PK == nil {
 		g.gen.Fail(fmt.Sprintf(`Message:%s missing primary key`, msg.Proto.GetName()))
 	}
+	if s.DeleteAt == nil {
+		g.gen.Fail(fmt.Sprintf(`Message:%s missing deleteAt`, msg.Proto.GetName()))
+	}
 
 	s.Fields = make([]*Field, 0)
 	for _, item := range s.MFields {
@@ -283,6 +287,11 @@ func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDe
 						tag.Values = append(tag.Values, "primaryKey")
 					}
 				}
+			}
+
+			_, deleteAt := fTags[_deleteAt]
+			if deleteAt && s.DeleteAt == nil {
+				s.DeleteAt = field
 			}
 		}
 
@@ -558,7 +567,6 @@ func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *St
 			g.P(fmt.Sprintf(`%s %s %s`, field.Name, field.Type, MargeTags(field.Tags...)))
 		}
 	}
-	g.P(fmt.Sprintf(`InnerDeletionTimestamp int64 %s`, toQuoted(`json:"innerDeletionTimestamp,omitempty" gorm:"column:inner_deletion_timestamp"`)))
 	g.P("}")
 
 	g.P(fmt.Sprintf(`func From%s(in *%s) *XX%s {`, pname, g.wrapPkg(pname), pname))
@@ -659,10 +667,16 @@ func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *St
 	g.P(fmt.Sprintf("func (m XX%s) PrimaryKey() (string, any, bool) {", pname))
 	fpk := schema.PK
 	if fpk.Desc.Proto.GetType() == descriptor.FieldDescriptorProto_TYPE_STRING {
-		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == ""`, fpk.Desc.Proto.GetName(), fpk.Name, fpk.Name))
+		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == ""`, toColumnName(fpk.Desc.Proto.GetName()), fpk.Name, fpk.Name))
 	} else {
-		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == 0`, fpk.Desc.Proto.GetName(), fpk.Name, fpk.Name))
+		g.P(fmt.Sprintf(`return "%s", m.%s, m.%s == 0`, toColumnName(fpk.Desc.Proto.GetName()), fpk.Name, fpk.Name))
 	}
+	g.P("}")
+	g.P()
+
+	g.P(fmt.Sprintf("func (m XX%s) DeleteAt() string {", pname))
+	fDelete := schema.DeleteAt
+	g.P(fmt.Sprintf(`return "%s"`, toColumnName(fDelete.Desc.Proto.GetName())))
 	g.P("}")
 	g.P()
 
@@ -787,7 +801,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P()
 	g.P(`s.exprs = append(s.exprs,`)
 	g.P(fmt.Sprintf(`%s.OrderBy{Columns: []%s.OrderByColumn{{Column: %s.Column{Table: m.TableName(), Name: pk}, Desc: true}}},`, g.clausePkg.Use(), g.clausePkg.Use(), g.clausePkg.Use()))
-	g.P(fmt.Sprintf(`%s.Cond().Build("inner_deletion_timestamp", 0),`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`%s.Cond().Build(m.DeleteAt(), 0),`, g.daoPkg.Use()))
 	g.P(`)`)
 	g.P()
 	g.P(`total, err := s.Count(ctx)`)
@@ -807,7 +821,8 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXFindAll(ctx %s.Context) ([]*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P(fmt.Sprintf(`s.exprs = append(s.exprs, %s.Cond().Build("inner_deletion_timestamp", 0))`, g.daoPkg.Use()))
+	g.P("m := s.m")
+	g.P(fmt.Sprintf(`s.exprs = append(s.exprs, %s.Cond().Build(m.DeleteAt(), 0))`, g.daoPkg.Use()))
 	g.P(`return s.findAll(ctx)`)
 	g.P("}")
 	g.P()
@@ -841,7 +856,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P(`m := s.m`)
 	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build("inner_deletion_timestamp", 0))`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build(m.DeleteAt(), 0))`, g.daoPkg.Use()))
 	g.P(`clauses = append(clauses, s.exprs...)`)
 	g.P()
 	g.P(`err = tx.Clauses(clauses...).Count(&total).Error`)
@@ -863,7 +878,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P("m := s.m")
 	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build("inner_deletion_timestamp", 0))`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build(m.DeleteAt(), 0))`, g.daoPkg.Use()))
 	g.P(`clauses = append(clauses, s.exprs...)`)
 	g.P()
 	g.P("for _, item := range s.joins { tx = tx.Joins(item) }")
@@ -976,7 +991,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P("m := s.m")
 	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(`if err := tx.Create(m).Error; err != nil {`)
+	g.P(`if err := tx.Create(&m).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
@@ -1025,7 +1040,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`err := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(m).Error`, g.gormPkg.Use()))
+	g.P(fmt.Sprintf(`err := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(&m).Error`, g.gormPkg.Use()))
 	g.P("if err != nil {")
 	g.P(`return nil, err`)
 	g.P("}")
@@ -1043,7 +1058,8 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`if soft {`)
-	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{"inner_deletion_timestamp": %s.Now().UnixNano()}).Error`, g.timePkg.Use()))
+	g.P(fmt.Sprintf(`deleteAt := m.DeleteAt()`))
+	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{deleteAt: %s.Now().Unix()}).Error`, g.timePkg.Use()))
 	g.P(`}`)
 	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Delete(&%s{}).Error`, sname))
 	g.P("}")

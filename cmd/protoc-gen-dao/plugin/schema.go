@@ -68,6 +68,7 @@ type MapFields struct {
 type Storage struct {
 	Name     string
 	PK       *Field
+	DeleteAt *Field
 	MFields  map[string]*Field
 	Fields   []*Field
 	SDField  *Field
