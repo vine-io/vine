@@ -458,7 +458,7 @@ func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *St
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _float32, _float64, _int32, _int64, _uint32, _uint64, _string, _bool:
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in %s) *%s {`, pname, field.Name, field.Type, pname))
+			g.P(fmt.Sprintf(`func (m *%s) Apply%s(in %s) *%s {`, pname, field.Name, field.Type, pname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
 			g.P("}")
@@ -467,7 +467,7 @@ func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *St
 			key, value := field.Map.Key, field.Map.Value
 			keyString, _ := g.buildFieldGoType(file, key)
 			valueString, _ := g.buildFieldGoType(file, value)
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in map[%s]%s) *%s {`, pname, field.Name, keyString, valueString, pname))
+			g.P(fmt.Sprintf(`func (m *%s) Apply%s(in map[%s]%s) *%s {`, pname, field.Name, keyString, valueString, pname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
 			g.P("}")
@@ -490,7 +490,7 @@ func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *St
 			g.P()
 		case _slice:
 			typ, _ := g.buildFieldGoType(file, field.Slice)
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in []%s) *%s {`, pname, field.Name, typ, pname))
+			g.P(fmt.Sprintf(`func (m *%s) Apply%s(in []%s) *%s {`, pname, field.Name, typ, pname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
 			g.P("}")
@@ -539,7 +539,7 @@ func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *St
 				}
 				typ = fmt.Sprintf(`%s.%s`, v, subMsg.Proto.GetName())
 			}
-			g.P(fmt.Sprintf(`func (m *%s) Set%s(in *%s) *%s {`, pname, field.Name, typ, pname))
+			g.P(fmt.Sprintf(`func (m *%s) Apply%s(in *%s) *%s {`, pname, field.Name, typ, pname))
 			g.P(fmt.Sprintf(`m.%s = in`, field.Name))
 			g.P(`return m`)
 			g.P("}")
