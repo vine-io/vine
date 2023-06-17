@@ -300,7 +300,7 @@ func (g *deepcopy) buildFieldGoType(file *generator.FileDescriptor, field *descr
 		return "[]byte", nil
 	case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
 		subMsg := g.gen.ExtractMessage(field.GetTypeName())
-		if subMsg.Proto.File() == file {
+		if isSamePackage(subMsg.Proto.File(), file) {
 			return "*" + subMsg.Proto.GetName(), nil
 		}
 		obj := g.gen.ObjectNamed(field.GetTypeName())
@@ -312,6 +312,12 @@ func (g *deepcopy) buildFieldGoType(file *generator.FileDescriptor, field *descr
 	default:
 		return "", errors.New("invalid field type")
 	}
+}
+
+func isSamePackage(a, b *generator.FileDescriptor) bool {
+	ap := strings.Split(a.GetOptions().GetGoPackage(), ";")[0]
+	bp := strings.Split(b.GetOptions().GetGoPackage(), ";")[0]
+	return ap == bp
 }
 
 func (g *deepcopy) extractTags(comments []*generator.Comment) map[string]*Tag {
