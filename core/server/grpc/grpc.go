@@ -699,6 +699,7 @@ func (g *grpcServer) Register() error {
 		Address:  mnet.HostPort(saddr, port),
 		Metadata: md,
 	}
+	node.Port, _ = strconv.ParseInt(port, 10, 64)
 
 	node.Metadata["broker"] = config.Broker.String()
 	node.Metadata["registry"] = config.Registry.String()
