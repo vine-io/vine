@@ -39,6 +39,7 @@ type Options struct {
 	Router      router.Router
 	Client      client.Client
 	Strategy    selector.Strategy
+	Metadata    map[string]string
 }
 
 type Option func(o *Options)
@@ -83,6 +84,18 @@ func WithRouter(r router.Router) Option {
 func WithClient(c client.Client) Option {
 	return func(o *Options) {
 		o.Client = c
+	}
+}
+
+// WithMetadata specifies metadata
+func WithMetadata(md map[string]string) Option {
+	return func(o *Options) {
+		if o.Metadata == nil {
+			o.Metadata = map[string]string{}
+		}
+		for k, v := range md {
+			o.Metadata[k] = v
+		}
 	}
 }
 

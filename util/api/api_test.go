@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/core/server/grpc"
+	ahandler "github.com/vine-io/vine/lib/api/handler"
 )
 
 func TestNewPrimpHandler(t *testing.T) {
@@ -24,7 +25,7 @@ func TestNewPrimpHandler(t *testing.T) {
 		ctx.JSON(http.StatusOK, msg)
 	})
 
-	PrimpHandler(ns, s.Name(), app, s.Client())
+	PrimpHandler(ns, s.Name(), app, s.Client(), ahandler.WithMetadata(map[string]string{"request": "api"}))
 
 	s.Server().Init(grpc.HttpHandler(app))
 

@@ -136,6 +136,10 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 
 	// create context
 	cx := ctx.FromRequest(c.Request)
+	for k, v := range h.opts.Metadata {
+		cx = metadata.Set(cx, k, v)
+	}
+
 	// set merged context to request
 	r := c.Request.Clone(cx)
 	if h.s != nil {

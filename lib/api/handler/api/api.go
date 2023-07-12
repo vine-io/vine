@@ -33,6 +33,7 @@ import (
 	"github.com/vine-io/vine/lib/api/handler"
 	"github.com/vine-io/vine/lib/errors"
 	ctx "github.com/vine-io/vine/util/context"
+	"github.com/vine-io/vine/util/context/metadata"
 )
 
 const (
@@ -64,6 +65,10 @@ func (a *apiHandler) Handle(c *gin.Context) {
 
 	// create the context from headers
 	cx := ctx.FromRequest(c.Request)
+	for k, v := range a.opts.Metadata {
+		cx = metadata.Set(cx, k, v)
+	}
+
 	r := c.Request.Clone(cx)
 	if a.s != nil {
 		// we were given the service

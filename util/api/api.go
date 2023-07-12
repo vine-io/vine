@@ -14,7 +14,7 @@ import (
 )
 
 // PrimpHandler primp *gin.Engine with rpc handler
-func PrimpHandler(ns, name string, app *gin.Engine, co vclient.Client) {
+func PrimpHandler(ns, name string, app *gin.Engine, co vclient.Client, opts ...ahandler.Option) {
 
 	Type := "api"
 	HandlerType := "rpc"
@@ -36,10 +36,13 @@ func PrimpHandler(ns, name string, app *gin.Engine, co vclient.Client) {
 		router.WithRegistry(co.Options().Registry),
 	)
 
-	rp := arpc.NewHandler(
+	arpcOpts := []ahandler.Option{
 		ahandler.WithNamespace(ns),
 		ahandler.WithRouter(rt),
 		ahandler.WithClient(co),
-	)
+	}
+	arpcOpts = append(arpcOpts, opts...)
+
+	rp := arpc.NewHandler(arpcOpts...)
 	app.Use(rp.Handle)
 }
