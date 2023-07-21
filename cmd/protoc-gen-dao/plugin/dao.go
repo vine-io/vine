@@ -571,6 +571,7 @@ func (g *dao) generateEntityIOMethods(file *generator.FileDescriptor, schema *St
 
 	g.P(fmt.Sprintf(`func From%s(in *%s) *XX%s {`, pname, g.wrapPkg(pname), pname))
 	g.P(fmt.Sprintf(`out := new(XX%s)`, pname))
+	g.P("if in == nil { return out }")
 	for _, field := range schema.Fields {
 		switch field.Type {
 		case _map:
