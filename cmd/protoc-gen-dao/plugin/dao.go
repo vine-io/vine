@@ -692,24 +692,25 @@ func (g *dao) generateStorageEntity(file *generator.FileDescriptor, schema *Stor
 
 	g.P(fmt.Sprintf(`// %s the Storage for %s`, sname, pname))
 	g.P("type ", sname, " struct {")
+	g.P(fmt.Sprintf(`%s.EmptyHook`, g.storagePkg.Use()))
 	g.P(fmt.Sprintf(`tx *gorm.DB %s`, toQuoted(`json:"-" gorm:"-"`)))
 	g.P("joins []string ", toQuoted(`json:"-" gorm:"-"`))
-	g.P("m XX", pname)
+	g.P("ptr *", pname)
 	g.P(fmt.Sprintf(`exprs []%s.Expression %s`, g.clausePkg.Use(), toQuoted(`json:"-" gorm:"-"`)))
 	g.P()
 	g.P("}")
 	g.P()
 
-	g.P(fmt.Sprintf(`func New%s(tx *%s.DB, m *%s) *%s {
-	return &%s{tx: tx, joins: []string{}, exprs: make([]%s.Expression, 0), m: *From%s(m)}
-}`, sname, g.gormPkg.Use(), pname, sname, sname, g.clausePkg.Use(), pname))
+	g.P(fmt.Sprintf(`func New%s(tx *%s.DB, in *%s) *%s {
+	return &%s{tx: tx, joins: []string{}, exprs: make([]%s.Expression, 0), ptr: in}
+}`, sname, g.gormPkg.Use(), pname, sname, sname, g.clausePkg.Use()))
 }
 
 func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Storage) {
 	sname, pname := schema.Name, schema.Desc.Proto.GetName()
 
 	g.P(fmt.Sprintf(`func (s *%s) AutoMigrate(tx *%s.DB) error {`, sname, g.gormPkg.Use()))
-	g.P(fmt.Sprintf("return tx.Migrator().AutoMigrate(&XX%s{})", pname))
+	g.P(fmt.Sprintf("return tx.Migrator().AutoMigrate(From%s(s.ptr))", pname))
 	g.P("}")
 	g.P()
 
@@ -790,13 +791,13 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 
 	g.P(fmt.Sprintf(`func (s *%s) XXLoad(tx *%s.DB, in *%s) error {`, sname, g.gormPkg.Use(), g.wrapPkg(pname)))
 	g.P(fmt.Sprintf(`s.tx = tx`))
-	g.P(fmt.Sprintf("s.m = *From%s(in)", pname))
+	g.P("s.ptr = in")
 	g.P("return nil")
 	g.P("}")
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXFindPage(ctx %s.Context, page, size int32) ([]*%s, int64, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P("m := s.m")
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
 	g.P(`pk, _, _ := m.PrimaryKey()`)
 	g.P()
 	g.P(`s.exprs = append(s.exprs,`)
@@ -821,7 +822,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXFindAll(ctx %s.Context) ([]*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P("m := s.m")
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
 	g.P(fmt.Sprintf(`s.exprs = append(s.exprs, %s.Cond().Build(m.DeleteAt(), 0))`, g.daoPkg.Use()))
 	g.P(`return s.findAll(ctx)`)
 	g.P("}")
@@ -834,12 +835,13 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 
 	g.P(fmt.Sprintf(`func (s *%s) findAll(ctx %s.Context) ([]*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
 	g.P(fmt.Sprintf(`dest := make([]*XX%s, 0)`, pname))
-	g.P("m := s.m")
-	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
+	g.P("tx := s.tx")
+	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(`clauses := append(s.extractClauses(tx), s.exprs...)`)
-	g.P("for _, item := range s.joins { tx = tx.Joins(item) }")
-	g.P(`if err := tx.Clauses(clauses...).Find(&dest).Error; err != nil {`)
+	g.P(`clauses := append(s.extractClauses(tx1), s.exprs...)`)
+	g.P("for _, item := range s.joins { tx1 = tx1.Joins(item) }")
+	g.P(`if err := tx1.Clauses(clauses...).Find(&dest).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
@@ -848,12 +850,17 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P(fmt.Sprintf(`outs[i] = dest[i].To%s()`, pname))
 	g.P("}")
 	g.P()
+	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
+	if err := s.PostList(ctx, tx2, outs); err != nil {
+		return nil, err
+	}`))
+	g.P()
 	g.P(fmt.Sprintf(`return outs, nil`))
 	g.P("}")
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) Count(ctx %s.Context) (total int64, err error) {`, sname, g.ctxPkg.Use()))
-	g.P(`m := s.m`)
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
 	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
 	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build(m.DeleteAt(), 0))`, g.daoPkg.Use()))
@@ -865,40 +872,62 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXFindPk(ctx %s.Context, id any) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P("m := s.m")
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
+	g.P("tx := s.tx")
 	g.P(`pk, _, _ := m.PrimaryKey()`)
-	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(fmt.Sprintf(`if err := tx.Where(pk+" = ?", id).First(&m).Error; err != nil { return nil, err }`))
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
+	g.P(fmt.Sprintf(`if err := tx1.Where(pk+" = ?", id).First(&m).Error; err != nil { return nil, err }`))
+	g.P(fmt.Sprintf(`out := m.To%s()`, pname))
+	g.P()
+	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
+	if err := s.PostGet(ctx, tx2, out); err != nil {
+		return nil, err
+	}`))
+	g.P()
+	g.P("return out, nil")
 	g.P("}")
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXFindOne(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P("m := s.m")
-	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
+	g.P("tx := s.tx")
+	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx), %s.Cond().Build(m.DeleteAt(), 0))`, g.daoPkg.Use()))
+	g.P(fmt.Sprintf(`clauses := append(s.extractClauses(tx1), %s.Cond().Build(m.DeleteAt(), 0))`, g.daoPkg.Use()))
 	g.P(`clauses = append(clauses, s.exprs...)`)
 	g.P()
-	g.P("for _, item := range s.joins { tx = tx.Joins(item) }")
-	g.P(`if err := tx.Clauses(clauses...).First(&m).Error; err != nil {`)
+	g.P("for _, item := range s.joins { tx1 = tx1.Joins(item) }")
+	g.P(`if err := tx1.Clauses(clauses...).First(&m).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
+	g.P(fmt.Sprintf(`out := m.To%s()`, pname))
 	g.P()
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
+	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
+	if err := s.PostGet(ctx, tx2, out); err != nil {
+		return nil, err
+	}`))
+	g.P()
+	g.P("return out, nil")
 	g.P("}")
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXFindPureOne(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P(`m := s.m`)
-	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
+	g.P("tx := s.tx")
+	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
-	g.P(`if err := tx.Clauses(s.exprs...).First(&m).Error; err != nil {`)
+	g.P(`if err := tx1.Clauses(s.exprs...).First(&m).Error; err != nil {`)
 	g.P("return nil, err")
 	g.P("}")
+	g.P(fmt.Sprintf(`out := m.To%s()`, pname))
 	g.P()
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
+	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
+	if err := s.PostGet(ctx, tx2, out); err != nil {
+		return nil, err
+	}`))
+	g.P()
+	g.P("return out, nil")
 	g.P("}")
 	g.P()
 
@@ -909,7 +938,7 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) extractClauses(tx *%s.DB) []%s.Expression {`, sname, g.gormPkg.Use(), g.clausePkg.Use()))
-	g.P("m := s.m")
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
 	g.P(`exprs := make([]clause.Expression, 0)`)
 	for _, field := range schema.Fields {
 		column := toColumnName(field.Name)
@@ -988,25 +1017,44 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXCreate(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P("m := s.m")
-	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P(fmt.Sprintf(`if err := s.PreCreate(ctx, s.tx, s.ptr); err != nil {
+		return nil, err
+	}`))
 	g.P()
-	g.P(`if err := tx.Create(&m).Error; err != nil {`)
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
+	g.P("tx := s.tx.Begin()")
+	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P()
+	g.P(`if err := tx1.Create(&m).Error; err != nil {`)
+	g.P("tx.Rollback()")
 	g.P("return nil, err")
 	g.P("}")
+	g.P(fmt.Sprintf(`out := m.To%s()`, pname))
 	g.P()
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
+	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
+	if err := s.PostCreate(ctx, tx2, out); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	return out, nil`))
 	g.P("}")
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXUpdates(ctx %s.Context) (*%s, error) {`, sname, g.ctxPkg.Use(), g.wrapPkg(pname)))
-	g.P("m := s.m")
+	g.P(fmt.Sprintf(`if err := s.PreUpdate(ctx, s.tx, s.ptr); err != nil {
+		return nil, err
+	}`))
+	g.P()
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(fmt.Sprintf(`return nil, %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
-	g.P()
-	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`values := make(map[string]interface{}, 0)`)
 	for _, field := range schema.Fields {
@@ -1036,32 +1084,68 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 		}
 	}
 	g.P()
-	g.P(`if err := tx.Updates(values).Error; err != nil {`)
+	g.P("tx := s.tx.Begin()")
+	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`, g.gormPkg.Use()))
+	g.P()
+	g.P(`if err := tx1.Updates(values).Error; err != nil {`)
+	g.P("tx.Rollback()")
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`err := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(&m).Error`, g.gormPkg.Use()))
-	g.P("if err != nil {")
+	g.P(fmt.Sprintf(`if err := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv).First(&m).Error; err != nil {`, g.gormPkg.Use()))
 	g.P(`return nil, err`)
 	g.P("}")
-	g.P(fmt.Sprintf(`return m.To%s(), nil`, pname))
+	g.P(fmt.Sprintf(`out := m.To%s()`, pname))
+	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
+	if err := s.PostUpdate(ctx, tx2, out); err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
+	return out, nil`))
 	g.P("}")
 	g.P()
 
 	g.P(fmt.Sprintf(`func (s *%s) XXDelete(ctx %s.Context, soft bool) error {`, sname, g.ctxPkg.Use()))
-	g.P("m := s.m")
+	g.P(fmt.Sprintf(`if err := s.PreDelete(ctx, s.tx, s.ptr); err != nil {
+		return err
+	}`))
+	g.P()
+	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
 	g.P(`pk, pkv, isNil := m.PrimaryKey()`)
 	g.P(`if isNil {`)
 	g.P(fmt.Sprintf(`return %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P(fmt.Sprintf(`tx := s.tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
+	g.P("tx := s.tx.Begin()")
+	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`if soft {`)
 	g.P(fmt.Sprintf(`deleteAt := m.DeleteAt()`))
-	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Updates(map[string]interface{}{deleteAt: %s.Now().Unix()}).Error`, g.timePkg.Use()))
-	g.P(`}`)
-	g.P(fmt.Sprintf(`return tx.Where(pk+" = ?", pkv).Delete(&%s{}).Error`, sname))
+	g.P(fmt.Sprintf(`if err := tx1.Where(pk+" = ?", pkv).Updates(map[string]interface{}{deleteAt: %s.Now().Unix()}).Error; err != nil {`, g.timePkg.Use()))
+	g.P("tx.Rollback()")
+	g.P("return err")
+	g.P("}")
+	g.P(fmt.Sprintf(`} else if err := tx1.Where(pk+" = ?", pkv).Delete(&%s{}).Error; err != nil {`, sname))
+	g.P("tx.Rollback()")
+	g.P("return err")
+	g.P("}")
+	g.P()
+	g.P(fmt.Sprintf(`out := m.To%s()
+	tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
+	if err := s.PostDelete(ctx, tx2, out); err != nil {
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}`, pname))
+	g.P()
+	g.P("return nil")
 	g.P("}")
 	g.P()
 }
