@@ -1023,22 +1023,16 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	}`))
 	g.P()
 	g.P(fmt.Sprintf("m := From%s(s.ptr)", pname))
-	g.P("tx := s.tx.Begin()")
+	g.P("tx := s.tx")
 	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`if err := tx1.Create(&m).Error; err != nil {`)
-	g.P("tx.Rollback()")
 	g.P("return nil, err")
 	g.P("}")
 	g.P(fmt.Sprintf(`out := m.To%s()`, pname))
 	g.P()
 	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
 	if err := s.PostCreate(ctx, tx2, out); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
 
@@ -1085,11 +1079,10 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 		}
 	}
 	g.P()
-	g.P("tx := s.tx.Begin()")
+	g.P("tx := s.tx")
 	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx).Where(pk+" = ?", pkv)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`if err := tx1.Updates(values).Error; err != nil {`)
-	g.P("tx.Rollback()")
 	g.P("return nil, err")
 	g.P("}")
 	g.P()
@@ -1099,11 +1092,6 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P(fmt.Sprintf(`out := m.To%s()`, pname))
 	g.P(fmt.Sprintf(`tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
 	if err := s.PostUpdate(ctx, tx2, out); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
 
@@ -1122,27 +1110,21 @@ func (g *dao) generateStorageMethods(file *generator.FileDescriptor, schema *Sto
 	g.P(fmt.Sprintf(`return %s.New("missing primary key")`, g.errPkg.Use()))
 	g.P("}")
 	g.P()
-	g.P("tx := s.tx.Begin()")
+	g.P("tx := s.tx")
 	g.P(fmt.Sprintf(`tx1 := tx.Session(&%s.Session{}).Table(m.TableName()).WithContext(ctx)`, g.gormPkg.Use()))
 	g.P()
 	g.P(`if soft {`)
 	g.P(fmt.Sprintf(`deleteAt := m.DeleteAt()`))
 	g.P(fmt.Sprintf(`if err := tx1.Where(pk+" = ?", pkv).Updates(map[string]interface{}{deleteAt: %s.Now().Unix()}).Error; err != nil {`, g.timePkg.Use()))
-	g.P("tx.Rollback()")
 	g.P("return err")
 	g.P("}")
 	g.P(fmt.Sprintf(`} else if err := tx1.Where(pk+" = ?", pkv).Delete(&%s{}).Error; err != nil {`, sname))
-	g.P("tx.Rollback()")
 	g.P("return err")
 	g.P("}")
 	g.P()
 	g.P(fmt.Sprintf(`out := m.To%s()
 	tx2 := tx.Session(&gorm.Session{}).WithContext(ctx)
 	if err := s.PostDelete(ctx, tx2, out); err != nil {
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
 		return err
 	}`, pname))
 	g.P()
