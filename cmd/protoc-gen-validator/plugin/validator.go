@@ -133,6 +133,7 @@ func (g *validator) Generate(file *generator.FileDescriptor) {
 	g.isPkg = g.NewImport("github.com/vine-io/vine/util/is", "is")
 	g.stringsPkg = g.NewImport("strings", "")
 
+	g.P(fmt.Sprintf(`var _ %s.Scanner`, g.fmtPkg.Use()))
 	for i, msg := range file.Messages() {
 		g.generateMessage(file, msg, i)
 	}
