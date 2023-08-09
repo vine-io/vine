@@ -25,13 +25,13 @@ option go_package = "github.com/vine-io/vine/lib/api";
 // Endpoint is a mapping between an RPC method and HTTP endpoint
 message Endpoint {
   // RPC Method e.g. Greeter.Hello
-   string name = 1;
+  string name = 1;
 
   // Description e.g what's this endpoint for
-   string description = 2;
+  string description = 2;
 
   // API Handler e.g rpc, proxy
-   string handler = 3;
+  string handler = 3;
 
   // HTTP Host e.g example.com
   repeated string host = 4;
@@ -43,59 +43,59 @@ message Endpoint {
   repeated string path = 6;
 
   // Entity HTTP method for resource
-   string entity = 7;
+  string entity = 7;
 
   // Security HTTP authorization, e.g. Basic, Bearer
-   string security = 8;
+  string security = 8;
 
   // Body destination
   // "*" or "" - top level message value
   // "string" - inner message value
-   string body = 9;
+  string body = 9;
 
   // Stream flag
-   string stream = 10;
+  string stream = 10;
 }
 
 // Event A HTTP event as RPC
 // Forwarded by the event handler
 message Event {
   // e.g login
-   string name = 1;
+  string name = 1;
 
   // uuid
-   string id = 2;
+  string id = 2;
 
   // unix timestamp of event
-   int64 timestamp = 3;
+  int64 timestamp = 3;
 
   // event headers
   map<string, Pair> header = 4;
 
   // the event data
-   string data = 5;
+  string data = 5;
 }
 
 message FileDesc {
   // 文件名称
-   string name = 1;
+  string name = 1;
 
   // 读取偏离量
-   int64 offset = 2;
+  int64 offset = 2;
 }
 
 message FileHeader {
-   string name = 1;
+  string name = 1;
 
-   int64 size = 2;
+  int64 size = 2;
 
-   int64 length = 3;
+  int64 length = 3;
 
-   bytes chunk = 4;
+  bytes chunk = 4;
 }
 
 message Pair {
-   string key = 1;
+  string key = 1;
 
   repeated string values = 2;
 }
@@ -104,9 +104,9 @@ message Pair {
 // Forward by the api handler
 // +gogo:genproto=true
 message Request {
-   string method = 1;
+  string method = 1;
 
-   string path = 2;
+  string path = 2;
 
   map<string, Pair> header = 3;
 
@@ -114,28 +114,28 @@ message Request {
 
   map<string, Pair> post = 5;
 
-   string body = 6;
+  string body = 6;
 
-   string url = 7;
+  string url = 7;
 }
 
 // Response A HTTP response as RPC
 // Expected response for the api handler
 message Response {
-   int32 statusCode = 1;
+  int32 statusCode = 1;
 
   map<string, Pair> header = 2;
 
-   string body = 3;
+  string body = 3;
 }
 
 // Service represents an API service
 message Service {
   // Name of service
-   string name = 1;
+  string name = 1;
 
   // The endpoint for this service
-   Endpoint endpoint = 2;
+  Endpoint endpoint = 2;
 
   // Versions of this service
   repeated registry.Service services = 3;

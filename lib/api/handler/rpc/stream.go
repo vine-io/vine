@@ -24,10 +24,12 @@ package rpc
 
 import (
 	b "bytes"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -41,6 +43,24 @@ import (
 	"github.com/vine-io/vine/lib/api"
 	"github.com/vine-io/vine/lib/logger"
 )
+
+func isWebSocket(c *gin.Context) bool {
+	contains := func(key, val string) bool {
+		vv := strings.Split(c.GetHeader(key), ",")
+		for _, v := range vv {
+			if val == strings.ToLower(strings.TrimSpace(v)) {
+				return true
+			}
+		}
+		return false
+	}
+
+	if contains("Connection", "upgrade") && contains("Upgrade", "websocket") {
+		return true
+	}
+
+	return false
+}
 
 // serveWebSocket will stream rpc back over websockets assuming json
 func serveWebSocket(ctx *gin.Context, service *api.Service, c client.Client, so selector.SelectOption) {
@@ -61,8 +81,8 @@ func serveWebSocket(ctx *gin.Context, service *api.Service, c client.Client, so 
 	}
 
 	hdr := make(http.Header)
-	if proto := ctx.GetHeader("Set-WebSocket-Protocol"); proto != "" {
-		for _, p := range strings.Split(proto, ",") {
+	if pt := ctx.GetHeader("Set-WebSocket-Protocol"); pt != "" {
+		for _, p := range strings.Split(pt, ",") {
 			switch p {
 			case "binary":
 				hdr["Set-WebSocket-Protocol"] = []string{"binary"}
@@ -180,7 +200,8 @@ func writeLoop(conn *websocket.Conn, stream client.Stream) {
 		default:
 			op, buf, err := conn.ReadMessage()
 			if err != nil {
-				if wserr, ok := err.(*websocket.CloseError); ok {
+				var wserr *websocket.CloseError
+				if errors.As(err, &wserr) {
 					switch wserr.Code {
 					case websocket.CloseGoingAway:
 						// this happens when user leave the page
@@ -233,22 +254,8 @@ func isStream(c *gin.Context, svc *api.Service) bool {
 	return false
 }
 
-func isWebSocket(c *gin.Context) bool {
-	contains := func(key, val string) bool {
-		vv := strings.Split(c.GetHeader(key), ",")
-		for _, v := range vv {
-			if val == strings.ToLower(strings.TrimSpace(v)) {
-				return true
-			}
-		}
-		return false
-	}
-
-	if contains("Connection", "upgrade") && contains("Upgrade", "websocket") {
-		return true
-	}
-
-	return false
+func isMultipart(c *gin.Context) bool {
+	return strings.Contains(c.ContentType(), "multipart/form-data")
 }
 
 func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client, so selector.SelectOption) {
@@ -394,40 +401,22 @@ func multipartHandler(ctx *gin.Context, service *api.Service, c client.Client, s
 	return
 }
 
-func isMultipart(c *gin.Context) bool {
-	return strings.Contains(c.ContentType(), "multipart/form-data")
+func isDownLoadLink(s *api.Service) bool {
+	return s.Endpoint.Stream == string(api.Server) && strings.HasSuffix(strings.ToLower(s.Endpoint.Name), "download")
 }
 
 func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client, so selector.SelectOption) {
-	vals := make(map[string]string)
-	for key, values := range ctx.Request.URL.Query() {
-		vv, ok := vals[key]
-		if !ok {
-			vals[key] = strings.Join(values, ",")
-		} else {
-			vals[key] = vv + "," + strings.Join(values, ",")
-		}
-	}
-
-	for key, values := range ctx.Request.Form {
-		vv, ok := vals[key]
-		if !ok {
-			vals[key] = strings.Join(values, ",")
-		} else {
-			vals[key] = vv + "," + strings.Join(values, ",")
-		}
-	}
-
-	br, err := json.Marshal(vals)
-	if err != nil {
-		writeError(ctx, err)
-		return
-	}
-
 	request := &api.FileDesc{}
-	err = json.Unmarshal(br, request)
-	if err != nil {
-		writeError(ctx, fmt.Errorf("read request values: %v", err))
+
+	_ = ctx.ShouldBindJSON(request)
+	if request.Name == "" && request.Offset == 0 {
+		request.Name = ctx.Query("name")
+		offset := ctx.Query("offset")
+		request.Offset, _ = strconv.ParseInt(offset, 10, 64)
+	}
+
+	if request.Name == "" && request.Offset == 0 {
+		writeError(ctx, fmt.Errorf("read request values: request is empty"))
 		return
 	}
 
@@ -470,10 +459,6 @@ func downLoadHandler(ctx *gin.Context, service *api.Service, c client.Client, so
 		return
 	}
 	return
-}
-
-func isDownLoadLink(s *api.Service) bool {
-	return s.Endpoint.Stream == string(api.Server) && strings.HasSuffix(strings.ToLower(s.Endpoint.Name), "download")
 }
 
 type responseReader struct {
