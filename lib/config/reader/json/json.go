@@ -26,7 +26,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 
 	"github.com/vine-io/vine/lib/config/encoder"
 	"github.com/vine-io/vine/lib/config/encoder/json"

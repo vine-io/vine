@@ -28,7 +28,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/imdario/mergo"
+	"dario.cat/mergo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/vine-io/vine/lib/cmd"
