@@ -32,7 +32,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/serenize/snaker"
 	"github.com/spf13/cobra"
 	"github.com/vine-io/vine"
 	"github.com/vine-io/vine/cmd/vine/app/api/handler"
@@ -46,6 +45,7 @@ import (
 	log "github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/util/helper"
 	"github.com/vine-io/vine/util/namespace"
+	"github.com/vine-io/vine/util/snaker"
 	"github.com/vine-io/vine/util/stats"
 	"golang.org/x/net/publicsuffix"
 )

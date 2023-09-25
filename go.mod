@@ -20,7 +20,6 @@ require (
 	github.com/miekg/dns v1.1.56
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/serenize/snaker v0.0.0-20201027110005-a7ad2135616e
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
@@ -29,7 +28,7 @@ require (
 	github.com/xlab/treeprint v1.2.0
 	golang.org/x/crypto v0.13.0
 	golang.org/x/net v0.15.0
-	google.golang.org/grpc v1.58.1
+	google.golang.org/grpc v1.58.2
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -54,8 +53,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/gomega v1.19.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -76,4 +73,4 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.58.1
+replace google.golang.org/grpc => google.golang.org/grpc v1.58.2
