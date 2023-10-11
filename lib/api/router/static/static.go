@@ -33,7 +33,7 @@ import (
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/lib/api"
 	"github.com/vine-io/vine/lib/api/router"
-	"github.com/vine-io/vine/lib/api/router/util"
+	"github.com/vine-io/vine/lib/api/router/httprule"
 	"github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/util/context/metadata"
 )
@@ -41,7 +41,7 @@ import (
 type endpoint struct {
 	apiep    *api.Endpoint
 	hostregs []*regexp.Regexp
-	pathregs []util.Pattern
+	pathregs []httprule.Pattern
 	pcreregs []*regexp.Regexp
 }
 
@@ -114,7 +114,7 @@ func (r *staticRouter) Register(ep *api.Endpoint) error {
 		return err
 	}
 
-	var pathregs []util.Pattern
+	var pathregs []httprule.Pattern
 	var hostregs []*regexp.Regexp
 	var pcreregs []*regexp.Regexp
 
@@ -141,7 +141,7 @@ func (r *staticRouter) Register(ep *api.Endpoint) error {
 			}
 		}
 
-		rule, err := util.Parse(p)
+		rule, err := httprule.Parse(p)
 		if err != nil && !pcreok {
 			return err
 		} else if err != nil && pcreok {
@@ -149,7 +149,7 @@ func (r *staticRouter) Register(ep *api.Endpoint) error {
 		}
 
 		tpl := rule.Compile()
-		pathreg, err := util.NewPattern(tpl.Version, tpl.OpCodes, tpl.Pool, "")
+		pathreg, err := httprule.NewPattern(tpl.Version, tpl.OpCodes, tpl.Pool, "")
 		if err != nil {
 			return err
 		}

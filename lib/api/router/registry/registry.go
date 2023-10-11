@@ -37,7 +37,7 @@ import (
 	"github.com/vine-io/vine/core/registry/cache"
 	"github.com/vine-io/vine/lib/api"
 	"github.com/vine-io/vine/lib/api/router"
-	"github.com/vine-io/vine/lib/api/router/util"
+	"github.com/vine-io/vine/lib/api/router/httprule"
 	"github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/util/context/metadata"
 )
@@ -45,7 +45,7 @@ import (
 // endpoint struct, that holds compiled pcre
 type endpoint struct {
 	hostregs []*regexp.Regexp
-	pathregs []util.Pattern
+	pathregs []httprule.Pattern
 	pcreregs []*regexp.Regexp
 }
 
@@ -210,7 +210,7 @@ func (r *registryRouter) store(services []*registry.Service) {
 				}
 			}
 
-			rule, err := util.Parse(p)
+			rule, err := httprule.Parse(p)
 			if err != nil && !pcreok {
 				logger.Tracef("endpoint have invalid path pattern: %+v", err)
 				continue
@@ -219,7 +219,7 @@ func (r *registryRouter) store(services []*registry.Service) {
 			}
 
 			tpl := rule.Compile()
-			pathreg, err := util.NewPattern(tpl.Version, tpl.OpCodes, tpl.Pool, "")
+			pathreg, err := httprule.NewPattern(tpl.Version, tpl.OpCodes, tpl.Pool, "")
 			if err != nil {
 				logger.Tracef("endpoint have invalid path pattern: %+v", err)
 				continue

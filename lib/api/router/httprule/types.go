@@ -20,27 +20,65 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package util
+package httprule
 
-// download from https://raw.githubusercontent.com/grpc-ecosystem/grpc-gateway/master/utilities/pattern.go
+// download from https://raw.githubusercontent.com/grpc-ecosystem/grpc-gateway/master/protoc-gen-grpc-gateway/httprule/types.go
 
-// An OpCode is a opcode of compiled path patterns.
-type OpCode int
-
-// These constants are the valid values of OpCode.
-const (
-	// OpNop does nothing
-	OpNop = OpCode(iota)
-	// OpPush pushes a component to stack
-	OpPush
-	// OpLitPush pushes a component to stack if it matches to the literal
-	OpLitPush
-	// OpPushM concatenates the remaining components and pushes it to stack
-	OpPushM
-	// OpConcatN pops N items from stack, concatenates them and pushes it back to stack
-	OpConcatN
-	// OpCapture pops an item and binds it to the variable
-	OpCapture
-	// OpEnd is the least positive invalid opcode.
-	OpEnd
+import (
+	"fmt"
+	"strings"
 )
+
+type template struct {
+	segments []segment
+	verb     string
+	template string
+}
+
+type segment interface {
+	fmt.Stringer
+	compile() (ops []op)
+}
+
+type wildcard struct{}
+
+type deepWildcard struct{}
+
+type literal string
+
+type variable struct {
+	path     string
+	segments []segment
+}
+
+func (wildcard) String() string {
+	return "*"
+}
+
+func (deepWildcard) String() string {
+	return "**"
+}
+
+func (l literal) String() string {
+	return string(l)
+}
+
+func (v variable) String() string {
+	var segs []string
+	for _, s := range v.segments {
+		segs = append(segs, s.String())
+	}
+	return fmt.Sprintf("{%s=%s}", v.path, strings.Join(segs, "/"))
+}
+
+func (t template) String() string {
+	var segs []string
+	for _, s := range t.segments {
+		segs = append(segs, s.String())
+	}
+	str := strings.Join(segs, "/")
+	if t.verb != "" {
+		str = fmt.Sprintf("%s:%s", str, t.verb)
+	}
+	return "/" + str
+}
