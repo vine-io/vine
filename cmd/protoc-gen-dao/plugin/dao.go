@@ -354,7 +354,7 @@ func (g *dao) generateRegTables(file *generator.FileDescriptor) {
 	g.P("func init() {")
 	g.P("storageSet = append(storageSet,")
 	for _, item := range g.schemas {
-		if item.Desc.Proto.File().GetName() != file.GetName() {
+		if item.Desc.Proto.File().GetName() != file.GetName() || !item.Deep {
 			continue
 		}
 		g.P(fmt.Sprintf(`&%s{},`, item.Name))
