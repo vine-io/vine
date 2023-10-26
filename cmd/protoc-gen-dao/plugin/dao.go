@@ -68,7 +68,6 @@ type dao struct {
 	gen *generator.Generator
 
 	schemas     []*Storage
-	regTables   map[string]string
 	aliasTypes  map[string]string
 	aliasFields map[string]*Field
 
@@ -92,7 +91,6 @@ type dao struct {
 func New() *dao {
 	return &dao{
 		schemas:     []*Storage{},
-		regTables:   map[string]string{},
 		aliasTypes:  map[string]string{},
 		aliasFields: map[string]*Field{},
 	}
@@ -203,7 +201,6 @@ func (g *dao) wrapStorages(file *generator.FileDescriptor, msg *generator.Messag
 	}
 
 	if _, ok := tags[_object]; ok {
-		g.regTables[msg.Proto.GetName()] = s.Name
 		s.Deep = true
 	}
 
@@ -300,10 +297,6 @@ func (g *dao) buildFields(file *generator.FileDescriptor, m *generator.MessageDe
 }
 
 func (g *dao) generateRegTables(file *generator.FileDescriptor) {
-	if len(g.regTables) == 0 {
-		return
-	}
-
 	pkg := g.gen.OutPut.Package
 	if pkg == "" {
 		pkg = file.GetPackage()
@@ -313,6 +306,7 @@ func (g *dao) generateRegTables(file *generator.FileDescriptor) {
 		pwd, _ := os.Getwd()
 		out = filepath.Join(pwd, filepath.Dir(file.GetName()))
 	}
+
 	//	register := filepath.Join(out, "register.go")
 	//	_, err := os.Stat(register)
 	//	if os.IsExist(err) {
@@ -359,8 +353,11 @@ func (g *dao) generateRegTables(file *generator.FileDescriptor) {
 	g.P("// ", out)
 	g.P("func init() {")
 	g.P("storageSet = append(storageSet,")
-	for _, table := range g.regTables {
-		g.P(fmt.Sprintf(`&%s{},`, table))
+	for _, item := range g.schemas {
+		if item.Desc.Proto.File().GetName() != file.GetName() {
+			continue
+		}
+		g.P(fmt.Sprintf(`&%s{},`, item.Name))
 	}
 	g.P(")")
 	g.P("}")
