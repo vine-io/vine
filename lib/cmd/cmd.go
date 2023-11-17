@@ -169,14 +169,15 @@ func newCmd(opts ...Option) Cmd {
 	rootCmd.InitDefaultCompletionCmd()
 
 	rootCmd.ResetFlags()
-	rootCmd.PersistentFlags().AddFlagSet(registry.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(broker.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(client.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(selector.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(server.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(cache.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(log.Flag)
-	rootCmd.PersistentFlags().AddFlagSet(trace.Flag)
+	flags := rootCmd.PersistentFlags()
+	flags.AddFlagSet(registry.Flag)
+	flags.AddFlagSet(broker.Flag)
+	flags.AddFlagSet(client.Flag)
+	flags.AddFlagSet(selector.Flag)
+	flags.AddFlagSet(server.Flag)
+	flags.AddFlagSet(cache.Flag)
+	flags.AddFlagSet(log.Flag)
+	flags.AddFlagSet(trace.Flag)
 
 	options.app = rootCmd
 	c.opts = options
