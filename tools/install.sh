@@ -20,12 +20,11 @@ if [ "$gopath" == "" ];then
   gopath=`go env var GOROOT | grep "/"`
 fi
 
-package=`curl -s https://api.github.com/repos/vine-io/vine/releases/latest | grep browser_download_url | grep ${os} | cut -d'"' -f4 | grep "vine-${os}-${archi}"`
+version=`curl -s https://api.github.com/repos/vine-io/vine/releases/latest | grep tag_name | cut -d'"' -f4`
+pname=vine_${version:1}_${os}_${archi}.tar.gz
+package=`curl -s https://api.github.com/repos/vine-io/vine/releases/latest | grep browser_download_url | grep ${os} | cut -d'"' -f4 | grep "${pname}"`
 
 echo "install package: ${package}"
-wget ${package} -O /tmp/vine.tar.gz && tar -xvf /tmp/vine.tar.gz -C /tmp/
+wget ${package} -O /tmp/${pname} && tar -xvf /tmp/${pname} -C $gopath/bin
 
-mv /tmp/${os}-${archi}/* $gopath/bin
-
-rm -fr /tmp/${os}-${archi}
-rm -fr /tmp/vine.tar.gz
+rm -fr /tmp/$pname
