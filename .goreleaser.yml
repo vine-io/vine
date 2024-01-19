@@ -1,0 +1,127 @@
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go mod tidy
+
+metadata:
+  mod_timestamp: "{{ .CommitTimestamp }}"
+
+builds:
+  - main: ./cmd/vine/main.go
+    id: vine
+    binary: vine
+    goos:
+      - darwin
+      - linux
+      - windows
+
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - -s -w
+      - -X github.com/vine-io/vine/cmd/vine/version.GitCommit={{ .Commit }}
+      - -X github.com/vine-io/vine/cmd/vine/version.GitVersion={{ .Tag }}
+      - -X github.com/vine-io/vine/cmd/vine/version.BuildDate={{ .Timestamp }}
+
+  - main: ./cmd/protoc-gen-vine/main.go
+    id: protoc-gen-vine
+    binary: protoc-gen-vine
+    goos:
+      - darwin
+      - linux
+      - windows
+
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - "-s -w"
+
+
+  - main: ./cmd/protoc-gen-dao/main.go
+    id: protoc-gen-dao
+    binary: protoc-gen-dao
+    goos:
+      - darwin
+      - linux
+      - windows
+
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - "-s -w"
+
+  - main: ./cmd/protoc-gen-deepcopy/main.go
+    id: protoc-gen-deepcopy
+    binary: protoc-gen-deepcopy
+    goos:
+      - darwin
+      - linux
+      - windows
+
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - "-s -w"
+
+  - main: ./cmd/protoc-gen-validator/main.go
+    id: protoc-gen-validator
+    binary: protoc-gen-validator
+    goos:
+      - darwin
+      - linux
+      - windows
+
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - "-s -w"
+
+  - main: ./cmd/protoc-gen-gogo/main.go
+    id: protoc-gen-gogo
+    binary: protoc-gen-gogo
+    goos:
+      - darwin
+      - linux
+      - windows
+
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - "-s -w"
+
+archives:
+  - id: vine
+
+    format_overrides:
+      - goos: windows
+        format: zip
+
+    files:
+      - none*
+
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  sort: desc
+
+nfpms:
+  - id: vine
+    formats:
+      - deb
+      - rpm
+
+    bindir: /usr/local/sbin

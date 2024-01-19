@@ -415,10 +415,6 @@ func (r *registryRouter) Route(req *http.Request) (*api.Service, error) {
 		return ep, nil
 	}
 
-	// error not nil
-	// ignore that shit
-	// TODO: don't ignore that shit
-
 	// get the service name
 	rp, err := r.opts.Resolver.Resolve(req)
 	if err != nil {

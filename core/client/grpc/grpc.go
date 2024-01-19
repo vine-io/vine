@@ -197,12 +197,12 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 			grpcCallOptions = append(grpcCallOptions, opts...)
 		}
 
-		err := cc.Invoke(ctx, methodToGRPC(req.Service(), req.Endpoint()), req.Body(), rsp, grpcCallOptions...)
-		ch <- vineError(err)
+		invokeErr := cc.Invoke(ctx, methodToGRPC(req.Service(), req.Endpoint()), req.Body(), rsp, grpcCallOptions...)
+		ch <- vineError(invokeErr)
 	}()
 
 	select {
-	case err := <-ch:
+	case err = <-ch:
 		grr = err
 	case <-ctx.Done():
 		grr = errors.Timeout("go.vine.client", "%v", ctx.Err())

@@ -5,5 +5,7 @@
 testdata
 
 *.db
+dist/
+vendor/
 
 _output

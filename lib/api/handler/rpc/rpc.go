@@ -126,7 +126,6 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 		bsize = h.opts.MaxRecvSize
 	}
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, bsize)
-	var service *api.Service
 
 	ct := c.GetHeader("Content-Type")
 	if ct == "" {
@@ -142,6 +141,7 @@ func (h *rpcHandler) Handle(c *gin.Context) {
 
 	// set merged context to request
 	r := c.Request.Clone(cx)
+	var service *api.Service
 	if h.s != nil {
 		// we were given the service
 		service = h.s
