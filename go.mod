@@ -6,12 +6,12 @@ require (
 	dario.cat/mergo v1.0.0
 	github.com/BurntSushi/toml v1.3.2
 	github.com/bitly/go-simplejson v0.5.1
-	github.com/evanphx/json-patch/v5 v5.8.1
+	github.com/evanphx/json-patch/v5 v5.9.0
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gogo/protobuf v1.3.2
-	github.com/google/uuid v1.5.0
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/hashicorp/hcl v1.0.0
 	github.com/jinzhu/inflection v1.0.0
@@ -28,7 +28,7 @@ require (
 	github.com/xlab/treeprint v1.2.0
 	golang.org/x/crypto v0.18.0
 	golang.org/x/net v0.20.0
-	google.golang.org/grpc v1.60.1
+	google.golang.org/grpc v1.61.0
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -78,4 +78,4 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.60.1
+replace google.golang.org/grpc => google.golang.org/grpc v1.61.0
