@@ -40,7 +40,10 @@ type netListener struct{}
 type maxMsgSizeKey struct{}
 type maxConnKey struct{}
 type tlsAuth struct{}
+type grpcServerWrapKey struct{}
 type grpcWithHttp struct{}
+
+type ServerWrapFn func(s *grpc.Server) error
 
 // Codec gRPC Codec to be used to encode/decode requests for a given content type
 func Codec(contentType string, c encoding.Codec) server.Option {
@@ -86,4 +89,9 @@ func Options(opts ...grpc.ServerOption) server.Option {
 // send. Default maximum message size is 4 MB
 func MaxMsgSize(s int) server.Option {
 	return setServerOption(maxMsgSizeKey{}, s)
+}
+
+// WrapGRPCServer wraps grpc.Server, we can register custom grpc service by this way.
+func WrapGRPCServer(fn ServerWrapFn) server.Option {
+	return setServerOption(grpcServerWrapKey{}, fn)
 }

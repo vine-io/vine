@@ -37,7 +37,6 @@ import (
 	"time"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/vine-io/vine/lib/errors"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"golang.org/x/net/netutil"
@@ -49,6 +48,8 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+
+	"github.com/vine-io/vine/lib/errors"
 
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/registry"
@@ -906,6 +907,12 @@ func (g *grpcServer) Start() error {
 	if g.opts.Context != nil {
 		if c, ok := g.opts.Context.Value(maxConnKey{}).(int); ok && c > 0 {
 			ts = netutil.LimitListener(ts, c)
+		}
+
+		if fn, ok := g.opts.Context.Value(grpcServerWrapKey{}).(ServerWrapFn); ok {
+			if err := fn(g.svc); err != nil {
+				return err
+			}
 		}
 	}
 
