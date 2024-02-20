@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,20 +23,26 @@
 // protoc-gen-dao is a plugin for the Google protocol buffer compiler to generate
 // Go code. Run it building this program and putting it in your path with
 // the name
-//		protoc-gen-dao
+//
+//	protoc-gen-dao
+//
 // That word 'validator' at the end becomes part of the option string set for the
 // protocol compiler, so once the protocol compiler (protoc) is installed
 // you can run
-//		protoc --dao_put=:out_directory --go_out=output_directory input_directory/file.proto
+//
+//	protoc --dao_put=:out_directory --go_out=output_directory input_directory/file.proto
+//
 // to generate vine code for the protocol defined by file.proto.
 // With input that, the output will be written to
-//		output_directory/file.validator.pb.go
+//
+//	output_directory/file.validator.pb.go
 //
 // The generated code is documented in the package comment for
 // the library.
 //
 // See the README and documentation is protocol buffers to learn more:
-//		https://developers.google.com/protocol-buffers/
+//
+//	https://developers.google.com/protocol-buffers/
 package main
 
 import (

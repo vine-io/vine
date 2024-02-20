@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -49,11 +49,10 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 
-	"github.com/vine-io/vine/lib/errors"
-
 	"github.com/vine-io/vine/core/broker"
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/server"
+	"github.com/vine-io/vine/lib/errors"
 	log "github.com/vine-io/vine/lib/logger"
 	"github.com/vine-io/vine/util/addr"
 	"github.com/vine-io/vine/util/backoff"

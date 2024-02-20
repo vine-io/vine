@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,18 +32,19 @@ import "github.com/miekg/dns"
 // register only the wrapped instance with the server.
 //
 // Example usage:
-//     service := &mdns.DNSSDService{
-//       MDNSService: &mdns.MDNSService{
-// 	       Instance: "My Foobar Service",
-// 	       Service: "_foobar._tcp",
-// 	       Port:    8000,
-//        }
-//      }
-//      server, err := mdns.NewServer(&mdns.Config{Zone: service})
-//      if err != nil {
-//        log.Fatalf("Error creating server: %v", err)
-//      }
-//      defer server.Shutdown()
+//
+//	    service := &mdns.DNSSDService{
+//	      MDNSService: &mdns.MDNSService{
+//		       Instance: "My Foobar Service",
+//		       Service: "_foobar._tcp",
+//		       Port:    8000,
+//	       }
+//	     }
+//	     server, err := mdns.NewServer(&mdns.Config{Zone: service})
+//	     if err != nil {
+//	       log.Fatalf("Error creating server: %v", err)
+//	     }
+//	     defer server.Shutdown()
 type DNSSDService struct {
 	MDNSService *MDNSService
 }

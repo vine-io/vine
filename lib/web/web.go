@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -54,10 +54,10 @@ type Service interface {
 	Run() error
 }
 
-//Option for web
+// Option for web
 type Option func(o *Options)
 
-//Web basic Defaults
+// Web basic Defaults
 var (
 	// For serving
 	DefaultName    = "go-web"

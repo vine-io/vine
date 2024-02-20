@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@
 package main
 
 import (
-	 "github.com/vine-io/vine/cmd/generator/vanity"
-	 "github.com/vine-io/vine/cmd/generator/vanity/command"
+	"github.com/vine-io/vine/cmd/generator/vanity"
+	"github.com/vine-io/vine/cmd/generator/vanity/command"
 	gogo "github.com/vine-io/vine/cmd/protoc-gen-gogo/plugin"
 )
 

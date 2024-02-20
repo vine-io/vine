@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,7 @@ var (
 	total = 24
 )
 
-func render(ctx *gin.Context, tmpl string, data interface{})  {
+func render(ctx *gin.Context, tmpl string, data interface{}) {
 	t, err := template.New("template").Funcs(template.FuncMap{
 		//		"format": format,
 	}).Parse(layoutTemplate)

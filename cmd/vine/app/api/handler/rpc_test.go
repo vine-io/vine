@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	 "github.com/vine-io/vine/core/client"
-	 "github.com/vine-io/vine/core/client/selector"
-	 "github.com/vine-io/vine/core/registry/memory"
+	"github.com/vine-io/vine/core/client"
+	"github.com/vine-io/vine/core/client/selector"
+	"github.com/vine-io/vine/core/registry/memory"
 	"github.com/vine-io/vine/core/server"
 	"github.com/vine-io/vine/lib/cmd"
 	"github.com/vine-io/vine/util/context/metadata"

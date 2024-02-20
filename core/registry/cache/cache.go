@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ import (
 type Cache interface {
 	// Registry embed the registry interface
 	registry.Registry
-	// Stop stop the cache watcher
+	// Stop stops the cache watcher
 	Stop()
 }
 

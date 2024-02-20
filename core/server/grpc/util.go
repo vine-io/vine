@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2020 Lack
+// Copyright (c) 2020 The vine Authors
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,8 @@ func wait(ctx context.Context) *sync.WaitGroup {
 // Input:
 // Foo.Bat, /Foo/Bar, /Package.Foo/Bar, /a.package.Foo/Bar
 // Output:
-// 	[Foo, Bar]
+//
+//	[Foo, Bar]
 func serverMethod(m string) (string, string, error) {
 	if len(m) == 0 {
 		return "", "", fmt.Errorf("malformed method name: %q", m)
