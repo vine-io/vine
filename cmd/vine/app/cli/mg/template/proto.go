@@ -5,7 +5,7 @@ var (
 
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/api/types/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option go_package = "{{.GoDir}}/api/types/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
 option java_package = "io.vine.types.{{.Group}}.{{.Version}}";
 option java_multiple_files = true;
 
@@ -41,7 +41,7 @@ message {{title .Name}}List {
 
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/api/services/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option go_package = "{{.GoDir}}/api/services/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
 option java_package = "io.vine.services.{{.Group}}.{{.Version}}";
 option java_multiple_files = true;
 
@@ -84,7 +84,7 @@ message Pong {
 
 package {{.Group}}{{.Version}};
 
-option go_package = "{{.Dir}}/api/services/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
+option go_package = "{{.GoDir}}/api/services/{{.Group}}/{{.Version}};{{.Group}}{{.Version}}";
 option java_package = "io.vine.services.{{.Group}}.{{.Version}}";
 option java_multiple_files = true;
 

@@ -98,7 +98,7 @@ func runProto(cmd *cobra.Command, args []string) error {
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "api", "services", group, pv, name+".proto"),
+			Pb:      filepath.Join(c.GoDir, "api", "services", group, pv, name+".proto"),
 			Group:   group,
 			Version: pv,
 			Type:    "service",
@@ -111,14 +111,14 @@ func runProto(cmd *cobra.Command, args []string) error {
 		}
 		c.Toml.Proto = append(c.Toml.Proto, tool.Proto{
 			Name:    name,
-			Pb:      filepath.Join(c.Dir, "api", "types", group, pv, name+".proto"),
+			Pb:      filepath.Join(c.GoDir, "api", "types", group, pv, name+".proto"),
 			Group:   group,
 			Version: pv,
 			Type:    "api",
 			Plugins: []string{"validator", "dao", "deepcopy"},
 		})
 
-		registerFile := filepath.Join(c.Dir, "api", "types", group, pv, "register.go")
+		registerFile := filepath.Join(c.GoDir, "api", "types", group, pv, "register.go")
 		_, err := os.Stat(registerFile)
 		if os.IsNotExist(err) {
 			c.Files = append(c.Files, file{

@@ -25,6 +25,7 @@ package grpc
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net"
 	"reflect"
@@ -43,7 +44,7 @@ import (
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/core/codec/bytes"
 	"github.com/vine-io/vine/core/registry"
-	"github.com/vine-io/vine/lib/errors"
+	verrs "github.com/vine-io/vine/lib/errors"
 	"github.com/vine-io/vine/util/context/metadata"
 	mnet "github.com/vine-io/vine/util/net"
 )
@@ -125,10 +126,10 @@ func (g *grpcClient) next(request client.Request, opts client.CallOptions) (sele
 	// get next nodes from the selector
 	next, err := g.opts.Selector.Select(service, opts.SelectOptions...)
 	if err != nil {
-		if err == selector.ErrNotFound {
-			return nil, errors.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
+		if errors.Is(err, selector.ErrNotFound) {
+			return nil, verrs.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
 		}
-		return nil, errors.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
+		return nil, verrs.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
 	}
 
 	return next, nil
@@ -159,7 +160,7 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 
 	cf, err := g.newGRPCCodec(req.ContentType())
 	if err != nil {
-		return errors.InternalServerError("go.vine.client", err.Error())
+		return verrs.InternalServerError("go.vine.client", err.Error())
 	}
 
 	maxRecvMsgSize := g.maxRecvMsgSizeValue()
@@ -181,7 +182,7 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 
 	cc, err := g.pool.getConn(address, grpcDialOptions...)
 	if err != nil {
-		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error sending request: %v", err))
+		return verrs.InternalServerError("go.vine.client", fmt.Sprintf("Error sending request: %v", err))
 	}
 	// defer execution of release
 	defer g.pool.release(address, cc, grr)
@@ -205,7 +206,7 @@ func (g *grpcClient) call(ctx context.Context, node *registry.Node, req client.R
 	case err = <-ch:
 		grr = err
 	case <-ctx.Done():
-		grr = errors.Timeout("go.vine.client", "%v", ctx.Err())
+		grr = verrs.Timeout("go.vine.client", "%v", ctx.Err())
 	}
 
 	return grr
@@ -237,7 +238,7 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 
 	cf, err := g.newGRPCCodec(req.ContentType())
 	if err != nil {
-		return errors.InternalServerError("go.vine.client", err.Error())
+		return verrs.InternalServerError("go.vine.client", err.Error())
 	}
 
 	var dialCtx context.Context
@@ -268,7 +269,7 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 
 	cc, err := grpc.DialContext(dialCtx, address, grpcDialOptions...)
 	if err != nil {
-		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error sending request: %v", err))
+		return verrs.InternalServerError("go.vine.client", fmt.Sprintf("Error sending request: %v", err))
 	}
 
 	desc := &grpc.StreamDesc{
@@ -296,7 +297,7 @@ func (g *grpcClient) stream(ctx context.Context, node *registry.Node, req client
 		// close the connection
 		_ = cc.Close()
 		// now return the error
-		return errors.InternalServerError("go.vine.client", fmt.Sprintf("Error creating stream: %v", err))
+		return verrs.InternalServerError("go.vine.client", fmt.Sprintf("Error creating stream: %v", err))
 	}
 
 	codec := &grpcCodec{
@@ -395,9 +396,9 @@ func (g *grpcClient) NewRequest(service, method string, req interface{}, reqOpts
 
 func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
 	if req == nil {
-		return errors.InternalServerError("go.vine.client", "req is nil")
+		return verrs.InternalServerError("go.vine.client", "req is nil")
 	} else if rsp == nil {
-		return errors.InternalServerError("go.vine.client", "rsp is nil")
+		return verrs.InternalServerError("go.vine.client", "rsp is nil")
 	}
 
 	// make a copy of call opts
@@ -428,7 +429,7 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return errors.Timeout("go.vine.client", "%v", ctx.Err())
+		return verrs.Timeout("go.vine.client", "%v", ctx.Err())
 	default:
 	}
 
@@ -445,7 +446,7 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 		// call backoff first. Someone may want an initial start delay
 		t, err := callOpts.Backoff(ctx, req, i)
 		if err != nil {
-			return errors.InternalServerError("go.vine.client", err.Error())
+			return verrs.InternalServerError("go.vine.client", err.Error())
 		}
 
 		// only sleep if greater than 0
@@ -457,16 +458,17 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 		node, err := next()
 		service := req.Service()
 		if err != nil {
-			if err == selector.ErrNotFound {
-				return errors.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
+			if errors.Is(err, selector.ErrNotFound) {
+				return verrs.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
 			}
-			return errors.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
+			return verrs.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
 		}
 
 		// make the call
 		err = gcall(ctx, node, req, rsp, callOpts)
 		g.opts.Selector.Mark(service, node, err)
-		if verr, ok := err.(*errors.Error); ok {
+		var verr *verrs.Error
+		if errors.As(err, &verr) {
 			return verr
 		}
 
@@ -483,7 +485,7 @@ func (g *grpcClient) Call(ctx context.Context, req client.Request, rsp interface
 
 		select {
 		case <-ctx.Done():
-			return errors.Timeout("go.vine.client", "%v", ctx.Err())
+			return verrs.Timeout("go.vine.client", "%v", ctx.Err())
 		case err := <-ch:
 			// if the call succeeded lets bail early
 			if err == nil {
@@ -523,7 +525,7 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 	// should we noop right here?
 	select {
 	case <-ctx.Done():
-		return nil, errors.Timeout("go.vine.client", "%v", ctx.Err())
+		return nil, verrs.Timeout("go.vine.client", "%v", ctx.Err())
 	default:
 	}
 
@@ -539,7 +541,7 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 		// call backoff first. Someone may want an initial start delay
 		t, err := callOpts.Backoff(ctx, req, i)
 		if err != nil {
-			return nil, errors.InternalServerError("go.vine.client", err.Error())
+			return nil, verrs.InternalServerError("go.vine.client", err.Error())
 		}
 
 		// only sleep if greater than 0
@@ -550,10 +552,10 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 		node, err := next()
 		service := req.Service()
 		if err != nil {
-			if err == selector.ErrNotFound {
-				return nil, errors.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
+			if errors.Is(err, selector.ErrNotFound) {
+				return nil, verrs.InternalServerError("go.vine.client", "service %s: %s", service, err.Error())
 			}
-			return nil, errors.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
+			return nil, verrs.InternalServerError("go.vine.client", "error selecting %s node: %s", service, err.Error())
 		}
 
 		// make the call
@@ -580,7 +582,7 @@ func (g *grpcClient) Stream(ctx context.Context, req client.Request, opts ...cli
 
 		select {
 		case <-ctx.Done():
-			return nil, errors.Timeout("go.vine.client", "%v", ctx.Err())
+			return nil, verrs.Timeout("go.vine.client", "%v", ctx.Err())
 		case rsp := <-ch:
 			// if the call succeeded lets bail early
 			if rsp.err == nil {
@@ -618,7 +620,7 @@ func (g *grpcClient) Publish(ctx context.Context, p client.Message, opts ...clie
 
 	cf, err := g.newGRPCCodec(p.ContentType())
 	if err != nil {
-		return errors.InternalServerError("go.vine.client", err.Error())
+		return verrs.InternalServerError("go.vine.client", err.Error())
 	}
 
 	var body []byte
@@ -630,14 +632,14 @@ func (g *grpcClient) Publish(ctx context.Context, p client.Message, opts ...clie
 		// set the body
 		b, err := cf.Marshal(p.Payload())
 		if err != nil {
-			return errors.InternalServerError("go.vine.client", err.Error())
+			return verrs.InternalServerError("go.vine.client", err.Error())
 		}
 		body = b
 	}
 
 	if !g.once.Load().(bool) {
 		if err = g.opts.Broker.Connect(); err != nil {
-			return errors.InternalServerError("go.vine.client", err.Error())
+			return verrs.InternalServerError("go.vine.client", err.Error())
 		}
 		g.once.Store(true)
 	}
