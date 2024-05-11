@@ -760,9 +760,14 @@ func (m *Marshaler) marshalValue(out *errWriter, prop *proto.Properties, v refle
 		}
 	}
 
-	if v.Kind() == reflect.Int32 || v.Kind() == reflect.Int64 ||
-		v.Kind() == reflect.Uint32 || v.Kind() == reflect.Uint64 {
+	if v.Kind() == reflect.Int32 || v.Kind() == reflect.Int64 {
 		iv := v.Int()
+		out.write(fmt.Sprintf("%d", iv))
+		return out.err
+	}
+
+	if v.Kind() == reflect.Uint32 || v.Kind() == reflect.Uint64 {
+		iv := v.Uint()
 		out.write(fmt.Sprintf("%d", iv))
 		return out.err
 	}

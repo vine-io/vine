@@ -29,6 +29,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"reflect"
 	"sort"
 	"sync"
 	"time"
@@ -113,20 +114,28 @@ func (h *httpServer) NewHandler(handler interface{}, opts ...server.HandlerOptio
 		o(&options)
 	}
 
-	var eps []*registry.Endpoint
+	typ := reflect.TypeOf(handler)
+	hdlr := reflect.ValueOf(handler)
+	name := reflect.Indirect(hdlr).Type().Name()
 
-	if !options.Internal {
-		for name, metadata := range options.Metadata {
-			eps = append(eps, &registry.Endpoint{
-				Name:     name,
-				Metadata: metadata,
-			})
+	var endpoints []*registry.Endpoint
+
+	for m := 0; m < typ.NumMethod(); m++ {
+		if e := extractEndpoint(typ.Method(m)); e != nil {
+			e.Name = name + "." + e.Name
+
+			for k, v := range options.Metadata[e.Name] {
+				e.Metadata[k] = v
+			}
+
+			endpoints = append(endpoints, e)
 		}
 	}
 
 	return &httpHandler{
-		eps:  eps,
+		name: name,
 		hd:   handler,
+		eps:  endpoints,
 		opts: options,
 	}
 }

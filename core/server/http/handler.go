@@ -28,13 +28,14 @@ import (
 )
 
 type httpHandler struct {
+	name string
 	opts server.HandlerOptions
 	eps  []*registry.Endpoint
 	hd   interface{}
 }
 
 func (h *httpHandler) Name() string {
-	return "handler"
+	return h.name
 }
 
 func (h *httpHandler) Handler() interface{} {
