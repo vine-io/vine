@@ -24,12 +24,16 @@ package http
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/vine-io/vine/core/registry"
 	"github.com/vine-io/vine/core/registry/memory"
 	"github.com/vine-io/vine/lib/api/handler"
@@ -39,10 +43,20 @@ import (
 	regRouter "github.com/vine-io/vine/lib/api/router/registry"
 )
 
+type ClosedRecorder struct {
+	httptest.ResponseRecorder
+}
+
+func (r *ClosedRecorder) CloseNotify() <-chan bool {
+	ch := make(chan bool, 1)
+	return ch
+}
+
 func testHttp(t *testing.T, path, service, ns string) {
 	r := memory.NewRegistry()
 
-	l, err := net.Listen("tcp", "127.0.0.1:11111")
+	port := 10000 + rand.New(rand.NewSource(time.Now().UnixNano())).Int63n(1000)
+	l, err := net.Listen("tcp", "127.0.0.1:"+fmt.Sprintf("%d", port))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,17 +76,18 @@ func testHttp(t *testing.T, path, service, ns string) {
 	r.Register(ctx, s)
 	defer r.Deregister(ctx, s)
 
+	gin.SetMode(gin.ReleaseMode)
+	engine := gin.New()
 	// setup the test handler
-	m := http.NewServeMux()
-	m.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`you got served`))
+	engine.POST(path, func(ctx *gin.Context) {
+		ctx.String(http.StatusOK, `you got served`)
 	})
 
 	// start http test serve
-	go http.Serve(l, m)
+	go http.Serve(l, engine)
 
 	// create new request and writer
-	w := httptest.NewRecorder()
+	w := &ClosedRecorder{ResponseRecorder: *httptest.NewRecorder()}
 	req, err := http.NewRequest("POST", path, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -90,7 +105,7 @@ func testHttp(t *testing.T, path, service, ns string) {
 	p := NewHandler(handler.WithRouter(rt))
 
 	// execute the handler
-	c, _ := gin.CreateTestContext(w)
+	c := gin.CreateTestContextOnly(w, engine)
 	c.Request = req
 	p.Handle(c)
 
@@ -149,6 +164,7 @@ func TestHttpHandler(t *testing.T) {
 	for _, d := range testData {
 		t.Run(d.service, func(t *testing.T) {
 			testHttp(t, d.path, d.service, d.namespace)
+			time.Sleep(time.Second)
 		})
 	}
 }

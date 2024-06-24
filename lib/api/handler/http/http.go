@@ -31,6 +31,7 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/vine-io/vine/core/client/selector"
 	"github.com/vine-io/vine/lib/api"
 	"github.com/vine-io/vine/lib/api/handler"
@@ -72,7 +73,7 @@ func (h *httpHandler) Handle(c *gin.Context) {
 		req.Host = rp.Host
 		req.URL.Scheme = rp.Scheme
 		req.URL.Host = rp.Host
-		req.URL.Path = rp.Path
+		req.URL.Path = c.Request.URL.Path
 	}
 
 	proxy.ServeHTTP(c.Writer, c.Request)
