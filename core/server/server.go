@@ -30,6 +30,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/spf13/pflag"
+
 	"github.com/vine-io/vine/core/codec"
 	"github.com/vine-io/vine/core/registry"
 	log "github.com/vine-io/vine/lib/logger"

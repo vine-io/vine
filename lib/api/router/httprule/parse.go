@@ -28,7 +28,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/vine-io/vine/lib/logger"
+	log "github.com/vine-io/vine/lib/logger"
 )
 
 // InvalidTemplateError indicates that the path template is not valid.
@@ -124,16 +124,16 @@ type parser struct {
 
 // topLevelSegments is the target of this parser.
 func (p *parser) topLevelSegments() ([]segment, error) {
-	logger.Debugf("Parsing %q", p.tokens)
+	log.Debugf("Parsing %q", p.tokens)
 	segs, err := p.segments()
 	if err != nil {
 		return nil, err
 	}
-	logger.Debugf("accept segments: %q; %q", p.accepted, p.tokens)
+	log.Debugf("accept segments: %q; %q", p.accepted, p.tokens)
 	if _, err := p.accept(typeEOF); err != nil {
 		return nil, fmt.Errorf("unexpected token %q after segments %q", p.tokens[0], strings.Join(p.accepted, ""))
 	}
-	logger.Debugf("accept eof: %q; %q", p.accepted, p.tokens)
+	log.Debugf("accept eof: %q; %q", p.accepted, p.tokens)
 	return segs, nil
 }
 
@@ -143,7 +143,7 @@ func (p *parser) segments() ([]segment, error) {
 		return nil, err
 	}
 
-	logger.Debugf("accept segment: %q; %q", p.accepted, p.tokens)
+	log.Debugf("accept segment: %q; %q", p.accepted, p.tokens)
 	segs := []segment{s}
 	for {
 		if _, err := p.accept("/"); err != nil {
@@ -154,7 +154,7 @@ func (p *parser) segments() ([]segment, error) {
 			return segs, err
 		}
 		segs = append(segs, s)
-		logger.Debugf("accept segment: %q; %q", p.accepted, p.tokens)
+		log.Debugf("accept segment: %q; %q", p.accepted, p.tokens)
 	}
 }
 

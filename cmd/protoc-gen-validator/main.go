@@ -46,7 +46,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/gogo/protobuf/proto"
@@ -67,7 +67,7 @@ func main() {
 	g.EasyHeader()
 	g.EnableEdit()
 
-	data, err := ioutil.ReadAll(os.Stdin)
+	data, err := io.ReadAll(os.Stdin)
 	if err != nil {
 		g.Error(err, "reading input")
 	}

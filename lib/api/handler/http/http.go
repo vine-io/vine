@@ -45,7 +45,7 @@ const (
 type httpHandler struct {
 	options handler.Options
 
-	// set with different initialiser
+	// set with different initializer
 	s *api.Service
 }
 
@@ -73,7 +73,7 @@ func (h *httpHandler) Handle(c *gin.Context) {
 		req.Host = rp.Host
 		req.URL.Scheme = rp.Scheme
 		req.URL.Host = rp.Host
-		req.URL.Path = c.Request.URL.Path
+		req.URL.Path = rp.Path
 	}
 
 	proxy.ServeHTTP(c.Writer, c.Request)
@@ -107,8 +107,9 @@ func (h *httpHandler) getService(c *gin.Context) (string, error) {
 	if err != nil {
 		return "", nil
 	}
+	target := s.Address + r.URL.String()
 
-	return fmt.Sprintf("http://%s", s.Address), nil
+	return fmt.Sprintf("http://%s", target), nil
 }
 
 func (h *httpHandler) String() string {

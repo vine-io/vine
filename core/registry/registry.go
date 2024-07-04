@@ -38,7 +38,10 @@ var (
 	DefaultRegistryTimeout = time.Second * 10
 	// DefaultNamespace the default value of namespace
 	DefaultNamespace = "vine"
+)
 
+// Registry errors
+var (
 	// ErrNotFound not found error when GetService is called
 	ErrNotFound = errors.New("service not found")
 	// ErrWatcherStopped watcher stopped error when watcher is stopped
@@ -46,7 +49,7 @@ var (
 )
 
 func init() {
-	Flag.String("registry.default", "", "Registry for discovery")
+	Flag.String("registry.default", "", "Sets the default registry for discovery")
 	Flag.String("registry.address", "", "Sets the registry addresses")
 	Flag.Duration("registry.timeout", DefaultRegistryTimeout, "Sets the registry request timeout")
 	Flag.String("registry.namespace", DefaultNamespace, "Sets the registry namespace")
