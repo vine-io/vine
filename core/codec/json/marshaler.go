@@ -30,6 +30,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	json "github.com/json-iterator/go"
 	"github.com/oxtoacart/bpool"
+
 	mjsonpb "github.com/vine-io/vine/util/jsonpb"
 )
 

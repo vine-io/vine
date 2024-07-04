@@ -29,6 +29,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	json "github.com/json-iterator/go"
+
 	"github.com/vine-io/vine/core/codec"
 	mjsonpb "github.com/vine-io/vine/util/jsonpb"
 )

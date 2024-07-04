@@ -27,6 +27,7 @@ import (
 	"io/ioutil"
 
 	"github.com/gogo/protobuf/proto"
+
 	"github.com/vine-io/vine/core/codec"
 )
 

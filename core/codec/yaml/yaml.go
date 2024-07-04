@@ -28,9 +28,10 @@ import (
 	"io"
 
 	"github.com/gogo/protobuf/proto"
+	"gopkg.in/yaml.v3"
+
 	"github.com/vine-io/vine/core/codec"
 	myamlpb "github.com/vine-io/vine/util/yamlpb"
-	"gopkg.in/yaml.v3"
 )
 
 type Codec struct {

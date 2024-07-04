@@ -1,6 +1,6 @@
 module github.com/vine-io/vine
 
-go 1.18
+go 1.21
 
 require (
 	dario.cat/mergo v1.0.0
@@ -28,7 +28,7 @@ require (
 	github.com/xlab/treeprint v1.2.0
 	golang.org/x/crypto v0.24.0
 	golang.org/x/net v0.26.0
-	google.golang.org/grpc v1.64.0
+	google.golang.org/grpc v1.65.0
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -75,9 +75,9 @@ require (
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.64.0
+replace google.golang.org/grpc => google.golang.org/grpc v1.65.0

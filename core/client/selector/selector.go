@@ -27,6 +27,7 @@ import (
 	"errors"
 
 	"github.com/spf13/pflag"
+
 	"github.com/vine-io/vine/core/registry"
 )
 

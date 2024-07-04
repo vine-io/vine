@@ -27,6 +27,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/oxtoacart/bpool"
+
 	"github.com/vine-io/vine/core/codec"
 )
 
